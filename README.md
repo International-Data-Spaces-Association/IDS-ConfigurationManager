@@ -189,4 +189,4 @@ Please read the `CHANGELOG.md` for versioning details.
 
 <a name="license"></a>
 ## License
-Copyright © 2020 Fraunhofer ISST
+This project is licensed under the Apache License 2.0 - see the LICENSE.md file for details.
