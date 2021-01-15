@@ -1,0 +1,180 @@
+{
+  "@context": {
+    "ids": "https://w3id.org/idsa/core/",
+    "idsc": "https://w3id.org/idsa/code/"
+  },
+  "@type": "ids:ConfigurationModel",
+  "@id": "https://w3id.org/idsa/autogen/configurationModel/6e4d7df7-e1c4-4450-9412-8b963fdf2fd8",
+  "ids:keyStore": {
+    "@id": "http://k"
+  },
+  "ids:connectorStatus": {
+    "@id": "idsc:CONNECTOR_OFFLINE"
+  },
+  "ids:connectorProxy": [
+    {
+      "@type": "ids:Proxy",
+      "@id": "https://w3id.org/idsa/autogen/proxy/6d333830-e293-4443-b980-8a382372115a",
+      "ids:proxyURI": {
+        "@id": "www.proxyUri.com"
+      },
+      "ids:proxyAuthentication": {
+        "@type": "ids:BasicAuthentication",
+        "@id": "https://w3id.org/idsa/autogen/basicAuthentication/3ede38a7-9755-47f2-a971-c00d566bdf3a",
+        "ids:authPassword": "password",
+        "ids:authUsername": "user"
+      }
+    }
+  ],
+  "ids:trustStore": {
+    "@id": "http://t"
+  },
+  "ids:appRoute": [
+    {
+      "@type": "ids:AppRoute",
+      "@id": "https://w3id.org/idsa/autogen/appRoute/3bbbd898-5574-4d1c-b67d-e9114cca8a2f",
+      "ids:routeDeployMethod": "custom",
+      "ids:appRouteBroker": [],
+      "ids:appRouteStart": [
+        {
+          "@type": "ids:GenericEndpoint",
+          "@id": "https://w3id.org/idsa/autogen/genericEndpoint/a93d7977-0702-4c22-be55-1253303b68ea",
+          "ids:genericEndpointAuthentication": {
+            "@type": "ids:BasicAuthentication",
+            "@id": "https://w3id.org/idsa/autogen/basicAuthentication/cee841b4-39fe-43f9-b89f-0665dd9c1750",
+            "ids:authPassword": "password",
+            "ids:authUsername": "user"
+          },
+          "ids:accessURL": {
+            "@id": "www.accessUrl.com"
+          }
+        }
+      ],
+      "ids:appRouteOutput": [
+        {
+          "@type": "ids:Resource",
+          "@id": "https://w3id.org/idsa/autogen/resource/4397a6e5-db31-41e8-8529-a03629a607d6",
+          "ids:modified": {
+            "@value": "2020-11-09T11:39:46.401+01:00",
+            "@type": "http://www.w3.org/2001/XMLSchema#dateTimeStamp"
+          },
+          "ids:created": {
+            "@value": "2020-11-09T11:39:46.386+01:00",
+            "@type": "http://www.w3.org/2001/XMLSchema#dateTimeStamp"
+          },
+          "ids:language": [
+            {
+              "@id": "idsc:DE"
+            }
+          ],
+          "ids:version": "1",
+          "ids:description": [
+            {
+              "@value": "description",
+              "@type": "http://www.w3.org/2001/XMLSchema#string"
+            }
+          ],
+          "ids:keyword": [
+            {
+              "@value": "Key",
+              "@type": "http://www.w3.org/2001/XMLSchema#string"
+            }
+          ],
+          "ids:title": [
+            {
+              "@value": "title",
+              "@type": "http://www.w3.org/2001/XMLSchema#string"
+            }
+          ],
+          "ids:standardLicense": {
+            "@id": "license"
+          },
+          "ids:representation": [
+            {
+              "@type": "ids:Representation",
+              "@id": "https://w3id.org/idsa/autogen/representation/30cf2514-2ec8-4faa-bf14-629e512cb64a",
+              "ids:instance": [
+                {
+                  "@type": "ids:Artifact",
+                  "@id": "https://w3id.org/idsa/autogen/artifact/23049070-308c-4de9-987a-83627e686222",
+                  "ids:byteSize": 1
+                }
+              ],
+              "ids:language": {
+                "@id": "idsc:DE"
+              },
+              "ids:mediaType": {
+                "@type": "ids:IANAMediaType",
+                "@id": "https://w3id.org/idsa/autogen/iANAMediaType/ffaf3a8d-ee5d-4d9b-adb6-3e89aa6c0fc0",
+                "ids:filenameExtension": "PDF"
+              },
+              "ids:sourceType": "HTTP_GET"
+            }
+          ],
+          "ids:publisher": {
+            "@id": "publisher"
+          },
+          "ids:brokerList": [
+            {
+              "@id": "https://w3id.org/idsa/autogen/broker/9cef02f2-55d8-46ff-a68a-507ded28f3a6"
+            }
+          ]
+        }
+      ],
+      "ids:appRouteEnd": [
+        {
+          "@type": "ids:Endpoint",
+          "@id": "https://w3id.org/idsa/autogen/endpoint/dfda5eb4-d21b-42ab-a934-471e97a1a2bf",
+          "ids:accessURL": {
+            "@id": "/api/ids/data"
+          }
+        }
+      ]
+    }
+  ],
+  "ids:configurationModelLogLevel": {
+    "@id": "idsc:NO_LOGGING"
+  },
+  "ids:connectorDeployMode": {
+    "@id": "idsc:TEST_DEPLOYMENT"
+  },
+  "ids:connectorDescription": {
+    "@type": "ids:BaseConnector",
+    "@id": "https://w3id.org/idsa/autogen/baseConnector/06eaab82-e52e-401d-92c5-6751187c5e1c",
+    "ids:hasEndpoint": [
+      {
+        "@type": "ids:ConnectorEndpoint",
+        "@id": "https://w3id.org/idsa/autogen/connectorEndpoint/acf12ba8-3449-422d-982f-f26f626552af",
+        "ids:accessURL": {
+          "@id": "www.accessUrl.com"
+        }
+      }
+    ],
+    "ids:version": "1",
+    "ids:description": [
+      {
+        "@value": "description",
+        "@type": "http://www.w3.org/2001/XMLSchema#string"
+      }
+    ],
+    "ids:title": [
+      {
+        "@value": "title",
+        "@type": "http://www.w3.org/2001/XMLSchema#string"
+      }
+    ],
+    "ids:maintainer": {
+      "@id": "maintainer"
+    },
+    "ids:curator": {
+      "@id": "curator"
+    },
+    "ids:securityProfile": {
+      "@id": "idsc:BASE_SECURITY_PROFILE"
+    },
+    "ids:inboundModelVersion": [
+      "1"
+    ],
+    "ids:outboundModelVersion": "1"
+  }
+}
