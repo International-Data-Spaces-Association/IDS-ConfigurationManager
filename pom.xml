@@ -119,8 +119,8 @@
             <groupId>de.fraunhofer.iais.eis.ids.infomodel</groupId>
             <artifactId>java</artifactId>
             <version>4.0.1-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/java-4.0.1-SNAPSHOT.jar</systemPath>
+<!--            <scope>system</scope>-->
+<!--            <systemPath>${basedir}/lib/java-4.0.1-SNAPSHOT.jar</systemPath>-->
         </dependency>
 
         <dependency>
