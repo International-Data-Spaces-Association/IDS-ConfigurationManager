@@ -75,7 +75,7 @@ You need:
 
 Clone the project from
 ```
-https://www.ids.isst.fraunhofer.de/bitbucket/scm/idsp/ids-configurationmanager.git
+https://github.com/FraunhoferISST/IDS-ConfigurationManager
 ```
 open the directory and run 
 ```
@@ -176,14 +176,6 @@ This means that the creation of the resource was successful and the dataspace co
 ## Versioning
 
 Please read the `CHANGELOG.md` for versioning details.
-
----
-
-<a name="authors"></a>
-## Authors
-* **Steffen Biehs**  - *Initial work, implementation*
-* **Erik van den, Akker** - *Initial work, implementation* 
-* **Gökhan Kahriman** - *Initial work, implementation*
 
 ---
 
