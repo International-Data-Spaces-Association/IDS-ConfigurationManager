@@ -81,9 +81,9 @@ open the directory and run
 ```
 mvn clean package
 ```
-When building was successfully, go into target folder and run
+When building was successfully, go into target folder and run with current version number (<X.Y.Z>):
 ```
-java -jar configmanager-0.0.1-SNAPSHOT.jar
+java -jar configmanager-<X.Y.Z>.jar
 ```
 in terminal to start the configuration manager.
 
