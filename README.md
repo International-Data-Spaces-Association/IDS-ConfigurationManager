@@ -110,13 +110,13 @@ configuration of configuration model, connector, brokers etc. via the user inter
                                    With the API the representations can be managed.
 
 * `Database: `The data resources are persist in an H2 database.
-              Console path: `http://localhost:8080/console`
+              Console path: `http://localhost:8081/console`
 ---
 <a name="hands-on-ids-configurationmanager"></a>
 ## Hands-on IDS Configurationmanager
 
 To interact with the running application, the provided endpoints at the Swagger UI can be used.
-The Swagger UI is available at: `http://localhost:8080/swagger-ui/index.html?url=/v3/api-docs/` .
+The Swagger UI is available at: `http://localhost:8081/swagger-ui/index.html?url=/v3/api-docs/` .
 
 The following is an example of how the configuration model can be extended step by step in the Configuration Manager.
 The following points are discussed:
