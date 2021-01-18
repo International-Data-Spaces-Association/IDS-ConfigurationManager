@@ -40,8 +40,10 @@ public class AppRouteUIController implements AppRouteApi {
         AppRoute appRoute = appRouteService.createAppRoute(routeDeployMethod);
 
         if (appRoute != null) {
-            return ResponseEntity.ok(Utility.jsonMessage("message", "Created a new app route with id: " +
-                    appRoute.getId()));
+            var jsonObject = new JSONObject();
+            jsonObject.put("id", appRoute.getId().toString());
+            jsonObject.put("message", "Created a new app route successfully");
+            return ResponseEntity.ok(jsonObject.toJSONString());
         } else {
             return ResponseEntity.badRequest().body("Could not create an app route");
         }

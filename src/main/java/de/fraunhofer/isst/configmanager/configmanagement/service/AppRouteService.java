@@ -86,6 +86,12 @@ public class AppRouteService {
      */
     public List<AppRoute> getAppRoutes() {
 
+        if (configModelService.getConfigModel().getAppRoute() == null) {
+            ConfigurationModelImpl configurationModel = (ConfigurationModelImpl) configModelService.getConfigModel();
+            configurationModel.setAppRoute(new ArrayList<>());
+            configModelService.saveState();
+
+        }
         return new ArrayList<>(configModelService.getConfigModel().getAppRoute());
     }
 
