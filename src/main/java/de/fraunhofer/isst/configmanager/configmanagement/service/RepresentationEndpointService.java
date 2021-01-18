@@ -1,11 +1,8 @@
 package de.fraunhofer.isst.configmanager.configmanagement.service;
 
 
-import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.config.RepresentationEndpointObject;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.RepresentationEndpointRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,15 +15,11 @@ import java.util.List;
 @Service
 public class RepresentationEndpointService {
 
-    private final static Logger logger = LoggerFactory.getLogger(RepresentationEndpointService.class);
     private final RepresentationEndpointRepository representationEndpointRepository;
-    private final Serializer serializer;
 
     @Autowired
-    public RepresentationEndpointService(RepresentationEndpointRepository representationEndpointRepository,
-                                         Serializer serializer) {
+    public RepresentationEndpointService(RepresentationEndpointRepository representationEndpointRepository) {
         this.representationEndpointRepository = representationEndpointRepository;
-        this.serializer = serializer;
     }
 
     /**
@@ -43,7 +36,7 @@ public class RepresentationEndpointService {
     }
 
     /**
-     * This method retuns for an specific endpoint id the value from the map.
+     * This method returns for an specific endpoint id the value from the map.
      *
      * @param endpointId id of the endpoint
      * @return representation uri

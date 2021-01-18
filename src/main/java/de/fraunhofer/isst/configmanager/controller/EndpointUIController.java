@@ -4,8 +4,6 @@ package de.fraunhofer.isst.configmanager.controller;
 import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.iais.eis.util.Util;
-import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
-import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.DataSpaceConnectorResourceMapper;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.configmanagement.service.RepresentationEndpointService;
 import de.fraunhofer.isst.configmanager.configmanagement.service.UtilService;
@@ -39,22 +37,16 @@ public class EndpointUIController implements EndpointUIApi {
     private final ConfigModelService configModelService;
     private final UtilService utilService;
     private final RepresentationEndpointService representationEndpointService;
-    private final DataSpaceConnectorResourceMapper dataSpaceConnectorResourceMapper;
-    private final DefaultConnectorClient client;
 
     @Autowired
-    public EndpointUIController(DefaultConnectorClient client,
-                                Serializer serializer,
+    public EndpointUIController(Serializer serializer,
                                 ConfigModelService configModelService,
                                 UtilService utilService,
-                                RepresentationEndpointService representationEndpointService,
-                                DataSpaceConnectorResourceMapper dataSpaceConnectorResourceMapper) {
-        this.dataSpaceConnectorResourceMapper = dataSpaceConnectorResourceMapper;
+                                RepresentationEndpointService representationEndpointService) {
         this.serializer = serializer;
         this.configModelService = configModelService;
         this.utilService = utilService;
         this.representationEndpointService = representationEndpointService;
-        this.client = client;
     }
 
     /**

@@ -5,6 +5,7 @@ import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.configmanagement.service.AppRouteService;
 import de.fraunhofer.isst.configmanager.util.Utility;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +34,10 @@ public class AppRouteSubrouteUIController implements AppRouteSubrouteApi {
         RouteStep routeStep = appRouteService.createSubroute(routeId, routeDeployMethod);
 
         if (routeStep != null) {
-            return ResponseEntity.ok(Utility.jsonMessage("message", "Created new subroute with id: " + routeStep.getId()));
+            var jsonObject = new JSONObject();
+            jsonObject.put("subrouteId", routeStep.getId().toString());
+            jsonObject.put("message", "Created a new subroute");
+            return ResponseEntity.ok(jsonObject.toJSONString());
         } else {
             return ResponseEntity.badRequest().body("Could not create subroute for the app route with id: " + routeId);
         }

@@ -5,6 +5,7 @@ import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.configmanagement.service.AppRouteService;
 import de.fraunhofer.isst.configmanager.util.Utility;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,8 +46,10 @@ public class AppRouteEndUIController implements AppRouteEndApi {
         Endpoint endpoint = appRouteService.createAppRouteEnd(routeId, accessUrl);
 
         if (endpoint != null) {
-            return ResponseEntity.ok(Utility.jsonMessage("message", "Created an endpoint for the app route with id: " +
-                    endpoint.getId()));
+            var jsonObject = new JSONObject();
+            jsonObject.put("endpointId", endpoint.getId().toString());
+            jsonObject.put("message", "Created an endpoint for the app route");
+            return ResponseEntity.ok(jsonObject.toJSONString());
         } else {
             return ResponseEntity.badRequest().body("Could not create an endpoint for the app route");
         }
@@ -65,8 +68,10 @@ public class AppRouteEndUIController implements AppRouteEndApi {
         Endpoint endpoint = appRouteService.createSubrouteEnd(routeId, routeStepId, accessUrl);
 
         if (endpoint != null) {
-            return ResponseEntity.ok(Utility.jsonMessage("message", "Created an endpoint for the subroute with id: " +
-                    endpoint.getId()));
+            var jsonObject = new JSONObject();
+            jsonObject.put("endpointId", endpoint.getId().toString());
+            jsonObject.put("message", "Created an endpoint for the sub route");
+            return ResponseEntity.ok(jsonObject.toJSONString());
         } else {
             return ResponseEntity.badRequest().body("Could not create an endpoint for the subroute");
         }

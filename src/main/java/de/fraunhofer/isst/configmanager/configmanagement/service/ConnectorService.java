@@ -1,7 +1,6 @@
 package de.fraunhofer.isst.configmanager.configmanagement.service;
 
 import de.fraunhofer.iais.eis.*;
-import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.iais.eis.util.TypedLiteral;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.config.BaseConnectorObject;
@@ -27,14 +26,11 @@ public class ConnectorService {
     private final static Logger logger = LoggerFactory.getLogger(ConnectorService.class);
     private final ConnectorListRepository connectorListRepository;
     private List<ConnectorListener> listeners;
-    private final Serializer serializer;
     private ConnectorList connectors;
 
     @Autowired
-    public ConnectorService(Serializer serializer,
-                            ConnectorListRepository connectorListRepository) {
+    public ConnectorService(ConnectorListRepository connectorListRepository) {
         this.connectorListRepository = connectorListRepository;
-        this.serializer = serializer;
 
         // If no connector is found in the database, a default connector is created at this point.
         if (connectorListRepository.count() == 0) {

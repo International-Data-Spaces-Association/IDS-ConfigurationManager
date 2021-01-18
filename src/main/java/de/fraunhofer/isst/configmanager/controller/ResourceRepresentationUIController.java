@@ -5,7 +5,6 @@ import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
-import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.DataSpaceConnectorResourceMapper;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.configmanagement.service.RepresentationEndpointService;
 import de.fraunhofer.isst.configmanager.configmanagement.service.UtilService;
@@ -39,7 +38,6 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
     private final UtilService utilService;
     private final DefaultConnectorClient client;
     private final Serializer serializer;
-    private final DataSpaceConnectorResourceMapper dataSpaceConnectorResourceMapper;
     private final RepresentationEndpointService representationEndpointService;
 
     @Autowired
@@ -47,13 +45,11 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
                                               UtilService utilService,
                                               DefaultConnectorClient client,
                                               Serializer serializer,
-                                              DataSpaceConnectorResourceMapper dataSpaceConnectorResourceMapper,
                                               RepresentationEndpointService representationEndpointService) {
         this.client = client;
         this.configModelService = configModelService;
         this.utilService = utilService;
         this.serializer = serializer;
-        this.dataSpaceConnectorResourceMapper = dataSpaceConnectorResourceMapper;
         this.representationEndpointService = representationEndpointService;
     }
 

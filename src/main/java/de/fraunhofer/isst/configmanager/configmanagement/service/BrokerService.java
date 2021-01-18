@@ -20,12 +20,10 @@ public class BrokerService {
 
     private final static Logger logger = LoggerFactory.getLogger(BrokerService.class);
     private final CustomBrokerRepository customBrokerRepository;
-    private final Serializer serializer;
 
     @Autowired
     public BrokerService(Serializer serializer, CustomBrokerRepository customBrokerRepository) {
         this.customBrokerRepository = customBrokerRepository;
-        this.serializer = serializer;
 
         // If no broker is found in the database, a default broker is created at this point.
         if (customBrokerRepository.count() == 0) {

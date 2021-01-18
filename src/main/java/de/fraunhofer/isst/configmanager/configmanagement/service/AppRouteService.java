@@ -56,8 +56,7 @@ public class AppRouteService {
 
         boolean updated = false;
 
-        var appRouteImpl = (AppRouteImpl) configModelService.getConfigModel().getAppRoute()
-                .stream().filter(appRoute1 -> appRoute1.getId().equals(routeId)).findAny().orElse(null);
+        var appRouteImpl = getAppRouteImpl(routeId);
 
         if (appRouteImpl != null) {
             if (routeDeployMethod != null) {
@@ -107,8 +106,7 @@ public class AppRouteService {
     public Endpoint createAppRouteStart(URI routeId, String accessUrl, String username, String password) {
 
         if (routeId != null) {
-            var appRouteImpl = (AppRouteImpl) configModelService.getConfigModel().getAppRoute().stream().filter(
-                    appRoute -> appRoute.getId().equals(routeId)).findAny().orElse(null);
+            var appRouteImpl = getAppRouteImpl(routeId);
 
             if (appRouteImpl != null) {
                 if (appRouteImpl.getAppRouteStart() == null) {
@@ -141,8 +139,7 @@ public class AppRouteService {
         Endpoint endpoint = createEndpoint(accessUrl, username, password);
 
         if (routeId != null) {
-            var appRouteImpl = (AppRouteImpl) configModelService.getConfigModel().getAppRoute().stream().filter(
-                    appRoute -> appRoute.getId().equals(routeId)).findAny().orElse(null);
+            var appRouteImpl = getAppRouteImpl(routeId);
 
             if (appRouteImpl != null) {
 
@@ -159,9 +156,7 @@ public class AppRouteService {
                     configModelService.saveState();
                     return endpoint;
                 } else {
-                    var routeStepImpl = (RouteStepImpl)
-                            appRouteImpl.getHasSubRoute().stream()
-                                    .filter(routeStep -> routeStep.getId().equals(routeStepId)).findAny().orElse(null);
+                    var routeStepImpl = getSubrouteImpl(routeStepId, appRouteImpl);
 
                     if (routeStepImpl != null) {
 
@@ -217,8 +212,7 @@ public class AppRouteService {
      */
     public Endpoint getAppRouteStart(URI routeId, URI endpointId) {
 
-        var appRouteImpl = configModelService.getConfigModel().getAppRoute()
-                .stream().filter(appRoute -> appRoute.getId().equals(routeId)).findAny().orElse(null);
+        var appRouteImpl = getAppRouteImpl(routeId);
 
         if (appRouteImpl != null) {
             return appRouteImpl.getAppRouteStart().stream().filter(endpoint -> endpoint.getId().equals(endpointId))
@@ -237,12 +231,10 @@ public class AppRouteService {
      */
     public Endpoint getSubrouteStart(URI routeId, URI routeStepId, URI endpointId) {
 
-        var appRouteImpl = configModelService.getConfigModel().getAppRoute()
-                .stream().filter(appRoute -> appRoute.getId().equals(routeId)).findAny().orElse(null);
+        var appRouteImpl = getAppRouteImpl(routeId);
 
         if (appRouteImpl != null) {
-            var routeImpl = appRouteImpl.getHasSubRoute().stream()
-                    .filter(routeStep -> routeStep.getId().equals(routeStepId)).findAny().orElse(null);
+            var routeImpl = getSubrouteImpl(routeStepId, appRouteImpl);
 
             if (routeImpl != null) {
                 return routeImpl.getAppRouteStart().stream().filter(endpoint -> endpoint.getId().equals(endpointId))
@@ -262,8 +254,7 @@ public class AppRouteService {
     public boolean deleteAppRouteStart(URI routeId, URI endpointId) {
 
         boolean deleted = false;
-        var appRouteImpl = configModelService.getConfigModel().getAppRoute()
-                .stream().filter(appRoute -> appRoute.getId().equals(routeId)).findAny().orElse(null);
+        var appRouteImpl = getAppRouteImpl(routeId);
 
         if (appRouteImpl != null) {
             deleted = appRouteImpl.getAppRouteStart().removeIf(endpoint -> endpoint.getId().equals(endpointId));
@@ -283,12 +274,10 @@ public class AppRouteService {
     public boolean deleteSubrouteStart(URI routeId, URI routeStepId, URI endpointId) {
 
         boolean deleted = false;
-        var appRouteImpl = configModelService.getConfigModel().getAppRoute()
-                .stream().filter(appRoute -> appRoute.getId().equals(routeId)).findAny().orElse(null);
+        var appRouteImpl = getAppRouteImpl(routeId);
 
         if (appRouteImpl != null) {
-            var routeStepImpl = appRouteImpl.getHasSubRoute().stream()
-                    .filter(routeStep -> routeStep.getId().equals(routeStepId)).findAny().orElse(null);
+            var routeStepImpl = getSubrouteImpl(routeStepId, appRouteImpl);
 
             if (routeStepImpl != null) {
                 deleted = routeStepImpl.getAppRouteStart().removeIf(endpoint -> endpoint.getId().equals(endpointId));
@@ -312,36 +301,9 @@ public class AppRouteService {
 
         boolean updated = false;
 
-        var appRouteImpl = configModelService.getConfigModel().getAppRoute()
-                .stream().filter(appRoute -> appRoute.getId().equals(routeId)).findAny().orElse(null);
+        var appRouteImpl = getAppRouteImpl(routeId);
 
-        if (appRouteImpl != null) {
-
-            var endpointImpl = (GenericEndpointImpl) appRouteImpl.getAppRouteStart().stream()
-                    .filter(endpoint -> endpoint.getId().equals(endpointId)).findAny().orElse(null);
-
-            if (endpointImpl != null) {
-                BasicAuthentication basicAuthentication = endpointImpl.getGenericEndpointAuthentication();
-                if (accessUrl != null) {
-                    endpointImpl.setAccessURL(URI.create(accessUrl));
-                    updated = true;
-                }
-                if (username != null) {
-                    endpointImpl.setGenericEndpointAuthentication(
-                            new BasicAuthenticationBuilder(basicAuthentication.getId())
-                                    ._authPassword_(basicAuthentication.getAuthPassword())
-                                    ._authUsername_(username).build());
-                    updated = true;
-                }
-                if (password != null) {
-                    endpointImpl.setGenericEndpointAuthentication(
-                            new BasicAuthenticationBuilder(basicAuthentication.getId())
-                                    ._authUsername_(basicAuthentication.getAuthUsername())
-                                    ._authPassword_(password).build());
-                    updated = true;
-                }
-            }
-        }
+        updated = isUpdated(endpointId, accessUrl, username, password, updated, appRouteImpl);
         configModelService.saveState();
         return updated;
 
@@ -363,41 +325,13 @@ public class AppRouteService {
 
         boolean updated = false;
 
-        var appRouteImpl = configModelService.getConfigModel().getAppRoute()
-                .stream().filter(appRoute -> appRoute.getId().equals(routeId)).findAny().orElse(null);
+        var appRouteImpl = getAppRouteImpl(routeId);
 
         if (appRouteImpl != null) {
 
-            var routeStepImpl = appRouteImpl.getHasSubRoute().stream()
-                    .filter(routeStep -> routeStep.getId().equals(routeStepId)).findAny().orElse(null);
+            var routeStepImpl = getSubrouteImpl(routeStepId, appRouteImpl);
 
-            if (routeStepImpl != null) {
-
-                var endpointImpl = (GenericEndpointImpl) routeStepImpl.getAppRouteStart().stream()
-                        .filter(endpoint -> endpoint.getId().equals(endpointId)).findAny().orElse(null);
-
-                if (endpointImpl != null) {
-                    BasicAuthentication basicAuthentication = endpointImpl.getGenericEndpointAuthentication();
-                    if (accessUrl != null) {
-                        endpointImpl.setAccessURL(URI.create(accessUrl));
-                        updated = true;
-                    }
-                    if (username != null) {
-                        endpointImpl.setGenericEndpointAuthentication(
-                                new BasicAuthenticationBuilder(basicAuthentication.getId())
-                                        ._authPassword_(basicAuthentication.getAuthPassword())
-                                        ._authUsername_(username).build());
-                        updated = true;
-                    }
-                    if (password != null) {
-                        endpointImpl.setGenericEndpointAuthentication(
-                                new BasicAuthenticationBuilder(basicAuthentication.getId())
-                                        ._authUsername_(basicAuthentication.getAuthUsername())
-                                        ._authPassword_(password).build());
-                        updated = true;
-                    }
-                }
-            }
+            updated = isUpdated(endpointId, accessUrl, username, password, updated, routeStepImpl);
         }
         configModelService.saveState();
         return updated;
@@ -412,8 +346,7 @@ public class AppRouteService {
      */
     public RouteStep createSubroute(URI routeId, String routeDeployMethod) {
 
-        var appRouteImpl = (AppRouteImpl) configModelService.getConfigModel().getAppRoute()
-                .stream().filter(appRoute -> appRoute.getId().equals(routeId)).findAny().orElse(null);
+        var appRouteImpl = getAppRouteImpl(routeId);
 
         if (appRouteImpl != null) {
 
@@ -472,13 +405,11 @@ public class AppRouteService {
 
         boolean updated = false;
 
-        var appRouteImpl = (AppRouteImpl) configModelService.getConfigModel().getAppRoute()
-                .stream().filter(appRoute -> appRoute.getId().equals(routeId)).findAny().orElse(null);
+        var appRouteImpl = getAppRouteImpl(routeId);
 
         if (appRouteImpl != null) {
 
-            var routeStepImpl = (RouteStepImpl) appRouteImpl.getHasSubRoute().stream()
-                    .filter(routeStep -> routeStep.getId().equals(routeStepId)).findAny().orElse(null);
+            var routeStepImpl = getSubrouteImpl(routeStepId, appRouteImpl);
 
             if (routeStepImpl != null) {
                 if (routeDeployMethod != null) {
@@ -500,13 +431,11 @@ public class AppRouteService {
      */
     public RouteStep getSubroute(URI routeId, URI routeStepId) {
 
-        var appRouteImpl = configModelService.getConfigModel().getAppRoute()
-                .stream().filter(appRoute -> appRoute.getId().equals(routeId)).findAny().orElse(null);
+        var appRouteImpl = getAppRouteImpl(routeId);
 
         if (appRouteImpl != null) {
 
-            return appRouteImpl.getHasSubRoute().stream().filter(routeStep -> routeStep.getId().equals(routeStepId))
-                    .findAny().orElse(null);
+            return getSubrouteImpl(routeStepId, appRouteImpl);
         }
         return null;
     }
@@ -522,8 +451,7 @@ public class AppRouteService {
 
         boolean deleted = false;
 
-        var appRouteImpl = configModelService.getConfigModel().getAppRoute()
-                .stream().filter(appRoute -> appRoute.getId().equals(routeId)).findAny().orElse(null);
+        var appRouteImpl = getAppRouteImpl(routeId);
 
         if (appRouteImpl != null) {
             deleted = appRouteImpl.getHasSubRoute().removeIf(routeStep -> routeStep.getId().equals(routeStepId));
@@ -542,8 +470,7 @@ public class AppRouteService {
      */
     public Endpoint createAppRouteEnd(URI routeId, String accessUrl) {
 
-        var appRouteImpl = (AppRouteImpl) configModelService.getConfigModel().getAppRoute()
-                .stream().filter(appRoute -> appRoute.getId().equals(routeId)).findAny().orElse(null);
+        var appRouteImpl = getAppRouteImpl(routeId);
 
         if (appRouteImpl != null) {
             if (appRouteImpl.getAppRouteEnd() == null) {
@@ -570,13 +497,11 @@ public class AppRouteService {
      */
     public Endpoint createSubrouteEnd(URI routeId, URI routeStepId, String accessUrl) {
 
-        var appRouteImpl = (AppRouteImpl) configModelService.getConfigModel().getAppRoute()
-                .stream().filter(appRoute -> appRoute.getId().equals(routeId)).findAny().orElse(null);
+        var appRouteImpl = getAppRouteImpl(routeId);
 
         if (appRouteImpl != null) {
 
-            var routeStepImpl = (RouteStepImpl) appRouteImpl.getHasSubRoute().stream()
-                    .filter(routeStep -> routeStep.getId().equals(routeStepId)).findAny().orElse(null);
+            var routeStepImpl = getSubrouteImpl(routeStepId, appRouteImpl);
 
             if (routeStepImpl != null) {
                 if (routeStepImpl.getAppRouteEnd() == null) {
@@ -623,8 +548,7 @@ public class AppRouteService {
      */
     public Endpoint getAppRouteEnd(URI routeId, URI endpointId) {
 
-        var appRouteImpl = (AppRouteImpl) configModelService.getConfigModel().getAppRoute()
-                .stream().filter(appRoute -> appRoute.getId().equals(routeId)).findAny().orElse(null);
+        var appRouteImpl = getAppRouteImpl(routeId);
 
         if (appRouteImpl != null) {
             return appRouteImpl.getAppRouteEnd().stream().filter(endpoint -> endpoint.getId().equals(endpointId))
@@ -643,13 +567,11 @@ public class AppRouteService {
      */
     public Endpoint getSubrouteEnd(URI routeId, URI routeStepId, URI endpointId) {
 
-        var appRouteImpl = (AppRouteImpl) configModelService.getConfigModel().getAppRoute()
-                .stream().filter(appRoute -> appRoute.getId().equals(routeId)).findAny().orElse(null);
+        var appRouteImpl = getAppRouteImpl(routeId);
 
         if (appRouteImpl != null) {
 
-            var routeStepImpl = appRouteImpl.getHasSubRoute().stream()
-                    .filter(routeStep -> routeStep.getId().equals(routeStepId)).findAny().orElse(null);
+            var routeStepImpl = getSubrouteImpl(routeStepId, appRouteImpl);
 
             if (routeStepImpl != null) {
                 return routeStepImpl.getAppRouteEnd().stream().filter(endpoint -> endpoint.getId().equals(endpointId))
@@ -670,8 +592,7 @@ public class AppRouteService {
 
         boolean deleted = false;
 
-        var appRouteImpl = (AppRouteImpl) configModelService.getConfigModel().getAppRoute()
-                .stream().filter(appRoute -> appRoute.getId().equals(routeId)).findAny().orElse(null);
+        var appRouteImpl = getAppRouteImpl(routeId);
 
         if (appRouteImpl != null) {
             deleted = appRouteImpl.getAppRouteEnd().removeIf(endpoint -> endpoint.getId().equals(endpointId));
@@ -692,13 +613,11 @@ public class AppRouteService {
 
         boolean deleted = false;
 
-        var appRouteImpl = (AppRouteImpl) configModelService.getConfigModel().getAppRoute()
-                .stream().filter(appRoute -> appRoute.getId().equals(routeId)).findAny().orElse(null);
+        var appRouteImpl = getAppRouteImpl(routeId);
 
         if (appRouteImpl != null) {
 
-            var routeStepImpl = (RouteStepImpl) appRouteImpl.getHasSubRoute().stream()
-                    .filter(routeStep -> routeStep.getId().equals(routeStepId)).findAny().orElse(null);
+            var routeStepImpl = getSubrouteImpl(routeStepId, appRouteImpl);
 
             if (routeStepImpl != null) {
                 deleted = routeStepImpl.getAppRouteEnd().removeIf(endpoint -> endpoint.getId().equals(endpointId));
@@ -720,8 +639,7 @@ public class AppRouteService {
 
         boolean updated = false;
 
-        var appRouteImpl = (AppRouteImpl) configModelService.getConfigModel().getAppRoute()
-                .stream().filter(appRoute -> appRoute.getId().equals(routeId)).findAny().orElse(null);
+        var appRouteImpl = getAppRouteImpl(routeId);
 
         if (appRouteImpl != null) {
 
@@ -751,13 +669,11 @@ public class AppRouteService {
     public boolean updateSubrouteEnd(URI routeId, URI routeStepId, URI endpointId, String accessUrl) {
 
         boolean updated = false;
-        var appRouteImpl = (AppRouteImpl) configModelService.getConfigModel().getAppRoute()
-                .stream().filter(appRoute -> appRoute.getId().equals(routeId)).findAny().orElse(null);
+        var appRouteImpl = getAppRouteImpl(routeId);
 
         if (appRouteImpl != null) {
 
-            var routeStepImpl = appRouteImpl.getHasSubRoute().stream()
-                    .filter(routeStep -> routeStep.getId().equals(routeStepId)).findAny().orElse(null);
+            var routeStepImpl = getSubrouteImpl(routeStepId, appRouteImpl);
 
             if (routeStepImpl != null) {
                 var endPointImpl = (EndpointImpl) routeStepImpl.getAppRouteEnd().stream()
@@ -784,8 +700,7 @@ public class AppRouteService {
      */
     public Resource getResourceFromAppRouteOutput(URI routeId, URI resourceId) {
 
-        var appRouteImpl = (AppRouteImpl) configModelService.getConfigModel().getAppRoute()
-                .stream().filter(appRoute -> appRoute.getId().equals(routeId)).findAny().orElse(null);
+        var appRouteImpl = getAppRouteImpl(routeId);
 
         if (appRouteImpl != null) {
             return appRouteImpl.getAppRouteOutput().stream()
@@ -804,13 +719,11 @@ public class AppRouteService {
      */
     public Resource getResourceFromSubrouteOutput(URI routeId, URI routeStepId, URI resourceId) {
 
-        var appRouteImpl = (AppRouteImpl) configModelService.getConfigModel().getAppRoute()
-                .stream().filter(appRoute -> appRoute.getId().equals(routeId)).findAny().orElse(null);
+        var appRouteImpl = getAppRouteImpl(routeId);
 
         if (appRouteImpl != null) {
 
-            var routeStepImpl = appRouteImpl.getHasSubRoute().stream()
-                    .filter(routeStep -> routeStep.getId().equals(routeStepId)).findAny().orElse(null);
+            var routeStepImpl = getSubrouteImpl(routeStepId, appRouteImpl);
 
             if (routeStepImpl != null) {
                 return routeStepImpl.getAppRouteOutput().stream()
@@ -830,8 +743,7 @@ public class AppRouteService {
     public boolean deleteResourceFromAppRouteOutput(URI routeId, URI resourceId) {
 
         boolean deleted = false;
-        var appRouteImpl = (AppRouteImpl) configModelService.getConfigModel().getAppRoute()
-                .stream().filter(appRoute -> appRoute.getId().equals(routeId)).findAny().orElse(null);
+        var appRouteImpl = getAppRouteImpl(routeId);
 
         if (appRouteImpl != null) {
             deleted = appRouteImpl.getAppRouteOutput().removeIf(resource -> resource.getId().equals(resourceId));
@@ -852,13 +764,11 @@ public class AppRouteService {
     public boolean deleteResourceFromSubrouteOutput(URI routeId, URI routeStepId, URI resourceId) {
 
         boolean deleted = false;
-        var appRouteImpl = (AppRouteImpl) configModelService.getConfigModel().getAppRoute()
-                .stream().filter(appRoute -> appRoute.getId().equals(routeId)).findAny().orElse(null);
+        var appRouteImpl = getAppRouteImpl(routeId);
 
         if (appRouteImpl != null) {
 
-            var routeStepImpl = appRouteImpl.getHasSubRoute().stream()
-                    .filter(routeStep -> routeStep.getId().equals(routeStepId)).findAny().orElse(null);
+            var routeStepImpl = getSubrouteImpl(routeStepId, appRouteImpl);
 
             if (routeStepImpl != null) {
                 deleted = routeStepImpl.getAppRouteOutput().removeIf(resource -> resource.getId().equals(resourceId));
@@ -866,5 +776,71 @@ public class AppRouteService {
             }
         }
         return deleted;
+    }
+
+    /**
+     * This method tries to update the endpoint with the given parameters.
+     *
+     * @param endpointId   id of the endpoint
+     * @param accessUrl    access url from an endpoint
+     * @param username     username for the authentication
+     * @param password     password for the authentication
+     * @param updated      boolean
+     * @param appRouteImpl app route implementation
+     * @return true, if endpoint is updated
+     */
+    private boolean isUpdated(URI endpointId, String accessUrl, String username, String password,
+                              boolean updated, AppRoute appRouteImpl) {
+        if (appRouteImpl != null) {
+
+            var endpointImpl = (GenericEndpointImpl) appRouteImpl.getAppRouteStart().stream()
+                    .filter(endpoint -> endpoint.getId().equals(endpointId)).findAny().orElse(null);
+
+            if (endpointImpl != null) {
+                BasicAuthentication basicAuthentication = endpointImpl.getGenericEndpointAuthentication();
+                if (accessUrl != null) {
+                    endpointImpl.setAccessURL(URI.create(accessUrl));
+                    updated = true;
+                }
+                if (username != null) {
+                    endpointImpl.setGenericEndpointAuthentication(
+                            new BasicAuthenticationBuilder(basicAuthentication.getId())
+                                    ._authPassword_(basicAuthentication.getAuthPassword())
+                                    ._authUsername_(username).build());
+                    updated = true;
+                }
+                if (password != null) {
+                    endpointImpl.setGenericEndpointAuthentication(
+                            new BasicAuthenticationBuilder(basicAuthentication.getId())
+                                    ._authUsername_(basicAuthentication.getAuthUsername())
+                                    ._authPassword_(password).build());
+                    updated = true;
+                }
+            }
+        }
+        return updated;
+    }
+
+    /**
+     * This method returns a specific app route with the given parameter.
+     *
+     * @param routeId id of the route
+     * @return app route implementation
+     */
+    private AppRouteImpl getAppRouteImpl(URI routeId) {
+        return (AppRouteImpl) configModelService.getConfigModel().getAppRoute()
+                .stream().filter(appRoute -> appRoute.getId().equals(routeId)).findAny().orElse(null);
+    }
+
+    /**
+     * This method returns a specific sub route with the given parameters.
+     *
+     * @param routeStepId  id of the subroute
+     * @param appRouteImpl app route implementation
+     * @return sub route implementation
+     */
+    private RouteStepImpl getSubrouteImpl(URI routeStepId, AppRouteImpl appRouteImpl) {
+        return (RouteStepImpl) appRouteImpl.getHasSubRoute().stream()
+                .filter(routeStep -> routeStep.getId().equals(routeStepId)).findAny().orElse(null);
     }
 }
