@@ -53,8 +53,4 @@ public interface EndpointUIApi {
                                                   @RequestParam(value = "appRouteOutputId", required = false) URI appRouteOutputId,
                                                   @RequestParam(value = "appRouteBrokerId", required = false) URI appRouteBrokerId);
 
-    @DeleteMapping(value = "/approute", produces = "application/ld+json")
-    @Operation(summary = "Deletes the given approute (if it is empty)")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully deleted the approute")})
-    ResponseEntity<String> deleteAppRoute(@RequestParam("routeId") URI routeId);
 }

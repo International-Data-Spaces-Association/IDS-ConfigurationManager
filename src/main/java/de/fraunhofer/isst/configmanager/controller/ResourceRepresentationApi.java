@@ -45,8 +45,8 @@ public interface ResourceRepresentationApi {
                                                            @RequestParam("representationId") URI representationId);
 
     @DeleteMapping(value = "/resource/representation", produces = "application/ld+json")
-    @Operation(summary = "Get the representation for a resource")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully get the representation for a resource")})
+    @Operation(summary = "Deletes the representation for a resource")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully deleted the representation for a resource")})
     ResponseEntity<String> deleteResourceRepresentation(@RequestParam("resourceId") URI resourceId,
                                                         @RequestParam("representationId") URI representationId);
 

@@ -3,6 +3,7 @@ package de.fraunhofer.isst.configmanager.controller;
 import de.fraunhofer.iais.eis.ConfigurationModel;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelService;
+import de.fraunhofer.isst.configmanager.util.Utility;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
@@ -53,10 +54,8 @@ public class ConfigModelController implements ConfigModelApi {
         ConfigurationModel configurationModel = configModelService.createConfigModel(loglevel, connectorStatus,
                 connectorDeployMode, trustStore, keyStore);
         if (configurationModel != null) {
-            var jsonObject = new JSONObject();
-            jsonObject.put("message", "Successfully created a new configuration model with the id: " +
-                    configurationModel.getId());
-            return ResponseEntity.ok(jsonObject.toJSONString());
+            return ResponseEntity.ok(Utility.jsonMessage("message", "Successfully created a new configuration model with the id: " +
+                    configurationModel.getId()));
         } else {
             return ResponseEntity.badRequest().body("Could not create configuration model");
         }
@@ -79,10 +78,8 @@ public class ConfigModelController implements ConfigModelApi {
         var result = configModelService.updateConfigurationModel(loglevel, connectorStatus,
                 connectorDeployMode, trustStore, keyStore);
         if (result) {
-            var jsonObject = new JSONObject();
-            jsonObject.put("message", "Successfully updated the configuration model with the id: "
-                    + configModelService.getConfigModel().getId().toString());
-            return ResponseEntity.ok(jsonObject.toJSONString());
+            return ResponseEntity.ok(Utility.jsonMessage("message", "Successfully updated the configuration model with the id: "
+                    + configModelService.getConfigModel().getId().toString()));
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Connector did not accent the new Configuration!");
         }
@@ -133,9 +130,7 @@ public class ConfigModelController implements ConfigModelApi {
     public ResponseEntity<String> deleteConfigModel(URI configmodelId) {
 
         if (configModelService.deleteConfigModel(configmodelId)) {
-            var jsonObject = new JSONObject();
-            jsonObject.put("message", "ConfigModel with ID: " + configmodelId + " is deleted");
-            return ResponseEntity.ok(jsonObject.toJSONString());
+            return ResponseEntity.ok(Utility.jsonMessage("message", "ConfigModel with ID: " + configmodelId + " is deleted"));
         } else {
             return ResponseEntity.badRequest().body("Could not delete the configuration model with ID: " + configmodelId);
         }

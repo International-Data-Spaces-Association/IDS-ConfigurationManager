@@ -6,6 +6,7 @@ import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorCl
 import de.fraunhofer.isst.configmanager.configmanagement.entities.config.CustomBroker;
 import de.fraunhofer.isst.configmanager.configmanagement.service.BrokerService;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ResourceService;
+import de.fraunhofer.isst.configmanager.util.Utility;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
@@ -60,9 +61,7 @@ public class BrokerUIController implements BrokerUIApi {
         CustomBroker brokerObject = brokerService.createCustomBroker(brokerUri, title);
 
         if (brokerObject != null) {
-            var jsonObject = new JSONObject();
-            jsonObject.put("message", "Created a new broker with id: " + brokerUri);
-            return ResponseEntity.ok(jsonObject.toJSONString());
+            return ResponseEntity.ok(Utility.jsonMessage("message", "Created a new broker with id: " + brokerUri));
         } else {
             return ResponseEntity.badRequest().body("Could not create a broker");
         }
@@ -96,9 +95,7 @@ public class BrokerUIController implements BrokerUIApi {
     @Override
     public ResponseEntity<String> deleteBroker(URI brokerUri) {
         if (brokerService.deleteBroker(brokerUri)) {
-            var jsonObject = new JSONObject();
-            jsonObject.put("message", "Broker with ID: " + brokerUri + " is deleted");
-            return ResponseEntity.ok(jsonObject.toJSONString());
+            return ResponseEntity.ok(Utility.jsonMessage("message", "Broker with ID: " + brokerUri + " is deleted"));
         } else {
             return ResponseEntity.badRequest().body("Could not delete the broker with the id:" + brokerUri);
         }

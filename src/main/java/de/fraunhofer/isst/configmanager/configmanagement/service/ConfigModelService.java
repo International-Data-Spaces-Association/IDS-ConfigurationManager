@@ -70,6 +70,9 @@ public class ConfigModelService {
                 LOGGER.warn("Could not get a valid ConfigurationModel and/or Connector is not reachable!");
             }
         }
+//        if (!checkRoutesAreComplete(getConfigModel())) {
+//            LOGGER.warn("Routes are not complete! Please check it!");
+//        }
     }
 
     /**
@@ -424,4 +427,47 @@ public class ConfigModelService {
             listener.notifyConfig(getConfigModel());
         }
     }
+//    private boolean checkRoutesAreComplete(ConfigurationModel configurationModel) {
+//
+//        boolean complete = false;
+//        if (configurationModel == null || configurationModel.getAppRoute() == null) {
+//            return true;
+//        }
+//        for (int i = 0; i < configurationModel.getAppRoute().size(); i++) {
+//            AppRoute appRoute = configurationModel.getAppRoute().get(i);
+//            if (appRoute.getHasSubRoute() != null && appRoute.getHasSubRoute().size() > 1) {
+//                RouteStep firstSubroute = appRoute.getHasSubRoute().get(0);
+//                RouteStep lastSubroute = appRoute.getHasSubRoute().get(appRoute.getHasSubRoute().size() - 1);
+//
+//                if (appRoute.getAppRouteEnd() == null || appRoute.getAppRouteEnd() == null) {
+//                    complete = true;
+//                }
+//                Endpoint appRouteStartEndpoint = appRoute.getAppRouteStart().get(0);
+//                Endpoint appRouteEndpoint = appRoute.getAppRouteEnd().get(0);
+//
+//                if ((appRouteStartEndpoint.getAccessURL().equals(firstSubroute.getAppRouteStart().get(0).getAccessURL()))
+//                        && (appRouteEndpoint.getAccessURL().equals(lastSubroute.getAppRouteEnd().get(0).getAccessURL()))) {
+//
+//                    for (int j = 0; j < appRoute.getHasSubRoute().size() - 1; j++) {
+//                        if (appRoute.getHasSubRoute().get(j) == null
+//                                || appRoute.getHasSubRoute().get(j).getAppRouteEnd() == null
+//                                || appRoute.getHasSubRoute().get(j).getAppRouteEnd().size() == 0
+//                                || appRoute.getHasSubRoute().get(j + 1) == null
+//                                || appRoute.getHasSubRoute().get(j + 1).getAppRouteStart() == null
+//                                || appRoute.getHasSubRoute().get(j + 1).getAppRouteStart().size() == 0) {
+//                            return false;
+//                        }
+//                        if (!appRoute.getHasSubRoute().get(j).getAppRouteEnd().get(0).getAccessURL()
+//                                .equals(appRoute.getHasSubRoute().get(j + 1).getAppRouteStart().get(0).getAccessURL())) {
+//                            complete = false;
+//                        } else {
+//                            complete = true;
+//                        }
+//                    }
+//                }
+//
+//            }
+//        }
+//        return complete;
+//    }
 }

@@ -6,6 +6,7 @@ import de.fraunhofer.iais.eis.util.TypedLiteral;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConnectorService;
+import de.fraunhofer.isst.configmanager.util.Utility;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
@@ -109,10 +110,8 @@ public class ConnectorUIController implements ConnectorUIApi {
         configModelImpl.setConnectorDescription(baseConnector);
         configModelService.saveState();
 
-        var jsonObject = new JSONObject();
-        jsonObject.put("message", "Successfully created a new connector with the id: " +
-                baseConnector.getId().toString());
-        return ResponseEntity.ok(jsonObject.toJSONString());
+        return ResponseEntity.ok(Utility.jsonMessage("message", "Successfully created a new connector with the id: " +
+                baseConnector.getId().toString()));
     }
 
     /**
@@ -166,10 +165,8 @@ public class ConnectorUIController implements ConnectorUIApi {
         configModelImpl.setConnectorDescription(connector);
         configModelService.saveState();
 
-        var jsonObject = new JSONObject();
-        jsonObject.put("message", "Successfully updated the connector with the id: " +
-                connector.getId().toString());
-        return ResponseEntity.ok(jsonObject.toJSONString());
+        return ResponseEntity.ok(Utility.jsonMessage("message", "Successfully updated the connector with the id: " +
+                connector.getId().toString()));
     }
 
     /**
@@ -185,9 +182,7 @@ public class ConnectorUIController implements ConnectorUIApi {
             configModelImpl.setConnectorDescription(null);
             configModelService.saveState();
 
-            var jsonObject = new JSONObject();
-            jsonObject.put("message", "Successfully deleted the connector");
-            return ResponseEntity.ok(jsonObject.toJSONString());
+            return ResponseEntity.ok(Utility.jsonMessage("message", "Successfully deleted the connector"));
         } else {
             return ResponseEntity.badRequest().body("Could not delete the connector");
         }

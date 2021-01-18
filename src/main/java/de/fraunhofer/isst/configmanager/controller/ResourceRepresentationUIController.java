@@ -96,13 +96,19 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
             }
         }
 
-        // Add resource representation in app route
+        // Add resource representation in subroute
         for (AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
-            for (Resource resource : appRoute.getAppRouteOutput()) {
-                if (resourceId.equals(resource.getId())) {
-                    var resourceImpl = (ResourceImpl) resource;
-                    resourceImpl.setRepresentation(Util.asList(representation));
-                    break;
+            if (appRoute.getHasSubRoute() != null) {
+                for (RouteStep routeStep : appRoute.getHasSubRoute()) {
+                    if (routeStep.getAppRouteOutput() != null) {
+                        for (Resource resource : routeStep.getAppRouteOutput()) {
+                            if (resourceId.equals(resource.getId())) {
+                                var resourceImpl = (ResourceImpl) resource;
+                                resourceImpl.setRepresentation(Util.asList(representation));
+                                break;
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -154,17 +160,22 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Could not find any resources!\"}");
         }
 
-
-        // Determine the correct resource representation from the app routes
-        RepresentationImpl appRouteCandidate = (RepresentationImpl) configModelService.getConfigModel()
-                .getAppRoute().stream()
-                .map(AppRoute::getAppRouteOutput)
-                .flatMap(Collection::stream)
-                .map(Resource::getRepresentation)
-                .flatMap(Collection::stream)
-                .filter(representation -> representation.getId().equals(representationId))
-                .findAny()
-                .orElse(null);
+        RepresentationImpl appRouteCandidate = null;
+        for (AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
+            for (RouteStep routeStep : appRoute.getHasSubRoute()) {
+                if (routeStep.getAppRouteOutput() != null) {
+                    for (Resource resource : routeStep.getAppRouteOutput()) {
+                        if (resourceId.equals(resource.getId())) {
+                            for (Representation representation : resource.getRepresentation()) {
+                                if (representationId.equals(representation.getId())) {
+                                    appRouteCandidate = (RepresentationImpl) representation;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         // Check if parameters are null and when not update it with new values
         if (appRouteCandidate != null) {
@@ -249,6 +260,7 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No representation with given IDs found!");
             }
         } catch (IOException e) {
+            configModelService.saveState();
             logger.error(e.getMessage());
         }
         return ResponseEntity.badRequest().body("Could not update the representation of the resource");
@@ -336,21 +348,26 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
 
         // Delete representation in app route
         var deleted = false;
-        for (AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
-            if (appRoute != null) {
-                var resource = appRoute.getAppRouteOutput().stream()
-                        .filter(resource1 -> resource1.getId().equals(resourceId)).findAny().orElse(null);
+        Resource foundResource = null;
 
-                if (resource != null) {
-                    deleted |= resource.getRepresentation()
-                            .removeIf(representation -> representation.getId().equals(representationId));
+        for (AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
+            for (RouteStep routeStep : appRoute.getHasSubRoute()) {
+                if (routeStep != null && routeStep.getAppRouteOutput() != null) {
+                    for (Resource resource : routeStep.getAppRouteOutput()) {
+                        if (resourceId.equals(resource.getId())) {
+                            foundResource = resource;
+                            break;
+                        }
+                    }
                 }
             }
         }
+        if (foundResource != null) {
+            deleted |= foundResource.getRepresentation().removeIf(representation -> representation.getId().equals(representationId));
+        }
 
         // Delete representation in catalog
-        for (ResourceCatalog resourceCatalog : configModelService.getConfigModel()
-                .getConnectorDescription().getResourceCatalog()) {
+        for (ResourceCatalog resourceCatalog : configModelService.getConfigModel().getConnectorDescription().getResourceCatalog()) {
             if (resourceCatalog != null) {
                 var resource = resourceCatalog.getOfferedResource().stream()
                         .filter(resource1 -> resource1.getId().equals(resourceId)).findAny().orElse(null);

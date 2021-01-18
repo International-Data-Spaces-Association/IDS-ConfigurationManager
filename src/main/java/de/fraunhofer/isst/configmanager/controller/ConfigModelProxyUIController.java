@@ -3,6 +3,7 @@ package de.fraunhofer.isst.configmanager.controller;
 import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelService;
+import de.fraunhofer.isst.configmanager.util.Utility;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,11 +62,8 @@ public class ConfigModelProxyUIController implements ConfigModelProxyApi {
         configModelImpl.setConnectorProxy(proxies);
         configModelService.saveState();
 
-        var jsonObject = new JSONObject();
-        jsonObject.put("message", "Successfully created a new proxy for the configuration model with the id: "
-                + proxies.get(0).getId().toString());
-
-        return ResponseEntity.ok(jsonObject.toJSONString());
+        return ResponseEntity.ok(Utility.jsonMessage("message", "Successfully created a new proxy for the configuration model with the id: "
+                + proxies.get(0).getId().toString()));
     }
 
     /**
@@ -84,10 +82,8 @@ public class ConfigModelProxyUIController implements ConfigModelProxyApi {
         var proxyImpl = (ProxyImpl) configModelService.getConfigModel().getConnectorProxy().get(0);
         if (proxyImpl != null) {
             configModelService.updateConfigurationModelProxy(proxyUri, noProxyUriList, username, password, proxyImpl);
-            var jsonObject = new JSONObject();
-            jsonObject.put("message", "Successfully updated proxy for the configuration model with the id: " +
-                    proxyImpl.getId().toString());
-            return ResponseEntity.ok(jsonObject.toJSONString());
+            return ResponseEntity.ok(Utility.jsonMessage("message", "Successfully updated proxy for the configuration model with the id: " +
+                    proxyImpl.getId().toString()));
         }
         return ResponseEntity.badRequest().body("Could not update proxy for the configuration model");
     }
@@ -139,10 +135,8 @@ public class ConfigModelProxyUIController implements ConfigModelProxyApi {
 
         if (configModelImpl.getConnectorProxy().removeIf(proxy -> proxy.getId().equals(proxyId))) {
             configModelService.saveState();
-            var jsonObject = new JSONObject();
-            jsonObject.put("message", "Successfully deleted connector proxy with the id: " +
-                    proxyId.toString());
-            return ResponseEntity.ok(jsonObject.toJSONString());
+            return ResponseEntity.ok(Utility.jsonMessage("message", "Successfully deleted connector proxy with the id: " +
+                    proxyId.toString()));
         } else {
             return ResponseEntity.badRequest().body("Could not delete the connector proxy");
         }

@@ -316,41 +316,41 @@ public class EndpointUIController implements EndpointUIApi {
         return ResponseEntity.badRequest().body("Could not delete the endpoint in the app route");
     }
 
-    /**
-     * This method completely deletes an app route under the condition that it is also completely empty.
-     *
-     * @param routeId ID of the route to be deleted
-     * @return HttpStatus 200 if route can be deleted, 400 when route is not empty, 404 when route is not found,
-     * 500 when Connector rejects new Config
-     */
-    @Override
-    public ResponseEntity<String> deleteAppRoute(URI routeId) {
-        var route = configModelService.getConfigModel().getAppRoute()
-                .stream()
-                .filter(appRoute -> appRoute.getId().equals(routeId))
-                .findAny().orElse(null);
-
-        if (route != null) {
-            var routeEmpty = route.getAppRouteOutput().isEmpty()
-                    && route.getAppRouteBroker().isEmpty()
-                    && route.getAppRouteStart().isEmpty()
-                    && route.getAppRouteEnd().isEmpty();
-            if (routeEmpty) {
-                configModelService.getConfigModel().getAppRoute().remove(route);
-                var success = configModelService.saveState();
-
-                if (success) {
-                    var jsonObject = new JSONObject();
-                    jsonObject.put("message", "Deleted app route with the id: " + routeId.toString());
-                    return ResponseEntity.ok(jsonObject.toJSONString());
-                } else {
-                    return ResponseEntity.status(500).body("New Config not accepted by Connector!");
-                }
-            } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Could not delete Route, not empty!");
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Could not find AppRoute with given ID!");
-        }
-    }
+//    /**
+//     * This method completely deletes an app route under the condition that it is also completely empty.
+//     *
+//     * @param routeId ID of the route to be deleted
+//     * @return HttpStatus 200 if route can be deleted, 400 when route is not empty, 404 when route is not found,
+//     * 500 when Connector rejects new Config
+//     */
+//    @Override
+//    public ResponseEntity<String> deleteAppRoute(URI routeId) {
+//        var route = configModelService.getConfigModel().getAppRoute()
+//                .stream()
+//                .filter(appRoute -> appRoute.getId().equals(routeId))
+//                .findAny().orElse(null);
+//
+//        if (route != null) {
+//            var routeEmpty = route.getAppRouteOutput().isEmpty()
+//                    && route.getAppRouteBroker().isEmpty()
+//                    && route.getAppRouteStart().isEmpty()
+//                    && route.getAppRouteEnd().isEmpty();
+//            if (routeEmpty) {
+//                configModelService.getConfigModel().getAppRoute().remove(route);
+//                var success = configModelService.saveState();
+//
+//                if (success) {
+//                    var jsonObject = new JSONObject();
+//                    jsonObject.put("message", "Deleted app route with the id: " + routeId.toString());
+//                    return ResponseEntity.ok(jsonObject.toJSONString());
+//                } else {
+//                    return ResponseEntity.status(500).body("New Config not accepted by Connector!");
+//                }
+//            } else {
+//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Could not delete Route, not empty!");
+//            }
+//        } else {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Could not find AppRoute with given ID!");
+//        }
+//    }
 }
