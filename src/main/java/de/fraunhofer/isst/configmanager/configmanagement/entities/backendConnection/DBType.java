@@ -1,4 +1,4 @@
-package de.fraunhofer.isst.configmanager.configmanagement.entities.backendConnection.enums;
+package de.fraunhofer.isst.configmanager.configmanagement.entities.backendConnection;
 
 /**
  * Enum class to set the database type for the backend connection.

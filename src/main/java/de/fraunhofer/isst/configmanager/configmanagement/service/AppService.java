@@ -1,10 +1,10 @@
 package de.fraunhofer.isst.configmanager.configmanagement.service;
 
-import de.fraunhofer.isst.configmanager.configmanagement.entities.config.CustomApp;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.config.CustomAppEndpoint;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.config.CustomEndpointType;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.config.CustomLanguage;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.CustomAppRepository;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.customApp.CustomApp;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.customApp.CustomAppEndpoint;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.customApp.CustomEndpointType;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.customApp.CustomLanguage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

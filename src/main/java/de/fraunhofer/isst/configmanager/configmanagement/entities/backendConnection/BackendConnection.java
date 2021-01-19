@@ -1,27 +1,53 @@
 package de.fraunhofer.isst.configmanager.configmanagement.entities.backendConnection;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+@Entity
+public class BackendConnection {
 
-import javax.validation.constraints.NotNull;
-import java.net.URI;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
 
-/**
- * A backend connection defines where a resource has been stored.
- * This connection can be for example a database, an address to a file or a simple http address.
- */
-public abstract class BackendConnection {
+    private String accessURL;
 
-    @NotNull
-    @JsonProperty("@id")
-    private URI id;
+    private String username;
 
-    public URI getId() {
+    private String password;
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(URI id) {
+    public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getAccessURL() {
+        return accessURL;
+    }
+
+    public void setAccessURL(String accessURL) {
+        this.accessURL = accessURL;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
 }

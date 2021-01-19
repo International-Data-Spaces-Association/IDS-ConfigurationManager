@@ -2,9 +2,8 @@ package de.fraunhofer.isst.configmanager.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.config.CustomApp;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.customApp.CustomApp;
 import de.fraunhofer.isst.configmanager.configmanagement.service.AppService;
-import de.fraunhofer.isst.configmanager.util.Utility;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

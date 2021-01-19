@@ -1,4 +1,4 @@
-package de.fraunhofer.isst.configmanager.configmanagement.entities.config;
+package de.fraunhofer.isst.configmanager.configmanagement.entities.customApp;
 
 public enum CustomEndpointType {
 
