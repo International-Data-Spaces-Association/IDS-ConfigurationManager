@@ -18,6 +18,7 @@ while the master only contains official releases.
 ## Table of Contents
 
 <!-- TOC -->
+- [Architecture](#architecture)
 - [Features](#features)
     - [Technologies](#technologies)
     - [IDS Components](#ids-components)
@@ -31,7 +32,22 @@ while the master only contains official releases.
 <!-- TOC -->
 
 ---
+<a name="architecture"></a>
+## Architecture
+The following illustration visualizes the interaction of Dataspace Connector, IDS Framework, Configuration Manager,
+and GUI. All components have a defined API that allows individual components to be removed or replaced.
+The connector can be deployed standalone and can be connected to existing backend systems.
+Configuration Manager and GUI facilitate the operation and configuration of the connector.
+If desired, the Dataspace Connector may be replaced by another connector implementation,
+either integrating the framework or not.
 
+![Architecture-Overview](images/architecture.jpg)
+
+To get more information about the Dataspace Connector or the UI for the Configuration Manager, follow these links:
+* [Dataspace Connector](https://github.com/FraunhoferISST/DataspaceConnector)
+* [Configuration Manager UI](https://github.com/fkie/ids-configmanager-ui)
+
+---
 <a name="features"></a>
 ## Features
 
