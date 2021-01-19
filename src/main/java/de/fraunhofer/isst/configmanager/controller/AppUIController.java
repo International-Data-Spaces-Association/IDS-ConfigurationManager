@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -29,28 +28,28 @@ public class AppUIController implements AppUIApi {
         this.objectMapper = objectMapper;
     }
 
-    @Override
-    public ResponseEntity<String> createApp(URI appUri, String title) {
-
-        CustomApp customApp = appService.createApp(appUri, title);
-
-        if (customApp != null) {
-            return ResponseEntity.ok(Utility.jsonMessage("message", "Created a new app with id: " + appUri));
-        } else {
-            return ResponseEntity.badRequest().body("Could not create app");
-        }
-    }
-
-    @Override
-    public ResponseEntity<String> updateApp(URI appUri, String title) {
-        boolean updated = appService.updateApp(appUri, title);
-
-        if (updated) {
-            return ResponseEntity.ok(Utility.jsonMessage("message", "Updated the app with id: " + appUri));
-        } else {
-            return ResponseEntity.badRequest().body("Could not update the app with the id: " + appUri);
-        }
-    }
+//    @Override
+//    public ResponseEntity<String> createApp(String title) {
+//
+//        CustomApp customApp = appService.createApp(title);
+//
+//        if (customApp != null) {
+//            return ResponseEntity.ok(Utility.jsonMessage("message", "Created a new app with id: " + customApp.getId()));
+//        } else {
+//            return ResponseEntity.badRequest().body("Could not create app");
+//        }
+//    }
+//
+//    @Override
+//    public ResponseEntity<String> updateApp(String id, String title) {
+//        boolean updated = appService.updateApp(id, title);
+//
+//        if (updated) {
+//            return ResponseEntity.ok(Utility.jsonMessage("message", "Updated the app with id: " + id));
+//        } else {
+//            return ResponseEntity.badRequest().body("Could not update the app with the id: " + id);
+//        }
+//    }
 
     @Override
     public ResponseEntity<String> getApps() {
@@ -68,8 +67,8 @@ public class AppUIController implements AppUIApi {
     }
 
     @Override
-    public ResponseEntity<String> getApp(URI appUri) {
-        CustomApp customApp = appService.getApp(appUri);
+    public ResponseEntity<String> getApp(String id) {
+        CustomApp customApp = appService.getApp(id);
 
         if (customApp != null) {
             try {
@@ -78,19 +77,19 @@ public class AppUIController implements AppUIApi {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problems while parsing to json");
             }
         } else {
-            return ResponseEntity.badRequest().body("Could not get app with id: " + appUri);
+            return ResponseEntity.badRequest().body("Could not get app with id: " + id);
         }
 
     }
-
-    @Override
-    public ResponseEntity<String> deleteApp(URI appUri) {
-        boolean deleted = appService.deleteApp(appUri);
-
-        if (deleted) {
-            return ResponseEntity.ok(Utility.jsonMessage("message", "Deleted the app with id: " + appUri));
-        } else {
-            return ResponseEntity.badRequest().body("Could not delete the app with id: " + appUri);
-        }
-    }
+//
+//    @Override
+//    public ResponseEntity<String> deleteApp(String id) {
+//        boolean deleted = appService.deleteApp(id);
+//
+//        if (deleted) {
+//            return ResponseEntity.ok(Utility.jsonMessage("message", "Deleted the app with id: " + id));
+//        } else {
+//            return ResponseEntity.badRequest().body("Could not delete the app with id: " + id);
+//        }
+//    }
 }

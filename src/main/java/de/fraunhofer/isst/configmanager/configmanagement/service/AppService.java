@@ -1,13 +1,15 @@
 package de.fraunhofer.isst.configmanager.configmanagement.service;
 
 import de.fraunhofer.isst.configmanager.configmanagement.entities.config.CustomApp;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.config.CustomAppEndpoint;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.config.CustomEndpointType;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.config.CustomLanguage;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.CustomAppRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,12 +32,38 @@ public class AppService {
             List<CustomApp> customAppList = new ArrayList<>();
 
             CustomApp customApp1 = new CustomApp();
-            customApp1.setAppUri(URI.create("www.customApp1.com"));
             customApp1.setTitle("Custom App 1");
+            List<CustomAppEndpoint> customAppEndpoints = new ArrayList<>();
+            CustomAppEndpoint customAppEndpoint = new CustomAppEndpoint();
+            customAppEndpoint.setCustomEndpointType(CustomEndpointType.INPUT_ENDPOINT);
+            customAppEndpoint.setEndpointPort(80);
+            customAppEndpoint.setEndpointDocumentation("Test documentation");
+            customAppEndpoint.setEndpointInformation("Test information");
+            customAppEndpoint.setAccessURL("www.customapp1.com");
+            customAppEndpoint.setInboundPath("testInbound");
+            customAppEndpoint.setOutboundPath("testOutbound");
+            customAppEndpoint.setLanguage(CustomLanguage.DE);
+            customAppEndpoint.setMediaType("json");
+            customAppEndpoint.setPath("pathToApp");
+            customAppEndpoints.add(customAppEndpoint);
+            customApp1.setAppEndpointList(customAppEndpoints);
 
             CustomApp customApp2 = new CustomApp();
-            customApp2.setAppUri(URI.create("www.customApp2.com"));
             customApp2.setTitle("Custom App 2");
+            List<CustomAppEndpoint> customAppEndpoints2 = new ArrayList<>();
+            CustomAppEndpoint customAppEndpoint2 = new CustomAppEndpoint();
+            customAppEndpoint2.setCustomEndpointType(CustomEndpointType.OUTPUT_ENDPOINT);
+            customAppEndpoint2.setEndpointPort(81);
+            customAppEndpoint2.setEndpointDocumentation("Test documentation");
+            customAppEndpoint2.setEndpointInformation("Test information");
+            customAppEndpoint2.setAccessURL("www.customapp2.com");
+            customAppEndpoint2.setInboundPath("testInbound");
+            customAppEndpoint2.setOutboundPath("testOutbound");
+            customAppEndpoint2.setLanguage(CustomLanguage.DE);
+            customAppEndpoint2.setMediaType("json");
+            customAppEndpoint2.setPath("pathToApp2");
+            customAppEndpoints2.add(customAppEndpoint2);
+            customApp2.setAppEndpointList(customAppEndpoints2);
 
             customAppList.add(customApp1);
             customAppList.add(customApp2);
@@ -47,14 +75,12 @@ public class AppService {
     /**
      * This method creates an app.
      *
-     * @param appUri uri of the app
-     * @param title  title of the app
+     * @param title title of the app
      * @return custom app
      */
-    public CustomApp createApp(URI appUri, String title) {
+    public CustomApp createApp(String title) {
 
         CustomApp customApp = new CustomApp();
-        customApp.setAppUri(appUri);
         customApp.setTitle(title);
 
         customAppRepository.save(customApp);
@@ -64,18 +90,15 @@ public class AppService {
     /**
      * This method updates an app with the given parameters.
      *
-     * @param appUri uri of the app
      * @param title  title of the app
      * @return true, if app is updated
      */
-    public boolean updateApp(URI appUri, String title) {
+    public boolean updateApp(String id, String title) {
 
         boolean updated = false;
 
-        CustomApp app = customAppRepository.findAll()
-                .stream()
-                .filter(customApp -> customApp.getAppUri().equals(appUri))
-                .findAny().orElse(null);
+        Long appId = Long.valueOf(id);
+        CustomApp app = customAppRepository.findById(appId).orElse(null);
 
         if (app != null) {
             if (title != null) {
@@ -94,28 +117,25 @@ public class AppService {
         return customAppRepository.findAll();
     }
 
-    public CustomApp getApp(URI appUri) {
+    public CustomApp getApp(String id) {
 
-        return customAppRepository
-                .findAll()
-                .stream()
-                .filter(customApp -> customApp.getAppUri().equals(appUri))
-                .findAny().orElse(null);
+        Long appId = Long.valueOf(id);
+        CustomApp app = customAppRepository.findById(appId).orElse(null);
+
+        return app;
     }
 
     /**
      * This method deletes an app from the repository.
      *
-     * @param appUri uri of the app
      * @return true, if app is deleted
      */
-    public boolean deleteApp(URI appUri) {
+    public boolean deleteApp(String id) {
 
         boolean deleted = false;
 
-        CustomApp app = customAppRepository
-                .findAll().stream()
-                .filter(customApp -> customApp.getAppUri().equals(appUri)).findAny().orElse(null);
+        Long appId = Long.valueOf(id);
+        CustomApp app = customAppRepository.findById(appId).orElse(null);
 
         if (app != null) {
             customAppRepository.delete(app);

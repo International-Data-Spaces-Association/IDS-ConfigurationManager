@@ -1,10 +1,7 @@
 package de.fraunhofer.isst.configmanager.configmanagement.entities.config;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import java.net.URI;
+import javax.persistence.*;
+import java.util.List;
 
 /**
  * Entity class for creating a custom app.
@@ -16,9 +13,10 @@ public class CustomApp {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private URI appUri;
-
     private String title;
+
+    @OneToMany(cascade=CascadeType.ALL)
+    private List<CustomAppEndpoint> appEndpointList;
 
     public Long getId() {
         return id;
@@ -28,13 +26,6 @@ public class CustomApp {
         this.id = id;
     }
 
-    public URI getAppUri() {
-        return appUri;
-    }
-
-    public void setAppUri(URI appUri) {
-        this.appUri = appUri;
-    }
 
     public String getTitle() {
         return title;
@@ -42,5 +33,13 @@ public class CustomApp {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public List<CustomAppEndpoint> getAppEndpointList() {
+        return appEndpointList;
+    }
+
+    public void setAppEndpointList(List<CustomAppEndpoint> appEndpointList) {
+        this.appEndpointList = appEndpointList;
     }
 }
