@@ -80,13 +80,18 @@ public class BackendConnectionService {
                 genericEndpointNewImpl.setAccessURL(URI.create(accessURL));
             }
             BasicAuthentication basicAuthentication = genericEndpointNew.getGenericEndpointAuthentication();
-            if (username != null) {
+
+            if (username != null && password != null) {
+                genericEndpointNewImpl.setGenericEndpointAuthentication(
+                        new BasicAuthenticationBuilder(basicAuthentication.getId())
+                                ._authPassword_(password)
+                                ._authUsername_(username).build());
+            } else if (username != null && password == null) {
                 genericEndpointNewImpl.setGenericEndpointAuthentication(
                         new BasicAuthenticationBuilder(basicAuthentication.getId())
                                 ._authPassword_(basicAuthentication.getAuthPassword())
                                 ._authUsername_(username).build());
-            }
-            if (password != null) {
+            } else {
                 genericEndpointNewImpl.setGenericEndpointAuthentication(
                         new BasicAuthenticationBuilder(basicAuthentication.getId())
                                 ._authPassword_(password)
