@@ -1,7 +1,15 @@
 package de.fraunhofer.isst.configmanager.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fraunhofer.iais.eis.AppRoute;
+import de.fraunhofer.iais.eis.AppRouteImpl;
+import de.fraunhofer.iais.eis.RouteStep;
+import de.fraunhofer.iais.eis.RouteStepImpl;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.RouteDeployMethodRepository;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.routeDeployMethod.DeployMethod;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.routeDeployMethod.RouteDeployMethod;
 import de.fraunhofer.isst.configmanager.configmanagement.service.AppRouteService;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.util.Utility;
@@ -15,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -25,13 +34,18 @@ public class AppRouteUIController implements AppRouteApi {
     private final ConfigModelService configModelService;
     private final AppRouteService appRouteService;
     private final Serializer serializer;
+    private final RouteDeployMethodRepository routeDeployMethodRepository;
+    private final ObjectMapper objectMapper;
 
     @Autowired
     public AppRouteUIController(ConfigModelService configModelService, AppRouteService appRouteService,
-                                Serializer serializer) {
+                                Serializer serializer, RouteDeployMethodRepository routeDeployMethodRepository,
+                                ObjectMapper objectMapper) {
         this.configModelService = configModelService;
         this.appRouteService = appRouteService;
         this.serializer = serializer;
+        this.routeDeployMethodRepository = routeDeployMethodRepository;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -118,6 +132,81 @@ public class AppRouteUIController implements AppRouteApi {
             }
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Could not find AppRoute with given ID!");
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> createRouteDeployMethod(DeployMethod deployMethod) {
+
+        RouteDeployMethod routeDeployMethod = new RouteDeployMethod();
+        routeDeployMethod.setDeployMethod(deployMethod);
+
+        if (routeDeployMethodRepository.count() == 0) {
+            routeDeployMethodRepository.save(routeDeployMethod);
+        } else {
+            RouteDeployMethod existingDeployMethod = routeDeployMethodRepository.findAll().get(0);
+            if (existingDeployMethod != null) {
+                routeDeployMethodRepository.delete(existingDeployMethod);
+                routeDeployMethodRepository.save(routeDeployMethod);
+                // Updates the deploy method from the app routes and route steps
+                updateDeployMethodFromRoutes(deployMethod);
+            }
+        }
+        return ResponseEntity.ok("Successfully created the route deploy method");
+    }
+
+    @Override
+    public ResponseEntity<String> updateRouteDeployMethod(DeployMethod deployMethod) {
+
+        if (routeDeployMethodRepository.count() != 0) {
+            RouteDeployMethod existingDeployMethod = routeDeployMethodRepository.findAll().get(0);
+            existingDeployMethod.setDeployMethod(deployMethod);
+            routeDeployMethodRepository.save(existingDeployMethod);
+            // Updates the deploy method from the app routes and route steps
+            updateDeployMethodFromRoutes(deployMethod);
+            return ResponseEntity.ok("Updated successfully the route deploy method");
+        } else {
+            return ResponseEntity.badRequest().body("Could not update the route deploy method");
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> getRouteDeployMethods() {
+        List<RouteDeployMethod> routeDeployMethods = routeDeployMethodRepository.findAll();
+        try {
+            return ResponseEntity.ok(objectMapper.writeValueAsString(routeDeployMethods));
+        } catch (JsonProcessingException e) {
+            return ResponseEntity.badRequest().body("Could not get deploy method from the app routes");
+        }
+    }
+
+    /**
+     * This method updates the deploy method from every app route and the subroute
+     *
+     * @param deployMethod deploy method of the route
+     */
+    private void updateDeployMethodFromRoutes(DeployMethod deployMethod) {
+
+        ArrayList<AppRoute> appRouteList = (ArrayList<AppRoute>) configModelService.getConfigModel().getAppRoute();
+        if (appRouteList != null) {
+            // Update deploy method from app routes
+            for (AppRoute appRoute : appRouteList) {
+                if (appRoute != null) {
+                    var appRouteImpl = (AppRouteImpl) appRoute;
+                    appRouteImpl.setRouteDeployMethod(deployMethod.toString());
+
+                    // Update deploy method from route steps
+                    if (appRoute.getHasSubRoute() != null) {
+                        for (RouteStep routeStep : appRoute.getHasSubRoute()) {
+                            if (routeStep != null) {
+                                var routeStepImpl = (RouteStepImpl) routeStep;
+                                routeStepImpl.setRouteDeployMethod(deployMethod.toString());
+                            }
+                        }
+                    }
+                }
+            }
+            configModelService.saveState();
         }
     }
 }

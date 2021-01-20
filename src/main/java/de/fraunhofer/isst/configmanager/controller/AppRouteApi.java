@@ -1,5 +1,6 @@
 package de.fraunhofer.isst.configmanager.controller;
 
+import de.fraunhofer.isst.configmanager.configmanagement.entities.routeDeployMethod.DeployMethod;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -36,4 +37,20 @@ public interface AppRouteApi {
     @Operation(summary = "Deletes the given app route")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully deleted the app route")})
     ResponseEntity<String> deleteAppRoute(@RequestParam("routeId") URI routeId);
+
+    @PostMapping(value = "/route/deploymethod", produces = "application/ld+json")
+    @Operation(summary = "Creates the route deploy method for all routes")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully created the route deploy method")})
+    ResponseEntity<String> createRouteDeployMethod(@RequestParam("deployMethod")DeployMethod deployMethod);
+
+    @PutMapping(value = "/route/deploymethod", produces = "application/ld+json")
+    @Operation(summary = "Updates the route deploy method for all routes")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully updated the route deploy method")})
+    ResponseEntity<String> updateRouteDeployMethod(@RequestParam("deployMethod")DeployMethod deployMethod);
+
+    @GetMapping(value = "/route/deploymethod", produces = "application/ld+json")
+    @Operation(summary = "Returns the route deploy method for all routes")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully returned the route deploy method")})
+    ResponseEntity<String> getRouteDeployMethods();
+
 }
