@@ -48,7 +48,11 @@ public class BackendConnectionService {
     }
 
     public List<Endpoint> getBackendConnections() {
-        return this.backendConnectionList.getEndpoints();
+        if (backendConnectionList != null) {
+            return this.backendConnectionList.getEndpoints();
+        } else {
+            return null;
+        }
     }
 
     public GenericEndpoint getBackendConnection(URI id) {
@@ -59,12 +63,9 @@ public class BackendConnectionService {
 
     public boolean deleteBackendConnection(URI id) {
 
-        boolean deleted = false;
-        GenericEndpoint genericEndpoint = getBackendConnection(id);
-        if (genericEndpoint != null) {
-            deleted = backendConnectionList.getBackendConnectionObjects().remove(genericEndpoint);
-            backendConnectionList = backendConnectionRepository.saveAndFlush(backendConnectionList);
-        }
+        boolean deleted = backendConnectionList.getBackendConnectionObjects()
+                .removeIf(backendConnectionObject -> backendConnectionObject.getEndpoint().getId().equals(id));
+        backendConnectionList = backendConnectionRepository.saveAndFlush(backendConnectionList);
         return deleted;
     }
 
