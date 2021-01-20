@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+
 public interface BackendConnectionApi {
 
     @PostMapping(value = "/backend/connection", produces = "application/ld+json")
@@ -23,17 +25,17 @@ public interface BackendConnectionApi {
     @GetMapping(value = "/backend/connection", produces = "application/ld+json")
     @Operation(summary = "Returns a specific backend connection")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Returned a specific backend connection")})
-    ResponseEntity<String> getBackendConnection(@RequestParam(value = "id") String id);
+    ResponseEntity<String> getBackendConnection(@RequestParam(value = "id") URI id);
 
     @DeleteMapping(value = "/backend/connection", produces = "application/ld+json")
     @Operation(summary = "Deletes a backend connection")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Deleted a backend connection")})
-    ResponseEntity<String> deleteBackendConnection(@RequestParam(value = "id") String id);
+    ResponseEntity<String> deleteBackendConnection(@RequestParam(value = "id") URI id);
 
     @PutMapping(value = "/backend/connection", produces = "application/ld+json")
     @Operation(summary = "Updates a backend connection")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Updated a backend connection")})
-    ResponseEntity<String> updateBackendConnection(@RequestParam(value = "id") String id,
+    ResponseEntity<String> updateBackendConnection(@RequestParam(value = "id") URI id,
                                                    @RequestParam(value = "accessURL", required = false) String accessURL,
                                                    @RequestParam(value = "username", required = false) String username,
                                                    @RequestParam(value = "password", required = false) String password);

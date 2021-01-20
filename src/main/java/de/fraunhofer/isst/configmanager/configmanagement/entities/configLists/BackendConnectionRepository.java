@@ -1,10 +1,11 @@
 package de.fraunhofer.isst.configmanager.configmanagement.entities.configLists;
 
-import de.fraunhofer.isst.configmanager.configmanagement.entities.backendConnection.BackendConnection;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 /**
  * CRUD repository for persisting backend connections.
  */
-public interface BackendConnectionRepository extends JpaRepository<BackendConnection, Long> {
+@Repository
+public interface BackendConnectionRepository extends JpaRepository<BackendConnectionList, Long> {
 }
