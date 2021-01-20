@@ -2,6 +2,8 @@ package de.fraunhofer.isst.configmanager.configmanagement.service;
 
 import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.util.Util;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.RouteDeployMethodRepository;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.routeDeployMethod.RouteDeployMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,19 +18,20 @@ import java.util.List;
 public class AppRouteService {
 
     private final ConfigModelService configModelService;
+    private final RouteDeployMethodRepository routeDeployMethodRepository;
 
     @Autowired
-    public AppRouteService(ConfigModelService configModelService) {
+    public AppRouteService(ConfigModelService configModelService, RouteDeployMethodRepository routeDeployMethodRepository) {
         this.configModelService = configModelService;
+        this.routeDeployMethodRepository = routeDeployMethodRepository;
     }
 
     /**
      * This method creates an app route
      *
-     * @param routeDeployMethod route deploy mode of the app route
      * @return app route
      */
-    public AppRoute createAppRoute(String routeDeployMethod) {
+    public AppRoute createAppRoute() {
 
         var configModelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
 
@@ -36,7 +39,14 @@ public class AppRouteService {
             configModelImpl.setAppRoute(new ArrayList<>());
         }
         ArrayList<AppRoute> appRoutes = (ArrayList<AppRoute>) configModelImpl.getAppRoute();
-        AppRoute appRoute = new AppRouteBuilder()._routeDeployMethod_(routeDeployMethod).build();
+        List<RouteDeployMethod> routeDeployMethod = routeDeployMethodRepository.findAll();
+        String deployMethod = "";
+        if (routeDeployMethod.isEmpty()) {
+            deployMethod = "custom";
+        } else {
+            deployMethod = routeDeployMethod.get(0).toString();
+        }
+        AppRoute appRoute = new AppRouteBuilder()._routeDeployMethod_(deployMethod).build();
         appRoutes.add(appRoute);
         configModelImpl.setAppRoute(appRoutes);
         configModelService.saveState();
@@ -46,26 +56,52 @@ public class AppRouteService {
     }
 
     /**
-     * This method updates the app route with the given parameters.
+     * This method updates the app route.
      *
-     * @param routeId           if of the app route
-     * @param routeDeployMethod route deploy method of the app route
+     * @param routeId if of the app route
      * @return true, if app route is updated
      */
-    public boolean updateAppRoute(URI routeId, String routeDeployMethod) {
+    public boolean updateAppRoute(URI routeId) {
 
         boolean updated = false;
 
         var appRouteImpl = getAppRouteImpl(routeId);
 
         if (appRouteImpl != null) {
-            if (routeDeployMethod != null) {
-                appRouteImpl.setRouteDeployMethod(routeDeployMethod);
-                updated = true;
+            appRouteImpl.setAppRouteBroker(null);
+            appRouteImpl.setAppRouteStart(null);
+            appRouteImpl.setAppRouteEnd(null);
+            appRouteImpl.setAppRouteOutput(null);
+            appRouteImpl.setHasSubRoute(null);
+            appRouteImpl.setRouteConfiguration(null);
+            appRouteImpl.setRouteDescription(null);
+
+            List<RouteDeployMethod> routeDeployMethod = routeDeployMethodRepository.findAll();
+            String deployMethod = "";
+            if (routeDeployMethod.isEmpty()) {
+                deployMethod = "custom";
+            } else {
+                deployMethod = routeDeployMethod.get(0).getDeployMethod().toString();
+            }
+            appRouteImpl.setRouteDeployMethod(deployMethod);
+            configModelService.saveState();
+            updated = true;
+        }
+        return updated;
+    }
+
+    public boolean deleteAppRoute(URI routeId) {
+
+        boolean deleted = false;
+
+        var appRoute = getAppRoute(routeId);
+        if (appRoute != null) {
+            deleted = configModelService.getConfigModel().getAppRoute().remove(appRoute);
+            if (deleted) {
                 configModelService.saveState();
             }
         }
-        return updated;
+        return deleted;
     }
 
     /**
@@ -843,4 +879,5 @@ public class AppRouteService {
         return (RouteStepImpl) appRouteImpl.getHasSubRoute().stream()
                 .filter(routeStep -> routeStep.getId().equals(routeStepId)).findAny().orElse(null);
     }
+
 }

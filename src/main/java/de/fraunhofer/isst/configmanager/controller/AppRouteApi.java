@@ -15,13 +15,17 @@ public interface AppRouteApi {
     @PostMapping(value = "/approute", produces = "application/ld+json")
     @Operation(summary = "Create a new app route")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Created a new app route")})
-    ResponseEntity<String> createAppRoute(@RequestParam(value = "routeDeployMethod") String routeDeployMethod);
+    ResponseEntity<String> createAppRoute();
 
     @PutMapping(value = "/approute", produces = "application/ld+json")
     @Operation(summary = "Updates the given app route")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Created a new app route")})
-    ResponseEntity<String> updateAppRoute(@RequestParam("routeId") URI routeId,
-                                          @RequestParam(value = "routeDeployMethod", required = false) String routeDeployMethod);
+    ResponseEntity<String> updateAppRoute(@RequestParam("routeId") URI routeId);
+
+    @DeleteMapping(value = "/approute", produces = "application/ld+json")
+    @Operation(summary = "Deletes the given app route")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully deleted the app route")})
+    ResponseEntity<String> deleteAppRoute(@RequestParam("routeId") URI routeId);
 
     @GetMapping(value = "/approute", produces = "application/ld+json")
     @Operation(summary = "Returns the given app route")
@@ -33,20 +37,16 @@ public interface AppRouteApi {
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully get all app routes")})
     ResponseEntity<String> getAppRoutes();
 
-    @DeleteMapping(value = "/approute", produces = "application/ld+json")
-    @Operation(summary = "Deletes the given app route")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully deleted the app route")})
-    ResponseEntity<String> deleteAppRoute(@RequestParam("routeId") URI routeId);
-
+    // Interfaces for managing deploy methods of the routes
     @PostMapping(value = "/route/deploymethod", produces = "application/ld+json")
     @Operation(summary = "Creates the route deploy method for all routes")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully created the route deploy method")})
-    ResponseEntity<String> createRouteDeployMethod(@RequestParam("deployMethod")DeployMethod deployMethod);
+    ResponseEntity<String> createRouteDeployMethod(@RequestParam("deployMethod") DeployMethod deployMethod);
 
     @PutMapping(value = "/route/deploymethod", produces = "application/ld+json")
     @Operation(summary = "Updates the route deploy method for all routes")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully updated the route deploy method")})
-    ResponseEntity<String> updateRouteDeployMethod(@RequestParam("deployMethod")DeployMethod deployMethod);
+    ResponseEntity<String> updateRouteDeployMethod(@RequestParam("deployMethod") DeployMethod deployMethod);
 
     @GetMapping(value = "/route/deploymethod", produces = "application/ld+json")
     @Operation(summary = "Returns the route deploy method for all routes")

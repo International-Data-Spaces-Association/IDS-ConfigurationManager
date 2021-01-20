@@ -49,9 +49,9 @@ public class AppRouteUIController implements AppRouteApi {
     }
 
     @Override
-    public ResponseEntity<String> createAppRoute(String routeDeployMethod) {
+    public ResponseEntity<String> createAppRoute() {
 
-        AppRoute appRoute = appRouteService.createAppRoute(routeDeployMethod);
+        AppRoute appRoute = appRouteService.createAppRoute();
 
         if (appRoute != null) {
             var jsonObject = new JSONObject();
@@ -64,13 +64,23 @@ public class AppRouteUIController implements AppRouteApi {
     }
 
     @Override
-    public ResponseEntity<String> updateAppRoute(URI routeId, String routeDeployMethod) {
-        boolean updated = appRouteService.updateAppRoute(routeId, routeDeployMethod);
+    public ResponseEntity<String> updateAppRoute(URI routeId) {
+        boolean updated = appRouteService.updateAppRoute(routeId);
 
         if (updated) {
             return ResponseEntity.ok(Utility.jsonMessage("message", "App route with id: " + routeId + " is updated."));
         } else {
             return ResponseEntity.badRequest().body("Could not update app route with id: " + routeId);
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> deleteAppRoute(URI routeId) {
+        boolean deleted = appRouteService.deleteAppRoute(routeId);
+        if (deleted) {
+            return ResponseEntity.ok(Utility.jsonMessage("message", "App route with id: " + routeId + " is deleted."));
+        } else {
+            return ResponseEntity.badRequest().body("Could not delete app route with id: " + routeId);
         }
     }
 
@@ -101,37 +111,6 @@ public class AppRouteUIController implements AppRouteApi {
             }
         } else {
             return ResponseEntity.badRequest().body("Could not get list of app routes");
-        }
-    }
-
-    @Override
-    public ResponseEntity<String> deleteAppRoute(URI routeId) {
-        var route = configModelService.getConfigModel().getAppRoute()
-                .stream()
-                .filter(appRoute -> appRoute.getId().equals(routeId))
-                .findAny().orElse(null);
-
-        if (route != null) {
-            var routeEmpty = route.getAppRouteOutput().isEmpty()
-                    && route.getAppRouteBroker().isEmpty()
-                    && route.getAppRouteStart().isEmpty()
-                    && route.getAppRouteEnd().isEmpty();
-            if (routeEmpty) {
-                configModelService.getConfigModel().getAppRoute().remove(route);
-                var success = configModelService.saveState();
-
-                if (success) {
-                    var jsonObject = new JSONObject();
-                    jsonObject.put("message", "Deleted app route with the id: " + routeId.toString());
-                    return ResponseEntity.ok(jsonObject.toJSONString());
-                } else {
-                    return ResponseEntity.status(500).body("New Config not accepted by Connector!");
-                }
-            } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Could not delete Route, not empty!");
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Could not find AppRoute with given ID!");
         }
     }
 
