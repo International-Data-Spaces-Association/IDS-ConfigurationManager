@@ -79,13 +79,15 @@ public class ConfigModelProxyUIController implements ConfigModelProxyApi {
     public ResponseEntity<String> updateConfigModelProxy(String proxyUri, ArrayList<URI> noProxyUriList,
                                                          String username, String password) {
 
-        var proxyImpl = (ProxyImpl) configModelService.getConfigModel().getConnectorProxy().get(0);
-        if (proxyImpl != null) {
+        var proxyList = configModelService.getConfigModel().getConnectorProxy();
+        if (proxyList.size() == 0) {
+            return ResponseEntity.badRequest().body("Could not find any proxy setting to update.");
+        } else {
+            var proxyImpl = (ProxyImpl) configModelService.getConfigModel().getConnectorProxy().get(0);
             configModelService.updateConfigurationModelProxy(proxyUri, noProxyUriList, username, password, proxyImpl);
-            return ResponseEntity.ok(Utility.jsonMessage("message", "Successfully updated proxy for the configuration model with the id: " +
-                    proxyImpl.getId().toString()));
+            return ResponseEntity.ok(Utility.jsonMessage("message", "Successfully updated proxy for the" +
+                    " configuration model with the id: " + proxyImpl.getId().toString()));
         }
-        return ResponseEntity.badRequest().body("Could not update proxy for the configuration model");
     }
 
     /**
