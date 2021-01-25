@@ -8,6 +8,7 @@ import de.fraunhofer.iais.eis.RouteStep;
 import de.fraunhofer.iais.eis.RouteStepImpl;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.RouteDeployMethodRepository;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.endpointInfo.EndpointInformation;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.routeDeployMethod.DeployMethod;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.routeDeployMethod.RouteDeployMethod;
 import de.fraunhofer.isst.configmanager.configmanagement.service.AppRouteService;
@@ -111,6 +112,62 @@ public class AppRouteUIController implements AppRouteApi {
             }
         } else {
             return ResponseEntity.badRequest().body("Could not get list of app routes");
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> createAppRouteStep(URI routeId, URI startId, int startCoordinateX,
+                                                     int startCoordinateY, URI endID, int endCoordinateX,
+                                                     int endCoordinateY) {
+
+        RouteStep routeStep = appRouteService.createAppRouteStep(routeId, startId, startCoordinateX, startCoordinateY,
+                endID, endCoordinateX, endCoordinateY);
+
+        if (routeStep != null) {
+            var jsonObject = new JSONObject();
+            jsonObject.put("endpointId", routeStep.getId().toString());
+            jsonObject.put("message", "Successfully created the route step");
+            return ResponseEntity.ok(jsonObject.toJSONString());
+        } else {
+            return ResponseEntity.badRequest().body("Could not create the route step");
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> validateAppRoute(URI routeId) {
+
+        String validationMessage = appRouteService.validateAppRoute(routeId);
+        return ResponseEntity.ok(validationMessage);
+
+    }
+
+    @Override
+    public ResponseEntity<String> getAppRouteStep(URI routeId, URI routeStepId) {
+
+        RouteStep routeStep = appRouteService.getSubroute(routeId, routeStepId);
+        if (routeStep != null) {
+            try {
+                return ResponseEntity.ok(serializer.serialize(routeStep));
+            } catch (IOException e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not serialize the route step");
+            }
+        } else {
+            return ResponseEntity.badRequest().body("Could not get the route step");
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> getEndpointInformation(URI routeId, URI endpointId) {
+
+        EndpointInformation endpointInformation = appRouteService.getEndpointInformation(routeId, endpointId);
+        if (endpointInformation != null) {
+            try {
+                return ResponseEntity.ok(objectMapper.writeValueAsString(endpointInformation));
+            } catch (JsonProcessingException e) {
+                return ResponseEntity.badRequest().body("Could not parse endpoint information to JSON");
+            }
+        } else {
+            return ResponseEntity.badRequest().body("Could not get endpoint information");
         }
     }
 

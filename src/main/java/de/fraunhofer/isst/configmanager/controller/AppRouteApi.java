@@ -12,8 +12,9 @@ import java.net.URI;
 
 public interface AppRouteApi {
 
+    // Interfaces for managing app routes
     @PostMapping(value = "/approute", produces = "application/ld+json")
-    @Operation(summary = "Create a new app route")
+    @Operation(summary = "Creates a new app route")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Created a new app route")})
     ResponseEntity<String> createAppRoute();
 
@@ -36,6 +37,38 @@ public interface AppRouteApi {
     @Operation(summary = "Returns all app routes")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully get all app routes")})
     ResponseEntity<String> getAppRoutes();
+
+    @PostMapping(value = "/approute/step", produces = "application/ld+json")
+    @Operation(summary = "Creates a new subroute for the app route")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully created a new subroute for the app route")})
+    ResponseEntity<String> createAppRouteStep(@RequestParam(value = "routeId") URI routeId,
+                                              @RequestParam(value = "startId") URI startId,
+                                              @RequestParam(value = "startCoordinateX") int startCoordinateX,
+                                              @RequestParam(value = "startCoordinateY") int startCoordinateY,
+                                              @RequestParam(value = "endId") URI endID,
+                                              @RequestParam(value = "endCoordinateX") int endCoordinateX,
+                                              @RequestParam(value = "endCoordinateY") int endCoordinateY);
+
+    @GetMapping(value = "/approute/validate", produces = "application/ld+json")
+    @Operation(summary = "Validates the created routes for completeness and correctness")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Validated the created routes for completeness" +
+            " and correctness")})
+    ResponseEntity<String> validateAppRoute(@RequestParam(value = "routeId") URI routeId);
+
+    // Interfaces for managing route steps
+    @GetMapping(value = "/approute/step", produces = "application/ld+json")
+    @Operation(summary = "Returns the specific route step")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully returned the specific route step")})
+    ResponseEntity<String> getAppRouteStep(@RequestParam(value = "routeId") URI routeId,
+                                           @RequestParam(value = "routeStepId") URI routeStepId);
+
+    @GetMapping(value = "/approute/step/endpoint/info", produces = "application/ld+json")
+    @Operation(summary = "Returns for a route step the specific endpoint information")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully returned for a route step " +
+            "the specific endpoint information")})
+    ResponseEntity<String> getEndpointInformation(@RequestParam(value = "routeId") URI routeId,
+                                                  @RequestParam(value = "endpointId") URI endpointId);
+
 
     // Interfaces for managing deploy methods of the routes
     @PostMapping(value = "/route/deploymethod", produces = "application/ld+json")
