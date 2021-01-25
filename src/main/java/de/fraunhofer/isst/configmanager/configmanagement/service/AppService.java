@@ -1,16 +1,19 @@
 package de.fraunhofer.isst.configmanager.configmanagement.service;
 
+import de.fraunhofer.iais.eis.AppEndpoint;
+import de.fraunhofer.iais.eis.AppEndpointType;
+import de.fraunhofer.iais.eis.Language;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.CustomAppRepository;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.customApp.CustomApp;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.customApp.CustomAppEndpoint;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.customApp.CustomEndpointType;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.customApp.CustomLanguage;
 import de.fraunhofer.isst.configmanager.util.Utility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +27,7 @@ public class AppService {
     private final CustomAppRepository customAppRepository;
 
     @Autowired
-    public AppService(CustomAppRepository customAppRepository) {
+    public AppService(CustomAppRepository customAppRepository) throws URISyntaxException {
         this.customAppRepository = customAppRepository;
 
         // If db is empty dummy apps will be created
@@ -32,34 +35,46 @@ public class AppService {
             logger.info("No custom app is found! Creating custom apps.");
             List<CustomApp> customAppList = new ArrayList<>();
 
+            // Create custom app with endpoints
             CustomApp customApp1 = new CustomApp();
             customApp1.setTitle("Custom App 1");
+
             List<CustomAppEndpoint> customAppEndpoints = new ArrayList<>();
-            CustomAppEndpoint customAppEndpoint = Utility.createCustomApp(CustomEndpointType.INPUT_ENDPOINT, 80,
+
+            AppEndpoint appEndpoint = Utility.createAppEndpoint(AppEndpointType.INPUT_ENDPOINT, new BigInteger("80"),
                     "documentation", "information", "www.ca1.com",
-                    "iPath", "oPath", CustomLanguage.DE, "JSON", "path");
-            CustomAppEndpoint customAppEndpoint2 = Utility.createCustomApp(CustomEndpointType.OUTPUT_ENDPOINT, 81,
+                    "iPath", "oPath", Language.DE, "PDF", "path");
+            CustomAppEndpoint customAppEndpoint = new CustomAppEndpoint(appEndpoint);
+
+
+            AppEndpoint appEndpoint2 = Utility.createAppEndpoint(AppEndpointType.OUTPUT_ENDPOINT, new BigInteger("81"),
                     "documentation", "information", "www.ca2.com",
-                    "iPath", "oPath", CustomLanguage.DE, "JSON", "path");
+                    "iPath", "oPath", Language.DE, "JSON", "path");
+            CustomAppEndpoint customAppEndpoint2 = new CustomAppEndpoint(appEndpoint2);
+
             customAppEndpoints.add(customAppEndpoint);
             customAppEndpoints.add(customAppEndpoint2);
             customApp1.setAppEndpointList(customAppEndpoints);
+            customAppList.add(customApp1);
 
+
+            // Create custom app 2 with endpoints
             CustomApp customApp2 = new CustomApp();
             customApp2.setTitle("Custom App 2");
             List<CustomAppEndpoint> customAppEndpoints2 = new ArrayList<>();
-            CustomAppEndpoint customAppEndpoint3 = Utility.createCustomApp(CustomEndpointType.INPUT_ENDPOINT, 82,
+            AppEndpoint appEndpoint3 = Utility.createAppEndpoint(AppEndpointType.INPUT_ENDPOINT, new BigInteger("82"),
                     "documentation", "information", "www.ca3.com",
-                    "iPath", "oPath", CustomLanguage.DE, "JSON", "path");
-            CustomAppEndpoint customAppEndpoint4 = Utility.createCustomApp(CustomEndpointType.INPUT_ENDPOINT, 83,
+                    "iPath", "oPath", Language.DE, "JSON", "path");
+            CustomAppEndpoint customAppEndpoint3 = new CustomAppEndpoint(appEndpoint3);
+            AppEndpoint appEndpoint4 = Utility.createAppEndpoint(AppEndpointType.OUTPUT_ENDPOINT, new BigInteger("83"),
                     "documentation", "information", "www.ca4.com",
-                    "iPath", "oPath", CustomLanguage.DE, "JSON", "path");
+                    "iPath", "oPath", Language.DE, "JSON", "path");
+            CustomAppEndpoint customAppEndpoint4 = new CustomAppEndpoint(appEndpoint4);
 
             customAppEndpoints2.add(customAppEndpoint3);
             customAppEndpoints2.add(customAppEndpoint4);
             customApp2.setAppEndpointList(customAppEndpoints2);
 
-            customAppList.add(customApp1);
             customAppList.add(customApp2);
 
             customAppRepository.saveAll(customAppList);

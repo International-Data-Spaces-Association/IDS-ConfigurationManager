@@ -1,9 +1,13 @@
 package de.fraunhofer.isst.configmanager.util;
 
-import de.fraunhofer.isst.configmanager.configmanagement.entities.customApp.CustomAppEndpoint;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.customApp.CustomEndpointType;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.customApp.CustomLanguage;
+import de.fraunhofer.iais.eis.*;
+import de.fraunhofer.iais.eis.util.TypedLiteral;
+import de.fraunhofer.iais.eis.util.Util;
 import net.minidev.json.JSONObject;
+
+import java.math.BigInteger;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class Utility {
 
@@ -14,23 +18,28 @@ public class Utility {
         return jsonObect.toJSONString();
     }
 
-    public static CustomAppEndpoint createCustomApp(CustomEndpointType customEndpointType,
-                                                    int port, String documentation,
-                                                    String endpointInformation, String accessURL,
-                                                    String inboundPath, String outboundPath,
-                                                    CustomLanguage customLanguage, String mediaType,
-                                                    String path) {
-        CustomAppEndpoint customAppEndpoint = new CustomAppEndpoint();
-        customAppEndpoint.setCustomEndpointType(customEndpointType);
-        customAppEndpoint.setEndpointPort(port);
-        customAppEndpoint.setEndpointDocumentation(documentation);
-        customAppEndpoint.setEndpointInformation(endpointInformation);
-        customAppEndpoint.setAccessURL(accessURL);
-        customAppEndpoint.setInboundPath(inboundPath);
-        customAppEndpoint.setOutboundPath(outboundPath);
-        customAppEndpoint.setLanguage(customLanguage);
-        customAppEndpoint.setMediaType(mediaType);
-        customAppEndpoint.setPath(path);
-        return customAppEndpoint;
+    public static AppEndpoint createAppEndpoint(AppEndpointType appEndpointType,
+                                                BigInteger port, String documentation,
+                                                String endpointInformation, String accessURL,
+                                                String inboundPath, String outboundPath,
+                                                Language language, String mediaType,
+                                                String path) throws URISyntaxException {
+
+        MediaType mediatype = new CustomMediaTypeBuilder()._filenameExtension_(mediaType).build();
+
+        AppEndpoint appEndpoint = new AppEndpointBuilder()
+                ._appEndpointType_(appEndpointType)
+                ._appEndpointPort_(port)
+                ._endpointDocumentation_(Util.asList(new URI(documentation)))
+                ._endpointInformation_(Util.asList(new TypedLiteral(endpointInformation)))
+                ._accessURL_(URI.create(accessURL))
+                ._inboundPath_(inboundPath)
+                ._outboundPath_(outboundPath)
+                ._language_(language)
+                ._appEndpointMediaType_(mediatype)
+                ._path_(path)
+                .build();
+
+        return appEndpoint;
     }
 }
