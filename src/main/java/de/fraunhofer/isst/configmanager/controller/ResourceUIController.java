@@ -164,7 +164,6 @@ public class ResourceUIController implements ResourceUIApi {
      * This method creates a resource with the given parameters. The special feature here is that the created resource
      * is included once in the app route and once in the resource catalog of the connector.
      *
-     * @param routeId         id of the route
      * @param title           title of the resource
      * @param description     description of the resource
      * @param language        language of the resource
@@ -176,10 +175,9 @@ public class ResourceUIController implements ResourceUIApi {
      * @return response from the target connector
      */
     @Override
-    public ResponseEntity<String> createResource(URI routeId, URI routeStepId, String accessUrl, String title,
-                                                 String description, String language, ArrayList<String> keywords,
-                                                 String version, String standardlicense, String publisher,
-                                                 List<URI> brokerList) {
+    public ResponseEntity<String> createResource(String title, String description, String language,
+                                                 ArrayList<String> keywords, String version, String standardlicense,
+                                                 String publisher, List<URI> brokerList) {
 
 
         ArrayList<TypedLiteral> keys = new ArrayList<>();
@@ -188,20 +186,6 @@ public class ResourceUIController implements ResourceUIApi {
         }
 
         var configModulIMpl = (ConfigurationModelImpl) configModelService.getConfigModel();
-
-        // Create new list for app route if it is empty
-        if (configModulIMpl.getAppRoute() == null) {
-            configModulIMpl.setAppRoute(new ArrayList<>());
-
-            // Create new app route
-            AppRoute appRoute = new AppRouteBuilder(routeId)
-                    ._appRouteOutput_(new ArrayList<>())
-                    ._routeDeployMethod_("custom")
-                    .build();
-
-            ArrayList<AppRoute> appRoutes = (ArrayList<AppRoute>) configModulIMpl.getAppRoute();
-            appRoutes.add(appRoute);
-        }
 
         // Create the resource with the given parameters
         Resource resource = new ResourceBuilder()
@@ -217,41 +201,6 @@ public class ResourceUIController implements ResourceUIApi {
                 .build();
         resource.setProperty("brokerList", brokerList);
 
-        var appRoutes = (ArrayList<AppRoute>) configModulIMpl.getAppRoute();
-
-        // Find the correct app route
-        var appRouteImpl = (AppRouteImpl) appRoutes.stream().filter(
-                appRoute -> appRoute.getId().equals(routeId)).findAny().orElse(null);
-
-        if (appRouteImpl != null) {
-
-            // Find the correct subroute
-            var routeStepImpl = (RouteStepImpl) appRouteImpl.getHasSubRoute().stream()
-                    .filter(routeStep -> routeStep.getId().equals(routeStepId)).findAny().orElse(null);
-
-            if (routeStepImpl != null) {
-
-                if (routeStepImpl.getAppRouteOutput() == null) {
-                    routeStepImpl.setAppRouteOutput(new ArrayList<>());
-                }
-                ArrayList<Resource> resources = (ArrayList<Resource>) routeStepImpl.getAppRouteOutput();
-
-                // Check if the subroute is the last route step of the app route. If it is the case then the access url
-                // from the resource endpoint must be equal with the connector endpoint of the app route
-                if (routeStepImpl.getId().equals(appRouteImpl.getHasSubRoute()
-                        .get(appRouteImpl.getHasSubRoute().size() - 1).getId())) {
-                    var resourceImpl = (ResourceImpl) resource;
-                    resourceImpl.setResourceEndpoint(Util.asList(new ConnectorEndpointBuilder()
-                            ._accessURL_(appRouteImpl.getAppRouteEnd().get(0).getAccessURL())
-                            .build()));
-                }
-                resources.add(resource);
-            }
-        } else {
-            appRoutes.add(new AppRouteBuilder(routeId)
-                    ._routeDeployMethod_("custom")
-                    ._appRouteOutput_(Util.asList(resource)).build());
-        }
 
         // Set Resource in Connector
         if (configModulIMpl.getConnectorDescription() == null) {
@@ -290,18 +239,6 @@ public class ResourceUIController implements ResourceUIApi {
             connectorImpl.setResourceCatalog(Util.asList(catalog));
         }
 
-        // Set the resource endpoint in the connector if it is not already present
-        if (connectorImpl.getHasEndpoint() == null) {
-            connectorImpl.setHasEndpoint(new ArrayList<>());
-        }
-        ArrayList<ConnectorEndpoint> connectorEndpointList = (ArrayList<ConnectorEndpoint>) connectorImpl.getHasEndpoint();
-        if(connectorImpl.getHasEndpoint()
-                .stream()
-                .map(Endpoint::getAccessURL)
-                .noneMatch(uri -> uri.equals(resource.getResourceEndpoint().get(0).getAccessURL()))){
-            connectorEndpointList.add(resource.getResourceEndpoint().get(0));
-        }
-
         // Save and send request to dataspace connector
         try {
             configModelService.saveState();
@@ -320,7 +257,6 @@ public class ResourceUIController implements ResourceUIApi {
      * This method updates a resource with the given parameters. The special feature here is that the resource
      * is updated once in the app route and once in the resource catalog of the connector.
      *
-     * @param routeId         id of the route
      * @param resourceId      id of the resource
      * @param title           title of the resource
      * @param description     description of the resource
@@ -333,9 +269,9 @@ public class ResourceUIController implements ResourceUIApi {
      * @return response from the target connector
      */
     @Override
-    public ResponseEntity<String> updateResource(URI routeId, URI resourceId, URI connectorEndpointId, String accessUrl,
-                                                 String title, String description, String language, ArrayList<String> keywords,
-                                                 String version, String standardlicense, String publisher, List<URI> brokerList) {
+    public ResponseEntity<String> updateResource(URI resourceId, String title, String description, String language,
+                                                 ArrayList<String> keywords, String version, String standardlicense,
+                                                 String publisher, List<URI> brokerList) {
 
         // Update resource in resource catalog
         ResourceImpl resourceImpl = null;
@@ -353,34 +289,9 @@ public class ResourceUIController implements ResourceUIApi {
 
         // Update the resource with the given parameters and optionally a broker list is set
         if (resourceImpl != null) {
-            resourceService.updateResourceContent(connectorEndpointId, accessUrl, title, description, language,
-                    keywords, version, standardlicense, publisher, resourceImpl);
+            resourceService.updateResourceContent(title, description, language, keywords, version, standardlicense,
+                    publisher, resourceImpl);
             resourceImpl.setProperty("brokerList", brokerList);
-        }
-
-        // Update resource in  subroute
-        ResourceImpl appRouteResource = null;
-
-        var appRoute = configModelService.getConfigModel().getAppRoute()
-                .stream().filter(appRoute1 -> appRoute1.getId().equals(routeId)).findAny().orElse(null);
-
-        if (appRoute != null) {
-            for (RouteStep routeStep : appRoute.getHasSubRoute()) {
-                if (routeStep.getAppRouteOutput() != null) {
-                    for (Resource resource : routeStep.getAppRouteOutput()) {
-                        if (resourceId.equals(resource.getId())) {
-                            appRouteResource = (ResourceImpl) resource;
-                        }
-                    }
-                }
-            }
-        }
-
-        // Update the resource in the app route and optionally a broker list is set
-        if (appRouteResource != null) {
-            resourceService.updateResourceContent(connectorEndpointId, accessUrl, title, description, language,
-                    keywords, version, standardlicense, publisher, appRouteResource);
-            appRouteResource.setProperty("brokerList", brokerList);
         }
 
         // Save the updated resource and update the resource in the dataspace connector

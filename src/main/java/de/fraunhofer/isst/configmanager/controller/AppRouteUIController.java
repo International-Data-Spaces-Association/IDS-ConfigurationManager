@@ -124,10 +124,10 @@ public class AppRouteUIController implements AppRouteApi {
     @Override
     public ResponseEntity<String> createAppRouteStep(URI routeId, URI startId, int startCoordinateX,
                                                      int startCoordinateY, URI endID, int endCoordinateX,
-                                                     int endCoordinateY) {
+                                                     int endCoordinateY, URI resourceId) {
 
         RouteStep routeStep = appRouteService.createAppRouteStep(routeId, startId, startCoordinateX, startCoordinateY,
-                endID, endCoordinateX, endCoordinateY);
+                endID, endCoordinateX, endCoordinateY, resourceId);
 
         if (routeStep != null) {
             var jsonObject = new JSONObject();

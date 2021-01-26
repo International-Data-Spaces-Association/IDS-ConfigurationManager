@@ -33,10 +33,7 @@ public interface ResourceUIApi {
     @Operation(summary = "Creates a resource for the connector")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully created a resource for the" +
             " connector")})
-    ResponseEntity<String> createResource(@RequestParam("routeId") URI routeId,
-                                          @RequestParam("routeStepId") URI routeStepId,
-                                          @RequestParam(value = "accessUrl", required = false) String accessUrl,
-                                          @RequestParam("title") String title,
+    ResponseEntity<String> createResource(@RequestParam("title") String title,
                                           @RequestParam("description") String description,
                                           @RequestParam("language") String language,
                                           @RequestParam("keyword") ArrayList<String> keywords,
@@ -49,10 +46,7 @@ public interface ResourceUIApi {
     @Operation(summary = "Updates the specific resource at the connector")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully updated the specific resource at the " +
             "connector")})
-    ResponseEntity<String> updateResource(@RequestParam("routeId") URI routeId,
-                                          @RequestParam("resourceId") URI resourceId,
-                                          @RequestParam(value = "connectorEndpointId", required = false) URI connectorEndpointId,
-                                          @RequestParam(value = "accessUrl", required = false) String accessUrl,
+    ResponseEntity<String> updateResource(@RequestParam("resourceId") URI resourceId,
                                           @RequestParam(value = "title", required = false) String title,
                                           @RequestParam(value = "description", required = false) String description,
                                           @RequestParam(value = "language", required = false) String language,

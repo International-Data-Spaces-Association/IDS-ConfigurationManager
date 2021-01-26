@@ -118,18 +118,8 @@ public class ResourceService {
      * @param publisher       the publisher of the resource
      * @param resourceImpl    the resource implementation class to set the parameters
      */
-    public void updateResourceContent(URI connectorEndpointId, String accessUrl, String title, String description,
-                                      String language, ArrayList<String> keywords, String version, String standardlicense,
-                                      String publisher, ResourceImpl resourceImpl) {
-        if (accessUrl != null && connectorEndpointId != null) {
-            var endpoint = (ConnectorEndpointImpl) resourceImpl.getResourceEndpoint()
-                    .stream()
-                    .filter(connectorEndpoint -> connectorEndpoint.getId().equals(connectorEndpointId))
-                    .findAny().orElse(null);
-            if (endpoint != null) {
-                endpoint.setAccessURL(URI.create(accessUrl));
-            }
-        }
+    public void updateResourceContent(String title, String description, String language, ArrayList<String> keywords,
+                                      String version, String standardlicense, String publisher, ResourceImpl resourceImpl) {
         if (title != null) {
             resourceImpl.setTitle(Util.asList(new TypedLiteral(title)));
         }

@@ -27,29 +27,6 @@ public class AppUIController implements AppUIApi {
         this.objectMapper = objectMapper;
     }
 
-//    @Override
-//    public ResponseEntity<String> createApp(String title) {
-//
-//        CustomApp customApp = appService.createApp(title);
-//
-//        if (customApp != null) {
-//            return ResponseEntity.ok(Utility.jsonMessage("message", "Created a new app with id: " + customApp.getId()));
-//        } else {
-//            return ResponseEntity.badRequest().body("Could not create app");
-//        }
-//    }
-//
-//    @Override
-//    public ResponseEntity<String> updateApp(String id, String title) {
-//        boolean updated = appService.updateApp(id, title);
-//
-//        if (updated) {
-//            return ResponseEntity.ok(Utility.jsonMessage("message", "Updated the app with id: " + id));
-//        } else {
-//            return ResponseEntity.badRequest().body("Could not update the app with the id: " + id);
-//        }
-//    }
-
     @Override
     public ResponseEntity<String> getApps() {
         List<CustomApp> customAppList = appService.getApps();
@@ -80,15 +57,4 @@ public class AppUIController implements AppUIApi {
         }
 
     }
-//
-//    @Override
-//    public ResponseEntity<String> deleteApp(String id) {
-//        boolean deleted = appService.deleteApp(id);
-//
-//        if (deleted) {
-//            return ResponseEntity.ok(Utility.jsonMessage("message", "Deleted the app with id: " + id));
-//        } else {
-//            return ResponseEntity.badRequest().body("Could not delete the app with id: " + id);
-//        }
-//    }
 }

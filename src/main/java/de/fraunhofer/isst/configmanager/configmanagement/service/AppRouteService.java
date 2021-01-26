@@ -28,6 +28,7 @@ public class AppRouteService {
 
     private final ConfigModelService configModelService;
     private final BackendConnectionService backendConnectionService;
+    private final ResourceService resourceService;
 
     private final RouteDeployMethodRepository routeDeployMethodRepository;
     private final EndpointInformationRepository endpointInformationRepository;
@@ -38,12 +39,14 @@ public class AppRouteService {
                            RouteDeployMethodRepository routeDeployMethodRepository,
                            EndpointInformationRepository endpointInformationRepository,
                            CustomAppRepository customAppRepository,
-                           BackendConnectionService backendConnectionService) {
+                           BackendConnectionService backendConnectionService,
+                           ResourceService resourceService) {
         this.configModelService = configModelService;
         this.routeDeployMethodRepository = routeDeployMethodRepository;
         this.endpointInformationRepository = endpointInformationRepository;
         this.customAppRepository = customAppRepository;
         this.backendConnectionService = backendConnectionService;
+        this.resourceService = resourceService;
     }
 
     /**
@@ -478,6 +481,7 @@ public class AppRouteService {
 //        return updated;
 //    }
 //
+
     /**
      * This method returns the specific soubroute.
      *
@@ -901,7 +905,7 @@ public class AppRouteService {
     }
 
     public RouteStep createAppRouteStep(URI routeId, URI startId, int startCoordinateX, int startCoordinateY,
-                                        URI endID, int endCoordinateX, int endCoordinateY) {
+                                        URI endID, int endCoordinateX, int endCoordinateY, URI resourceId) {
 
         // Create and save the endpoints of the route with the respective coordinates
         EndpointInformation startEndpointInformation =
@@ -935,10 +939,21 @@ public class AppRouteService {
 
             // Create route step
             if (startEndpoint != null && endpoint != null) {
-                RouteStep routeStep = new RouteStepBuilder()._routeDeployMethod_(deployMethod)
-                        ._appRouteStart_(Util.asList(startEndpoint))
-                        ._appRouteEnd_(Util.asList(endpoint))
-                        .build();
+                Resource resource = resourceService.getResource(resourceId);
+                RouteStep routeStep;
+                if (resource != null) {
+                    routeStep = new RouteStepBuilder()._routeDeployMethod_(deployMethod)
+                            ._appRouteStart_(Util.asList(startEndpoint))
+                            ._appRouteEnd_(Util.asList(endpoint))
+                            ._appRouteOutput_(Util.asList(resource))
+                            .build();
+                } else {
+                    logger.info("Subroute is created without Resource!!!");
+                    routeStep = new RouteStepBuilder()._routeDeployMethod_(deployMethod)
+                            ._appRouteStart_(Util.asList(startEndpoint))
+                            ._appRouteEnd_(Util.asList(endpoint))
+                            .build();
+                }
                 routeSteps.add(routeStep);
                 configModelService.saveState();
                 return routeStep;
@@ -1003,7 +1018,7 @@ public class AppRouteService {
         }
         if (configModelService.getConfigModel().getAppRoute().size() > 1) {
 
-            for(AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
+            for (AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
                 boolean validation = checkRouteFromGenericToIDSEndpoint(appRouteImpl) ||
                         checkRouteFromIDSToGenericEndpoint(appRouteImpl);
                 if (validation) {
