@@ -2,6 +2,7 @@ package de.fraunhofer.isst.configmanager.controller;
 
 import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
+import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.util.Utility;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,39 +32,17 @@ public class ConfigModelProxyUIController implements ConfigModelProxyApi {
     public ConfigModelProxyUIController(ConfigModelService configModelService, Serializer serializer) {
         this.configModelService = configModelService;
         this.serializer = serializer;
-    }
 
-    /**
-     * This method creates a connector proxy for the configuration model with the given parameters.
-     *
-     * @param proxyUri       uri of the proxy
-     * @param noProxyUriList list of no proxy uri's
-     * @param username       username for the authentication
-     * @param password       password for the authentication
-     * @return a suitable http response depending on success
-     */
-    @Override
-    public ResponseEntity<String> createConfigModelProxy(String proxyUri, ArrayList<URI> noProxyUriList,
-                                                         String username, String password) {
-        var configModelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
-
-        if (configModelImpl.getConnectorProxy() == null) {
-            configModelImpl.setConnectorProxy(new ArrayList<>());
+        if (configModelService.getConfigModel().getConnectorProxy() == null) {
+            var configModelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
+            Proxy proxy = new ProxyBuilder()
+                    ._proxyURI_(URI.create(""))
+                    ._noProxy_(Util.asList())
+                    ._proxyAuthentication_(new BasicAuthenticationBuilder()._authPassword_("")._authUsername_("").build())
+                    .build();
+            configModelImpl.setConnectorProxy(Util.asList(proxy));
         }
-        ArrayList<Proxy> proxies = (ArrayList<Proxy>) configModelImpl.getConnectorProxy();
-        proxies.add(new ProxyBuilder()
-                ._proxyURI_(URI.create(proxyUri))
-                ._noProxy_(noProxyUriList)
-                ._proxyAuthentication_(new BasicAuthenticationBuilder()
-                        ._authUsername_(username)
-                        ._authPassword_(password)
-                        .build())
-                .build());
-        configModelImpl.setConnectorProxy(proxies);
-        configModelService.saveState();
 
-        return ResponseEntity.ok(Utility.jsonMessage("message", "Successfully created a new proxy for the configuration model with the id: "
-                + proxies.get(0).getId().toString()));
     }
 
     /**

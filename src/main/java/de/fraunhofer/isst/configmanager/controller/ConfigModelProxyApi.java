@@ -11,15 +11,6 @@ import java.util.ArrayList;
 
 public interface ConfigModelProxyApi {
 
-    @PostMapping(value = "/configmodel/proxy", produces = "application/ld+json")
-    @Operation(summary = "Creates a new proxy for the configuration model")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully created a new proxy for the " +
-            "configuration model")})
-    ResponseEntity<String> createConfigModelProxy(@RequestParam("proxyUri") String proxyUri,
-                                                  @RequestParam(value = "noProxyUri", required = false) ArrayList<URI> noProxyUriList,
-                                                  @RequestParam(value = "username", required = false) String username,
-                                                  @RequestParam(value = "password", required = false) String password);
-
     @PutMapping(value = "/configmodel/proxy", produces = "application/ld+json")
     @Operation(summary = "Updates a the proxy at the configuration model")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully updated the proxy at the " +
@@ -46,6 +37,5 @@ public interface ConfigModelProxyApi {
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully deleted the proxy from the" +
             " configuration model")})
     ResponseEntity<String> deleteConfigModelProxy(@RequestParam("proxyId") URI proxyId);
-
 
 }
