@@ -47,6 +47,12 @@ public class AppRouteUIController implements AppRouteApi {
         this.serializer = serializer;
         this.routeDeployMethodRepository = routeDeployMethodRepository;
         this.objectMapper = objectMapper;
+
+        if (routeDeployMethodRepository.count() == 0) {
+            RouteDeployMethod routeDeployMethod = new RouteDeployMethod();
+            routeDeployMethod.setDeployMethod(DeployMethod.NONE);
+            routeDeployMethodRepository.save(routeDeployMethod);
+        }
     }
 
     @Override
@@ -169,26 +175,6 @@ public class AppRouteUIController implements AppRouteApi {
         } else {
             return ResponseEntity.badRequest().body("Could not get endpoint information");
         }
-    }
-
-    @Override
-    public ResponseEntity<String> createRouteDeployMethod(DeployMethod deployMethod) {
-
-        RouteDeployMethod routeDeployMethod = new RouteDeployMethod();
-        routeDeployMethod.setDeployMethod(deployMethod);
-
-        if (routeDeployMethodRepository.count() == 0) {
-            routeDeployMethodRepository.save(routeDeployMethod);
-        } else {
-            RouteDeployMethod existingDeployMethod = routeDeployMethodRepository.findAll().get(0);
-            if (existingDeployMethod != null) {
-                routeDeployMethodRepository.delete(existingDeployMethod);
-                routeDeployMethodRepository.save(routeDeployMethod);
-                // Updates the deploy method from the app routes and route steps
-                updateDeployMethodFromRoutes(deployMethod);
-            }
-        }
-        return ResponseEntity.ok("Successfully created the route deploy method");
     }
 
     @Override

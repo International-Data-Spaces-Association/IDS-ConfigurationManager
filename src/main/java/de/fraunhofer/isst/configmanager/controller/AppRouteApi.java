@@ -71,11 +71,6 @@ public interface AppRouteApi {
 
 
     // Interfaces for managing deploy methods of the routes
-    @PostMapping(value = "/route/deploymethod", produces = "application/ld+json")
-    @Operation(summary = "Creates the route deploy method for all routes")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully created the route deploy method")})
-    ResponseEntity<String> createRouteDeployMethod(@RequestParam("deployMethod") DeployMethod deployMethod);
-
     @PutMapping(value = "/route/deploymethod", produces = "application/ld+json")
     @Operation(summary = "Updates the route deploy method for all routes")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully updated the route deploy method")})
