@@ -114,6 +114,72 @@ public class EndpointUIController implements EndpointUIApi {
         return ResponseEntity.badRequest().body("Could not get route endpoint");
     }
 
+    @Override
+    public ResponseEntity<String> getConnectorEndpoints() {
+
+        if (configModelService.getConfigModel().getConnectorDescription() == null) {
+            return ResponseEntity.badRequest().body("Could not get the connector");
+        }
+        Connector connector = configModelService.getConfigModel().getConnectorDescription();
+        if (connector.getHasEndpoint() == null) {
+            return ResponseEntity.badRequest().body("Could not find any connector endpoints");
+        } else {
+            try {
+                return ResponseEntity.ok(serializer.serialize(connector.getHasEndpoint()));
+            } catch (IOException e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problems while serializing");
+            }
+        }
+
+    }
+
+    @Override
+    public ResponseEntity<String> getConnectorEndpoint(URI connectorEndpointId) {
+        if (configModelService.getConfigModel().getConnectorDescription() == null) {
+            return ResponseEntity.badRequest().body("Could not get the connector");
+        }
+        Connector connector = configModelService.getConfigModel().getConnectorDescription();
+        if (connector.getHasEndpoint() == null) {
+            return ResponseEntity.badRequest().body("Could not find any connector endpoints");
+        } else {
+            ConnectorEndpoint connectorEndpoint = connector.getHasEndpoint()
+                    .stream()
+                    .filter(connectorEndpoint1 -> connectorEndpoint1.getId().equals(connectorEndpointId))
+                    .findAny().orElse(null);
+            if (connectorEndpoint != null) {
+                try {
+                    return ResponseEntity.ok(serializer.serialize(connectorEndpoint));
+                } catch (IOException e) {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problems while serializing");
+                }
+            }
+        }
+        return ResponseEntity.badRequest().body("Could not find any connector endpoint with id: " + connectorEndpointId);
+    }
+
+    @Override
+    public ResponseEntity<String> createConnectorEndpoint(String accessUrl) {
+
+        var configModelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
+        if (configModelImpl.getConnectorDescription() == null) {
+            return ResponseEntity.badRequest().body("Could not get the connector");
+        }
+
+        var baseConnector = (BaseConnectorImpl) configModelImpl.getConnectorDescription();
+        if (baseConnector.getHasEndpoint() == null) {
+            baseConnector.setHasEndpoint(new ArrayList<>());
+        }
+        ArrayList<ConnectorEndpoint> connectorEndpoints = (ArrayList<ConnectorEndpoint>) baseConnector.getHasEndpoint();
+        ConnectorEndpoint connectorEndpoint = new ConnectorEndpointBuilder()._accessURL_(URI.create(accessUrl)).build();
+        connectorEndpoints.add(connectorEndpoint);
+        configModelService.saveState();
+
+        var jsonObject = new JSONObject();
+        jsonObject.put("id", connectorEndpoint.getId().toString());
+        jsonObject.put("message", "Created a new connector endpoint for the connector");
+        return ResponseEntity.ok(jsonObject.toJSONString());
+    }
+
     /**
      * This method creates an app route endpoint with the given parameters.
      *

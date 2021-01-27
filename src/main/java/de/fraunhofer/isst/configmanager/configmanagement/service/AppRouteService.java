@@ -1019,8 +1019,9 @@ public class AppRouteService {
         if (configModelService.getConfigModel().getAppRoute().size() > 1) {
 
             for (AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
-                boolean validation = checkRouteFromGenericToIDSEndpoint(appRouteImpl) ||
-                        checkRouteFromIDSToGenericEndpoint(appRouteImpl);
+                var appRouteImp = (AppRouteImpl) appRoute;
+                boolean validation = checkRouteFromGenericToIDSEndpoint(appRouteImp) ||
+                        checkRouteFromIDSToGenericEndpoint(appRouteImp);
                 if (validation) {
                     validationMessage = "Validation successful! Routes are complete and correct";
                 } else {

@@ -33,6 +33,22 @@ public interface EndpointUIApi {
                                                   @RequestParam("username") String username,
                                                   @RequestParam("password") String password);
 
+    @GetMapping(value = "/connector/endpoints", produces = "application/ld+json")
+    @Operation(summary = "Returns the connector endpoints")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully returned the connector endpoints")})
+    ResponseEntity<String> getConnectorEndpoints();
+
+    @GetMapping(value = "/connector/endpoint", produces = "application/ld+json")
+    @Operation(summary = "Returns the connector endpoint")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully returned the connector endpoint")})
+    ResponseEntity<String> getConnectorEndpoint(@RequestParam("connectorEndpointId") URI connectorEndpointId);
+
+    @PostMapping(value = "/connector/endpoint", produces = "application/ld+json")
+    @Operation(summary = "Creates a new connector endpoint for the connector")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully created the connector endpoint " +
+            "for the connector")})
+    ResponseEntity<String> createConnectorEndpoint(@RequestParam("accessUrl") String accessUrl);
+
     @PutMapping(value = "/approute/endpoint", produces = "application/ld+json")
     @Operation(summary = "Updates the endpoint in the app route")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully updated the endpoint in the" +
