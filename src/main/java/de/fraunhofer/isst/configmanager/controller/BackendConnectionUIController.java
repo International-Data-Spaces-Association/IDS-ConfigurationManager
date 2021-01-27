@@ -35,6 +35,14 @@ public class BackendConnectionUIController implements BackendConnectionApi {
         this.serializer = serializer;
     }
 
+    /**
+     * This method creates a backend connection with the given parameters.
+     *
+     * @param accessURL
+     * @param username
+     * @param password
+     * @return a suitable http response depending on success
+     */
     @Override
     public ResponseEntity<String> createBackendConnection(String accessURL, String username, String password) {
 
@@ -51,6 +59,11 @@ public class BackendConnectionUIController implements BackendConnectionApi {
 
     }
 
+    /**
+     * This method returns a list of backend connections.
+     *
+     * @return a suitable http response depending on success
+     */
     @Override
     public ResponseEntity<String> getBackendConnections() {
 
@@ -62,6 +75,12 @@ public class BackendConnectionUIController implements BackendConnectionApi {
         }
     }
 
+    /**
+     * This method returns a backend connection.
+     *
+     * @param id id of the backend connection
+     * @return a suitable http response depending on success
+     */
     @Override
     public ResponseEntity<String> getBackendConnection(URI id) {
 
@@ -77,6 +96,12 @@ public class BackendConnectionUIController implements BackendConnectionApi {
         }
     }
 
+    /**
+     * This method deletes a backend connection.
+     *
+     * @param id id of the backend connection
+     * @return a suitable http response depending on success
+     */
     @Override
     public ResponseEntity<String> deleteBackendConnection(URI id) {
         boolean deleted = backendConnectionService.deleteBackendConnection(id);
@@ -87,6 +112,15 @@ public class BackendConnectionUIController implements BackendConnectionApi {
         }
     }
 
+    /**
+     * This method updates a backend connection with the given parameters.
+     *
+     * @param id        id of the backend connection
+     * @param accessURL access url of the endpoint
+     * @param username  username for authentication
+     * @param password  password fot authentication
+     * @return a suitable http response depending on success
+     */
     @Override
     public ResponseEntity<String> updateBackendConnection(URI id, String accessURL, String username, String
             password) {
@@ -97,7 +131,5 @@ public class BackendConnectionUIController implements BackendConnectionApi {
         } else {
             return ResponseEntity.badRequest().body("Could not update the backend connection with id: " + id);
         }
-
-
     }
 }

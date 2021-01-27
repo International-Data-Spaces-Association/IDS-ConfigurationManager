@@ -5,6 +5,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+/**
+ * Entity class for persisting the endpoint with the coordinates.
+ */
 @Entity
 public class EndpointInformation {
 

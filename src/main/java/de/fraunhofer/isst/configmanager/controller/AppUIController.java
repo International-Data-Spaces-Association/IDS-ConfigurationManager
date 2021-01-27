@@ -27,6 +27,11 @@ public class AppUIController implements AppUIApi {
         this.objectMapper = objectMapper;
     }
 
+    /**
+     * This method returns a list of custom apps.
+     *
+     * @return a suitable http response depending on success
+     */
     @Override
     public ResponseEntity<String> getApps() {
         List<CustomApp> customAppList = appService.getApps();
@@ -42,6 +47,12 @@ public class AppUIController implements AppUIApi {
         }
     }
 
+    /**
+     * This method returns a specific app.
+     *
+     * @param id id of the app
+     * @return a suitable http response depending on success
+     */
     @Override
     public ResponseEntity<String> getApp(String id) {
         CustomApp customApp = appService.getApp(id);
