@@ -55,14 +55,10 @@ public class BackendConnectionUIController implements BackendConnectionApi {
     public ResponseEntity<String> getBackendConnections() {
 
         List<Endpoint> endpoints = backendConnectionService.getBackendConnections();
-        if (endpoints != null) {
-            try {
-                return ResponseEntity.ok(serializer.serialize(endpoints));
-            } catch (IOException e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problems while serializing");
-            }
-        } else {
-            return ResponseEntity.badRequest().body("Could not get backend connections");
+        try {
+            return ResponseEntity.ok(serializer.serialize(endpoints));
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problems while serializing");
         }
     }
 
@@ -92,7 +88,8 @@ public class BackendConnectionUIController implements BackendConnectionApi {
     }
 
     @Override
-    public ResponseEntity<String> updateBackendConnection(URI id, String accessURL, String username, String password) {
+    public ResponseEntity<String> updateBackendConnection(URI id, String accessURL, String username, String
+            password) {
 
         boolean updated = backendConnectionService.updateBackendConnection(id, accessURL, username, password);
         if (updated) {

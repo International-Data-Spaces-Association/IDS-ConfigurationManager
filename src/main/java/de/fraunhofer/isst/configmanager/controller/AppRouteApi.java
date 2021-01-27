@@ -48,7 +48,7 @@ public interface AppRouteApi {
                                               @RequestParam(value = "endId") URI endID,
                                               @RequestParam(value = "endCoordinateX") int endCoordinateX,
                                               @RequestParam(value = "endCoordinateY") int endCoordinateY,
-                                              @RequestParam(value = "resourceId") URI resourceId);
+                                              @RequestParam(value = "resourceId", required = false) URI resourceId);
 
     @GetMapping(value = "/approute/validate", produces = "application/ld+json")
     @Operation(summary = "Validates the created routes for completeness and correctness")

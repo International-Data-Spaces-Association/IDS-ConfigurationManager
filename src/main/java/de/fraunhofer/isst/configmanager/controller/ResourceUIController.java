@@ -200,7 +200,7 @@ public class ResourceUIController implements ResourceUIApi {
                 ._modified_(CalenderUtil.getGregorianNow())
                 .build();
         resource.setProperty("brokerList", brokerList);
-
+        var resourceImpl = (ResourceImpl) resource;
 
         // Set Resource in Connector
         if (configModulIMpl.getConnectorDescription() == null) {
@@ -216,6 +216,16 @@ public class ResourceUIController implements ResourceUIApi {
             );
         }
         var connectorImpl = (BaseConnectorImpl) configModulIMpl.getConnectorDescription();
+        // Set resource endpoint either from existing connector endpoint or with a dummy one
+        if (connectorImpl.getHasEndpoint() == null) {
+            resourceImpl.setResourceEndpoint(Util.asList(new ConnectorEndpointBuilder()
+                    ._accessURL_(URI.create("/api/ids/data")).build()));
+        } else {
+            ConnectorEndpoint connectorEndpoint
+                    = configModelService.getConfigModel().getConnectorDescription().getHasEndpoint().get(0);
+            resourceImpl.setResourceEndpoint(Util.asList(connectorEndpoint));
+        }
+
         if (connectorImpl.getResourceCatalog() == null) {
             // New resource catalog will be set, if it is not existing
             connectorImpl.setResourceCatalog(new ArrayList<>());
@@ -227,12 +237,12 @@ public class ResourceUIController implements ResourceUIApi {
             //get the offers as List of Resources instead of Capture of ? extends Resource
             resources = (ArrayList<Resource>) oldCatalog.get().getOfferedResource();
             //add the resource to the list
-            resources.add(resource);
+            resources.add(resourceImpl);
         } else {
             // Resource will be added to the list of offered resources and the resource catalog of the connector will be
             // updated.
             resources = new ArrayList<>();
-            resources.add(resource);
+            resources.add(resourceImpl);
             var catalog = new ResourceCatalogBuilder()
                     ._offeredResource_(resources)
                     ._requestedResource_(new ArrayList<>()).build();
@@ -240,16 +250,17 @@ public class ResourceUIController implements ResourceUIApi {
         }
 
         // Save and send request to dataspace connector
+        var jsonObject = new JSONObject();
         try {
             configModelService.saveState();
-            var response = client.registerResource(resource);
-            var jsonObject = new JSONObject();
+            jsonObject.put("resourceID", resourceImpl.getId().toString());
+            var response = client.registerResource(resourceImpl);
             jsonObject.put("connectorResponse", response);
-            jsonObject.put("resourceID", resource.getId().toString());
             return ResponseEntity.ok(jsonObject.toJSONString());
         } catch (IOException e) {
+            jsonObject.put("message", "Could not register resource at connector");
             logger.error(e.getMessage());
-            return ResponseEntity.badRequest().body("Could not register resource at connector");
+            return ResponseEntity.badRequest().body(jsonObject.toJSONString());
         }
     }
 

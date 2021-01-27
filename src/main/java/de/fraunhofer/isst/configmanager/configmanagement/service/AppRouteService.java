@@ -977,11 +977,14 @@ public class AppRouteService {
             }
         }
 
-        // Search endpoint in the backend repository
-        if (backendConnectionService.getBackendConnections() != null) {
-            return backendConnectionService.getBackendConnection(endpointId);
+        // Search endpoint in the backend repository and in list of connector endpoints
+        if(backendConnectionService.getBackendConnections().size()!=0){
+            GenericEndpoint genericEndpoint = backendConnectionService.getBackendConnection(endpointId);
+            if (genericEndpoint != null) return genericEndpoint;
+            else return configModelService.getConfigModel().getConnectorDescription().getHasEndpoint()
+                    .stream().filter(connectorEndpoint -> connectorEndpoint.getId().equals(endpointId))
+                    .findAny().orElse(null);
         }
-        logger.info("No endpoint found in app repo and backend repo!!!");
         return null;
     }
 
