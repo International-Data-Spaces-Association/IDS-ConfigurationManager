@@ -178,6 +178,19 @@ public class AppRouteUIController implements AppRouteApi {
     }
 
     @Override
+    public ResponseEntity<String> getAllEndpointInfo() {
+        List<EndpointInformation> endpointInformations = appRouteService.getAllEndpointInfo();
+        if(endpointInformations !=null) {
+            try {
+                return ResponseEntity.ok(objectMapper.writeValueAsString(endpointInformations));
+            } catch (JsonProcessingException e) {
+                return ResponseEntity.badRequest().body("Could not parse endpoint information to JSON");
+            }
+        }
+        return ResponseEntity.badRequest().body("Could not get endpoint information");
+    }
+
+    @Override
     public ResponseEntity<String> updateRouteDeployMethod(DeployMethod deployMethod) {
 
         if (routeDeployMethodRepository.count() != 0) {

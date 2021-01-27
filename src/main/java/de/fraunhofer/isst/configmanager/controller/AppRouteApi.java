@@ -70,6 +70,11 @@ public interface AppRouteApi {
     ResponseEntity<String> getEndpointInformation(@RequestParam(value = "routeId") URI routeId,
                                                   @RequestParam(value = "endpointId") URI endpointId);
 
+    @GetMapping(value = "/approute/step/endpoints/info", produces = "application/ld+json")
+    @Operation(summary = "Returns all endpoints information")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully returned all endpoint information")})
+    ResponseEntity<String> getAllEndpointInfo();
+
 
     // Interfaces for managing deploy methods of the routes
     @PutMapping(value = "/route/deploymethod", produces = "application/ld+json")

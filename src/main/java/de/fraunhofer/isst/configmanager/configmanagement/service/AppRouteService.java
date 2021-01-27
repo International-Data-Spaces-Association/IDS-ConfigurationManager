@@ -978,7 +978,7 @@ public class AppRouteService {
         }
 
         // Search endpoint in the backend repository and in list of connector endpoints
-        if(backendConnectionService.getBackendConnections().size()!=0){
+        if (backendConnectionService.getBackendConnections().size() != 0) {
             GenericEndpoint genericEndpoint = backendConnectionService.getBackendConnection(endpointId);
             if (genericEndpoint != null) return genericEndpoint;
             else return configModelService.getConfigModel().getConnectorDescription().getHasEndpoint()
@@ -999,6 +999,12 @@ public class AppRouteService {
             }
         }
         return null;
+
+    }
+
+    public List<EndpointInformation> getAllEndpointInfo() {
+
+        return endpointInformationRepository.findAll();
 
     }
 
@@ -1073,4 +1079,5 @@ public class AppRouteService {
         }
         return true;
     }
+
 }
