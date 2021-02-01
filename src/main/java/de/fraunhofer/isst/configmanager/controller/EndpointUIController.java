@@ -23,12 +23,11 @@ import java.util.ArrayList;
 
 /**
  * The controller class implements the EndpointUIApi and offers the possibilities to manage
- * the endpoints in the configurationmanager.
+ * the endpoints in the configuration manager.
  */
 @RestController
 @RequestMapping("/api/ui")
-@Tag(name = "Endpoints Management", description = "Endpoints for managing the app route endpoints in the " +
-        "configuration manager")
+@Tag(name = "Endpoints Management", description = "Different endpoint types can be managed here")
 public class EndpointUIController implements EndpointUIApi {
 
     private final static Logger logger = LoggerFactory.getLogger(EndpointUIController.class);
@@ -57,7 +56,7 @@ public class EndpointUIController implements EndpointUIApi {
      * @return a suitable http response depending on success
      */
     @Override
-    public ResponseEntity<String> getAppRouteEndpoint(URI routeId, URI endpointId) {
+    public ResponseEntity<String> getGenericEndpoint(URI routeId, URI endpointId) {
 
         var route = configModelService.getConfigModel().getAppRoute()
                 .stream()
@@ -88,7 +87,7 @@ public class EndpointUIController implements EndpointUIApi {
      * @return a suitable http response depending on success
      */
     @Override
-    public ResponseEntity<String> getAppRouteEndpointInJson(URI routeId, URI endpointId) {
+    public ResponseEntity<String> getGenericEndpointJson(URI routeId, URI endpointId) {
         var route = configModelService.getConfigModel().getAppRoute()
                 .stream()
                 .filter(appRoute -> appRoute.getId().equals(routeId))
@@ -190,8 +189,8 @@ public class EndpointUIController implements EndpointUIApi {
      * @return a suitable http response depending on success
      */
     @Override
-    public ResponseEntity<String> createAppRouteEndpoint(URI routeId, String accessUrl,
-                                                         String username, String password) {
+    public ResponseEntity<String> createGenericEndpoint(URI routeId, String accessUrl,
+                                                        String username, String password) {
 
         var configModelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
 
@@ -271,8 +270,8 @@ public class EndpointUIController implements EndpointUIApi {
      * @return a suitable http response depending on success
      */
     @Override
-    public ResponseEntity<String> updateAppRouteEndpoint(URI routeId, URI endpointId, String accessUrl, String username,
-                                                         String password) {
+    public ResponseEntity<String> updateGenericEndpoint(URI routeId, URI endpointId, String accessUrl, String username,
+                                                        String password) {
         var routeImpl = (AppRouteImpl) configModelService.getConfigModel().getAppRoute()
                 .stream()
                 .filter(appRoute -> appRoute.getId().equals(routeId))
@@ -332,83 +331,4 @@ public class EndpointUIController implements EndpointUIApi {
         }
         return ResponseEntity.badRequest().body("Could not find the app route for updating the endpoint");
     }
-
-    /**
-     * This method deletes the app route endpoint with the given parameters.
-     *
-     * @param routeId          if of the app route
-     * @param appRouteEndId    id of the app route end
-     * @param appRouteStartId  id of the app route start
-     * @param appRouteOutputId id of the app route output
-     * @param appRouteBrokerId id of the the app route broker
-     * @return a suitable http response depending on success
-     */
-    @Override
-    public ResponseEntity<String> deleteAppRouteEndpoint(URI routeId, URI appRouteEndId, URI appRouteStartId,
-                                                         URI appRouteOutputId, URI appRouteBrokerId) {
-
-        var route = configModelService.getConfigModel().getAppRoute()
-                .stream()
-                .filter(appRoute -> appRoute.getId().equals(routeId))
-                .findAny().orElse(null);
-
-        if (route != null) {
-            if (appRouteEndId != null) {
-                route.getAppRouteEnd().removeIf(endpoint -> endpoint.getId().equals(appRouteEndId));
-            }
-            if (appRouteStartId != null) {
-                route.getAppRouteStart().removeIf(endpoint -> endpoint.getId().equals(appRouteStartId));
-            }
-            if (appRouteOutputId != null) {
-                route.getAppRouteOutput().removeIf(endpoint -> endpoint.getId().equals(appRouteOutputId));
-            }
-            if (appRouteBrokerId != null) {
-                route.getAppRouteBroker().removeIf(endpoint -> endpoint.getId().equals(appRouteBrokerId));
-            }
-            configModelService.saveState();
-
-            var jsonObject = new JSONObject();
-            jsonObject.put("message", "Successfully deleted the endpoint in the app route");
-            return ResponseEntity.ok(jsonObject.toJSONString());
-        }
-        return ResponseEntity.badRequest().body("Could not delete the endpoint in the app route");
-    }
-
-//    /**
-//     * This method completely deletes an app route under the condition that it is also completely empty.
-//     *
-//     * @param routeId ID of the route to be deleted
-//     * @return HttpStatus 200 if route can be deleted, 400 when route is not empty, 404 when route is not found,
-//     * 500 when Connector rejects new Config
-//     */
-//    @Override
-//    public ResponseEntity<String> deleteAppRoute(URI routeId) {
-//        var route = configModelService.getConfigModel().getAppRoute()
-//                .stream()
-//                .filter(appRoute -> appRoute.getId().equals(routeId))
-//                .findAny().orElse(null);
-//
-//        if (route != null) {
-//            var routeEmpty = route.getAppRouteOutput().isEmpty()
-//                    && route.getAppRouteBroker().isEmpty()
-//                    && route.getAppRouteStart().isEmpty()
-//                    && route.getAppRouteEnd().isEmpty();
-//            if (routeEmpty) {
-//                configModelService.getConfigModel().getAppRoute().remove(route);
-//                var success = configModelService.saveState();
-//
-//                if (success) {
-//                    var jsonObject = new JSONObject();
-//                    jsonObject.put("message", "Deleted app route with the id: " + routeId.toString());
-//                    return ResponseEntity.ok(jsonObject.toJSONString());
-//                } else {
-//                    return ResponseEntity.status(500).body("New Config not accepted by Connector!");
-//                }
-//            } else {
-//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Could not delete Route, not empty!");
-//            }
-//        } else {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Could not find AppRoute with given ID!");
-//        }
-//    }
 }

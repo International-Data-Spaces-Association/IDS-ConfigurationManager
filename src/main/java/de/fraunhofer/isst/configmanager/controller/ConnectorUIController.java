@@ -22,7 +22,7 @@ import java.net.URI;
 
 /**
  * The controller class implements the ConnectorUIApi and offers the possibilities to manage
- * the connectors in the configurationmanager.
+ * the connectors in the configuration manager.
  */
 @RestController
 @RequestMapping("/api/ui")

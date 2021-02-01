@@ -25,7 +25,7 @@ import java.util.Collection;
 
 /**
  * The controller class implements the ResourceRepresentationApi and offers the possibilities to manage
- * the resource representations in the configurationmanager.
+ * the resource representations in the configuration manager.
  */
 @RestController
 @RequestMapping("/api/ui")

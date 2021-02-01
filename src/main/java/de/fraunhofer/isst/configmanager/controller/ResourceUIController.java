@@ -27,7 +27,7 @@ import java.util.List;
 
 /**
  * The controller class implements the ResourceUIApi and offers the possibilities to manage
- * the resources in the configurationmanager.
+ * the resources in the configuration manager.
  */
 @RestController
 @RequestMapping("/api/ui")

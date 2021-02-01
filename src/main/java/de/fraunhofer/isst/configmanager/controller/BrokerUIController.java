@@ -23,7 +23,7 @@ import java.util.List;
 
 /**
  * The controller class implements the BrokerAPI and offers the possibilities to manage
- * the brokers in the configurationmanager.
+ * the brokers in the configuration manager.
  */
 @RestController
 @RequestMapping("/api/ui")

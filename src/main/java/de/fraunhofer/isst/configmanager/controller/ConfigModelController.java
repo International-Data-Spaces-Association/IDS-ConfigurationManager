@@ -19,7 +19,7 @@ import java.net.URI;
 
 /**
  * The controller class implements the ConfigModelApi and offers the possibilities to manage
- * the configuration model in the configurationmanager.
+ * the configuration model in the configuration manager.
  */
 @RestController
 @RequestMapping("/api/ui")

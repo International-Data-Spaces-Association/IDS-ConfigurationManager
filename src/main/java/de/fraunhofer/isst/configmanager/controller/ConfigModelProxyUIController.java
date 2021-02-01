@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 /**
  * The controller class implements the ConfigModelProxyApi and offers the possibilities to manage
- * the proxy settings in the configurationmanager.
+ * the proxy settings in the configuration manager.
  */
 @RestController
 @RequestMapping("/api/ui")
