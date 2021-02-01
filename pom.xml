@@ -11,8 +11,8 @@
     <groupId>de.fraunhofer.isst</groupId>
     <artifactId>configurationmanager</artifactId>
     <version>1.0.0</version>
-    <name>configurationmanager</name>
-    <description>Configuration manager developed by the Fraunhofer ISST</description>
+    <name>configuration manager</name>
+    <description>Configuration Manager developed by the Fraunhofer ISST</description>
     <organization>
         <name>Fraunhofer Institute for Software and Systems Engineering</name>
         <url>https://www.isst.fraunhofer.de/</url>
@@ -54,6 +54,10 @@
         <de.fraunhofer.iais.eis.ids.infomodel.version>4.0.0</de.fraunhofer.iais.eis.ids.infomodel.version>
         <de.fraunhofer.iais.eis.ids.infomodel.serializer.version>4.0.0
         </de.fraunhofer.iais.eis.ids.infomodel.serializer.version>
+
+        <licence_name>Apache License, Version 2.0</licence_name>
+        <licence_url>https://www.apache.org/licenses/LICENSE-2.0.txt</licence_url>
+        <licence_distribution>repo</licence_distribution>
     </properties>
 
     <dependencies>
