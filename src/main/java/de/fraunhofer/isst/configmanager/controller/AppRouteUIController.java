@@ -56,9 +56,9 @@ public class AppRouteUIController implements AppRouteApi {
     }
 
     @Override
-    public ResponseEntity<String> createAppRoute() {
+    public ResponseEntity<String> createAppRoute(String description) {
 
-        AppRoute appRoute = appRouteService.createAppRoute();
+        AppRoute appRoute = appRouteService.createAppRoute(description);
 
         if (appRoute != null) {
             var jsonObject = new JSONObject();
@@ -71,8 +71,8 @@ public class AppRouteUIController implements AppRouteApi {
     }
 
     @Override
-    public ResponseEntity<String> updateAppRoute(URI routeId) {
-        boolean updated = appRouteService.updateAppRoute(routeId);
+    public ResponseEntity<String> updateAppRoute(URI routeId, String description) {
+        boolean updated = appRouteService.updateAppRoute(routeId, description);
 
         if (updated) {
             return ResponseEntity.ok(Utility.jsonMessage("message", "App route with id: " + routeId + " is updated."));
@@ -140,6 +140,17 @@ public class AppRouteUIController implements AppRouteApi {
     }
 
     @Override
+    public ResponseEntity<String> deleteAppRouteStep(URI routeId, URI routeStepId) {
+
+        boolean deleted = appRouteService.deleteAppRouteStep(routeId, routeStepId);
+        if (deleted) {
+            return ResponseEntity.ok("Successfully deleted the route step with id: " + routeStepId);
+        } else {
+            return ResponseEntity.badRequest().body("Could not delete the route step");
+        }
+    }
+
+    @Override
     public ResponseEntity<String> validateAppRoute(URI routeId) {
 
         String validationMessage = appRouteService.validateAppRoute(routeId);
@@ -180,7 +191,7 @@ public class AppRouteUIController implements AppRouteApi {
     @Override
     public ResponseEntity<String> getAllEndpointInfo() {
         List<EndpointInformation> endpointInformations = appRouteService.getAllEndpointInfo();
-        if(endpointInformations !=null) {
+        if (endpointInformations != null) {
             try {
                 return ResponseEntity.ok(objectMapper.writeValueAsString(endpointInformations));
             } catch (JsonProcessingException e) {
