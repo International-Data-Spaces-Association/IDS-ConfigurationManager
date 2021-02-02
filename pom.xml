@@ -3,100 +3,77 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-parent -->
+        <!-- License: Apache License, Version 2.0 -->
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.3.1.RELEASE</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <version>2.4.2</version>
+        <relativePath/>
     </parent>
+
     <groupId>de.fraunhofer.isst</groupId>
     <artifactId>configurationmanager</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <name>configurationmanager</name>
     <description>Configuration manager developed by the Fraunhofer ISST</description>
+
     <organization>
         <name>Fraunhofer Institute for Software and Systems Engineering</name>
         <url>https://www.isst.fraunhofer.de/</url>
     </organization>
-    <developers>
-        <developer>
-            <name>Steffen Biehs</name>
-            <email>steffen.biehs@isst.fraunhofer.de</email>
-            <organization>Fraunhofer Institute for Software and Systems Engineering</organization>
-            <organizationUrl>https://www.isst.fraunhofer.de/</organizationUrl>
-            <roles>
-                <role>head</role>
-                <role>architect</role>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Gökhan Kahriman</name>
-            <email>goekhan.kahriman@isst.fraunhofer.de</email>
-            <organization>Fraunhofer Institute for Software and Systems Engineering</organization>
-            <organizationUrl>https://www.isst.fraunhofer.de/</organizationUrl>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Erik van den, Akker</name>
-            <email>erik.van.den.akker@isst.fraunhofer.de</email>
-            <organization>Fraunhofer Institute for Software and Systems Engineering</organization>
-            <organizationUrl>https://www.isst.fraunhofer.de/</organizationUrl>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-    </developers>
 
     <properties>
         <java.version>11</java.version>
-        <de.fraunhofer.iais.eis.ids.infomodel.version>4.0.0</de.fraunhofer.iais.eis.ids.infomodel.version>
-        <de.fraunhofer.iais.eis.ids.infomodel.serializer.version>4.0.0
-        </de.fraunhofer.iais.eis.ids.infomodel.serializer.version>
     </properties>
 
     <dependencies>
-        <!-- Spring Boot -->
-
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-jpa -->
+        <!-- License: Apache License, Version 2.0 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-rest -->
+        <!-- License: Apache License, Version 2.0 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-rest</artifactId>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security -->
+        <!-- License: Apache License, Version 2.0 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web -->
+        <!-- License: Apache License, Version 2.0 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-devtools -->
+        <!-- License: Apache License, Version 2.0 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>runtime</scope>
-        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-configuration-processor -->
+        <!-- License: Apache License, Version 2.0 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
-        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test -->
+        <!-- License: Apache License, Version 2.0 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -108,63 +85,90 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-test -->
+        <!-- License: Apache License, Version 2.0 -->
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
+            <version>5.4.2</version>
             <scope>test</scope>
         </dependency>
 
-        <!-- Infomodel -->
+        <!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
+        <!-- License: MPL 2.0 or EPL 1.0 -->
         <dependency>
-            <groupId>de.fraunhofer.iais.eis.ids.infomodel</groupId>
-            <artifactId>java</artifactId>
-            <version>4.0.1-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/java-4.0.1-SNAPSHOT.jar</systemPath>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.200</version>
+            <scope>runtime</scope>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+        <!-- License: The MIT License -->
         <dependency>
-            <groupId>de.fraunhofer.iais.eis.ids.infomodel</groupId>
-            <artifactId>util</artifactId>
-            <version>4.0.1-SNAPSHOT</version>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.18</version>
+            <optional>true</optional>
         </dependency>
 
-        <dependency>
-            <groupId>de.fraunhofer.iais.eis.ids</groupId>
-            <artifactId>infomodel-serializer</artifactId>
-            <version>${de.fraunhofer.iais.eis.ids.infomodel.serializer.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>de.fraunhofer.iais.eis.ids.infomodel</groupId>
-                    <artifactId>java</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <!-- SpringDoc OpenAPI -->
+        <!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui -->
+        <!-- License: Apache License, Version 2.0 -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
-            <version>1.4.3</version>
+            <version>1.5.3</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/junit/junit -->
+        <!-- License: Eclipse Public License 1.0 -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <version>4.13.1</version>
             <scope>test</scope>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt -->
+        <!-- License: Apache License, Version 2.0 -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt</artifactId>
             <version>0.9.1</version>
         </dependency>
 
-        <!-- OkHttp -->
+        <!-- https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp -->
+        <!-- License: Apache License, Version 2.0 -->
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
-            <version>4.7.2</version>
+            <version>4.9.1</version>
+        </dependency>
+
+        <!-- Infomodel -->
+        <dependency>
+            <groupId>de.fraunhofer.iais.eis.ids.infomodel</groupId>
+            <artifactId>java</artifactId>
+            <version>4.0.2-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>de.fraunhofer.iais.eis.ids.infomodel</groupId>
+            <artifactId>util</artifactId>
+            <version>4.0.2-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>de.fraunhofer.iais.eis.ids</groupId>
+            <artifactId>infomodel-serializer</artifactId>
+            <version>4.0.2-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>de.fraunhofer.iais.eis.ids.infomodel</groupId>
+                    <artifactId>java</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 
@@ -174,7 +178,6 @@
             <name>maven-snapshots</name>
             <url>https://maven.iais.fraunhofer.de/artifactory/eis-ids-public</url>
         </repository>
-
 <!--        <repository>-->
 <!--            <id>eis-snapshot-repo</id>-->
 <!--            <name>maven-snapshots</name>-->
@@ -190,5 +193,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

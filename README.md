@@ -52,16 +52,16 @@ This is a list of currently implemented features, which is continuously updated.
 
 <a name="technologies"></a>
 ### Technologies
-`Java`, `Maven`, `Spring Boot`, `Rest`, `OpenAPI`, `Swagger`, `SLF4J`, `JSON(-LD)`
+`Java`, `Maven`, `Spring Boot`, `Rest`, `OpenAPI`, `Swagger`, `SLF4J`, `JSON(-LD)`, `H2`, `Project Lombok`, `JUnit`, `JWT`, `OkHttp`  
 
 <a name="IDS Components"></a>
 ### IDS Components
 
 | Library/Component | Version | License | Owner | Contact |
 | ------ | ------ | ------ | ------ | ------ |
-| [IDS Information Model Library](https://maven.iais.fraunhofer.de/artifactory/eis-ids-public/de/fraunhofer/iais/eis/ids/infomodel/) | 4.0.0 | Apache 2.0 | Fraunhofer IAIS | [Sebastian Bader](mailto:sebastian.bader@iais.fraunhofer.de) |
-| [IDS Information Model Serializer Library](https://maven.iais.fraunhofer.de/artifactory/eis-ids-public/de/fraunhofer/iais/eis/ids/infomodel-serializer/) | 4.0.0 | Apache 2.0 | Fraunhofer IAIS | [Sebastian Bader](mailto:sebastian.bader@iais.fraunhofer.de) |
-| [Dataspace Connector](https://github.com/FraunhoferISST/DataspaceConnector) | 3.2.1 | Apache 2.0 | Fraunhofer ISST | [Julia Pampus](mailto:julia.pampus@isst.fraunhofer.de) |
+| IDS Information Model Library | 4.0.2-SNAPSHOT | Apache 2.0 | Fraunhofer IAIS | [Sebastian Bader](mailto:sebastian.bader@iais.fraunhofer.de) |
+| IDS Information Model Serializer Library | 4.0.2-SNAPSHOT | Apache 2.0 | Fraunhofer IAIS | [Sebastian Bader](mailto:sebastian.bader@iais.fraunhofer.de) |
+| [Dataspace Connector](https://github.com/FraunhoferISST/DataspaceConnector) | latest | Apache 2.0 | Fraunhofer ISST | [Julia Pampus](mailto:julia.pampus@isst.fraunhofer.de) |
 ---
 <a name="getting-started"></a>
 ## Getting Started
@@ -75,15 +75,15 @@ You need:
 
 Clone the project from
 ```
-https://www.ids.isst.fraunhofer.de/bitbucket/scm/idsp/ids-configurationmanager.git
+https://github.com/FraunhoferISST/IDS-ConfigurationManager
 ```
 open the directory and run 
 ```
 mvn clean package
 ```
-When building was successfully, go into target folder and run
+When building was successfully, go into target folder and run with current version number (<X.Y.Z>):
 ```
-java -jar configmanager-0.0.1-SNAPSHOT.jar
+java -jar configmanager-<X.Y.Z>.jar
 ```
 in terminal to start the configuration manager.
 
@@ -110,13 +110,13 @@ configuration of configuration model, connector, brokers etc. via the user inter
                                    With the API the representations can be managed.
 
 * `Database: `The data resources are persist in an H2 database.
-              Console path: `http://localhost:8080/console`
+              Console path: `http://localhost:8081/console`
 ---
 <a name="hands-on-ids-configurationmanager"></a>
 ## Hands-on IDS Configurationmanager
 
 To interact with the running application, the provided endpoints at the Swagger UI can be used.
-The Swagger UI is available at: `http://localhost:8080/swagger-ui/index.html?url=/v3/api-docs/` .
+The Swagger UI is available at: `http://localhost:8081/swagger-ui/index.html?url=/v3/api-docs/` .
 
 The following is an example of how the configuration model can be extended step by step in the Configuration Manager.
 The following points are discussed:
@@ -176,14 +176,6 @@ This means that the creation of the resource was successful and the dataspace co
 ## Versioning
 
 Please read the `CHANGELOG.md` for versioning details.
-
----
-
-<a name="authors"></a>
-## Authors
-* **Steffen Biehs**  - *Initial work, implementation*
-* **Erik van den, Akker** - *Initial work, implementation* 
-* **Gökhan Kahriman** - *Initial work, implementation*
 
 ---
 
