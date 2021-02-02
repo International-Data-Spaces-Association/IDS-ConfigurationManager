@@ -85,7 +85,8 @@ public class AppRouteService {
     /**
      * This method updates the app route.
      *
-     * @param routeId if of the app route
+     * @param routeId     if of the app route
+     * @param description desciption of the app route
      * @return true, if app route is updated
      */
     public boolean updateAppRoute(URI routeId, String description) {
@@ -328,6 +329,24 @@ public class AppRouteService {
 
     }
 
+    /**
+     * This method deletes a route step with the given parameters.
+     *
+     * @param routeId     id of the app route
+     * @param routeStepId id of the route step
+     * @return true, if route step is deleted
+     */
+    public boolean deleteAppRouteStep(URI routeId, URI routeStepId) {
+
+        boolean deleted = false;
+        var appRouteImpl = getAppRouteImpl(routeId);
+        if (appRouteImpl != null) {
+            deleted = appRouteImpl.getHasSubRoute().removeIf(routeStep -> routeStep.getId().equals(routeStepId));
+            if (deleted) configModelService.saveState();
+        }
+        return deleted;
+    }
+
     public String validateAppRoute(URI routeId) {
 
         String validationMessage = "";
@@ -398,16 +417,5 @@ public class AppRouteService {
             }
         }
         return true;
-    }
-
-    public boolean deleteAppRouteStep(URI routeId, URI routeStepId) {
-
-        boolean deleted = false;
-        var appRouteImpl = getAppRouteImpl(routeId);
-        if (appRouteImpl != null) {
-            deleted = appRouteImpl.getHasSubRoute().removeIf(routeStep -> routeStep.getId().equals(routeStepId));
-            if (deleted) configModelService.saveState();
-        }
-        return deleted;
     }
 }
