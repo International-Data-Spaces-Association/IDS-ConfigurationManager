@@ -14,8 +14,8 @@
     <groupId>de.fraunhofer.isst</groupId>
     <artifactId>configurationmanager</artifactId>
     <version>1.0.1</version>
-    <name>configurationmanager</name>
-    <description>Configuration manager developed by the Fraunhofer ISST</description>
+    <name>Configuration Manager</name>
+    <description>Configuration Manager developed by the Fraunhofer ISST</description>
 
     <organization>
         <name>Fraunhofer Institute for Software and Systems Engineering</name>
@@ -24,12 +24,15 @@
 
     <properties>
         <java.version>11</java.version>
+
+        <licence_name>Apache License, Version 2.0</licence_name>
+        <licence_url>https://www.apache.org/licenses/LICENSE-2.0.txt</licence_url>
     </properties>
 
     <licenses>
         <license>
-            <name>Apache License, Version 2.0</name>
-            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <name>${licence_name}</name>
+            <url>${licence_url}}</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
@@ -186,11 +189,11 @@
             <name>maven-snapshots</name>
             <url>https://maven.iais.fraunhofer.de/artifactory/eis-ids-public</url>
         </repository>
-<!--        <repository>-->
-<!--            <id>eis-snapshot-repo</id>-->
-<!--            <name>maven-snapshots</name>-->
-<!--            <url>https://maven.iais.fraunhofer.de/artifactory/eis-ids-snapshot</url>-->
-<!--        </repository>-->
+        <!--        <repository>-->
+        <!--            <id>eis-snapshot-repo</id>-->
+        <!--            <name>maven-snapshots</name>-->
+        <!--            <url>https://maven.iais.fraunhofer.de/artifactory/eis-ids-snapshot</url>-->
+        <!--        </repository>-->
     </repositories>
 
     <build>
