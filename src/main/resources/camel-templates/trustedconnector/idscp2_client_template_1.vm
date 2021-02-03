@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:camel="http://camel.apache.org/schema/blueprint" xsi:schemaLocation="
+ http://www.osgi.org/xmlns/blueprint/v1.0.0 https://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+ http://camel.apache.org/schema/blueprint https://camel.apache.org/schema/blueprint/camel-blueprint-3.3.0.xsd">
+
+    <camel:sslContextParameters id="clientSslContext" certAlias="1.0.1">
+        <camel:keyManagers keyPassword="password">
+            <camel:keyStore resource="$keyStorePath" password="$keyStorePassword"/>
+        </camel:keyManagers>
+        <camel:trustManagers>
+            <camel:keyStore resource="$trustStorePath" password="$trustStorePassword"/>
+        </camel:trustManagers>
+    </camel:sslContextParameters>
+
+    <camelContext xmlns="http://camel.apache.org/schema/blueprint">
+
+        #set ($startUrlHost = $startUrl.split("//")[1].split(":")[0])
+        #set ($startUrlPort = $startUrl.split("//")[1].split(":")[1])
+
+        <restConfiguration component="jetty" host="$startUrlHost" port="$startUrlPort" bindingMode="off" />
+
+        <rest>
+            <post uri="/">
+                <to uri="direct:rest" />
+            </post>
+        </rest>
+
+        <route id="$connectionId">
+            <from uri="direct:rest"/>
+            <convertBodyTo type="java.lang.String"/>
+            <log message="Client sends: ${body}"/>
+            <to uri="idscp2client://$endUrl?awaitResponse=true&amp;sslContextParameters=#clientSslContext"/>
+            <log message="Client received: ${body}"/>
+        </route>
+
+    </camelContext>
+
+</blueprint>

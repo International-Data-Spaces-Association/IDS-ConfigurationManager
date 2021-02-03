@@ -122,9 +122,9 @@
         <dependency>
             <groupId>de.fraunhofer.iais.eis.ids.infomodel</groupId>
             <artifactId>java</artifactId>
-            <version>4.0.1-SNAPSHOT</version>
+            <version>4.0.2-SNAPSHOT</version>
             <scope>system</scope>
-            <systemPath>${basedir}/lib/java-4.0.1-SNAPSHOT.jar</systemPath>
+            <systemPath>${basedir}/lib/java-4.0.2-SNAPSHOT.jar</systemPath>
         </dependency>
 
         <dependency>
@@ -170,6 +170,13 @@
             <artifactId>okhttp</artifactId>
             <version>4.7.2</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.velocity/velocity -->
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity</artifactId>
+            <version>1.7</version>
+        </dependency>
     </dependencies>
 
     <repositories>
@@ -179,11 +186,11 @@
             <url>https://maven.iais.fraunhofer.de/artifactory/eis-ids-public</url>
         </repository>
 
-<!--        <repository>-->
-<!--            <id>eis-snapshot-repo</id>-->
-<!--            <name>maven-snapshots</name>-->
-<!--            <url>https://maven.iais.fraunhofer.de/artifactory/eis-ids-snapshot</url>-->
-<!--        </repository>-->
+        <!--        <repository>-->
+        <!--            <id>eis-snapshot-repo</id>-->
+        <!--            <name>maven-snapshots</name>-->
+        <!--            <url>https://maven.iais.fraunhofer.de/artifactory/eis-ids-snapshot</url>-->
+        <!--        </repository>-->
     </repositories>
 
     <build>

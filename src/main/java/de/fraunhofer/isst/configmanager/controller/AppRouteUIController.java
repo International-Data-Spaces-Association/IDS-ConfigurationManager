@@ -2,10 +2,7 @@ package de.fraunhofer.isst.configmanager.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.fraunhofer.iais.eis.AppRoute;
-import de.fraunhofer.iais.eis.AppRouteImpl;
-import de.fraunhofer.iais.eis.RouteStep;
-import de.fraunhofer.iais.eis.RouteStepImpl;
+import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.RouteDeployMethodRepository;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.endpointInfo.EndpointInformation;
@@ -13,6 +10,7 @@ import de.fraunhofer.isst.configmanager.configmanagement.entities.routeDeployMet
 import de.fraunhofer.isst.configmanager.configmanagement.entities.routeDeployMethod.RouteDeployMethod;
 import de.fraunhofer.isst.configmanager.configmanagement.service.AppRouteService;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelService;
+import de.fraunhofer.isst.configmanager.util.CamelUtils;
 import de.fraunhofer.isst.configmanager.util.Utility;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import net.minidev.json.JSONObject;
@@ -83,6 +81,9 @@ public class AppRouteUIController implements AppRouteApi {
 
     @Override
     public ResponseEntity<String> deleteAppRoute(URI routeId) {
+        AppRoute appRoute = appRouteService.getAppRoute(routeId);
+        // Delete route file
+        CamelUtils.deleteRouteFile(appRoute);
         boolean deleted = appRouteService.deleteAppRoute(routeId);
         if (deleted) {
             return ResponseEntity.ok(Utility.jsonMessage("message", "App route with id: " + routeId + " is deleted."));
@@ -129,6 +130,13 @@ public class AppRouteUIController implements AppRouteApi {
         RouteStep routeStep = appRouteService.createAppRouteStep(routeId, startId, startCoordinateX, startCoordinateY,
                 endID, endCoordinateX, endCoordinateY, resourceId);
 
+        ConfigurationModel configurationModel = configModelService.getConfigModel();
+        AppRoute appRoute = appRouteService.getAppRoute(routeId);
+
+        // Generate camel routes
+        CamelUtils.deleteRouteFile(appRoute);
+        CamelUtils.generateXMLRoute(configurationModel, appRoute);
+
         if (routeStep != null) {
             var jsonObject = new JSONObject();
             jsonObject.put("endpointId", routeStep.getId().toString());
@@ -144,6 +152,13 @@ public class AppRouteUIController implements AppRouteApi {
 
         boolean deleted = appRouteService.deleteAppRouteStep(routeId, routeStepId);
         if (deleted) {
+            ConfigurationModel configurationModel = configModelService.getConfigModel();
+            AppRoute appRoute = appRouteService.getAppRoute(routeId);
+
+            // Generate camel routes
+            CamelUtils.deleteRouteFile(appRoute);
+            CamelUtils.generateXMLRoute(configurationModel, appRoute);
+
             return ResponseEntity.ok("Successfully deleted the route step with id: " + routeStepId);
         } else {
             return ResponseEntity.badRequest().body("Could not delete the route step");
