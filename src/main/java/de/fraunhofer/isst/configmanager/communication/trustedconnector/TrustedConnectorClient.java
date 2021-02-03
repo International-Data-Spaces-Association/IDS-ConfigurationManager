@@ -33,6 +33,10 @@ public class TrustedConnectorClient implements DefaultConnectorClient {
                 ._configurationModelLogLevel_(LogLevel.NO_LOGGING)
                 ._connectorStatus_(ConnectorStatus.CONNECTOR_ONLINE)
                 ._connectorDeployMode_(ConnectorDeployMode.TEST_DEPLOYMENT)
+                ._keyStorePassword_("password")
+                ._keyStore_(URI.create("http://k"))
+                ._trustStorePassword_("password")
+                ._trustStore_(URI.create("http://t"))
                 .build();
     }
 

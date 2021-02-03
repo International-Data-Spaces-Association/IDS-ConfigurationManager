@@ -229,9 +229,16 @@ public class AppRouteService {
                 appRouteImpl.setHasSubRoute(new ArrayList<>());
             }
             ArrayList<RouteStep> routeSteps = (ArrayList<RouteStep>) appRouteImpl.getHasSubRoute();
+
             // Determine endpoints
             Endpoint startEndpoint = getEndpoint(startId);
             Endpoint endpoint = getEndpoint(endID);
+
+            // Set app route start and end
+            if (routeSteps.size() == 0) {
+                appRouteImpl.setAppRouteStart(Util.asList(startEndpoint));
+            }
+            appRouteImpl.setAppRouteEnd(Util.asList(endpoint));
 
             // Get route deploy method for route step
             List<RouteDeployMethod> routeDeployMethod = routeDeployMethodRepository.findAll();

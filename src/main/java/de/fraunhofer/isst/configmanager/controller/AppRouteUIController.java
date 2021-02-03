@@ -139,7 +139,7 @@ public class AppRouteUIController implements AppRouteApi {
 
         if (routeStep != null) {
             var jsonObject = new JSONObject();
-            jsonObject.put("endpointId", routeStep.getId().toString());
+            jsonObject.put("routeStepId", routeStep.getId().toString());
             jsonObject.put("message", "Successfully created the route step");
             return ResponseEntity.ok(jsonObject.toJSONString());
         } else {
