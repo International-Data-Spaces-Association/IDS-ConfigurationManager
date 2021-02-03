@@ -4,6 +4,7 @@ package de.fraunhofer.isst.configmanager.controller;
 import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.iais.eis.util.Util;
+import de.fraunhofer.isst.configmanager.configmanagement.service.AppRouteService;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.configmanagement.service.RepresentationEndpointService;
 import de.fraunhofer.isst.configmanager.configmanagement.service.UtilService;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * The controller class implements the EndpointUIApi and offers the possibilities to manage
@@ -36,16 +38,19 @@ public class EndpointUIController implements EndpointUIApi {
     private final ConfigModelService configModelService;
     private final UtilService utilService;
     private final RepresentationEndpointService representationEndpointService;
+    private final AppRouteService appRouteService;
 
     @Autowired
     public EndpointUIController(Serializer serializer,
                                 ConfigModelService configModelService,
                                 UtilService utilService,
-                                RepresentationEndpointService representationEndpointService) {
+                                RepresentationEndpointService representationEndpointService,
+                                AppRouteService appRouteService) {
         this.serializer = serializer;
         this.configModelService = configModelService;
         this.utilService = utilService;
         this.representationEndpointService = representationEndpointService;
+        this.appRouteService = appRouteService;
     }
 
     /**
@@ -113,6 +118,11 @@ public class EndpointUIController implements EndpointUIApi {
         return ResponseEntity.badRequest().body("Could not get route endpoint");
     }
 
+    /**
+     * This method returns all connector endpoints.
+     *
+     * @return a suitable http response depending on success
+     */
     @Override
     public ResponseEntity<String> getConnectorEndpoints() {
 
@@ -132,6 +142,12 @@ public class EndpointUIController implements EndpointUIApi {
 
     }
 
+    /**
+     * This method returns a specific connector endpoint.
+     *
+     * @param connectorEndpointId id of the connector endpoint
+     * @return a suitable http response depending on success
+     */
     @Override
     public ResponseEntity<String> getConnectorEndpoint(URI connectorEndpointId) {
         if (configModelService.getConfigModel().getConnectorDescription() == null) {
@@ -156,8 +172,15 @@ public class EndpointUIController implements EndpointUIApi {
         return ResponseEntity.badRequest().body("Could not find any connector endpoint with id: " + connectorEndpointId);
     }
 
+    /**
+     * This method creates a connector endpoint with given parameters.
+     *
+     * @param accessUrl  access url of the endpoint
+     * @param resourceId id of the resource
+     * @return a suitable http response depending on success
+     */
     @Override
-    public ResponseEntity<String> createConnectorEndpoint(String accessUrl) {
+    public ResponseEntity<String> createConnectorEndpoint(String accessUrl, URI resourceId) {
 
         var configModelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
         if (configModelImpl.getConnectorDescription() == null) {
@@ -169,8 +192,27 @@ public class EndpointUIController implements EndpointUIApi {
             baseConnector.setHasEndpoint(new ArrayList<>());
         }
         ArrayList<ConnectorEndpoint> connectorEndpoints = (ArrayList<ConnectorEndpoint>) baseConnector.getHasEndpoint();
+        // Create Connector Endpoint
         ConnectorEndpoint connectorEndpoint = new ConnectorEndpointBuilder()._accessURL_(URI.create(accessUrl)).build();
+        // Add Connector Endpoint in Connector
         connectorEndpoints.add(connectorEndpoint);
+
+        // Get Resource
+        var resourceImpl = (ResourceImpl) baseConnector.getResourceCatalog().stream()
+                .map(ResourceCatalog::getOfferedResource)
+                .flatMap(Collection::stream)
+                .dropWhile(res -> !res.getId().equals(resourceId))
+                .findFirst()
+                .orElse(null);
+
+        // Add Connector Endpoint to Resource
+        if (resourceImpl != null) {
+            if (resourceImpl.getResourceEndpoint() == null) {
+                resourceImpl.setResourceEndpoint(new ArrayList<>());
+            }
+            ArrayList<ConnectorEndpoint> resourceEndpoint = (ArrayList<ConnectorEndpoint>) resourceImpl.getResourceEndpoint();
+            resourceEndpoint.add(connectorEndpoint);
+        }
         configModelService.saveState();
 
         var jsonObject = new JSONObject();

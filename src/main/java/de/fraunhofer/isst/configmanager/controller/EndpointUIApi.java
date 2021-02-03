@@ -17,25 +17,25 @@ public interface EndpointUIApi {
     @GetMapping(value = "/generic/endpoint", produces = "application/ld+json")
     @Operation(summary = "Returns the generic endpoint of an app route")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully returned the generic endpoint of an " +
-            "app route" )})
+            "app route")})
     ResponseEntity<String> getGenericEndpoint(@RequestParam("routeId") URI routeId,
-                                               @RequestParam("endpointId") URI endpointId);
+                                              @RequestParam("endpointId") URI endpointId);
 
     @GetMapping(value = "/generic/endpoint/json", produces = "application/ld+json")
     @Operation(summary = "Returns the generic endpoint of an app route in JSON")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully returned the generic endpoint of " +
             "an app route in JSON")})
     ResponseEntity<String> getGenericEndpointJson(@RequestParam("routeId") URI routeId,
-                                                     @RequestParam("endpointId") URI endpointId);
+                                                  @RequestParam("endpointId") URI endpointId);
 
     @PostMapping(value = "/generic/endpoint", produces = "application/ld+json")
     @Operation(summary = "Creates a new generic endpoint for the app route")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully created the generic endpoint for the" +
             " app route")})
     ResponseEntity<String> createGenericEndpoint(@RequestParam(value = "routeId", required = false) URI routeId,
-                                                  @RequestParam("accessUrl") String accessUrl,
-                                                  @RequestParam("username") String username,
-                                                  @RequestParam("password") String password);
+                                                 @RequestParam("accessUrl") String accessUrl,
+                                                 @RequestParam("username") String username,
+                                                 @RequestParam("password") String password);
 
     @PutMapping(value = "/generic/endpoint", produces = "application/ld+json")
     @Operation(summary = "Updates the generic endpoint in the app route")
@@ -62,6 +62,7 @@ public interface EndpointUIApi {
     @Operation(summary = "Creates a new connector endpoint for the connector")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully created the connector endpoint " +
             "for the connector")})
-    ResponseEntity<String> createConnectorEndpoint(@RequestParam("accessUrl") String accessUrl);
+    ResponseEntity<String> createConnectorEndpoint(@RequestParam("accessUrl") String accessUrl,
+                                                   @RequestParam("resourceId") URI resourceId);
 
 }

@@ -35,7 +35,6 @@ public class BackendConnectionService {
             endpointImpl.setGenericEndpointAuthentication(new BasicAuthenticationBuilder()._authUsername_(username)
                     ._authPassword_(password).build());
         }
-
         // Save the endpoint
         BackendConnectionObject backendConnectionObject = new BackendConnectionObject(endpoint);
         if (backendConnectionRepository.count() == 0) {
@@ -49,8 +48,10 @@ public class BackendConnectionService {
     }
 
     public List<Endpoint> getBackendConnections() {
+
+        backendConnectionList = backendConnectionRepository.findAll().stream().findAny().get();
         if (backendConnectionList != null) {
-            return this.backendConnectionList.getEndpoints();
+            return backendConnectionList.getEndpoints();
         } else {
             return new ArrayList<>();
         }

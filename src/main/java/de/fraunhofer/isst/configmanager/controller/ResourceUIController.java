@@ -216,15 +216,6 @@ public class ResourceUIController implements ResourceUIApi {
             );
         }
         var connectorImpl = (BaseConnectorImpl) configModulIMpl.getConnectorDescription();
-        // Set resource endpoint either from existing connector endpoint or with a dummy one
-        if (connectorImpl.getHasEndpoint() == null) {
-            resourceImpl.setResourceEndpoint(Util.asList(new ConnectorEndpointBuilder()
-                    ._accessURL_(URI.create("/api/ids/data")).build()));
-        } else {
-            ConnectorEndpoint connectorEndpoint
-                    = configModelService.getConfigModel().getConnectorDescription().getHasEndpoint().get(0);
-            resourceImpl.setResourceEndpoint(Util.asList(connectorEndpoint));
-        }
 
         if (connectorImpl.getResourceCatalog() == null) {
             // New resource catalog will be set, if it is not existing
