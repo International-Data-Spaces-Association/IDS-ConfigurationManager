@@ -44,7 +44,9 @@ public class ConfigModelController implements ConfigModelApi {
      * @param connectorStatus     connector status of the configuration model
      * @param connectorDeployMode connector deploy mode of the configuration model
      * @param trustStore          trustStore of the configuration model
+     * @param trustStorePassword  password of the trust store
      * @param keyStore            keyStore of the configuration model
+     * @param keyStorePassword    password of the key store
      * @return a suitable http response depending on success
      */
     @Override
@@ -69,7 +71,9 @@ public class ConfigModelController implements ConfigModelApi {
      * @param connectorStatus     connector status of the configuration model
      * @param connectorDeployMode connector deploy mode of the configuration model
      * @param trustStore          trustStore of the configuration model
+     * @param trustStorePassword  password of the trust store
      * @param keyStore            keyStore of the configuration model
+     * @param keyStorePassword    password of the key store
      * @return a suitable http response depending on success
      */
     @Override

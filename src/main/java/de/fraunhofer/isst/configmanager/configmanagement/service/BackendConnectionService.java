@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class BackendConnectionService {
@@ -48,11 +49,10 @@ public class BackendConnectionService {
     }
 
     public List<Endpoint> getBackendConnections() {
-
-        backendConnectionList = backendConnectionRepository.findAll().stream().findAny().get();
-        if (backendConnectionList != null) {
+        try {
+            backendConnectionList = backendConnectionRepository.findAll().stream().findAny().get();
             return backendConnectionList.getEndpoints();
-        } else {
+        } catch (NoSuchElementException e) {
             return new ArrayList<>();
         }
     }

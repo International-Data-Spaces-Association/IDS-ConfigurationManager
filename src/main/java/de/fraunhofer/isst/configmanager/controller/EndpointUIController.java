@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * The controller class implements the EndpointUIApi and offers the possibilities to manage
@@ -175,18 +174,13 @@ public class EndpointUIController implements EndpointUIApi {
     /**
      * This method creates a connector endpoint with given parameters.
      *
-     * @param accessUrl  access url of the endpoint
-     * @param resourceId id of the resource
+     * @param accessUrl access url of the endpoint
      * @return a suitable http response depending on success
      */
     @Override
-    public ResponseEntity<String> createConnectorEndpoint(String accessUrl, URI resourceId) {
+    public ResponseEntity<String> createConnectorEndpoint(String accessUrl) {
 
         var configModelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
-        if (configModelImpl.getConnectorDescription() == null) {
-            return ResponseEntity.badRequest().body("Could not get the connector");
-        }
-
         var baseConnector = (BaseConnectorImpl) configModelImpl.getConnectorDescription();
         if (baseConnector.getHasEndpoint() == null) {
             baseConnector.setHasEndpoint(new ArrayList<>());
@@ -197,26 +191,10 @@ public class EndpointUIController implements EndpointUIApi {
         // Add Connector Endpoint in Connector
         connectorEndpoints.add(connectorEndpoint);
 
-        // Get Resource
-        var resourceImpl = (ResourceImpl) baseConnector.getResourceCatalog().stream()
-                .map(ResourceCatalog::getOfferedResource)
-                .flatMap(Collection::stream)
-                .dropWhile(res -> !res.getId().equals(resourceId))
-                .findFirst()
-                .orElse(null);
-
-        // Add Connector Endpoint to Resource
-        if (resourceImpl != null) {
-            if (resourceImpl.getResourceEndpoint() == null) {
-                resourceImpl.setResourceEndpoint(new ArrayList<>());
-            }
-            ArrayList<ConnectorEndpoint> resourceEndpoint = (ArrayList<ConnectorEndpoint>) resourceImpl.getResourceEndpoint();
-            resourceEndpoint.add(connectorEndpoint);
-        }
         configModelService.saveState();
 
         var jsonObject = new JSONObject();
-        jsonObject.put("id", connectorEndpoint.getId().toString());
+        jsonObject.put("connectorEndpointId", connectorEndpoint.getId().toString());
         jsonObject.put("message", "Created a new connector endpoint for the connector");
         return ResponseEntity.ok(jsonObject.toJSONString());
     }
@@ -244,7 +222,7 @@ public class EndpointUIController implements EndpointUIApi {
         if (routeId == null) {
             // Creates some route if routeID is null
             AppRoute appRoute = new AppRouteBuilder()._routeDeployMethod_("custom")
-                    ._appRouteEnd_(Util.asList(new EndpointBuilder()._accessURL_(URI.create("/api/ids/data")).build()))
+                    ._appRouteEnd_(Util.asList(new EndpointBuilder()._accessURL_(URI.create("http://api/ids/data")).build()))
                     ._appRouteStart_(Util.asList(new GenericEndpointBuilder()
                             ._accessURL_(URI.create(accessUrl))
                             ._genericEndpointAuthentication_(
@@ -269,7 +247,7 @@ public class EndpointUIController implements EndpointUIApi {
 
             if (routeImpl != null) {
                 if (routeImpl.getAppRouteEnd() == null) {
-                    routeImpl.setAppRouteEnd(Util.asList(new EndpointBuilder()._accessURL_(URI.create("/api/ids/data")).build()));
+                    routeImpl.setAppRouteEnd(Util.asList(new EndpointBuilder()._accessURL_(URI.create("http://api/ids/data")).build()));
                 }
                 if (routeImpl.getAppRouteStart() == null) {
                     routeImpl.setAppRouteStart(new ArrayList<>());

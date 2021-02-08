@@ -127,7 +127,7 @@ public class BackendConnectionUIController implements BackendConnectionApi {
 
         boolean updated = backendConnectionService.updateBackendConnection(id, accessURL, username, password);
         if (updated) {
-            return ResponseEntity.ok("Updated the backend connnection with id: " + id);
+            return ResponseEntity.ok("Updated the backend connection with id: " + id);
         } else {
             return ResponseEntity.badRequest().body("Could not update the backend connection with id: " + id);
         }

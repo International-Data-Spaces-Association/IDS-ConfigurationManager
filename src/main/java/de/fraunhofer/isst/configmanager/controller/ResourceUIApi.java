@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.List;
 
 public interface ResourceUIApi {
 
@@ -39,8 +38,7 @@ public interface ResourceUIApi {
                                           @RequestParam("keyword") ArrayList<String> keywords,
                                           @RequestParam("version") String version,
                                           @RequestParam("standardlicense") String standardlicense,
-                                          @RequestParam("publisher") String publisher,
-                                          @RequestParam(value = "brokerList", required = false) List<URI> brokerlist);
+                                          @RequestParam("publisher") String publisher);
 
     @PutMapping(value = "/resource", produces = "application/ld+json")
     @Operation(summary = "Updates the specific resource at the connector")
@@ -53,8 +51,7 @@ public interface ResourceUIApi {
                                           @RequestParam(value = "keyword", required = false) ArrayList<String> keywords,
                                           @RequestParam(value = "version", required = false) String version,
                                           @RequestParam(value = "standardlicense", required = false) String standardlicense,
-                                          @RequestParam(value = "publisher", required = false) String publisher,
-                                          @RequestParam(value = "brokerList", required = false) List<URI> brokerlist);
+                                          @RequestParam(value = "publisher", required = false) String publisher);
 
     @DeleteMapping(value = "/resource")
     @Operation(summary = "Deletes the specific resource from the connector")

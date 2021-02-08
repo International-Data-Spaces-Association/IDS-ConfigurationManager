@@ -62,7 +62,6 @@ public interface EndpointUIApi {
     @Operation(summary = "Creates a new connector endpoint for the connector")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully created the connector endpoint " +
             "for the connector")})
-    ResponseEntity<String> createConnectorEndpoint(@RequestParam("accessUrl") String accessUrl,
-                                                   @RequestParam("resourceId") URI resourceId);
+    ResponseEntity<String> createConnectorEndpoint(@RequestParam("accessUrl") String accessUrl);
 
 }
