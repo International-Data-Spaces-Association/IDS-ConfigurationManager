@@ -53,7 +53,9 @@ public class ConfigModelService {
                         "CONNECTOR_OFFLINE",
                         "TEST_DEPLOYMENT",
                         "http://t",
-                        "http://k"
+                        "tPassword",
+                        "http://k",
+                        "kPassword"
                 );
             }
         } else {
@@ -86,14 +88,26 @@ public class ConfigModelService {
      * @return configurationmodel
      */
     public ConfigurationModel createConfigModel(String loglevel, String connectorStatus, String connectorDeployMode,
-                                                String trustStore, String keyStore) {
+                                                String trustStore, String trustStorePassword, String keyStore,
+                                                String keyStorePassword) {
+
+        BaseConnector connector = new BaseConnectorBuilder()
+                ._inboundModelVersion_(new ArrayList<>(List.of("3.1.0")))
+                ._outboundModelVersion_("3.1.0")
+                ._securityProfile_(SecurityProfile.BASE_SECURITY_PROFILE)
+                ._maintainer_(URI.create("https://example.com"))
+                ._curator_(URI.create("https://example.com"))
+                .build();
 
         ConfigurationModel configurationModel = new ConfigurationModelBuilder()
                 ._configurationModelLogLevel_(LogLevel.valueOf(loglevel))
+                ._connectorDescription_(connector)
                 ._connectorStatus_(ConnectorStatus.valueOf(connectorStatus))
                 ._connectorDeployMode_(ConnectorDeployMode.valueOf(connectorDeployMode))
                 ._trustStore_(URI.create(trustStore))
+                ._trustStorePassword_(trustStorePassword)
                 ._keyStore_(URI.create(keyStore))
+                ._keyStorePassword_(keyStorePassword)
                 .build();
 
         // The configuration model is added to the list of configuration models and then stored in the database.
@@ -366,11 +380,14 @@ public class ConfigModelService {
      * @param connectorStatus     connector status of the configuration model
      * @param connectorDeployMode connector deploy mode of the configuration model
      * @param trustStore          trust store of the configuration model
+     * @param trustStorePassword  password of the trust store
      * @param keyStore            key store of the configuration model
+     * @param keyStorePassword    password of the key store
      * @return true, if configuration model is updated
      */
     public boolean updateConfigurationModel(String loglevel, String connectorStatus, String connectorDeployMode,
-                                            String trustStore, String keyStore) {
+                                            String trustStore, String trustStorePassword, String keyStore,
+                                            String keyStorePassword) {
 
         ConfigurationModelImpl configModelImpl = (ConfigurationModelImpl) getConfigModel();
         if (loglevel != null) {
@@ -385,8 +402,14 @@ public class ConfigModelService {
         if (trustStore != null) {
             configModelImpl.setTrustStore(URI.create(trustStore));
         }
+        if (trustStorePassword != null) {
+            configModelImpl.setTrustStorePassword(trustStorePassword);
+        }
         if (keyStore != null) {
             configModelImpl.setKeyStore(URI.create(keyStore));
+        }
+        if (keyStorePassword != null) {
+            configModelImpl.setKeyStorePassword(keyStorePassword);
         }
         return saveState();
     }

@@ -254,10 +254,24 @@ public class AppRouteService {
                 Resource resource = resourceService.getResource(resourceId);
                 RouteStep routeStep;
                 if (resource != null) {
+
+                    // Set resource endpoint
+                    if (configModelService.getConfigModel().getConnectorDescription().getHasEndpoint() == null
+                            || configModelService.getConfigModel().getConnectorDescription().getHasEndpoint().isEmpty()) {
+
+                        var baseConnectorImpl = (BaseConnectorImpl) configModelService.getConfigModel().getConnectorDescription();
+                        baseConnectorImpl.setHasEndpoint(Util.asList(new ConnectorEndpointBuilder()
+                                ._accessURL_(URI.create("http://api/ids/data")).build()));
+                    }
+                    var connectorEndpoint = configModelService.getConfigModel().getConnectorDescription()
+                            .getHasEndpoint().get(0);
+                    var resourceImpl = (ResourceImpl) resource;
+                    resourceImpl.setResourceEndpoint(Util.asList(connectorEndpoint));
+
                     routeStep = new RouteStepBuilder()._routeDeployMethod_(deployMethod)
                             ._appRouteStart_(Util.asList(startEndpoint))
                             ._appRouteEnd_(Util.asList(endpoint))
-                            ._appRouteOutput_(Util.asList(resource))
+                            ._appRouteOutput_(Util.asList(resourceImpl))
                             .build();
                 } else {
                     logger.info("Subroute is created without Resource!!!");

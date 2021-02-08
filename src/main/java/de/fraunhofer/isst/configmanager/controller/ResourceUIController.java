@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * The controller class implements the ResourceUIApi and offers the possibilities to manage
@@ -171,13 +170,12 @@ public class ResourceUIController implements ResourceUIApi {
      * @param version         version of the resource
      * @param standardlicense standard license for the resource
      * @param publisher       the publisher of the resource
-     * @param brokerList      a possible list of brokers
      * @return response from the target connector
      */
     @Override
     public ResponseEntity<String> createResource(String title, String description, String language,
                                                  ArrayList<String> keywords, String version, String standardlicense,
-                                                 String publisher, List<URI> brokerList) {
+                                                 String publisher) {
 
 
         ArrayList<TypedLiteral> keys = new ArrayList<>();
@@ -199,22 +197,9 @@ public class ResourceUIController implements ResourceUIApi {
                 ._created_(CalenderUtil.getGregorianNow())
                 ._modified_(CalenderUtil.getGregorianNow())
                 .build();
-        resource.setProperty("brokerList", brokerList);
         var resourceImpl = (ResourceImpl) resource;
 
         // Set Resource in Connector
-        if (configModulIMpl.getConnectorDescription() == null) {
-            // Default connector is created, if no connector description can be found
-            configModulIMpl.setConnectorDescription(
-                    new BaseConnectorBuilder()
-                            ._curator_(URI.create("http://example"))
-                            ._maintainer_(URI.create("http://example"))
-                            ._securityProfile_(SecurityProfile.BASE_SECURITY_PROFILE)
-                            ._inboundModelVersion_(new ArrayList<>(List.of("4.0.0")))
-                            ._outboundModelVersion_("4.0.0")
-                            .build()
-            );
-        }
         var connectorImpl = (BaseConnectorImpl) configModulIMpl.getConnectorDescription();
 
         if (connectorImpl.getResourceCatalog() == null) {
@@ -267,13 +252,12 @@ public class ResourceUIController implements ResourceUIApi {
      * @param version         version of the resource
      * @param standardlicense standard license for the resource
      * @param publisher       the publisher of the resource
-     * @param brokerList      a possible list of brokers
      * @return response from the target connector
      */
     @Override
     public ResponseEntity<String> updateResource(URI resourceId, String title, String description, String language,
                                                  ArrayList<String> keywords, String version, String standardlicense,
-                                                 String publisher, List<URI> brokerList) {
+                                                 String publisher) {
 
         // Update resource in resource catalog
         ResourceImpl resourceImpl = null;
@@ -289,11 +273,10 @@ public class ResourceUIController implements ResourceUIApi {
             }
         }
 
-        // Update the resource with the given parameters and optionally a broker list is set
+        // Update the resource with the given parameters
         if (resourceImpl != null) {
             resourceService.updateResourceContent(title, description, language, keywords, version, standardlicense,
                     publisher, resourceImpl);
-            resourceImpl.setProperty("brokerList", brokerList);
         }
 
         // Save the updated resource and update the resource in the dataspace connector

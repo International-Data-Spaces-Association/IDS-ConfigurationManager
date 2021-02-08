@@ -17,7 +17,9 @@ public interface ConfigModelApi {
                                              @RequestParam("connectorStatus") String connectorStatus,
                                              @RequestParam("connectorDeployMode") String connectorDeployMode,
                                              @RequestParam("trustStore") String trustStore,
-                                             @RequestParam("keyStore") String keyStore);
+                                             @RequestParam("trustStorePassword") String trustStorePassword,
+                                             @RequestParam("keyStore") String keyStore,
+                                             @RequestParam("keyStorePassword") String keyStorePassword);
 
     @PutMapping(value = "/configmodel")
     @Operation(summary = "Updates the configuration model")
@@ -25,8 +27,10 @@ public interface ConfigModelApi {
     ResponseEntity<String> updateConfigModel(@RequestParam(value = "loglevel", required = false) String loglevel,
                                              @RequestParam(value = "connectorStatus", required = false) String connectorStatus,
                                              @RequestParam(value = "connectorDeployMode", required = false) String connectorDeployMode,
-                                             @RequestParam(value = "trustStore", required = false) String trustStore,
-                                             @RequestParam(value = "keyStore", required = false) String keyStore);
+                                             @RequestParam("trustStore") String trustStore,
+                                             @RequestParam("trustStorePassword") String trustStorePassword,
+                                             @RequestParam("keyStore") String keyStore,
+                                             @RequestParam("keyStorePassword") String keyStorePassword);
 
 
     @GetMapping(value = "/configmodel", produces = "application/ld+json")
