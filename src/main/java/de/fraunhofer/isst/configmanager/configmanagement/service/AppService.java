@@ -42,13 +42,13 @@ public class AppService {
             List<CustomAppEndpoint> customAppEndpoints = new ArrayList<>();
 
             AppEndpoint appEndpoint = Utility.createAppEndpoint(AppEndpointType.INPUT_ENDPOINT, new BigInteger("80"),
-                    "documentation", "information", "www.ca1.com",
+                    "documentation", "information", "http://app1",
                     "iPath", "oPath", Language.DE, "PDF", "path");
             CustomAppEndpoint customAppEndpoint = new CustomAppEndpoint(appEndpoint);
 
 
             AppEndpoint appEndpoint2 = Utility.createAppEndpoint(AppEndpointType.OUTPUT_ENDPOINT, new BigInteger("81"),
-                    "documentation", "information", "www.ca2.com",
+                    "documentation", "information", "http://app2",
                     "iPath", "oPath", Language.DE, "JSON", "path");
             CustomAppEndpoint customAppEndpoint2 = new CustomAppEndpoint(appEndpoint2);
 
@@ -63,11 +63,11 @@ public class AppService {
             customApp2.setTitle("Custom App 2");
             List<CustomAppEndpoint> customAppEndpoints2 = new ArrayList<>();
             AppEndpoint appEndpoint3 = Utility.createAppEndpoint(AppEndpointType.INPUT_ENDPOINT, new BigInteger("82"),
-                    "documentation", "information", "www.ca3.com",
+                    "documentation", "information", "http://app3",
                     "iPath", "oPath", Language.DE, "JSON", "path");
             CustomAppEndpoint customAppEndpoint3 = new CustomAppEndpoint(appEndpoint3);
             AppEndpoint appEndpoint4 = Utility.createAppEndpoint(AppEndpointType.OUTPUT_ENDPOINT, new BigInteger("83"),
-                    "documentation", "information", "www.ca4.com",
+                    "documentation", "information", "http://app4",
                     "iPath", "oPath", Language.DE, "JSON", "path");
             CustomAppEndpoint customAppEndpoint4 = new CustomAppEndpoint(appEndpoint4);
 

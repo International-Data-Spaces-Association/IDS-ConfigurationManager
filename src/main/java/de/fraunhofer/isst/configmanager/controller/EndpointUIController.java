@@ -244,7 +244,7 @@ public class EndpointUIController implements EndpointUIApi {
         if (routeId == null) {
             // Creates some route if routeID is null
             AppRoute appRoute = new AppRouteBuilder()._routeDeployMethod_("custom")
-                    ._appRouteEnd_(Util.asList(new EndpointBuilder()._accessURL_(URI.create("/api/ids/data")).build()))
+                    ._appRouteEnd_(Util.asList(new EndpointBuilder()._accessURL_(URI.create("http://api/ids/data")).build()))
                     ._appRouteStart_(Util.asList(new GenericEndpointBuilder()
                             ._accessURL_(URI.create(accessUrl))
                             ._genericEndpointAuthentication_(
@@ -269,7 +269,7 @@ public class EndpointUIController implements EndpointUIApi {
 
             if (routeImpl != null) {
                 if (routeImpl.getAppRouteEnd() == null) {
-                    routeImpl.setAppRouteEnd(Util.asList(new EndpointBuilder()._accessURL_(URI.create("/api/ids/data")).build()));
+                    routeImpl.setAppRouteEnd(Util.asList(new EndpointBuilder()._accessURL_(URI.create("http://api/ids/data")).build()));
                 }
                 if (routeImpl.getAppRouteStart() == null) {
                     routeImpl.setAppRouteStart(new ArrayList<>());
