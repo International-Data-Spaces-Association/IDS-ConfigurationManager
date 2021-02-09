@@ -112,7 +112,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
     public ConfigurationModel getConfiguration() throws IOException {
         var builder = new Request.Builder();
         builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername, dataSpaceConnectorApiPassword));
-        builder.url("https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin/api/configuration");
+        builder.url("https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin/api/example/configuration");
         builder.get();
         var request = builder.build();
         var response = client.newCall(request).execute();
