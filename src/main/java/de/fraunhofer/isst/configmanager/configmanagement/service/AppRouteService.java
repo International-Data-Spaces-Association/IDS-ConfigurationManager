@@ -158,14 +158,7 @@ public class AppRouteService {
      * @return list of app routes
      */
     public List<AppRoute> getAppRoutes() {
-
-        if (configModelService.getConfigModel().getAppRoute() == null) {
-            ConfigurationModelImpl configurationModel = (ConfigurationModelImpl) configModelService.getConfigModel();
-            configurationModel.setAppRoute(new ArrayList<>());
-            configModelService.saveState();
-
-        }
-        return new ArrayList<>(configModelService.getConfigModel().getAppRoute());
+        return (List<AppRoute>) configModelService.getConfigModel().getAppRoute();
     }
 
     /**
