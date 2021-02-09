@@ -13,6 +13,7 @@ import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelServ
 import de.fraunhofer.isst.configmanager.util.CamelUtils;
 import de.fraunhofer.isst.configmanager.util.Utility;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -111,14 +112,14 @@ public class AppRouteUIController implements AppRouteApi {
     @Override
     public ResponseEntity<String> getAppRoutes() {
         List<AppRoute> appRouteList = appRouteService.getAppRoutes();
-        if (appRouteList != null) {
-            try {
+        try {
+            if (appRouteList == null) {
+                return ResponseEntity.ok(objectMapper.writeValueAsString(new JSONArray()));
+            } else {
                 return ResponseEntity.ok(serializer.serialize(appRouteList));
-            } catch (IOException e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not serialize list of app routes");
             }
-        } else {
-            return ResponseEntity.badRequest().body("Could not get list of app routes");
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().body("Problems while serializing");
         }
     }
 

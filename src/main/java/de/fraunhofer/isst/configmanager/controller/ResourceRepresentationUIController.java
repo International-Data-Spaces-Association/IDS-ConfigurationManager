@@ -109,10 +109,14 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
             }
         }
 
+        var jsonObject = new JSONObject();
         try {
             configModelService.saveState();
+            jsonObject.put("resourceID", resourceId.toString());
+            jsonObject.put("representationID", representation.getId().toString());
+
             var response = client.registerResourceRepresentation(resourceId.toString(), representation);
-            logger.info(response);
+            jsonObject.put("connectorResponse", response);
 
             // Updates the custom resource representation of the connector
             ResponseEntity<String> res =
@@ -122,15 +126,12 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
             // Saves the endpoint id associated with the representation id in the database
             representationEndpointService.createRepresentationEndpoint(endpointId, representation.getId());
 
-            var jsonObject = new JSONObject();
-            jsonObject.put("connectorResponse", response);
-            jsonObject.put("resourceID", resourceId.toString());
-            jsonObject.put("representationID", representation.getId().toString());
             return ResponseEntity.ok(jsonObject.toJSONString());
         } catch (IOException e) {
             logger.error(e.getMessage());
+            jsonObject.put("message", "Could not register the resource representation at the connector");
+            return ResponseEntity.badRequest().body(jsonObject.toJSONString());
         }
-        return ResponseEntity.badRequest().body("Could not create resource representation");
     }
 
     /**

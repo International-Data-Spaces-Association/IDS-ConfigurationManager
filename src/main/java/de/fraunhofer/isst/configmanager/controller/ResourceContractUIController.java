@@ -121,17 +121,19 @@ public class ResourceContractUIController implements ResourceContractApi {
                 }
             }
         }
+        var jsonObject = new JSONObject();
         try {
             configModelService.saveState();
-            var response = client.updateResourceContract(resourceId.toString(), contractOffer);
-            var jsonObject = new JSONObject();
-            jsonObject.put("connectorResponse", response);
             jsonObject.put("resourceID", resourceId.toString());
+            jsonObject.put("contractID", contractOffer.getId().toString());
+            var response = client.updateResourceContract(resourceId.toString(), contractOffer);
+            jsonObject.put("connectorResponse", response);
             return ResponseEntity.ok(jsonObject.toJSONString());
         } catch (IOException e) {
             logger.error(e.getMessage());
+            jsonObject.put("message", "Could not update the representation of the resource");
+            return ResponseEntity.badRequest().body(jsonObject.toJSONString());
         }
-        return ResponseEntity.badRequest().body("Could not update the representation of the resource");
 
     }
 }
