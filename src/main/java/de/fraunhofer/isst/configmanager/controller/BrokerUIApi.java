@@ -27,17 +27,6 @@ public interface BrokerUIApi {
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Deleted the broker")})
     ResponseEntity<String> deleteBroker(@RequestParam(value = "brokerUri") URI brokerUri);
 
-    @PostMapping(value = "/broker/delete/{resourceId}", produces = "application/ld+json")
-    @Operation(summary = "Deletes a resource at the broker")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully deleted the resource at the broker")})
-    ResponseEntity<String> deleteResourceAtBroker(@RequestParam(value = "brokerUri") URI brokerUri,
-                                                  @PathVariable("resourceId") URI resourceId);
-
-    @GetMapping(value = "/broker", produces = "application/ld+json")
-    @Operation(summary = "Returns the specific broker")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully returned the specific broker")})
-    ResponseEntity<String> getBroker(@RequestParam(value = "brokerUri") URI brokerUri);
-
     @GetMapping(value = "/brokers", produces = "application/ld+json")
     @Operation(summary = "Returns the list of all brokers")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully returned the list of all brokers")})
@@ -47,6 +36,11 @@ public interface BrokerUIApi {
     @Operation(summary = "Returns a list of all broker uri's")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully returned a list of all broker uris's")})
     ResponseEntity<String> getAllBrokerUris();
+
+    @GetMapping(value = "/broker", produces = "application/ld+json")
+    @Operation(summary = "Returns the specific broker")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully returned the specific broker")})
+    ResponseEntity<String> getBroker(@RequestParam(value = "brokerUri") URI brokerUri);
 
     @PostMapping(value = "/broker/register", produces = "application/ld+json")
     @Operation(summary = "Registers the connector with the broker")
@@ -63,9 +57,16 @@ public interface BrokerUIApi {
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully updated the self description at the broker")})
     ResponseEntity<String> updateConnector(@RequestParam(value = "brokerUri") URI brokerUri);
 
-    @PostMapping(value = "/broker/update/{resourceId}", produces = "application/ld+json")
+    @PostMapping(value = "/broker/update/resource", produces = "application/ld+json")
     @Operation(summary = "Updates a resource at the broker")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully updated the resource at the broker")})
     ResponseEntity<String> updateResourceAtBroker(@RequestParam(value = "brokerUri") URI brokerUri,
-                                                  @PathVariable("resourceId") URI resourceId);
+                                                  @RequestParam("resourceId") URI resourceId);
+
+    @PostMapping(value = "/broker/delete/resource", produces = "application/ld+json")
+    @Operation(summary = "Deletes a resource at the broker")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully deleted the resource at the broker")})
+    ResponseEntity<String> deleteResourceAtBroker(@RequestParam(value = "brokerUri") URI brokerUri,
+                                                  @RequestParam("resourceId") URI resourceId);
+
 }

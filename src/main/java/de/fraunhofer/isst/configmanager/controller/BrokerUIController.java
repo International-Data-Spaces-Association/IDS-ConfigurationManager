@@ -34,17 +34,17 @@ public class BrokerUIController implements BrokerUIApi {
 
     private final ResourceService resourceService;
     private final BrokerService brokerService;
-    private final DefaultConnectorClient brokerUpdateClient;
+    private final DefaultConnectorClient client;
     private final ObjectMapper objectMapper;
 
     @Autowired
     public BrokerUIController(ResourceService resourceService,
                               BrokerService brokerService,
-                              DefaultConnectorClient brokerUpdateClient,
+                              DefaultConnectorClient client,
                               ObjectMapper objectMapper) {
         this.resourceService = resourceService;
         this.brokerService = brokerService;
-        this.brokerUpdateClient = brokerUpdateClient;
+        this.client = client;
         this.objectMapper = objectMapper;
     }
 
@@ -98,29 +98,6 @@ public class BrokerUIController implements BrokerUIApi {
             return ResponseEntity.ok(Utility.jsonMessage("message", "Broker with ID: " + brokerUri + " is deleted"));
         } else {
             return ResponseEntity.badRequest().body("Could not delete the broker with the id:" + brokerUri);
-        }
-    }
-
-    /**
-     * This method deletes a {@link Resource} at a given broker URI.
-     *
-     * @param brokerUri  URI of the Broker the connector shall to connect to
-     * @param resourceId the ID of the resource that shall be updated in the broker
-     * @return HTTP response entity with the response as body string
-     */
-    @Override
-    public ResponseEntity<String> deleteResourceAtBroker(URI brokerUri, URI resourceId) {
-        var broker = brokerService.getById(brokerUri);
-
-        if (broker != null) {
-            try {
-                return ResponseEntity.ok(brokerUpdateClient.deleteResourceAtBroker(resourceId, brokerUri.toString()));
-            } catch (IOException e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(String.format("Could not parse response from Connector: %s", e.getMessage()));
-            }
-        } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -186,7 +163,7 @@ public class BrokerUIController implements BrokerUIApi {
         var broker = brokerService.getById(brokerUri);
         if (broker != null) {
             try {
-                return ResponseEntity.ok(brokerUpdateClient.updateAtBroker(brokerUri.toString()));
+                return ResponseEntity.ok(client.updateAtBroker(brokerUri.toString()));
             } catch (IOException e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .body(String.format("Could not parse response from Connector: %s", e.getMessage()));
@@ -207,7 +184,7 @@ public class BrokerUIController implements BrokerUIApi {
         var broker = brokerService.getById(brokerUri);
         if (broker != null) {
             try {
-                return ResponseEntity.ok(brokerUpdateClient.unregisterAtBroker(brokerUri.toString()));
+                return ResponseEntity.ok(client.unregisterAtBroker(brokerUri.toString()));
             } catch (IOException e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .body(String.format("Could not parse response from Connector: %s", e.getMessage()));
@@ -228,7 +205,7 @@ public class BrokerUIController implements BrokerUIApi {
         var broker = brokerService.getById(brokerUri);
         if (broker != null) {
             try {
-                return ResponseEntity.ok(brokerUpdateClient.updateAtBroker(brokerUri.toString()));
+                return ResponseEntity.ok(client.updateAtBroker(brokerUri.toString()));
             } catch (IOException e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .body(String.format("Could not parse response from Connector: %s", e.getMessage()));
@@ -248,11 +225,33 @@ public class BrokerUIController implements BrokerUIApi {
     @Override
     public ResponseEntity<String> updateResourceAtBroker(URI brokerUri, URI resourceId) {
         var broker = brokerService.getById(brokerUri);
-        Resource resource = resourceService.getResource(resourceId);
 
-        if (broker != null || resource != null) {
+        if (broker != null) {
             try {
-                return ResponseEntity.ok(brokerUpdateClient.updateResourceAtBroker(resourceId, resource, brokerUri.toString()));
+                return ResponseEntity.ok(client.updateResourceAtBroker(brokerUri.toString(), resourceId));
+            } catch (IOException e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(String.format("Could not parse response from Connector: %s", e.getMessage()));
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    /**
+     * This method deletes a {@link Resource} at a given broker URI.
+     *
+     * @param brokerUri  URI of the Broker the connector shall to connect to
+     * @param resourceId the ID of the resource that shall be updated in the broker
+     * @return HTTP response entity with the response as body string
+     */
+    @Override
+    public ResponseEntity<String> deleteResourceAtBroker(URI brokerUri, URI resourceId) {
+        var broker = brokerService.getById(brokerUri);
+
+        if (broker != null) {
+            try {
+                return ResponseEntity.ok(client.deleteResourceAtBroker(brokerUri.toString(), resourceId));
             } catch (IOException e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .body(String.format("Could not parse response from Connector: %s", e.getMessage()));
