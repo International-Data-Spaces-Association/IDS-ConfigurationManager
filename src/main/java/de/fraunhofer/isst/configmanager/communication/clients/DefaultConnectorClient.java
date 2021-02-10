@@ -1,9 +1,6 @@
 package de.fraunhofer.isst.configmanager.communication.clients;
 
-import de.fraunhofer.iais.eis.ConfigurationModel;
-import de.fraunhofer.iais.eis.Contract;
-import de.fraunhofer.iais.eis.Representation;
-import de.fraunhofer.iais.eis.Resource;
+import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.ResourceRepresentation;
 import de.fraunhofer.isst.configmanager.configmanagement.service.listeners.ConfigModelListener;
 
@@ -52,6 +49,17 @@ public interface DefaultConnectorClient extends ConfigModelListener {
      * @throws IOException if request fails
      */
     ConfigurationModel getConfiguration() throws IOException;
+
+
+    /**
+     * This method returns the self declaration of a connector.
+     *
+     * @param accessURL url of the connector
+     * @param resourceId id of the resource
+     * @return base connector
+     */
+    BaseConnector getBaseConnector(String accessURL, String resourceId) throws IOException;
+
 
     /**
      * Send a Resource update Request to a target Connector

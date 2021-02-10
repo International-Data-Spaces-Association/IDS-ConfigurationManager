@@ -27,7 +27,7 @@ public class AppRouteService {
     private final static Logger logger = LoggerFactory.getLogger(AppRouteService.class);
 
     private final ConfigModelService configModelService;
-    private final BackendConnectionService backendConnectionService;
+    private final EndpointService endpointService;
     private final ResourceService resourceService;
 
     private final RouteDeployMethodRepository routeDeployMethodRepository;
@@ -39,13 +39,13 @@ public class AppRouteService {
                            RouteDeployMethodRepository routeDeployMethodRepository,
                            EndpointInformationRepository endpointInformationRepository,
                            CustomAppRepository customAppRepository,
-                           BackendConnectionService backendConnectionService,
+                           EndpointService endpointService,
                            ResourceService resourceService) {
         this.configModelService = configModelService;
         this.routeDeployMethodRepository = routeDeployMethodRepository;
         this.endpointInformationRepository = endpointInformationRepository;
         this.customAppRepository = customAppRepository;
-        this.backendConnectionService = backendConnectionService;
+        this.endpointService = endpointService;
         this.resourceService = resourceService;
     }
 
@@ -303,8 +303,8 @@ public class AppRouteService {
         }
 
         // Search endpoint in the backend repository and in list of connector endpoints
-        if (backendConnectionService.getBackendConnections().size() != 0) {
-            GenericEndpoint genericEndpoint = backendConnectionService.getBackendConnection(endpointId);
+        if (endpointService.getGenericEndpoints().size() != 0) {
+            GenericEndpoint genericEndpoint = endpointService.getGenericEndpoint(endpointId);
             if (genericEndpoint != null) return genericEndpoint;
             else return configModelService.getConfigModel().getConnectorDescription().getHasEndpoint()
                     .stream().filter(connectorEndpoint -> connectorEndpoint.getId().equals(endpointId))

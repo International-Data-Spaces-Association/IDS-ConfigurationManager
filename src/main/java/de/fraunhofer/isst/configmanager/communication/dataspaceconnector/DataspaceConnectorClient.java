@@ -1,10 +1,7 @@
 package de.fraunhofer.isst.configmanager.communication.dataspaceconnector;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.fraunhofer.iais.eis.ConfigurationModel;
-import de.fraunhofer.iais.eis.Contract;
-import de.fraunhofer.iais.eis.Representation;
-import de.fraunhofer.iais.eis.Resource;
+import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.ResourceRepresentation;
@@ -121,6 +118,36 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         }
         var body = response.body().string();
         return SERIALIZER.deserialize(body, ConfigurationModel.class);
+    }
+
+    @Override
+    public BaseConnector getBaseConnector(String accessURL, String resourceId) throws IOException {
+        var builder = new Request.Builder();
+        var urlBuilder = new HttpUrl.Builder()
+                .scheme("https")
+                .host(dataSpaceConnectorHost)
+                .port(dataSpaceConnectorPort)
+                .addPathSegments("admin/api/request/description")
+                .addQueryParameter("recipient", accessURL);
+
+        if(resourceId != null && !resourceId.isBlank()){
+            urlBuilder.addQueryParameter("requestedResource", resourceId);
+        }
+
+        var url = urlBuilder.build();
+        LOGGER.info(url.toString());
+        builder.url(url);
+        builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername, dataSpaceConnectorApiPassword));
+        builder.post(RequestBody.create(null, new byte[0]));
+        var request = builder.build();
+        var response = client.newCall(request).execute();
+
+        if (!response.isSuccessful()) {
+            LOGGER.warn(String.format("Could not get BaseConnector from %s!", dataSpaceConnectorHost));
+        }
+        var body = response.body().string();
+        LOGGER.info(body);
+        return SERIALIZER.deserialize(body, BaseConnector.class);
     }
 
     @Override

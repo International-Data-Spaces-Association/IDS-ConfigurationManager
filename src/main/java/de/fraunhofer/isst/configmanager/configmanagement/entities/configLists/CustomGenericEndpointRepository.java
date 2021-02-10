@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
  * CRUD repository for persisting backend connections.
  */
 @Repository
-public interface BackendConnectionRepository extends JpaRepository<BackendConnectionList, Long> {
+public interface CustomGenericEndpointRepository extends JpaRepository<CustomGenericEndpointList, Long> {
 }

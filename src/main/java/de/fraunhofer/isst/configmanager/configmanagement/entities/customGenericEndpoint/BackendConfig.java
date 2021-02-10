@@ -1,4 +1,4 @@
-package de.fraunhofer.isst.configmanager.configmanagement.entities.backendConnection;
+package de.fraunhofer.isst.configmanager.configmanagement.entities.customGenericEndpoint;
 
 import de.fraunhofer.iais.eis.Endpoint;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.converter.EndpointConverter;
