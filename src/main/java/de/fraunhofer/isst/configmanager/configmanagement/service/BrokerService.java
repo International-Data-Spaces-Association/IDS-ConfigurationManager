@@ -1,6 +1,5 @@
 package de.fraunhofer.isst.configmanager.configmanagement.service;
 
-import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.config.CustomBroker;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.CustomBrokerRepository;
 import org.slf4j.Logger;
@@ -22,7 +21,7 @@ public class BrokerService {
     private final CustomBrokerRepository customBrokerRepository;
 
     @Autowired
-    public BrokerService(Serializer serializer, CustomBrokerRepository customBrokerRepository) {
+    public BrokerService(CustomBrokerRepository customBrokerRepository) {
         this.customBrokerRepository = customBrokerRepository;
 
         // If no broker is found in the database, a default broker is created at this point.
@@ -35,7 +34,6 @@ public class BrokerService {
 
             customBrokerRepository.save(customBroker);
         }
-
     }
 
     /**
@@ -91,9 +89,7 @@ public class BrokerService {
      * @return list of all broker uri's
      */
     public List<URI> getAllBrokerUris() {
-
         List<URI> brokerUris = new ArrayList<>();
-
         for (CustomBroker customBroker : customBrokerRepository.findAll()) {
             if (customBroker != null) {
                 brokerUris.add(customBroker.getBrokerUri());
@@ -135,7 +131,6 @@ public class BrokerService {
      * @return custom broker
      */
     public CustomBroker getById(URI id) {
-
         return customBrokerRepository.findAll().stream().filter(customBroker -> customBroker.getBrokerUri().equals(id))
                 .findAny().orElse(null);
     }

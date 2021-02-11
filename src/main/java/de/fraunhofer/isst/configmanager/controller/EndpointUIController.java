@@ -12,8 +12,6 @@ import de.fraunhofer.isst.configmanager.configmanagement.service.UtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,8 +31,6 @@ import java.util.List;
 @RequestMapping("/api/ui")
 @Tag(name = "Endpoints Management", description = "Different endpoint types can be managed here")
 public class EndpointUIController implements EndpointUIApi {
-
-    private final static Logger logger = LoggerFactory.getLogger(EndpointUIController.class);
 
     private final Serializer serializer;
     private final ObjectMapper objectMapper;

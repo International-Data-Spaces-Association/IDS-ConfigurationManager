@@ -42,7 +42,6 @@ public class ConfigModelProxyUIController implements ConfigModelProxyApi {
                     .build();
             configModelImpl.setConnectorProxy(Util.asList(proxy));
         }
-
     }
 
     /**

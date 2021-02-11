@@ -1,19 +1,17 @@
 package de.fraunhofer.isst.configmanager.configmanagement.service;
 
-import de.fraunhofer.iais.eis.*;
+import de.fraunhofer.iais.eis.Language;
+import de.fraunhofer.iais.eis.Resource;
+import de.fraunhofer.iais.eis.ResourceCatalog;
+import de.fraunhofer.iais.eis.ResourceImpl;
 import de.fraunhofer.iais.eis.util.TypedLiteral;
 import de.fraunhofer.iais.eis.util.Util;
-import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 /**
  * Service class for managing resources.
@@ -21,67 +19,11 @@ import java.util.stream.Collectors;
 @Service
 public class ResourceService {
 
-    private final static Logger logger = LoggerFactory.getLogger(ConnectorService.class);
     private final ConfigModelService configModelService;
-    private final DefaultConnectorClient defaultConnectorClient;
 
     @Autowired
-    public ResourceService(ConfigModelService configModelService, DefaultConnectorClient defaultConnectorClient) {
+    public ResourceService(ConfigModelService configModelService) {
         this.configModelService = configModelService;
-        this.defaultConnectorClient = defaultConnectorClient;
-    }
-
-    /**
-     * This method updates the given resource in the connector.
-     *
-     * @param connector the current connector which holds the resource
-     * @param resource  resource to be replaced
-     * @return true, if resource is replaced
-     */
-    public boolean replaceResource(Connector connector, Resource resource) {
-
-        var containsId = connector.getResourceCatalog().stream().map(ResourceCatalog::getOfferedResource).flatMap(Collection::stream)
-                .map(resource1 -> resource1.getId().equals(resource.getId()))
-                .reduce(false, Boolean::logicalOr);
-
-        if (containsId) {
-            for (var catalog : connector.getResourceCatalog()) {
-                var list = catalog.getOfferedResource().stream()
-                        .map(resource1 -> resource1.getId().equals(resource.getId()) ? resource : resource1)
-                        .collect(Collectors.toCollection(ArrayList::new));
-
-                var catalogImpl = (ResourceCatalogImpl) catalog;
-                catalogImpl.setOfferedResource(list);
-                return true;
-            }
-            // Tries to update the resource in the dataspace conncetor.
-            try {
-                defaultConnectorClient.updateResource(resource.getId(), resource);
-            } catch (IOException e) {
-                logger.warn("Could not update resource at DataspaceConnector!", e.getMessage());
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * This method tries to delete the given resource in the connector
-     *
-     * @param connector  the current connector which holds the resource
-     * @param resourceId if of the resource
-     * @return true, if is deleted
-     */
-    public boolean deleteResource(Connector connector, URI resourceId) {
-        try {
-            defaultConnectorClient.deleteResource(resourceId);
-        } catch (IOException e) {
-            logger.warn("Could not delete resource at DataspaceConnector!", e.getMessage());
-        }
-        return connector.getResourceCatalog().stream()
-                .map(ResourceCatalog::getOfferedResource)
-                .map(resources -> resources.removeIf(resource -> resource.getId().equals(resourceId)))
-                .reduce(false, (a, b) -> a || b);
     }
 
     /**
@@ -91,8 +33,6 @@ public class ResourceService {
      * @return resource
      */
     public Resource getResource(URI resourceId) {
-        // Dunno why, but without try catch a NullPointerException is throwing within the return statement when the
-        // resourceId cannot be matched with a resource.
         try {
             return configModelService.getConfigModel().getConnectorDescription().getResourceCatalog().stream()
                     .map(ResourceCatalog::getOfferedResource)
@@ -155,7 +95,8 @@ public class ResourceService {
     public ArrayList<Resource> getResources() {
         ArrayList<Resource> resources = new ArrayList<>();
 
-        for (ResourceCatalog resourceCatalog : configModelService.getConfigModel().getConnectorDescription().getResourceCatalog()) {
+        for (ResourceCatalog resourceCatalog : configModelService.getConfigModel()
+                .getConnectorDescription().getResourceCatalog()) {
             if (resourceCatalog != null && resourceCatalog.getOfferedResource() != null) {
                 for (Resource resource : resourceCatalog.getOfferedResource()) {
                     if (resource != null) {

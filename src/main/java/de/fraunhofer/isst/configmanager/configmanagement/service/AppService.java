@@ -82,44 +82,6 @@ public class AppService {
     }
 
     /**
-     * This method creates an app.
-     *
-     * @param title title of the app
-     * @return custom app
-     */
-    public CustomApp createApp(String title) {
-
-        CustomApp customApp = new CustomApp();
-        customApp.setTitle(title);
-
-        customAppRepository.save(customApp);
-        return customApp;
-    }
-
-    /**
-     * This method updates an app with the given parameters.
-     *
-     * @param title title of the app
-     * @return true, if app is updated
-     */
-    public boolean updateApp(String id, String title) {
-
-        boolean updated = false;
-
-        Long appId = Long.valueOf(id);
-        CustomApp app = customAppRepository.findById(appId).orElse(null);
-
-        if (app != null) {
-            if (title != null) {
-                app.setTitle(title);
-                customAppRepository.save(app);
-                updated = true;
-            }
-        }
-        return updated;
-    }
-
-    /**
      * @return list of custom apps
      */
     public List<CustomApp> getApps() {
@@ -132,24 +94,5 @@ public class AppService {
         CustomApp app = customAppRepository.findById(appId).orElse(null);
 
         return app;
-    }
-
-    /**
-     * This method deletes an app from the repository.
-     *
-     * @return true, if app is deleted
-     */
-    public boolean deleteApp(String id) {
-
-        boolean deleted = false;
-
-        Long appId = Long.valueOf(id);
-        CustomApp app = customAppRepository.findById(appId).orElse(null);
-
-        if (app != null) {
-            customAppRepository.delete(app);
-            deleted = true;
-        }
-        return deleted;
     }
 }

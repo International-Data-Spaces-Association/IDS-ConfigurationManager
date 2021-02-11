@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Entity class for a list of generic endpoints
+ */
 @Entity
 @Data
 public class CustomGenericEndpointList {

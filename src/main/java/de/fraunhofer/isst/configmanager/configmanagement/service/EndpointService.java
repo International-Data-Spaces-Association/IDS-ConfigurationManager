@@ -4,6 +4,8 @@ import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.CustomGenericEndpointList;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.CustomGenericEndpointRepository;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.customGenericEndpoint.CustomGenericEndpointObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,8 +14,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+/**
+ * Service class for managing generic endpoints
+ */
 @Service
 public class EndpointService {
+
+    private final static Logger logger = LoggerFactory.getLogger(EndpointService.class);
 
     private final CustomGenericEndpointRepository customGenericEndpointRepository;
     private CustomGenericEndpointList customGenericEndpointList;
@@ -24,14 +31,23 @@ public class EndpointService {
         this.customGenericEndpointRepository = customGenericEndpointRepository;
     }
 
+    /**
+     * This method creates a generic endpoint with the given parameters.
+     *
+     * @param accessURL access url of the endpoint
+     * @param username  username for the authentication
+     * @param password  password for the authentication
+     * @return generic endpoint
+     */
     public GenericEndpoint createGenericEndpoint(String accessURL, String username, String password) {
-
         // Create generic endpoint
         GenericEndpoint endpoint = new GenericEndpointBuilder()._accessURL_(URI.create(accessURL)).build();
         var endpointImpl = (GenericEndpointImpl) endpoint;
         if (username != null && password != null) {
             endpointImpl.setGenericEndpointAuthentication(new BasicAuthenticationBuilder()._authUsername_(username)
                     ._authPassword_(password).build());
+        } else{
+            logger.info("No authentication was created because username and password were not entered.");
         }
         // Save the endpoint
         CustomGenericEndpointObject customGenericEndpointObject = new CustomGenericEndpointObject(endpoint);
@@ -45,6 +61,9 @@ public class EndpointService {
         return endpoint;
     }
 
+    /**
+     * @return list of generic endpoints
+     */
     public List<Endpoint> getGenericEndpoints() {
         try {
             customGenericEndpointList = customGenericEndpointRepository.findAll().stream().findAny().get();
@@ -54,21 +73,38 @@ public class EndpointService {
         }
     }
 
+    /**
+     * @param id id of the generic endpoint
+     * @return generic endpoint
+     */
     public GenericEndpoint getGenericEndpoint(URI id) {
-
         customGenericEndpointList = customGenericEndpointRepository.findAll().stream().findAny().get();
-        return (GenericEndpoint) this.customGenericEndpointList.getEndpoints().stream().filter(endpoint -> endpoint.getId().equals(id))
+        return (GenericEndpoint) this.customGenericEndpointList.getEndpoints()
+                .stream()
+                .filter(endpoint -> endpoint.getId().equals(id))
                 .findAny().orElse(null);
     }
 
+    /**
+     * @param id id of the generic endpoint
+     * @return true, if generic endpoint is deleted
+     */
     public boolean deleteGenericEndpoint(URI id) {
-
         boolean deleted = customGenericEndpointList.getCustomGenericEndpointObjects()
                 .removeIf(customGenericEndpointObject -> customGenericEndpointObject.getEndpoint().getId().equals(id));
         customGenericEndpointList = customGenericEndpointRepository.saveAndFlush(customGenericEndpointList);
         return deleted;
     }
 
+    /**
+     * This method updates a generic endpoint with the given parameters.
+     *
+     * @param id        id of the generic endpoint
+     * @param accessURL access url of the endpoint
+     * @param username  username for the authentication
+     * @param password  password for the authentication
+     * @return true, if generic endpoint is updated
+     */
     public boolean updateGenericEndpoint(URI id, String accessURL, String username, String password) {
         boolean updated = false;
         GenericEndpoint genericEndpointold = getGenericEndpoint(id);
@@ -86,17 +122,16 @@ public class EndpointService {
                         new BasicAuthenticationBuilder(basicAuthentication.getId())
                                 ._authPassword_(password)
                                 ._authUsername_(username).build());
-            } else if (username != null && password == null) {
+            } else if (username != null) {
                 genericEndpointNewImpl.setGenericEndpointAuthentication(
                         new BasicAuthenticationBuilder(basicAuthentication.getId())
                                 ._authPassword_(basicAuthentication.getAuthPassword())
                                 ._authUsername_(username).build());
-            } else if (username == null && password != null) {
+            } else if (password != null) {
                 genericEndpointNewImpl.setGenericEndpointAuthentication(
                         new BasicAuthenticationBuilder(basicAuthentication.getId())
                                 ._authPassword_(password)
                                 ._authUsername_(basicAuthentication.getAuthUsername()).build());
-            } else {
             }
         }
 

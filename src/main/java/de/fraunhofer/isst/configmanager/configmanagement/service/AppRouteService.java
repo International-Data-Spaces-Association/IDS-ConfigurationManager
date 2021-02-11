@@ -79,7 +79,6 @@ public class AppRouteService {
         configModelService.saveState();
 
         return appRoute;
-
     }
 
     /**
@@ -129,9 +128,7 @@ public class AppRouteService {
      * @return true, if app route is deleted
      */
     public boolean deleteAppRoute(URI routeId) {
-
         boolean deleted = false;
-
         var appRoute = getAppRoute(routeId);
         if (appRoute != null) {
             deleted = configModelService.getConfigModel().getAppRoute().remove(appRoute);
@@ -149,7 +146,6 @@ public class AppRouteService {
      * @return app route
      */
     public AppRoute getAppRoute(URI routeId) {
-
         return configModelService.getConfigModel().getAppRoute()
                 .stream().filter(appRoute1 -> appRoute1.getId().equals(routeId)).findAny().orElse(null);
     }
@@ -169,11 +165,8 @@ public class AppRouteService {
      * @return subroute
      */
     public RouteStep getSubroute(URI routeId, URI routeStepId) {
-
         var appRouteImpl = getAppRouteImpl(routeId);
-
         if (appRouteImpl != null) {
-
             return getSubrouteImpl(routeStepId, appRouteImpl);
         }
         return null;
@@ -288,7 +281,6 @@ public class AppRouteService {
      * @return endpoint
      */
     private Endpoint getEndpoint(URI endpointId) {
-
         // Search endpoint in the app repository
         List<CustomApp> customAppList = customAppRepository.findAll();
         if (customAppList.size() != 0) {
@@ -301,7 +293,6 @@ public class AppRouteService {
                 return customApp.getEndpoint();
             }
         }
-
         // Search endpoint in the backend repository and in list of connector endpoints
         if (endpointService.getGenericEndpoints().size() != 0) {
             GenericEndpoint genericEndpoint = endpointService.getGenericEndpoint(endpointId);
@@ -331,16 +322,13 @@ public class AppRouteService {
             }
         }
         return null;
-
     }
 
     /**
      * @return all endpoint information
      */
     public List<EndpointInformation> getAllEndpointInfo() {
-
         return endpointInformationRepository.findAll();
-
     }
 
     /**
@@ -351,7 +339,6 @@ public class AppRouteService {
      * @return true, if route step is deleted
      */
     public boolean deleteAppRouteStep(URI routeId, URI routeStepId) {
-
         boolean deleted = false;
         var appRouteImpl = getAppRouteImpl(routeId);
         if (appRouteImpl != null) {
@@ -362,7 +349,6 @@ public class AppRouteService {
     }
 
     public String validateAppRoute(URI routeId) {
-
         String validationMessage = "";
         var appRouteImpl = getAppRouteImpl(routeId);
         if (configModelService.getConfigModel().getAppRoute() == null || appRouteImpl == null
@@ -393,13 +379,11 @@ public class AppRouteService {
 
         }
         return validationMessage;
-
     }
 
     private boolean checkRouteFromGenericToIDSEndpoint(AppRouteImpl appRouteImpl) {
         if (appRouteImpl.getHasSubRoute() != null) {
             ArrayList<RouteStep> routeSteps = (ArrayList<RouteStep>) appRouteImpl.getHasSubRoute();
-
             if (routeSteps.get(0).getAppRouteStart().get(0).getClass() == GenericEndpoint.class &&
                     routeSteps.get(routeSteps.size() - 1).getAppRouteStart().get(0).getClass() == ConnectorEndpoint.class) {
 
@@ -410,7 +394,6 @@ public class AppRouteService {
     }
 
     private boolean checkRouteFromIDSToGenericEndpoint(AppRouteImpl appRouteImpl) {
-
         if (appRouteImpl.getHasSubRoute() != null) {
             ArrayList<RouteStep> routeSteps = (ArrayList<RouteStep>) appRouteImpl.getHasSubRoute();
 

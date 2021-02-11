@@ -10,6 +10,7 @@ import java.net.URI;
 
 public interface BrokerUIApi {
 
+    // APIs to manage custom broker
     @PostMapping(value = "/broker", produces = "application/ld+json")
     @Operation(summary = "Creates a new broker")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Created a new broker")})
@@ -42,6 +43,7 @@ public interface BrokerUIApi {
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully returned the specific broker")})
     ResponseEntity<String> getBroker(@RequestParam(value = "brokerUri") URI brokerUri);
 
+    // APIs to be able to manage connector at broker
     @PostMapping(value = "/broker/register", produces = "application/ld+json")
     @Operation(summary = "Registers the connector with the broker")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully registered the connector with the broker")})
@@ -57,6 +59,7 @@ public interface BrokerUIApi {
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully updated the self description at the broker")})
     ResponseEntity<String> updateConnector(@RequestParam(value = "brokerUri") URI brokerUri);
 
+    // APIs to manage the resources at broker
     @PostMapping(value = "/broker/update/resource", produces = "application/ld+json")
     @Operation(summary = "Updates a resource at the broker")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully updated the resource at the broker")})

@@ -129,11 +129,9 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
                 .port(dataSpaceConnectorPort)
                 .addPathSegments("admin/api/request/description")
                 .addQueryParameter("recipient", accessURL);
-
         if (resourceId != null && !resourceId.isBlank()) {
             urlBuilder.addQueryParameter("requestedResource", resourceId);
         }
-
         var url = urlBuilder.build();
         LOGGER.info(url.toString());
         builder.url(url);
@@ -141,7 +139,6 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         builder.post(RequestBody.create(null, new byte[0]));
         var request = builder.build();
         var response = client.newCall(request).execute();
-
         if (!response.isSuccessful()) {
             LOGGER.warn(String.format("Could not get BaseConnector from %s!", dataSpaceConnectorHost));
         }

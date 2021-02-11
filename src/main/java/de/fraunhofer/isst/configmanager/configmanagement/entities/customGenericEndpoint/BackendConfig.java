@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+/**
+ * The generic abstract class helps to persist objects inherited from the endpoint from the information model.
+ */
 @Data
 @NoArgsConstructor
 @MappedSuperclass
