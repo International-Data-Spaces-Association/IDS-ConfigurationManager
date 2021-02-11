@@ -20,7 +20,7 @@ public class CustomBroker {
 
     private String title;
 
-    private String selfDeclaration;
+    private BrokerStatus brokerStatus;
 
     public CustomBroker() {
     }
@@ -53,12 +53,7 @@ public class CustomBroker {
         this.title = title;
     }
 
-    public String getSelfDeclaration() {
-        return selfDeclaration;
-    }
+    public BrokerStatus getBrokerStatus() { return brokerStatus; }
 
-    public void setSelfDeclaration(String selfDeclaration) {
-        this.selfDeclaration = selfDeclaration;
-    }
-
+    public void setBrokerStatus(BrokerStatus brokerStatus) { this.brokerStatus = brokerStatus; }
 }
