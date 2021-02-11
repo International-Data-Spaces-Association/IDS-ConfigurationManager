@@ -67,8 +67,8 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
     @Override
     public ResponseEntity<String> createResourceRepresentation(URI resourceId, URI endpointId, String language,
                                                                String filenameExtension, Long bytesize, String sourceType) {
-        if (configModelService.getConfigModel() == null || configModelService.getConfigModel().getAppRoute() == null
-                || configModelService.getConfigModel().getConnectorDescription().getResourceCatalog() == null) {
+        if (configModelService.getConfigModel() == null ||
+                configModelService.getConfigModel().getConnectorDescription().getResourceCatalog() == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Could not find any resources!\"}");
         }
 
@@ -88,23 +88,6 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
                     var resourceImpl = (ResourceImpl) resource;
                     resourceImpl.setRepresentation(Util.asList(representation));
                     break;
-                }
-            }
-        }
-
-        // Add resource representation in subroute
-        for (AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
-            if (appRoute.getHasSubRoute() != null) {
-                for (RouteStep routeStep : appRoute.getHasSubRoute()) {
-                    if (routeStep.getAppRouteOutput() != null) {
-                        for (Resource resource : routeStep.getAppRouteOutput()) {
-                            if (resourceId.equals(resource.getId())) {
-                                var resourceImpl = (ResourceImpl) resource;
-                                resourceImpl.setRepresentation(Util.asList(representation));
-                                break;
-                            }
-                        }
-                    }
                 }
             }
         }
