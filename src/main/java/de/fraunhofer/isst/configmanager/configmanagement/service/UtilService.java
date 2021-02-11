@@ -4,6 +4,7 @@ import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.DataSpaceConnectorResourceMapper;
 import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.ResourceRepresentation;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.config.BrokerStatus;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.routeDeployMethod.DeployMethod;
 import net.minidev.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,6 +87,12 @@ public class UtilService {
             DeployMethod[] deployMethods = DeployMethod.values();
             for (int i = 0; i < deployMethods.length; i++) {
                 jsonArray.add(i, deployMethods[i].name());
+            }
+        }
+        if (name.contains("brokerstatus")) {
+            BrokerStatus[] brokerStatuses = BrokerStatus.values();
+            for (int i = 0; i < brokerStatuses.length; i++) {
+                jsonArray.add(i, brokerStatuses[i].name());
             }
         }
         return jsonArray.toJSONString();

@@ -3,6 +3,7 @@ package de.fraunhofer.isst.configmanager.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.config.BrokerStatus;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.config.CustomBroker;
 import de.fraunhofer.isst.configmanager.configmanagement.service.BrokerService;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ResourceService;
@@ -163,6 +164,7 @@ public class BrokerUIController implements BrokerUIApi {
         var broker = brokerService.getById(brokerUri);
         if (broker != null) {
             try {
+                brokerService.setBrokerStatus(brokerUri, BrokerStatus.REGISTERED);
                 return ResponseEntity.ok(client.updateAtBroker(brokerUri.toString()));
             } catch (IOException e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -184,6 +186,7 @@ public class BrokerUIController implements BrokerUIApi {
         var broker = brokerService.getById(brokerUri);
         if (broker != null) {
             try {
+                brokerService.setBrokerStatus(brokerUri, BrokerStatus.UNREGISTERED);
                 return ResponseEntity.ok(client.unregisterAtBroker(brokerUri.toString()));
             } catch (IOException e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

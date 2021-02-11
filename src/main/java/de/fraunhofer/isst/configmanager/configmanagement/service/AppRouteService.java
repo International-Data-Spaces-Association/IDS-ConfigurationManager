@@ -353,7 +353,7 @@ public class AppRouteService {
         var appRouteImpl = getAppRouteImpl(routeId);
         if (configModelService.getConfigModel().getAppRoute() == null || appRouteImpl == null
                 || appRouteImpl.getHasSubRoute() == null) {
-            validationMessage = "Validation failed! Could not find any app route or sub routes to validate";
+            validationMessage = "Validation failed! Could not find any app route or route steps to validate";
         }
         if (configModelService.getConfigModel().getAppRoute().size() == 1) {
             boolean validation = checkRouteFromGenericToIDSEndpoint(appRouteImpl) ||
@@ -384,8 +384,9 @@ public class AppRouteService {
     private boolean checkRouteFromGenericToIDSEndpoint(AppRouteImpl appRouteImpl) {
         if (appRouteImpl.getHasSubRoute() != null) {
             ArrayList<RouteStep> routeSteps = (ArrayList<RouteStep>) appRouteImpl.getHasSubRoute();
-            if (routeSteps.get(0).getAppRouteStart().get(0).getClass() == GenericEndpoint.class &&
-                    routeSteps.get(routeSteps.size() - 1).getAppRouteStart().get(0).getClass() == ConnectorEndpoint.class) {
+            if (routeSteps.get(0).getAppRouteStart().get(0).getClass().getSimpleName().equals("GenericEndpointImpl") &&
+                    routeSteps.get(routeSteps.size() - 1).getAppRouteEnd().get(0)
+                            .getClass().getSimpleName().equals("ConnectorEndpointImpl")) {
 
                 return checkEndpointLinkage(routeSteps);
             }
@@ -397,8 +398,9 @@ public class AppRouteService {
         if (appRouteImpl.getHasSubRoute() != null) {
             ArrayList<RouteStep> routeSteps = (ArrayList<RouteStep>) appRouteImpl.getHasSubRoute();
 
-            if (routeSteps.get(0).getAppRouteStart().get(0).getClass() == ConnectorEndpoint.class &&
-                    routeSteps.get(routeSteps.size() - 1).getAppRouteStart().get(0).getClass() == GenericEndpoint.class) {
+            if (routeSteps.get(0).getAppRouteStart().get(0).getClass().getSimpleName().equals("ConnectorEndpointImpl") &&
+                    routeSteps.get(routeSteps.size() - 1).getAppRouteEnd().get(0)
+                            .getClass().getSimpleName().equals("GenericEndpointImpl")) {
 
                 return checkEndpointLinkage(routeSteps);
             }
@@ -408,8 +410,8 @@ public class AppRouteService {
 
     private boolean checkEndpointLinkage(ArrayList<RouteStep> routeSteps) {
         for (int i = 0; i < routeSteps.size() - 1; i++) {
-            if (!routeSteps.get(i).getAppRouteStart().get(0).getAccessURL().equals(
-                    routeSteps.get(i + 1).getAppRouteEnd().get(0).getAccessURL())) {
+            if (routeSteps.get(i).getAppRouteStart().get(0) == null ||
+                    routeSteps.get(i).getAppRouteEnd().get(0) == null) {
                 return false;
             }
         }
