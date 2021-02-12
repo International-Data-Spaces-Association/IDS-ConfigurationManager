@@ -16,6 +16,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
@@ -71,7 +72,7 @@ public class CamelUtils {
         ArrayList<? extends Endpoint> routeStart = appRoute.getAppRouteStart();
         if (routeStart.get(0) instanceof ConnectorEndpoint) {
             ConnectorEndpoint connectorEndpoint = (ConnectorEndpoint) routeStart.get(0);
-            velocityContext.put("startUrl", connectorEndpoint.getAccessURL().toString());
+            velocityContext.put("startUrl", removeUriScheme(connectorEndpoint.getAccessURL()));
         } else if (routeStart.get(0) instanceof GenericEndpoint) {
             GenericEndpoint genericEndpoint = (GenericEndpoint) routeStart.get(0);
             velocityContext.put("startUrl", genericEndpoint.getAccessURL().toString());
@@ -82,7 +83,7 @@ public class CamelUtils {
         ArrayList<? extends Endpoint> routeEnd = appRoute.getAppRouteEnd();
         if (routeEnd.get(0) instanceof ConnectorEndpoint) {
             ConnectorEndpoint connectorEndpoint = (ConnectorEndpoint) routeEnd.get(0);
-            velocityContext.put("endUrl", connectorEndpoint.getAccessURL().toString());
+            velocityContext.put("endUrl", removeUriScheme(connectorEndpoint.getAccessURL()));
         } else if (routeEnd.get(0) instanceof GenericEndpoint) {
             GenericEndpoint genericEndpoint = (GenericEndpoint) routeEnd.get(0);
             velocityContext.put("endUrl", genericEndpoint.getAccessURL().toString());
@@ -226,6 +227,16 @@ public class CamelUtils {
                 e.printStackTrace();
             }
         }
+    }
+
+    private static String removeUriScheme(URI uri) {
+        String string = uri.toString();
+
+        if (string.split("//").length > 1) {
+            string = string.split("//")[1];
+        }
+
+        return string;
     }
 
 }

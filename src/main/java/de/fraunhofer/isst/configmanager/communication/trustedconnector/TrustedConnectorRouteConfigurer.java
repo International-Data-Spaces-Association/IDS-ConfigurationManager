@@ -30,9 +30,9 @@ public class TrustedConnectorRouteConfigurer {
      * @param configurationModel the config model containing key- and truststore information
      */
     public static void addSslConfig(VelocityContext velocityContext, ConfigurationModel configurationModel) {
-        velocityContext.put("keyStorePath", getUriAsString(configurationModel.getKeyStore()));
+        velocityContext.put("keyStorePath", removeFileScheme(configurationModel.getKeyStore()));
         velocityContext.put("keyStorePassword", configurationModel.getKeyStorePassword());
-        velocityContext.put("trustStorePath", getUriAsString(configurationModel.getTrustStore()));
+        velocityContext.put("trustStorePath", removeFileScheme(configurationModel.getTrustStore()));
         velocityContext.put("trustStorePassword", configurationModel.getTrustStorePassword());
     }
 
@@ -63,7 +63,7 @@ public class TrustedConnectorRouteConfigurer {
      * @param uri the URI
      * @return the URI as a string with the file scheme removed, if it was present.
      */
-    private static String getUriAsString(URI uri) {
+    private static String removeFileScheme(URI uri) {
         String string = uri.toString();
 
         if (string.startsWith("file://")) {

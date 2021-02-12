@@ -34,9 +34,9 @@ public class TrustedConnectorClient implements DefaultConnectorClient {
                 ._connectorStatus_(ConnectorStatus.CONNECTOR_ONLINE)
                 ._connectorDeployMode_(ConnectorDeployMode.TEST_DEPLOYMENT)
                 ._keyStorePassword_("password")
-                ._keyStore_(URI.create("http://k"))
+                ._keyStore_(URI.create("file://cert-stores/keystore.p12"))
                 ._trustStorePassword_("password")
-                ._trustStore_(URI.create("http://t"))
+                ._trustStore_(URI.create("file://cert-stores/truststore.p12"))
                 .build();
     }
 
