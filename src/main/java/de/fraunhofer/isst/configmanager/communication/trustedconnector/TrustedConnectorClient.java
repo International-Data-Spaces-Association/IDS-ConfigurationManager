@@ -41,12 +41,12 @@ public class TrustedConnectorClient implements DefaultConnectorClient {
     }
 
     @Override
-    public String updateResource(URI resourceID, Resource resource) throws IOException {
+    public BaseConnector getBaseConnector(String accessURL, String resourceId) throws IOException {
         return null;
     }
 
     @Override
-    public String updateResourceAtBroker(URI resourceID, Resource resource, String brokerUri) throws IOException {
+    public String updateResource(URI resourceID, Resource resource) throws IOException {
         return null;
     }
 
@@ -61,7 +61,12 @@ public class TrustedConnectorClient implements DefaultConnectorClient {
     }
 
     @Override
-    public String deleteResourceAtBroker(URI resourceID, String brokerUri) throws IOException {
+    public String updateResourceAtBroker(String brokerUri, URI resourceID) throws IOException {
+        return null;
+    }
+
+    @Override
+    public String deleteResourceAtBroker(String brokerUri, URI resourceID) throws IOException {
         return null;
     }
 
