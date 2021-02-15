@@ -142,7 +142,8 @@ public class ConnectorUIController implements ConnectorUIApi {
             connector.setDescription(Util.asList(new TypedLiteral(description)));
         }
         if (endpointAccessURL != null) {
-            connector.setHasEndpoint(Util.asList(new ConnectorEndpointBuilder()._accessURL_(URI.create(endpointAccessURL)).build()));
+            connector.setHasEndpoint(Util.asList(new ConnectorEndpointBuilder()
+                    ._accessURL_(URI.create(endpointAccessURL)).build()));
         }
         if (version != null) {
             connector.setVersion(version);

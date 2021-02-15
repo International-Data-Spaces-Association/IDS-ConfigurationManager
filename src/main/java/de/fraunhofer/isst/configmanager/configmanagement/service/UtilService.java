@@ -4,6 +4,7 @@ import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.DataSpaceConnectorResourceMapper;
 import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.ResourceRepresentation;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.config.BrokerStatus;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.routeDeployMethod.DeployMethod;
 import net.minidev.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,16 +21,16 @@ import java.net.URI;
 @Service
 public class UtilService {
 
-    private final ConfigModelService configModelService;
+    private final EndpointService endpointService;
     private final DataSpaceConnectorResourceMapper dataSpaceConnectorResourceMapper;
     private final DefaultConnectorClient client;
 
     @Autowired
-    public UtilService(ConfigModelService configModelService,
+    public UtilService(EndpointService endpointService,
                        DataSpaceConnectorResourceMapper dataSpaceConnectorResourceMapper,
                        DefaultConnectorClient client) {
 
-        this.configModelService = configModelService;
+        this.endpointService = endpointService;
         this.dataSpaceConnectorResourceMapper = dataSpaceConnectorResourceMapper;
         this.client = client;
     }
@@ -88,6 +89,12 @@ public class UtilService {
                 jsonArray.add(i, deployMethods[i].name());
             }
         }
+        if (name.contains("brokerstatus")) {
+            BrokerStatus[] brokerStatuses = BrokerStatus.values();
+            for (int i = 0; i < brokerStatuses.length; i++) {
+                jsonArray.add(i, brokerStatuses[i].name());
+            }
+        }
         return jsonArray.toJSONString();
     }
 
@@ -103,33 +110,28 @@ public class UtilService {
     public ResponseEntity<String> addEndpointToConnectorRepresentation(URI endpointId, URI resourceId,
                                                                        Representation representation) {
 
-        for (AppRoute approute : configModelService.getConfigModel().getAppRoute()) {
-            if (approute != null) {
-                var endpoint = (GenericEndpoint) approute.getAppRouteStart()
-                        .stream()
-                        .filter(endpoint1 -> endpoint1.getId().equals(endpointId))
-                        .findAny().orElse(null);
+        var endpoint = (GenericEndpoint) endpointService.getGenericEndpoints()
+                .stream()
+                .filter(endP -> endP.getId().equals(endpointId)).findAny().orElse(null);
 
-                if (endpoint != null) {
-                    BasicAuthenticationImpl basicAuth =
-                            (BasicAuthenticationImpl) endpoint.getGenericEndpointAuthentication();
-                    if (basicAuth != null) {
-                        String accessUrl = endpoint.getAccessURL().toString();
-                        String username = basicAuth.getAuthUsername();
-                        String password = basicAuth.getAuthPassword();
+        if (endpoint != null) {
+            BasicAuthenticationImpl basicAuth =
+                    (BasicAuthenticationImpl) endpoint.getGenericEndpointAuthentication();
+            if (basicAuth != null) {
+                String accessUrl = endpoint.getAccessURL().toString();
+                String username = basicAuth.getAuthUsername();
+                String password = basicAuth.getAuthPassword();
 
-                        ResourceRepresentation resourceRepresentation =
-                                dataSpaceConnectorResourceMapper.mapCustomRepresentation(representation, accessUrl,
-                                        username, password);
-                        try {
-                            // Try to add the new Representation object to the Connector
-                            return ResponseEntity.ok(client.updateCustomResourceRepresentation(resourceId.toString(),
-                                    representation.getId().toString(), resourceRepresentation));
-                        } catch (IOException e) {
-                            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                    .body(String.format("Could not parse response from Connector: %s", e.getMessage()));
-                        }
-                    }
+                ResourceRepresentation resourceRepresentation =
+                        dataSpaceConnectorResourceMapper.mapCustomRepresentation(representation, accessUrl,
+                                username, password);
+                try {
+                    // Try to add the new Representation object to the Connector
+                    return ResponseEntity.ok(client.updateCustomResourceRepresentation(resourceId.toString(),
+                            representation.getId().toString(), resourceRepresentation));
+                } catch (IOException e) {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .body(String.format("Could not parse response from Connector: %s", e.getMessage()));
                 }
             }
         }

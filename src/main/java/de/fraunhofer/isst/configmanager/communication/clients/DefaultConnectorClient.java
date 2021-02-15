@@ -1,9 +1,6 @@
 package de.fraunhofer.isst.configmanager.communication.clients;
 
-import de.fraunhofer.iais.eis.ConfigurationModel;
-import de.fraunhofer.iais.eis.Contract;
-import de.fraunhofer.iais.eis.Representation;
-import de.fraunhofer.iais.eis.Resource;
+import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.ResourceRepresentation;
 import de.fraunhofer.isst.configmanager.configmanagement.service.listeners.ConfigModelListener;
 
@@ -53,6 +50,17 @@ public interface DefaultConnectorClient extends ConfigModelListener {
      */
     ConfigurationModel getConfiguration() throws IOException;
 
+
+    /**
+     * This method returns the self declaration of a connector.
+     *
+     * @param accessURL  url of the connector
+     * @param resourceId id of the resource
+     * @return base connector
+     */
+    BaseConnector getBaseConnector(String accessURL, String resourceId) throws IOException;
+
+
     /**
      * Send a Resource update Request to a target Connector
      *
@@ -62,17 +70,6 @@ public interface DefaultConnectorClient extends ConfigModelListener {
      * @throws IOException when serializing of the Resource, or sending of the request fails
      */
     String updateResource(URI resourceID, Resource resource) throws IOException;
-
-    /**
-     * Send a Resource update request to a target broker.
-     *
-     * @param resourceID ID of the Resource that will be created
-     * @param resource   Resource to create
-     * @param brokerUri  URI of the Broker
-     * @return Response of the target Connector
-     * @throws IOException when serializing of the Resource, or sending of the request fails
-     */
-    String updateResourceAtBroker(URI resourceID, Resource resource, String brokerUri) throws IOException;
 
     /**
      * Send a resource creation request to a target connector.
@@ -93,14 +90,24 @@ public interface DefaultConnectorClient extends ConfigModelListener {
     String deleteResource(URI resourceID) throws IOException;
 
     /**
+     * Send a Resource update request to a target broker.
+     *
+     * @param brokerUri  URI of the Broker
+     * @param resourceID ID of the Resource that will be created
+     * @return Response of the target Connector
+     * @throws IOException when serializing of the Resource, or sending of the request fails
+     */
+    String updateResourceAtBroker(String brokerUri, URI resourceID) throws IOException;
+
+    /**
      * Send a resource deletion request to a target broker.
      *
-     * @param resourceID ID of the Resource to delete
      * @param brokerUri  URI of the Broker
+     * @param resourceID ID of the Resource to delete
      * @return Response of the target Connector
      * @throws IOException when an error occurs while sending the request
      */
-    String deleteResourceAtBroker(URI resourceID, String brokerUri) throws IOException;
+    String deleteResourceAtBroker(String brokerUri, URI resourceID) throws IOException;
 
     /**
      * Send a resource representation deletion request to a connector.

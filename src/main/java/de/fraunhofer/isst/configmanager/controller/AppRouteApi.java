@@ -92,6 +92,6 @@ public interface AppRouteApi {
     @GetMapping(value = "/route/deploymethod", produces = "application/ld+json")
     @Operation(summary = "Returns the route deploy method for all routes")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully returned the route deploy method")})
-    ResponseEntity<String> getRouteDeployMethods();
+    ResponseEntity<String> getRouteDeployMethod();
 
 }

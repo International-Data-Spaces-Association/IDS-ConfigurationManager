@@ -1,4 +1,4 @@
-package de.fraunhofer.isst.configmanager.configmanagement.entities.backendConnection;
+package de.fraunhofer.isst.configmanager.configmanagement.entities.customGenericEndpoint;
 
 import de.fraunhofer.iais.eis.GenericEndpoint;
 import lombok.NoArgsConstructor;
@@ -11,9 +11,9 @@ import javax.persistence.Entity;
  */
 @Entity
 @NoArgsConstructor
-public class BackendConnectionObject extends BackendConfig<GenericEndpoint> {
+public class CustomGenericEndpointObject extends BackendConfig<GenericEndpoint> {
 
-    public BackendConnectionObject(GenericEndpoint endpoint) {
+    public CustomGenericEndpointObject(GenericEndpoint endpoint) {
         super(endpoint);
     }
 

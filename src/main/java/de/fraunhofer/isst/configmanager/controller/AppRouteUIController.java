@@ -26,6 +26,10 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The controller class implements the AppRouteApi and offers the possibilities to manage
+ * the app routes in the configuration manager.
+ */
 @RestController
 @RequestMapping("/api/ui")
 @Tag(name = "App Route Management", description = "Endpoints for managing the app routes in the configuration manager")
@@ -54,6 +58,12 @@ public class AppRouteUIController implements AppRouteApi {
         }
     }
 
+    /**
+     * This method creates an app route.
+     *
+     * @param description description of the app route
+     * @return a suitable http response depending on success
+     */
     @Override
     public ResponseEntity<String> createAppRoute(String description) {
 
@@ -69,6 +79,13 @@ public class AppRouteUIController implements AppRouteApi {
         }
     }
 
+    /**
+     * This method updates an app route
+     *
+     * @param routeId     id of the app route
+     * @param description description of the app route
+     * @return a suitable http response depending on success
+     */
     @Override
     public ResponseEntity<String> updateAppRoute(URI routeId, String description) {
         boolean updated = appRouteService.updateAppRoute(routeId, description);
@@ -80,6 +97,12 @@ public class AppRouteUIController implements AppRouteApi {
         }
     }
 
+    /**
+     * This method deletes an app route
+     *
+     * @param routeId id of the app route
+     * @return a suitable http response depending on success
+     */
     @Override
     public ResponseEntity<String> deleteAppRoute(URI routeId) {
         AppRoute appRoute = appRouteService.getAppRoute(routeId);
@@ -93,6 +116,12 @@ public class AppRouteUIController implements AppRouteApi {
         }
     }
 
+    /**
+     * This method returns a specific app route
+     *
+     * @param routeId id of the app route
+     * @return a suitable http response depending on success
+     */
     @Override
     public ResponseEntity<String> getAppRoute(URI routeId) {
         AppRoute appRoute = appRouteService.getAppRoute(routeId);
@@ -109,6 +138,11 @@ public class AppRouteUIController implements AppRouteApi {
 
     }
 
+    /**
+     * This method returns a list of app routes
+     *
+     * @return a suitable http response depending on success
+     */
     @Override
     public ResponseEntity<String> getAppRoutes() {
         List<AppRoute> appRouteList = appRouteService.getAppRoutes();
@@ -123,6 +157,19 @@ public class AppRouteUIController implements AppRouteApi {
         }
     }
 
+    /**
+     * This method creates a route step for an app route with the given parameters
+     *
+     * @param routeId          id of the route
+     * @param startId          id of the start endpoint
+     * @param startCoordinateX x coordinate of the start endpoint
+     * @param startCoordinateY y coordinate of the start endpoint
+     * @param endID            id of the last endpoint
+     * @param endCoordinateX   x coordinate of the last endpoint
+     * @param endCoordinateY   y coordinate of the last endpoint
+     * @param resourceId       id of the resource
+     * @return a suitable http response depending on success
+     */
     @Override
     public ResponseEntity<String> createAppRouteStep(URI routeId, URI startId, int startCoordinateX,
                                                      int startCoordinateY, URI endID, int endCoordinateX,
@@ -148,6 +195,13 @@ public class AppRouteUIController implements AppRouteApi {
         }
     }
 
+    /**
+     * This method deletes a route step
+     *
+     * @param routeId     id of the app route
+     * @param routeStepId id of the route step
+     * @return a suitable http response depending on success
+     */
     @Override
     public ResponseEntity<String> deleteAppRouteStep(URI routeId, URI routeStepId) {
 
@@ -166,14 +220,13 @@ public class AppRouteUIController implements AppRouteApi {
         }
     }
 
-    @Override
-    public ResponseEntity<String> validateAppRoute(URI routeId) {
-
-        String validationMessage = appRouteService.validateAppRoute(routeId);
-        return ResponseEntity.ok(validationMessage);
-
-    }
-
+    /**
+     * This method returns a specific route step
+     *
+     * @param routeId     id of the app route
+     * @param routeStepId id of the route step
+     * @return a suitable http response depending on success
+     */
     @Override
     public ResponseEntity<String> getAppRouteStep(URI routeId, URI routeStepId) {
 
@@ -189,6 +242,13 @@ public class AppRouteUIController implements AppRouteApi {
         }
     }
 
+    /**
+     * This method returns information regarding the endpoint
+     *
+     * @param routeId    id of the app route
+     * @param endpointId id of the endpoint
+     * @return a suitable http response depending on success
+     */
     @Override
     public ResponseEntity<String> getEndpointInformation(URI routeId, URI endpointId) {
 
@@ -204,6 +264,9 @@ public class AppRouteUIController implements AppRouteApi {
         }
     }
 
+    /**
+     * @return list of endpoint information
+     */
     @Override
     public ResponseEntity<String> getAllEndpointInfo() {
         List<EndpointInformation> endpointInformations = appRouteService.getAllEndpointInfo();
@@ -217,6 +280,12 @@ public class AppRouteUIController implements AppRouteApi {
         return ResponseEntity.badRequest().body("Could not get endpoint information");
     }
 
+    /**
+     * This method updates the route deploy method of all app route and route steps
+     *
+     * @param deployMethod route deploy method
+     * @return a suitable http response depending on success
+     */
     @Override
     public ResponseEntity<String> updateRouteDeployMethod(DeployMethod deployMethod) {
 
@@ -232,8 +301,13 @@ public class AppRouteUIController implements AppRouteApi {
         }
     }
 
+    /**
+     * This method returns the route deploy method
+     *
+     * @return a suitable http response depending on success
+     */
     @Override
-    public ResponseEntity<String> getRouteDeployMethods() {
+    public ResponseEntity<String> getRouteDeployMethod() {
         List<RouteDeployMethod> routeDeployMethods = routeDeployMethodRepository.findAll();
         try {
             return ResponseEntity.ok(objectMapper.writeValueAsString(routeDeployMethods));
@@ -243,7 +317,7 @@ public class AppRouteUIController implements AppRouteApi {
     }
 
     /**
-     * This method updates the deploy method from every app route and the subroute
+     * This method updates the deploy method from every app route and route step
      *
      * @param deployMethod deploy method of the route
      */
@@ -270,5 +344,19 @@ public class AppRouteUIController implements AppRouteApi {
             }
             configModelService.saveState();
         }
+    }
+
+    /**
+     * This method validates the created app route for correctness and completeness
+     *
+     * @param routeId id of the app route
+     * @return a suitable http response depending on success
+     */
+    @Override
+    public ResponseEntity<String> validateAppRoute(URI routeId) {
+
+        String validationMessage = appRouteService.validateAppRoute(routeId);
+        return ResponseEntity.ok(validationMessage);
+
     }
 }

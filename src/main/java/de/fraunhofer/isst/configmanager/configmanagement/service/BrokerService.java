@@ -1,6 +1,6 @@
 package de.fraunhofer.isst.configmanager.configmanagement.service;
 
-import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.config.BrokerStatus;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.config.CustomBroker;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.CustomBrokerRepository;
 import org.slf4j.Logger;
@@ -22,20 +22,18 @@ public class BrokerService {
     private final CustomBrokerRepository customBrokerRepository;
 
     @Autowired
-    public BrokerService(Serializer serializer, CustomBrokerRepository customBrokerRepository) {
+    public BrokerService(CustomBrokerRepository customBrokerRepository) {
         this.customBrokerRepository = customBrokerRepository;
 
         // If no broker is found in the database, a default broker is created at this point.
         if (customBrokerRepository.count() == 0) {
             logger.info("Db is empty! Creating custom broker");
             CustomBroker customBroker = new CustomBroker();
-            customBroker.setBrokerUri(URI.create("https://example.com"));
-            customBroker.setTitle("title");
-            customBroker.setSelfDeclaration("This is a selfdeclaration");
-
+            customBroker.setBrokerUri(URI.create("https://broker.ids.isst.fraunhofer.de/infrastructure"));
+            customBroker.setTitle("IDS Broker");
+            customBroker.setBrokerStatus(BrokerStatus.UNREGISTERED);
             customBrokerRepository.save(customBroker);
         }
-
     }
 
     /**
@@ -50,9 +48,8 @@ public class BrokerService {
         CustomBroker customBroker = new CustomBroker(brokerUri);
         if (title != null) {
             customBroker.setTitle(title);
+            customBroker.setBrokerStatus(BrokerStatus.UNREGISTERED);
         }
-        customBroker.setSelfDeclaration("Self declaration of the broker");
-
         customBrokerRepository.save(customBroker);
 
         return customBroker;
@@ -67,18 +64,11 @@ public class BrokerService {
      */
     public boolean updateBroker(URI brokerUri, String title) {
         boolean updated = false;
-
-        CustomBroker broker = null;
-        for (CustomBroker customBroker : customBrokerRepository.findAll()) {
-            if (brokerUri.equals(customBroker.getBrokerUri()))
-                broker = customBroker;
-        }
-
+        CustomBroker broker = getById(brokerUri);
         if (broker != null) {
             if (title != null) {
                 broker.setTitle(title);
             }
-            broker.setSelfDeclaration("Self declaration of the broker");
             updated = true;
         }
         customBrokerRepository.save(broker);
@@ -91,9 +81,7 @@ public class BrokerService {
      * @return list of all broker uri's
      */
     public List<URI> getAllBrokerUris() {
-
         List<URI> brokerUris = new ArrayList<>();
-
         for (CustomBroker customBroker : customBrokerRepository.findAll()) {
             if (customBroker != null) {
                 brokerUris.add(customBroker.getBrokerUri());
@@ -110,8 +98,7 @@ public class BrokerService {
      */
     public boolean deleteBroker(URI id) {
         boolean deleted = false;
-        CustomBroker customBroker = customBrokerRepository.findAll()
-                .stream().filter(customBroker1 -> customBroker1.getBrokerUri().equals(id)).findAny().orElse(null);
+        CustomBroker customBroker = getById(id);
         if (customBroker != null) {
             customBrokerRepository.delete(customBroker);
             deleted = true;
@@ -135,8 +122,21 @@ public class BrokerService {
      * @return custom broker
      */
     public CustomBroker getById(URI id) {
-
         return customBrokerRepository.findAll().stream().filter(customBroker -> customBroker.getBrokerUri().equals(id))
                 .findAny().orElse(null);
+    }
+
+    /**
+     * This method is responsible for setting the broker status
+     *
+     * @param brokerId     id of the broker
+     * @param brokerStatus broker status
+     */
+    public void setBrokerStatus(URI brokerId, BrokerStatus brokerStatus) {
+        CustomBroker customBroker = getById(brokerId);
+        if (customBroker != null) {
+            customBroker.setBrokerStatus(brokerStatus);
+            customBrokerRepository.save(customBroker);
+        }
     }
 }

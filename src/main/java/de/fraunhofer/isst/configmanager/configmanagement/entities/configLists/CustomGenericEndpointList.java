@@ -1,7 +1,7 @@
 package de.fraunhofer.isst.configmanager.configmanagement.entities.configLists;
 
 import de.fraunhofer.iais.eis.Endpoint;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.backendConnection.BackendConnectionObject;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.customGenericEndpoint.CustomGenericEndpointObject;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -9,9 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Entity class for a list of generic endpoints
+ */
 @Entity
 @Data
-public class BackendConnectionList {
+public class CustomGenericEndpointList {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -19,12 +22,12 @@ public class BackendConnectionList {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn
-    private List<BackendConnectionObject> backendConnectionObjects = new ArrayList<>();
+    private List<CustomGenericEndpointObject> customGenericEndpointObjects = new ArrayList<>();
 
     /**
      * @return list of endpoints
      */
     public List<Endpoint> getEndpoints() {
-        return backendConnectionObjects.stream().map(BackendConnectionObject::getEndpoint).collect(Collectors.toList());
+        return customGenericEndpointObjects.stream().map(CustomGenericEndpointObject::getEndpoint).collect(Collectors.toList());
     }
 }

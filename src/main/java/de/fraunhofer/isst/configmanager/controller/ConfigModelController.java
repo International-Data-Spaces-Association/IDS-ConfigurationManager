@@ -57,8 +57,8 @@ public class ConfigModelController implements ConfigModelApi {
         ConfigurationModel configurationModel = configModelService.createConfigModel(loglevel, connectorStatus,
                 connectorDeployMode, trustStore, trustStorePassword, keyStore, keyStorePassword);
         if (configurationModel != null) {
-            return ResponseEntity.ok(Utility.jsonMessage("message", "Successfully created a new configuration model with the id: " +
-                    configurationModel.getId()));
+            return ResponseEntity.ok(Utility.jsonMessage("message", "Successfully created a new configuration" +
+                    " model with the id: " + configurationModel.getId()));
         } else {
             return ResponseEntity.badRequest().body("Could not create configuration model");
         }
@@ -84,8 +84,8 @@ public class ConfigModelController implements ConfigModelApi {
         var result = configModelService.updateConfigurationModel(loglevel, connectorStatus,
                 connectorDeployMode, trustStore, trustStorePassword, keyStore, keyStorePassword);
         if (result) {
-            return ResponseEntity.ok(Utility.jsonMessage("message", "Successfully updated the configuration model with the id: "
-                    + configModelService.getConfigModel().getId().toString()));
+            return ResponseEntity.ok(Utility.jsonMessage("message", "Successfully updated the configuration" +
+                    " model with the id: " + configModelService.getConfigModel().getId().toString()));
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Connector did not accent the new Configuration!");
         }

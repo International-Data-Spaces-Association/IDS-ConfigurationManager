@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Service class for the configuration model.
@@ -72,9 +71,6 @@ public class ConfigModelService {
                 LOGGER.warn("Could not get a valid ConfigurationModel and/or Connector is not reachable!");
             }
         }
-//        if (!checkRoutesAreComplete(getConfigModel())) {
-//            LOGGER.warn("Routes are not complete! Please check it!");
-//        }
     }
 
     /**
@@ -104,9 +100,7 @@ public class ConfigModelService {
         // The configuration model is added to the list of configuration models and then stored in the database.
         this.configModelList.getConfigModelObjects().add(new ConfigModelObject(configurationModel));
         configModelList = configModelRepository.saveAndFlush(configModelList);
-
         return configurationModel;
-
     }
 
     /**
@@ -184,186 +178,6 @@ public class ConfigModelService {
         return accepted;
     }
 
-
-    /**
-     * This method set the logging level in the configuration manager.
-     *
-     * @param loglevel is set in the configuration model
-     */
-    public void createConfigModelLogLevel(String loglevel) {
-        var configModel = (ConfigurationModelImpl) getConfigModel();
-        LogLevel logLevel = LogLevel.valueOf(loglevel);
-        configModel.setConfigurationModelLogLevel(logLevel);
-        saveState();
-    }
-
-    /**
-     * This method set the connector status in the configuration model.
-     *
-     * @param connectorstatus is set in the configuration model
-     */
-    public void createConfigModelConnectorStatus(String connectorstatus) {
-        var configModel = (ConfigurationModelImpl) getConfigModel();
-        ConnectorStatus connectorStatus = ConnectorStatus.valueOf(connectorstatus);
-        configModel.setConnectorStatus(connectorStatus);
-        saveState();
-    }
-
-    /**
-     * This method set the connector deploymode in the configuration model.
-     *
-     * @param connectordeploymode ist set in the configuration model
-     */
-    public void createConfigModelConnectorDeployMode(String connectordeploymode) {
-        var configModel = (ConfigurationModelImpl) getConfigModel();
-        ConnectorDeployMode connectorDeployMode = ConnectorDeployMode.valueOf(connectordeploymode);
-        configModel.setConnectorDeployMode(connectorDeployMode);
-        saveState();
-    }
-
-    /**
-     * The key store is set in the configuration model.
-     *
-     * @param keystore is set in te configuration model
-     */
-    public void createConfigModelKeystore(URI keystore) {
-        var configModel = (ConfigurationModelImpl) getConfigModel();
-        configModel.setKeyStore(keystore);
-        saveState();
-    }
-
-    /**
-     * This method deletes the key store from the configuration manager.
-     * <p>
-     * The method deletes the set key store
-     */
-    public void deleteConfigModelKeystore() {
-        var configModel = (ConfigurationModelImpl) getConfigModel();
-        configModel.setKeyStore(null);
-        saveState();
-    }
-
-    /**
-     * This method creates the trust store in the configuration model.
-     *
-     * @param truststore is set in the configuration model
-     */
-    public void createConfigModelTruststore(URI truststore) {
-        var configModel = (ConfigurationModelImpl) getConfigModel();
-        configModel.setTrustStore(truststore);
-        saveState();
-    }
-
-    /**
-     * This method deletes the trust store from the configuration manager.
-     */
-    public void deleteConfigModelTrustStore() {
-        var configModel = (ConfigurationModelImpl) getConfigModel();
-        configModel.setTrustStore(null);
-        saveState();
-    }
-
-    /**
-     * This method updates the given proxy.
-     *
-     * @param proxy which is updated
-     */
-    public void updateConfigModelProxy(Proxy proxy) {
-
-        var proxies = configModelList.getCurrentConfigurationModel().getConnectorProxy()
-                .stream().map(proxy1 -> proxy1.getId().equals(proxy.getId()) ? proxy : proxy1)
-                .collect(Collectors.toCollection(ArrayList::new));
-
-        var configModelImpl = (ConfigurationModelImpl) getConfigModel();
-        configModelImpl.setConnectorProxy(proxies);
-        saveState();
-    }
-
-    /**
-     * This method creates a proxy in the configuration model
-     *
-     * @param proxy which is crea
-     */
-    public void createConfigModelProxy(Proxy proxy) {
-
-        var configModelImpl = (ConfigurationModelImpl) getConfigModel();
-
-        if (configModelImpl.getConnectorProxy() == null) {
-            configModelImpl.setConnectorProxy(new ArrayList<>());
-        }
-        ArrayList<Proxy> proxies = (ArrayList<Proxy>) configModelImpl.getConnectorProxy();
-        proxies.add(proxy);
-        configModelImpl.setConnectorProxy(proxies);
-        saveState();
-    }
-
-    /**
-     * This method deletes the proxy in configuration model.
-     *
-     * @param proxyId id of the proxy
-     * @return true, if proxy is deleted from the configuration model
-     */
-    public boolean deleteConfigModelProxy(URI proxyId) {
-
-        if (getConfigModel().getConnectorProxy().removeIf(proxy -> proxy.getId().equals(proxyId))) {
-            saveState();
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * This method updates the user authentication in the configuration manager.
-     *
-     * @param userAuthentication which is updated in the configuration model
-     */
-    public void updateConfigModelUserAuth(UserAuthentication userAuthentication) {
-
-        var userAuthentications = configModelList.getCurrentConfigurationModel().getUserAuthentication()
-                .stream().map(userAuthentication1 -> userAuthentication1.getId()
-                        .equals(userAuthentication.getId()) ? userAuthentication : userAuthentication1)
-                .collect(Collectors.toCollection(ArrayList::new));
-
-        var configModelImpl = (ConfigurationModelImpl) getConfigModel();
-        configModelImpl.setUserAuthentication(userAuthentications);
-        saveState();
-    }
-
-    /**
-     * This method creates a user authentication in the configuration model.
-     *
-     * @param userAuthentication which is created
-     */
-    public void createConfigModelUserAuth(UserAuthentication userAuthentication) {
-
-        var configModelImpl = (ConfigurationModelImpl) getConfigModel();
-
-        if (configModelImpl.getUserAuthentication() == null) {
-            configModelImpl.setUserAuthentication(new ArrayList<>());
-        }
-
-        ArrayList<UserAuthentication> userAuths = (ArrayList<UserAuthentication>) configModelImpl.getUserAuthentication();
-        userAuths.add(userAuthentication);
-        configModelImpl.setUserAuthentication(userAuths);
-        saveState();
-    }
-
-    /**
-     * This method deletes the user authentication from the configuration model with the given id.
-     *
-     * @param authenticationId id of the user authentication
-     * @return true, if user authentication is deleted
-     */
-    public boolean deleteConfigModelUserAuth(URI authenticationId) {
-
-        if (getConfigModel().getUserAuthentication().removeIf(userAuthentication -> userAuthentication.getId()
-                .equals(authenticationId))) {
-            saveState();
-            return true;
-        }
-        return false;
-    }
-
     /**
      * This method updates the configuration model with the given parameters.
      *
@@ -430,56 +244,4 @@ public class ConfigModelService {
         }
         saveState();
     }
-
-    /**
-     * Listener method, which notify about changes in the configuration model
-     */
-    public void notifyListeners() {
-        for (ConfigModelListener listener : listeners) {
-            listener.notifyConfig(getConfigModel());
-        }
-    }
-//    private boolean checkRoutesAreComplete(ConfigurationModel configurationModel) {
-//
-//        boolean complete = false;
-//        if (configurationModel == null || configurationModel.getAppRoute() == null) {
-//            return true;
-//        }
-//        for (int i = 0; i < configurationModel.getAppRoute().size(); i++) {
-//            AppRoute appRoute = configurationModel.getAppRoute().get(i);
-//            if (appRoute.getHasSubRoute() != null && appRoute.getHasSubRoute().size() > 1) {
-//                RouteStep firstSubroute = appRoute.getHasSubRoute().get(0);
-//                RouteStep lastSubroute = appRoute.getHasSubRoute().get(appRoute.getHasSubRoute().size() - 1);
-//
-//                if (appRoute.getAppRouteEnd() == null || appRoute.getAppRouteEnd() == null) {
-//                    complete = true;
-//                }
-//                Endpoint appRouteStartEndpoint = appRoute.getAppRouteStart().get(0);
-//                Endpoint appRouteEndpoint = appRoute.getAppRouteEnd().get(0);
-//
-//                if ((appRouteStartEndpoint.getAccessURL().equals(firstSubroute.getAppRouteStart().get(0).getAccessURL()))
-//                        && (appRouteEndpoint.getAccessURL().equals(lastSubroute.getAppRouteEnd().get(0).getAccessURL()))) {
-//
-//                    for (int j = 0; j < appRoute.getHasSubRoute().size() - 1; j++) {
-//                        if (appRoute.getHasSubRoute().get(j) == null
-//                                || appRoute.getHasSubRoute().get(j).getAppRouteEnd() == null
-//                                || appRoute.getHasSubRoute().get(j).getAppRouteEnd().size() == 0
-//                                || appRoute.getHasSubRoute().get(j + 1) == null
-//                                || appRoute.getHasSubRoute().get(j + 1).getAppRouteStart() == null
-//                                || appRoute.getHasSubRoute().get(j + 1).getAppRouteStart().size() == 0) {
-//                            return false;
-//                        }
-//                        if (!appRoute.getHasSubRoute().get(j).getAppRouteEnd().get(0).getAccessURL()
-//                                .equals(appRoute.getHasSubRoute().get(j + 1).getAppRouteStart().get(0).getAccessURL())) {
-//                            complete = false;
-//                        } else {
-//                            complete = true;
-//                        }
-//                    }
-//                }
-//
-//            }
-//        }
-//        return complete;
-//    }
 }

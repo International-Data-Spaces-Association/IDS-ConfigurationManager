@@ -1,4 +1,4 @@
-package de.fraunhofer.isst.configmanager.configmanagement.entities.backendConnection;
+package de.fraunhofer.isst.configmanager.configmanagement.entities.customGenericEndpoint;
 
 import de.fraunhofer.iais.eis.Endpoint;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.converter.EndpointConverter;
@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+/**
+ * The generic abstract class helps to persist objects inherited from the endpoint from the information model.
+ */
 @Data
 @NoArgsConstructor
 @MappedSuperclass
