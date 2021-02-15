@@ -78,7 +78,7 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
                 ._mediaType_(new IANAMediaTypeBuilder()._filenameExtension_(filenameExtension).build())
                 ._instance_(Util.asList(new ArtifactBuilder()
                         ._byteSize_(BigInteger.valueOf(bytesize)).build())).build();
-        representation.setProperty("sourceType", sourceType);
+        representation.setProperty("ids:sourceType", sourceType);
 
         // Add representation in resource catalog
         for (ResourceCatalog resourceCatalog : configModelService.getConfigModel()
@@ -135,44 +135,9 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
                                                                String filenameExtension, Long bytesize,
                                                                String sourceType) {
 
-        if (configModelService.getConfigModel() == null || configModelService.getConfigModel().getAppRoute() == null
+        if (configModelService.getConfigModel() == null
                 || configModelService.getConfigModel().getConnectorDescription().getResourceCatalog() == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Could not find any resources!\"}");
-        }
-
-        RepresentationImpl appRouteCandidate = null;
-        for (AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
-            for (RouteStep routeStep : appRoute.getHasSubRoute()) {
-                if (routeStep.getAppRouteOutput() != null) {
-                    for (Resource resource : routeStep.getAppRouteOutput()) {
-                        if (resourceId.equals(resource.getId())) {
-                            for (Representation representation : resource.getRepresentation()) {
-                                if (representationId.equals(representation.getId())) {
-                                    appRouteCandidate = (RepresentationImpl) representation;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // Check if parameters are null and when not update it with new values
-        if (appRouteCandidate != null) {
-            if (language != null) {
-                appRouteCandidate.setLanguage(Language.valueOf(language));
-            }
-            if (filenameExtension != null) {
-                appRouteCandidate.setMediaType(new IANAMediaTypeBuilder()
-                        ._filenameExtension_(filenameExtension).build());
-            }
-            if (bytesize != null) {
-                appRouteCandidate.setInstance(Util.asList(new ArtifactBuilder()
-                        ._byteSize_(BigInteger.valueOf(bytesize)).build()));
-            }
-            if (sourceType != null) {
-                appRouteCandidate.setProperty("sourceType", sourceType);
-            }
         }
 
         // Determine the correct resource representation from the resource catalog of the connector
@@ -220,23 +185,7 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
                 jsonObject.put("resourceID", resourceId.toString());
                 jsonObject.put("representationID", representationId.toString());
                 return ResponseEntity.ok(jsonObject.toJSONString());
-            } else if (appRouteCandidate != null) {
-                var response = client.updateResourceRepresentation(
-                        resourceId.toString(),
-                        representationId.toString(),
-                        appRouteCandidate
-                );
-
-                ResponseEntity<String> res =
-                        utilService.addEndpointToConnectorRepresentation(endpointId, resourceId, appRouteCandidate);
-                logger.info("Response of updates custom resource representation: {}", res);
-                configModelService.saveState();
-                var jsonObject = new JSONObject();
-                jsonObject.put("connectorResponse", response);
-                jsonObject.put("resourceID", resourceId.toString());
-                jsonObject.put("representationID", representationId.toString());
-                return ResponseEntity.ok(jsonObject.toJSONString());
-            } else {
+            }else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No representation with given IDs found!");
             }
         } catch (IOException e) {
@@ -256,11 +205,12 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
     @Override
     public ResponseEntity<String> getResourceRepresentation(URI resourceId, URI representationId) {
 
-        if (configModelService.getConfigModel() == null || configModelService.getConfigModel().getAppRoute() == null) {
+        if (configModelService.getConfigModel() == null ||
+                configModelService.getConfigModel().getConnectorDescription().getResourceCatalog() == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Could not find any resources!\"}");
         }
-        for (AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
-            for (Resource resource : appRoute.getAppRouteOutput()) {
+        for (ResourceCatalog resourceCatalog : configModelService.getConfigModel().getConnectorDescription().getResourceCatalog()) {
+            for (Resource resource : resourceCatalog.getOfferedResource()) {
                 if (resourceId.equals(resource.getId())) {
                     for (Representation representation : resource.getRepresentation()) {
                         if (representationId.equals(representation.getId())) {
@@ -288,8 +238,8 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
     @Override
     public ResponseEntity<String> getResourceRepresentationInJson(URI resourceId, URI representationId) {
 
-        for (AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
-            for (Resource resource : appRoute.getAppRouteOutput()) {
+        for (ResourceCatalog resourceCatalog : configModelService.getConfigModel().getConnectorDescription().getResourceCatalog()) {
+            for (Resource resource : resourceCatalog.getOfferedResource()) {
                 if (resourceId.equals(resource.getId())) {
                     for (Representation representation : resource.getRepresentation()) {
                         if (representationId.equals(representation.getId())) {
@@ -321,30 +271,13 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
     @Override
     public ResponseEntity<String> deleteResourceRepresentation(URI resourceId, URI representationId) {
 
-        if (configModelService.getConfigModel() == null || configModelService.getConfigModel().getAppRoute() == null
+        if (configModelService.getConfigModel() == null
                 || configModelService.getConfigModel().getConnectorDescription().getResourceCatalog() == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Could not find any resources!\"}");
         }
 
         // Delete representation in app route
         var deleted = false;
-        Resource foundResource = null;
-
-        for (AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
-            for (RouteStep routeStep : appRoute.getHasSubRoute()) {
-                if (routeStep != null && routeStep.getAppRouteOutput() != null) {
-                    for (Resource resource : routeStep.getAppRouteOutput()) {
-                        if (resourceId.equals(resource.getId())) {
-                            foundResource = resource;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        if (foundResource != null) {
-            deleted |= foundResource.getRepresentation().removeIf(representation -> representation.getId().equals(representationId));
-        }
 
         // Delete representation in catalog
         for (ResourceCatalog resourceCatalog : configModelService.getConfigModel().getConnectorDescription().getResourceCatalog()) {

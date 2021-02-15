@@ -1,6 +1,9 @@
 package de.fraunhofer.isst.configmanager.controller;
 
-import de.fraunhofer.iais.eis.*;
+import de.fraunhofer.iais.eis.ContractOffer;
+import de.fraunhofer.iais.eis.Resource;
+import de.fraunhofer.iais.eis.ResourceCatalog;
+import de.fraunhofer.iais.eis.ResourceImpl;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
@@ -50,18 +53,22 @@ public class ResourceContractUIController implements ResourceContractApi {
     @Override
     public ResponseEntity<String> getResourceContract(URI resourceId) {
 
-        if (configModelService.getConfigModel() == null || configModelService.getConfigModel().getAppRoute() == null) {
+        if (configModelService.getConfigModel() == null ||
+                configModelService.getConfigModel().getConnectorDescription().getResourceCatalog() == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Could not find any resources!\"}");
         }
 
-        for (AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
-            for (Resource resource : appRoute.getAppRouteOutput()) {
-                if (resourceId.equals(resource.getId())) {
-                    if (resource.getContractOffer().get(0) != null) {
-                        try {
-                            return ResponseEntity.ok(serializer.serialize(resource.getContractOffer().get(0)));
-                        } catch (IOException e) {
-                            logger.error(e.getMessage());
+        for (ResourceCatalog resourceCatalog : configModelService.getConfigModel()
+                .getConnectorDescription().getResourceCatalog()) {
+            if (resourceCatalog.getOfferedResource() != null) {
+                for (Resource resource : resourceCatalog.getOfferedResource()) {
+                    if (resourceId.equals(resource.getId())) {
+                        if (resource.getContractOffer().get(0) != null) {
+                            try {
+                                return ResponseEntity.ok(serializer.serialize(resource.getContractOffer().get(0)));
+                            } catch (IOException e) {
+                                logger.error(e.getMessage());
+                            }
                         }
                     }
                 }
@@ -80,8 +87,8 @@ public class ResourceContractUIController implements ResourceContractApi {
     @Override
     public ResponseEntity<String> updateResourceContract(URI resourceId, String contractJson) {
 
-        if (configModelService.getConfigModel() == null || configModelService.getConfigModel().getAppRoute() == null
-                || configModelService.getConfigModel().getConnectorDescription().getResourceCatalog() == null) {
+        if (configModelService.getConfigModel() == null ||
+                configModelService.getConfigModel().getConnectorDescription().getResourceCatalog() == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Could not find any resources!\"}");
         }
 
@@ -92,19 +99,6 @@ public class ResourceContractUIController implements ResourceContractApi {
                 contractOffer = serializer.deserialize(contractJson, ContractOffer.class);
             } catch (IOException e) {
                 logger.error(e.getMessage());
-            }
-        }
-
-        // Update resource contract in app route
-        for (AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
-            if (appRoute.getAppRouteOutput() != null) {
-                for (Resource resource : appRoute.getAppRouteOutput()) {
-                    if (resourceId.equals(resource.getId())) {
-                        var resourceImpl = (ResourceImpl) resource;
-                        resourceImpl.setContractOffer(Util.asList(contractOffer));
-                        break;
-                    }
-                }
             }
         }
 
