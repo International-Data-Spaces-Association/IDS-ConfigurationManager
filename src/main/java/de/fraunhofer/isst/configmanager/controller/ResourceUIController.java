@@ -1,13 +1,11 @@
 package de.fraunhofer.isst.configmanager.controller;
 
-import de.fraunhofer.iais.eis.*;
+import de.fraunhofer.iais.eis.Resource;
+import de.fraunhofer.iais.eis.ResourceImpl;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
-import de.fraunhofer.iais.eis.util.TypedLiteral;
-import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ResourceService;
-import de.fraunhofer.isst.configmanager.util.CalenderUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -22,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * The controller class implements the ResourceUIApi and offers the possibilities to manage
@@ -130,22 +127,7 @@ public class ResourceUIController implements ResourceUIApi {
     @Override
     public ResponseEntity<String> deleteResource(URI resourceId) {
 
-        boolean deleted = configModelService.getConfigModel().getConnectorDescription().getResourceCatalog()
-                .stream()
-                .map(ResourceCatalog::getOfferedResource)
-                .map(resources -> resources.removeIf(resource -> resource.getId().equals(resourceId)))
-                .reduce(false, (a, b) -> a || b);
-
-        if (configModelService.getConfigModel().getAppRoute() == null) {
-            logger.info("Could not find any app route to delete the resource");
-        } else {
-            deleted |= configModelService.getConfigModel().getAppRoute().stream()
-                    .map(AppRoute::getHasSubRoute)
-                    .flatMap(Collection::stream)
-                    .map(RouteStep::getAppRouteOutput)
-                    .map(resources -> resources != null && resources.removeIf(resource -> resource.getId().equals(resourceId)))
-                    .reduce(false, (a, b) -> a || b);
-        }
+        boolean deleted = resourceService.deleteResource(resourceId);
 
         if (deleted) {
             try {
@@ -182,59 +164,15 @@ public class ResourceUIController implements ResourceUIApi {
                                                  String publisher) {
 
 
-        ArrayList<TypedLiteral> keys = new ArrayList<>();
-        for (String keyword : keywords) {
-            keys.add(new TypedLiteral(keyword));
-        }
-
-        var configModulIMpl = (ConfigurationModelImpl) configModelService.getConfigModel();
-
-        // Create the resource with the given parameters
-        Resource resource = new ResourceBuilder()
-                ._title_(Util.asList(new TypedLiteral(title)))
-                ._description_(Util.asList(new TypedLiteral(description)))
-                ._language_(Util.asList(Language.valueOf(language)))
-                ._keyword_(keys)
-                ._version_(version)
-                ._standardLicense_(URI.create(standardlicense))
-                ._publisher_(URI.create(publisher))
-                ._created_(CalenderUtil.getGregorianNow())
-                ._modified_(CalenderUtil.getGregorianNow())
-                .build();
-        var resourceImpl = (ResourceImpl) resource;
-
-        // Set Resource in Connector
-        var connectorImpl = (BaseConnectorImpl) configModulIMpl.getConnectorDescription();
-
-        if (connectorImpl.getResourceCatalog() == null) {
-            // New resource catalog will be set, if it is not existing
-            connectorImpl.setResourceCatalog(new ArrayList<>());
-        }
-        var oldCatalog = configModulIMpl.getConnectorDescription().getResourceCatalog()
-                .stream().findAny();
-        ArrayList<Resource> resources;
-        if (oldCatalog.isPresent()) {
-            //get the offers as List of Resources instead of Capture of ? extends Resource
-            resources = (ArrayList<Resource>) oldCatalog.get().getOfferedResource();
-            //add the resource to the list
-            resources.add(resourceImpl);
-        } else {
-            // Resource will be added to the list of offered resources and the resource catalog of the connector will be
-            // updated.
-            resources = new ArrayList<>();
-            resources.add(resourceImpl);
-            var catalog = new ResourceCatalogBuilder()
-                    ._offeredResource_(resources)
-                    ._requestedResource_(new ArrayList<>()).build();
-            connectorImpl.setResourceCatalog(Util.asList(catalog));
-        }
+        ResourceImpl resource = resourceService.createResource(title, description, language, keywords,
+                version, standardlicense, publisher);
 
         // Save and send request to dataspace connector
         var jsonObject = new JSONObject();
         try {
             configModelService.saveState();
-            jsonObject.put("resourceID", resourceImpl.getId().toString());
-            var response = client.registerResource(resourceImpl);
+            jsonObject.put("resourceID", resource.getId().toString());
+            var response = client.registerResource(resource);
             jsonObject.put("connectorResponse", response);
             return ResponseEntity.ok(jsonObject.toJSONString());
         } catch (IOException e) {
@@ -263,54 +201,13 @@ public class ResourceUIController implements ResourceUIApi {
                                                  ArrayList<String> keywords, String version, String standardlicense,
                                                  String publisher) {
 
-        // Update resource in resource catalog
-        ResourceImpl resourceImpl = null;
-        var configModelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
-        var catalogs = configModelImpl.getConnectorDescription().getResourceCatalog();
-        // Find the correct resource in the resource catalog of the connector
-        for (var catalog : catalogs) {
-            for (var offerdResource : catalog.getOfferedResource()) {
-                if (resourceId.equals(offerdResource.getId())) {
-                    resourceImpl = (ResourceImpl) offerdResource;
-                    break;
-                }
-            }
-        }
-        // Update the resource with the given parameters
-        if (resourceImpl != null) {
-            resourceService.updateResourceContent(title, description, language, keywords, version, standardlicense,
-                    publisher, resourceImpl);
-        }
-
-        // Update the resource in the app route
-        if (configModelService.getConfigModel().getAppRoute() == null) {
-            logger.info("Could not find any app route to update the resource");
-        } else {
-            ResourceImpl resourceImplApp = null;
-            for (AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
-                if (appRoute.getHasSubRoute() != null) {
-                    for (RouteStep routeStep : appRoute.getHasSubRoute()) {
-                        if (routeStep.getAppRouteOutput() != null) {
-                            for (Resource resource : routeStep.getAppRouteOutput()) {
-                                if (resourceId.equals(resource.getId())) {
-                                    resourceImplApp = (ResourceImpl) resource;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            if (resourceImplApp != null) {
-                resourceService.updateResourceContent(title, description, language, keywords, version, standardlicense,
-                        publisher, resourceImplApp);
-            }
-        }
+        ResourceImpl updatedResource = resourceService.updateResource(resourceId, title, description, language, keywords,
+                version, standardlicense, publisher);
 
         // Save the updated resource and update the resource in the dataspace connector
         try {
             configModelService.saveState();
-            var response = client.updateResource(resourceId, resourceImpl);
+            var response = client.updateResource(resourceId, updatedResource);
             var jsonObject = new JSONObject();
             jsonObject.put("connectorResponse", response);
             jsonObject.put("resourceID", resourceId.toString());

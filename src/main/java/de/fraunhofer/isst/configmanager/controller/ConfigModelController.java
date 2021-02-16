@@ -121,7 +121,9 @@ public class ConfigModelController implements ConfigModelApi {
         configModelJson.put("connectorStatus", configurationModel.getConnectorStatus());
         configModelJson.put("connectorDeployMode", configurationModel.getConnectorDeployMode());
         configModelJson.put("trustStore", configurationModel.getTrustStore().toString());
+        configModelJson.put("trustStorePassword", configurationModel.getTrustStorePassword());
         configModelJson.put("keyStore", configurationModel.getKeyStore().toString());
+        configModelJson.put("keyStorePassword", configurationModel.getKeyStorePassword());
 
         return ResponseEntity.ok(configModelJson.toJSONString());
     }

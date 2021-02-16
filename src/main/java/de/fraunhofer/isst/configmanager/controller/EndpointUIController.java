@@ -255,9 +255,7 @@ public class EndpointUIController implements EndpointUIApi {
         ConnectorEndpoint connectorEndpoint = new ConnectorEndpointBuilder()._accessURL_(URI.create(accessUrl)).build();
         // Add Connector Endpoint in Connector
         connectorEndpoints.add(connectorEndpoint);
-
         configModelService.saveState();
-
         var jsonObject = new JSONObject();
         jsonObject.put("connectorEndpointId", connectorEndpoint.getId().toString());
         jsonObject.put("message", "Created a new connector endpoint for the connector");

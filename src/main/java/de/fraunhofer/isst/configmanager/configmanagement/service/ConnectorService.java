@@ -6,7 +6,6 @@ import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.config.BaseConnectorObject;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.ConnectorList;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.ConnectorListRepository;
-import de.fraunhofer.isst.configmanager.configmanagement.service.listeners.ConnectorListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,12 +24,13 @@ public class ConnectorService {
 
     private final static Logger logger = LoggerFactory.getLogger(ConnectorService.class);
     private final ConnectorListRepository connectorListRepository;
-    private List<ConnectorListener> listeners;
     private ConnectorList connectors;
+    private final ConfigModelService configModelService;
 
     @Autowired
-    public ConnectorService(ConnectorListRepository connectorListRepository) {
+    public ConnectorService(ConnectorListRepository connectorListRepository, ConfigModelService configModelService) {
         this.connectorListRepository = connectorListRepository;
+        this.configModelService = configModelService;
 
         // If no connector is found in the database, a default connector is created at this point.
         if (connectorListRepository.count() == 0) {
@@ -50,21 +50,6 @@ public class ConnectorService {
             logger.info("Loading configurations from db");
             connectors = connectorListRepository.findAll().stream().findAny().get();
         }
-    }
-
-    /**
-     * @param listeners, which notify about changes
-     */
-    @Autowired
-    public void setListeners(List<ConnectorListener> listeners) {
-        this.listeners = listeners;
-    }
-
-    /**
-     * The method saves the state in the repository.
-     */
-    public void saveState() {
-        connectors = connectorListRepository.saveAndFlush(connectors);
     }
 
     /**
@@ -99,5 +84,46 @@ public class ConnectorService {
                 ._inboundModelVersion_(Util.asList(inboundedModelVersion))
                 ._outboundModelVersion_(outbundedModelVersion)
                 ._securityProfile_(SecurityProfile.BASE_SECURITY_PROFILE).build();
+    }
+
+    public boolean updateConnector(String title, String description, String endpointAccessURL, String version,
+                                   String curator, String maintainer, String inboundModelVersion, String outboundModelVersion) {
+
+        boolean updated = false;
+        var connector = (BaseConnectorImpl) configModelService.getConfigModel()
+                .getConnectorDescription();
+        if (connector != null) {
+            if (title != null) {
+                connector.setTitle(Util.asList(new TypedLiteral(title)));
+            }
+            if (description != null) {
+                connector.setDescription(Util.asList(new TypedLiteral(description)));
+            }
+            if (endpointAccessURL != null) {
+                connector.setHasEndpoint(Util.asList(new ConnectorEndpointBuilder()
+                        ._accessURL_(URI.create(endpointAccessURL)).build()));
+            }
+            if (version != null) {
+                connector.setVersion(version);
+            }
+            if (curator != null) {
+                connector.setCurator(URI.create(curator));
+            }
+            if (maintainer != null) {
+                connector.setMaintainer(URI.create(maintainer));
+            }
+            if (inboundModelVersion != null) {
+                connector.setInboundModelVersion(Util.asList(inboundModelVersion));
+            }
+            if (outboundModelVersion != null) {
+                connector.setOutboundModelVersion(outboundModelVersion);
+            }
+            connector.setSecurityProfile(SecurityProfile.BASE_SECURITY_PROFILE);
+            updated = true;
+        }
+        var configModelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
+        configModelImpl.setConnectorDescription(connector);
+        configModelService.saveState();
+        return updated;
     }
 }
