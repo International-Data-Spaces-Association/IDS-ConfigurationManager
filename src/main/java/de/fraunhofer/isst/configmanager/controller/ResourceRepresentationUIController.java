@@ -152,19 +152,37 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
                 .orElse(null);
 
         // Check if parameters are null and when not update it with new values
-        if (catalogCandidate != null) {
-            if (language != null) {
-                catalogCandidate.setLanguage(Language.valueOf(language));
+        updateRepresentation(language, filenameExtension, bytesize, sourceType, catalogCandidate);
+
+        // Try to update resource representation in the app routes, if it exists
+        if (configModelService.getConfigModel().getAppRoute() == null) {
+            logger.info("Could not find any app route to update the resource representation");
+        } else {
+            RepresentationImpl appRouteCandidate = null;
+            for (AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
+                if (appRoute.getHasSubRoute() != null) {
+                    for (RouteStep routeStep : appRoute.getHasSubRoute()) {
+                        if (routeStep.getAppRouteOutput() != null) {
+                            for (Resource resource : routeStep.getAppRouteOutput()) {
+                                if (resourceId.equals(resource.getId())) {
+                                    if (resource.getRepresentation() != null) {
+                                        for (Representation representation : resource.getRepresentation()) {
+                                            if (representationId.equals(representation.getId())) {
+                                                appRouteCandidate = (RepresentationImpl) representation;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
-            if (filenameExtension != null) {
-                catalogCandidate.setMediaType(new IANAMediaTypeBuilder()
-                        ._filenameExtension_(filenameExtension).build());
-            }
-            if (bytesize != null) {
-                catalogCandidate.setInstance(Util.asList(new ArtifactBuilder()
-                        ._byteSize_(BigInteger.valueOf(bytesize)).build()));
-            }
+
+            // Check if parameters are null and when not update it with new values
+            updateRepresentation(language, filenameExtension, bytesize, sourceType, appRouteCandidate);
         }
+
         try {
             // Update the resource representation in the dataspace connector
             if (catalogCandidate != null) {
@@ -185,7 +203,7 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
                 jsonObject.put("resourceID", resourceId.toString());
                 jsonObject.put("representationID", representationId.toString());
                 return ResponseEntity.ok(jsonObject.toJSONString());
-            }else {
+            } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No representation with given IDs found!");
             }
         } catch (IOException e) {
@@ -276,7 +294,6 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Could not find any resources!\"}");
         }
 
-        // Delete representation in app route
         var deleted = false;
 
         // Delete representation in catalog
@@ -291,6 +308,31 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
             }
         }
 
+        // Delete representation in app route if exists
+        if (configModelService.getConfigModel().getAppRoute() == null) {
+            logger.info("No app route found to delete the resource representation");
+        } else {
+            Resource foundresource = null;
+            for (AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
+                if (appRoute.getHasSubRoute() != null) {
+                    for (RouteStep routeStep : appRoute.getHasSubRoute()) {
+                        if (routeStep.getAppRouteOutput() != null) {
+                            for (Resource resource : routeStep.getAppRouteOutput()) {
+                                if (resourceId.equals(resource.getId())) {
+                                    foundresource = resource;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (foundresource != null) {
+                deleted |= foundresource.getRepresentation()
+                        .removeIf(representation -> representation.getId().equals(representationId));
+            }
+
+        }
         try {
             if (deleted) {
                 var response = client.deleteResourceRepresentation(resourceId.toString(),
@@ -308,5 +350,34 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
             logger.error(e.getMessage());
         }
         return ResponseEntity.badRequest().body("Could not delete the resource representation");
+    }
+
+    /**
+     * @param language           language of the representation
+     * @param filenameExtension  filename extension
+     * @param bytesize           byte size of the representation
+     * @param sourceType         source type of the representation
+     * @param representationImpl representation implementation
+     */
+    private void updateRepresentation(String language, String filenameExtension, Long bytesize, String sourceType,
+                                      RepresentationImpl representationImpl) {
+        if (representationImpl != null) {
+            if (language != null) {
+                representationImpl.setLanguage(Language.valueOf(language));
+            }
+            if (filenameExtension != null) {
+                representationImpl.setMediaType(null);
+                representationImpl.setMediaType(new IANAMediaTypeBuilder()
+                        ._filenameExtension_(filenameExtension).build());
+            }
+            if (bytesize != null) {
+                representationImpl.setInstance(null);
+                representationImpl.setInstance(Util.asList(new ArtifactBuilder()
+                        ._byteSize_(BigInteger.valueOf(bytesize)).build()));
+            }
+            if (sourceType != null) {
+                representationImpl.setProperty("ids:sourceType", sourceType);
+            }
+        }
     }
 }
