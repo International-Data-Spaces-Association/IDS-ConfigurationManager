@@ -136,12 +136,16 @@ public class ResourceUIController implements ResourceUIApi {
                 .map(resources -> resources.removeIf(resource -> resource.getId().equals(resourceId)))
                 .reduce(false, (a, b) -> a || b);
 
-        deleted |= configModelService.getConfigModel().getAppRoute().stream()
-                .map(AppRoute::getHasSubRoute)
-                .flatMap(Collection::stream)
-                .map(RouteStep::getAppRouteOutput)
-                .map(resources -> resources != null && resources.removeIf(resource -> resource.getId().equals(resourceId)))
-                .reduce(false, (a, b) -> a || b);
+        if (configModelService.getConfigModel().getAppRoute() == null) {
+            logger.info("Could not find any app route to delete the resource");
+        } else {
+            deleted |= configModelService.getConfigModel().getAppRoute().stream()
+                    .map(AppRoute::getHasSubRoute)
+                    .flatMap(Collection::stream)
+                    .map(RouteStep::getAppRouteOutput)
+                    .map(resources -> resources != null && resources.removeIf(resource -> resource.getId().equals(resourceId)))
+                    .reduce(false, (a, b) -> a || b);
+        }
 
         if (deleted) {
             try {
@@ -272,11 +276,35 @@ public class ResourceUIController implements ResourceUIApi {
                 }
             }
         }
-
         // Update the resource with the given parameters
         if (resourceImpl != null) {
             resourceService.updateResourceContent(title, description, language, keywords, version, standardlicense,
                     publisher, resourceImpl);
+        }
+
+        // Update the resource in the app route
+        if (configModelService.getConfigModel().getAppRoute() == null) {
+            logger.info("Could not find any app route to update the resource");
+        } else {
+            ResourceImpl resourceImplApp = null;
+            for (AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
+                if (appRoute.getHasSubRoute() != null) {
+                    for (RouteStep routeStep : appRoute.getHasSubRoute()) {
+                        if (routeStep.getAppRouteOutput() != null) {
+                            for (Resource resource : routeStep.getAppRouteOutput()) {
+                                if (resourceId.equals(resource.getId())) {
+                                    resourceImplApp = (ResourceImpl) resource;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (resourceImplApp != null) {
+                resourceService.updateResourceContent(title, description, language, keywords, version, standardlicense,
+                        publisher, resourceImplApp);
+            }
         }
 
         // Save the updated resource and update the resource in the dataspace connector

@@ -1,9 +1,6 @@
 package de.fraunhofer.isst.configmanager.controller;
 
-import de.fraunhofer.iais.eis.ContractOffer;
-import de.fraunhofer.iais.eis.Resource;
-import de.fraunhofer.iais.eis.ResourceCatalog;
-import de.fraunhofer.iais.eis.ResourceImpl;
+import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
@@ -54,7 +51,7 @@ public class ResourceContractUIController implements ResourceContractApi {
     public ResponseEntity<String> getResourceContract(URI resourceId) {
 
         if (configModelService.getConfigModel() == null ||
-                configModelService.getConfigModel().getConnectorDescription().getResourceCatalog() == null){
+                configModelService.getConfigModel().getConnectorDescription().getResourceCatalog() == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Could not find any resources!\"}");
         }
 
@@ -110,11 +107,35 @@ public class ResourceContractUIController implements ResourceContractApi {
                     if (resourceId.equals(resource.getId())) {
                         var resourceImpl = (ResourceImpl) resource;
                         resourceImpl.setContractOffer(Util.asList(contractOffer));
+                        logger.info("Updated resource representation in the resource catalog");
                         break;
                     }
                 }
             }
         }
+
+        // Update resource representation in app route
+        if (configModelService.getConfigModel().getAppRoute() == null) {
+            logger.info("Could not find any app route");
+        } else {
+            for (AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
+                if (appRoute.getHasSubRoute() != null) {
+                    for (RouteStep routeStep : appRoute.getHasSubRoute()) {
+                        if (routeStep.getAppRouteOutput() != null) {
+                            for (Resource resource : routeStep.getAppRouteOutput()) {
+                                if (resourceId.equals(resource.getId())) {
+                                    var resourceImpl = (ResourceImpl) resource;
+                                    resourceImpl.setContractOffer(Util.asList(contractOffer));
+                                    logger.info("Updated resource representation in the app route");
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         var jsonObject = new JSONObject();
         try {
             configModelService.saveState();

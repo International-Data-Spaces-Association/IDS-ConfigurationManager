@@ -5,6 +5,7 @@ import de.fraunhofer.iais.eis.Representation;
 import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.iais.eis.util.RdfResource;
+import de.fraunhofer.iais.eis.util.TypedLiteral;
 import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.BackendSource;
 import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.ResourceIDPair;
 import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.ResourceMetadata;
@@ -186,10 +187,15 @@ public class DataSpaceConnectorResourceMapper {
      * @return a source type
      */
     private ResourceRepresentation.SourceType resolveSourceType(Representation representation) {
-        String propertyString = (String) representation.getProperties().getOrDefault("ids:sourceType", null);
-        if(propertyString == null) propertyString = (String) representation.getProperties().get("sourceType");
         ResourceRepresentation.SourceType sourceType;
-        sourceType = ResourceRepresentation.SourceType.valueOf(propertyString);
+        TypedLiteral typedLiteral = (TypedLiteral) representation.getProperties()
+                .getOrDefault("https://w3id.org/idsa/core/sourceType", null);
+        if (typedLiteral != null) {
+            sourceType = ResourceRepresentation.SourceType.valueOf(typedLiteral.getValue());
+        } else {
+            String propName = (String) representation.getProperties().get("ids:sourceType");
+            sourceType = ResourceRepresentation.SourceType.valueOf(propName);
+        }
         return sourceType;
     }
 
