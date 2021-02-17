@@ -72,4 +72,10 @@ public interface BrokerUIApi {
     ResponseEntity<String> deleteResourceAtBroker(@RequestParam(value = "brokerUri") URI brokerUri,
                                                   @RequestParam("resourceId") URI resourceId);
 
+    @GetMapping(value = "/broker/resource/information", produces = "application/ld+json")
+    @Operation(summary = "Returns information about registration status for resources")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully returned information about" +
+            " registration status for resources")})
+    ResponseEntity<String> getRegisterStatusForResource(@RequestParam("resourceId") URI resourceId);
+
 }

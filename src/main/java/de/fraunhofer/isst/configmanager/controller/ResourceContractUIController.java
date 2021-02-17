@@ -95,11 +95,12 @@ public class ResourceContractUIController implements ResourceContractApi {
                 contractOffer = serializer.deserialize(contractJson, ContractOffer.class);
             } catch (IOException e) {
                 logger.error(e.getMessage());
+                return ResponseEntity.badRequest().body("Problems while deserializing the contract");
             }
         }
 
         // Update the resource contract
-        if (resourceService.updateResourceContract(resourceId, contractOffer)) {
+        if (contractOffer != null && resourceService.updateResourceContract(resourceId, contractOffer)) {
             var jsonObject = new JSONObject();
             try {
                 configModelService.saveState();

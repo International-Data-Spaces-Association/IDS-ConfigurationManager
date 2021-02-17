@@ -231,6 +231,7 @@ public class BrokerUIController implements BrokerUIApi {
 
         if (broker != null) {
             try {
+                brokerService.setResourceAtBroker(brokerUri, resourceId);
                 return ResponseEntity.ok(client.updateResourceAtBroker(brokerUri.toString(), resourceId));
             } catch (IOException e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -254,6 +255,7 @@ public class BrokerUIController implements BrokerUIApi {
 
         if (broker != null) {
             try {
+                brokerService.deleteResourceAtBroker(brokerUri, resourceId);
                 return ResponseEntity.ok(client.deleteResourceAtBroker(brokerUri.toString(), resourceId));
             } catch (IOException e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -261,6 +263,18 @@ public class BrokerUIController implements BrokerUIApi {
             }
         } else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> getRegisterStatusForResource(URI resourceId) {
+
+        var jsonObjet = brokerService.getRegisStatusForResource(resourceId);
+
+        if (jsonObjet == null) {
+            return ResponseEntity.badRequest().body("Could not get registration status for resource");
+        } else {
+            return ResponseEntity.ok(jsonObjet.toJSONString());
         }
     }
 

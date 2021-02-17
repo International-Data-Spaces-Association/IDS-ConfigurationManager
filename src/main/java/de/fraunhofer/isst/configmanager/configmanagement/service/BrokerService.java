@@ -3,6 +3,8 @@ package de.fraunhofer.isst.configmanager.configmanagement.service;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.config.BrokerStatus;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.config.CustomBroker;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.CustomBrokerRepository;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -138,5 +140,76 @@ public class BrokerService {
             customBroker.setBrokerStatus(brokerStatus);
             customBrokerRepository.save(customBroker);
         }
+    }
+
+    /**
+     * This method set a resource at a broker.
+     *
+     * @param brokerId   id of the broker
+     * @param resourceId id of the resource
+     */
+    public void setResourceAtBroker(URI brokerId, URI resourceId) {
+        CustomBroker customBroker = getById(brokerId);
+        if (customBroker != null) {
+            if (customBroker.getRegisteredResources() == null) {
+                customBroker.setRegisteredResources(new ArrayList<>());
+            }
+            List<String> registeredResources = customBroker.getRegisteredResources();
+            registeredResources.add(resourceId.toString());
+            customBroker.setRegisteredResources(registeredResources);
+            customBrokerRepository.save(customBroker);
+        }
+    }
+
+    /**
+     * This method deletes the resource at the broker
+     *
+     * @param brokerUri  id of the broker
+     * @param resourceId id of the resource
+     */
+    public void deleteResourceAtBroker(URI brokerUri, URI resourceId) {
+        CustomBroker customBroker = getById(brokerUri);
+        if (customBroker != null) {
+            if (customBroker.getRegisteredResources() == null) {
+                logger.info("Could not found any resource to delete");
+            } else {
+                List<String> registeredResources = customBroker.getRegisteredResources();
+                registeredResources.removeIf(s -> s.equals(resourceId.toString()));
+                customBroker.setRegisteredResources(registeredResources);
+                customBrokerRepository.save(customBroker);
+            }
+        }
+    }
+
+    /**
+     * This method creates a JSON for the registration status of a resource at a broker
+     *
+     * @param resourceId id of the resource
+     * @return jsonObject
+     */
+    public JSONArray getRegisStatusForResource(URI resourceId) {
+
+        List<CustomBroker> customBrokers = customBrokerRepository.findAll();
+        if (customBrokers.isEmpty()) {
+            logger.info("Could not find any broker");
+        } else {
+            var jsonArray = new JSONArray();
+            for (CustomBroker customBroker : customBrokers) {
+                if (customBroker.getRegisteredResources() != null) {
+                    for (String id : customBroker.getRegisteredResources()) {
+                        if (resourceId.toString().equals(id)) {
+                            var jsonObject = new JSONObject();
+                            jsonObject.put("brokerId", customBroker.getBrokerUri().toString());
+                            jsonObject.put("brokerStatus", customBroker.getBrokerStatus().toString());
+                            jsonObject.put("resourceId", resourceId.toString());
+                            jsonObject.put("resourceStatus", "REGISTERED");
+                            jsonArray.add(jsonObject);
+                        }
+                    }
+                }
+            }
+            return jsonArray;
+        }
+        return null;
     }
 }
