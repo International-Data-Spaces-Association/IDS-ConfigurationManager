@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.UUID;
 
 /**
  * A prototypical implementation of the interface DefaultConnectorClient for the dataspace connector.
@@ -213,12 +214,13 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         LOGGER.info(String.format("updating resource at Broker %s", brokerUri));
         String path = resourceID.getPath();
         String idStr = path.substring(path.lastIndexOf('/') + 1);
+        UUID resourceUUID = UUID.fromString(idStr);
         var builder = new Request.Builder();
         builder.url(new HttpUrl.Builder()
                 .scheme("https")
                 .host(dataSpaceConnectorHost)
                 .port(dataSpaceConnectorPort)
-                .addPathSegments("admin/api/broker/update/" + idStr)
+                .addPathSegments("admin/api/broker/update/" + resourceUUID)
                 .addQueryParameter("broker", brokerUri)
                 .build());
         builder.post(RequestBody.create(null, new byte[0]));
