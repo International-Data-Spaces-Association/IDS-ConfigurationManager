@@ -160,7 +160,9 @@ public class ConfigModelService {
      * @return true, if the state is saved
      */
     public boolean saveState() {
+        LOGGER.info("ConfigList before: " + configModelList);
         configModelList = configModelRepository.saveAndFlush(configModelList);
+        LOGGER.info("ConfigList after: " + configModelList);
         return true;
     }
 

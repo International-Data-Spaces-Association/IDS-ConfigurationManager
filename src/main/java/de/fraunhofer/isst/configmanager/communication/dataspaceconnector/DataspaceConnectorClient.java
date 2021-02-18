@@ -374,9 +374,10 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         var mappedResource = dataSpaceConnectorResourceMapper.getMetadata(resource);
         String path = resourceID.getPath();
         String idStr = path.substring(path.lastIndexOf('/') + 1);
+        UUID resourceUUID = UUID.fromString(idStr);
         var resourceJsonLD = MAPPER.writeValueAsString(mappedResource);
         var builder = new Request.Builder();
-        builder.url("https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin/api/resources/" + idStr);
+        builder.url("https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin/api/resources/" + resourceUUID);
         builder.put(RequestBody.create(resourceJsonLD, okhttp3.MediaType.parse("application/json")));
         builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername, dataSpaceConnectorApiPassword));
         var request = builder.build();
