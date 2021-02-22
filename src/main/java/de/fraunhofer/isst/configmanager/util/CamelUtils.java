@@ -6,6 +6,7 @@ import de.fraunhofer.iais.eis.ConnectorEndpoint;
 import de.fraunhofer.iais.eis.Endpoint;
 import de.fraunhofer.iais.eis.GenericEndpoint;
 import de.fraunhofer.iais.eis.RouteStep;
+import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.DataspaceConnectorRouteConfigurer;
 import de.fraunhofer.isst.configmanager.communication.trustedconnector.TrustedConnectorRouteConfigurer;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -72,7 +73,11 @@ public class CamelUtils {
         ArrayList<? extends Endpoint> routeStart = appRoute.getAppRouteStart();
         if (routeStart.get(0) instanceof ConnectorEndpoint) {
             ConnectorEndpoint connectorEndpoint = (ConnectorEndpoint) routeStart.get(0);
-            velocityContext.put("startUrl", removeUriScheme(connectorEndpoint.getAccessURL()));
+            if (connectorEndpoint.getAccessURL().toString().startsWith("idscp")) {
+                velocityContext.put("startUrl", removeUriScheme(connectorEndpoint.getAccessURL()));
+            } else {
+                velocityContext.put("startUrl", connectorEndpoint.getAccessURL().toString());
+            }
         } else if (routeStart.get(0) instanceof GenericEndpoint) {
             GenericEndpoint genericEndpoint = (GenericEndpoint) routeStart.get(0);
             velocityContext.put("startUrl", genericEndpoint.getAccessURL().toString());
@@ -83,7 +88,11 @@ public class CamelUtils {
         ArrayList<? extends Endpoint> routeEnd = appRoute.getAppRouteEnd();
         if (routeEnd.get(0) instanceof ConnectorEndpoint) {
             ConnectorEndpoint connectorEndpoint = (ConnectorEndpoint) routeEnd.get(0);
-            velocityContext.put("endUrl", removeUriScheme(connectorEndpoint.getAccessURL()));
+            if (connectorEndpoint.getAccessURL().toString().startsWith("idscp")) {
+                velocityContext.put("endUrl", removeUriScheme(connectorEndpoint.getAccessURL()));
+            } else {
+                velocityContext.put("endUrl", connectorEndpoint.getAccessURL().toString());
+            }
         } else if (routeEnd.get(0) instanceof GenericEndpoint) {
             GenericEndpoint genericEndpoint = (GenericEndpoint) routeEnd.get(0);
             velocityContext.put("endUrl", genericEndpoint.getAccessURL().toString());
@@ -94,14 +103,21 @@ public class CamelUtils {
         //get route steps (if any)
         List<String> routeStepUrls = new ArrayList<>();
         for (RouteStep routeStep: appRoute.getHasSubRoute()) {
-            routeStepUrls.add(routeStep.getAppRouteStart().get(0).getAccessURL().toString());
+            if (routeStep.getAppRouteEnd().get(0).getAccessURL().toString().startsWith("idscp")) {
+                routeStepUrls.add(removeUriScheme(routeStep.getAppRouteEnd().get(0).getAccessURL()));
+            } else {
+                routeStepUrls.add(routeStep.getAppRouteEnd().get(0).getAccessURL().toString());
+            }
+
         }
         velocityContext.put("routeStepUrls", routeStepUrls);
 
+        //add connector implementation dependent information to context and choose route template
         Resource template;
         if (dataspaceConnectorEnabled) {
             LOGGER.debug("Creating route for Dataspace Connector.");
-            template = null;
+            DataspaceConnectorRouteConfigurer.addBasicAuthToContext(velocityContext);
+            template = DataspaceConnectorRouteConfigurer.getRouteTemplate(appRoute);
         } else {
             LOGGER.debug("Creating route for Trusted Connector.");
             TrustedConnectorRouteConfigurer.addSslConfig(velocityContext, configurationModel);
