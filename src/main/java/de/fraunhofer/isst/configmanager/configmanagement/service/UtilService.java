@@ -3,6 +3,7 @@ package de.fraunhofer.isst.configmanager.configmanagement.service;
 import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.DataSpaceConnectorResourceMapper;
+import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.BackendSource;
 import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.ResourceRepresentation;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.config.BrokerStatus;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.routeDeployMethod.DeployMethod;
@@ -78,7 +79,7 @@ public class UtilService {
             }
         }
         if (name.contains("sourcetype")) {
-            ResourceRepresentation.SourceType[] sourceTypes = ResourceRepresentation.SourceType.values();
+            BackendSource.Type[] sourceTypes = BackendSource.Type.values();
             for (int i = 0; i < sourceTypes.length; i++) {
                 jsonArray.add(i, sourceTypes[i].name());
             }

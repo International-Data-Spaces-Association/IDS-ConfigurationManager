@@ -141,11 +141,10 @@ public class DataSpaceConnectorResourceMapper {
         resourceRepresentation.setByteSize(byteSize);
         var backendSource = new BackendSource();
         backendSource.setPassword("");
-        backendSource.setSystem("");
         backendSource.setUrl(URI.create("https://example.com"));
         backendSource.setUsername("");
+        backendSource.setType(resolveSourceType(representation));
         resourceRepresentation.setSource(backendSource);
-        resourceRepresentation.setSourceType(resolveSourceType(representation));
         resourceRepresentation.setType(representation.getMediaType().getFilenameExtension());
         return resourceRepresentation;
     }
@@ -171,11 +170,10 @@ public class DataSpaceConnectorResourceMapper {
         resourceRepresentation.setByteSize(byteSize);
         var backendSource = new BackendSource();
         backendSource.setPassword(password);
-        backendSource.setSystem("");
         backendSource.setUrl(URI.create(accessUrl));
         backendSource.setUsername(username);
+        backendSource.setType(resolveSourceType(representation));
         resourceRepresentation.setSource(backendSource);
-        resourceRepresentation.setSourceType(resolveSourceType(representation));
         resourceRepresentation.setType(representation.getMediaType().getFilenameExtension());
         return resourceRepresentation;
     }
@@ -186,15 +184,15 @@ public class DataSpaceConnectorResourceMapper {
      * @param representation
      * @return a source type
      */
-    private ResourceRepresentation.SourceType resolveSourceType(Representation representation) {
-        ResourceRepresentation.SourceType sourceType;
+    private BackendSource.Type resolveSourceType(Representation representation) {
+        BackendSource.Type sourceType;
         TypedLiteral typedLiteral = (TypedLiteral) representation.getProperties()
                 .getOrDefault("https://w3id.org/idsa/core/sourceType", null);
         if (typedLiteral != null) {
-            sourceType = ResourceRepresentation.SourceType.valueOf(typedLiteral.getValue());
+            sourceType = BackendSource.Type.valueOf(typedLiteral.getValue());
         } else {
             String propName = (String) representation.getProperties().get("ids:sourceType");
-            sourceType = ResourceRepresentation.SourceType.valueOf(propName);
+            sourceType = BackendSource.Type.valueOf(propName);
         }
         return sourceType;
     }
