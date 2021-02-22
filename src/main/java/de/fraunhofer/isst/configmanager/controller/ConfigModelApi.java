@@ -27,10 +27,10 @@ public interface ConfigModelApi {
     ResponseEntity<String> updateConfigModel(@RequestParam(value = "loglevel", required = false) String loglevel,
                                              @RequestParam(value = "connectorStatus", required = false) String connectorStatus,
                                              @RequestParam(value = "connectorDeployMode", required = false) String connectorDeployMode,
-                                             @RequestParam("trustStore") String trustStore,
-                                             @RequestParam("trustStorePassword") String trustStorePassword,
-                                             @RequestParam("keyStore") String keyStore,
-                                             @RequestParam("keyStorePassword") String keyStorePassword);
+                                             @RequestParam(value = "trustStore", required = false) String trustStore,
+                                             @RequestParam(value = "trustStorePassword", required = false) String trustStorePassword,
+                                             @RequestParam(value = "keyStore", required = false) String keyStore,
+                                             @RequestParam(value = "keyStorePassword", required = false) String keyStorePassword);
 
 
     @GetMapping(value = "/configmodel", produces = "application/ld+json")
