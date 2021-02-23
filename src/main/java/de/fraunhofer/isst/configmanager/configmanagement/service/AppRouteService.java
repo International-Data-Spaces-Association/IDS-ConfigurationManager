@@ -198,6 +198,7 @@ public class AppRouteService {
     public RouteStep createAppRouteStep(URI routeId, URI startId, int startCoordinateX, int startCoordinateY,
                                         URI endID, int endCoordinateX, int endCoordinateY, URI resourceId) {
 
+        RouteStep routeStep = null;
         // Create and save the endpoints of the route with the respective coordinates
         EndpointInformation startEndpointInformation =
                 new EndpointInformation(routeId.toString(), startId.toString(), startCoordinateX, startCoordinateY);
@@ -238,7 +239,6 @@ public class AppRouteService {
             // Create route step
             if (startEndpoint != null && endpoint != null) {
                 Resource resource = resourceService.getResource(resourceId);
-                RouteStep routeStep;
                 if (resource != null) {
 
                     // Set resource endpoint
@@ -268,10 +268,9 @@ public class AppRouteService {
                 }
                 routeSteps.add(routeStep);
                 configModelService.saveState();
-                return routeStep;
             }
         }
-        return null;
+        return routeStep;
     }
 
     /**
@@ -283,7 +282,7 @@ public class AppRouteService {
     private Endpoint getEndpoint(URI endpointId) {
         // Search endpoint in the app repository
         List<CustomApp> customAppList = customAppRepository.findAll();
-        if (customAppList.size() != 0) {
+        if (customAppList.size() != 0 && endpointId.toString().contains("appEndpoint")) {
             var customApp = customAppList.stream()
                     .map(CustomApp::getAppEndpointList)
                     .flatMap(Collection::stream)
@@ -294,10 +293,13 @@ public class AppRouteService {
             }
         }
         // Search endpoint in the backend repository and in list of connector endpoints
-        if (endpointService.getGenericEndpoints().size() != 0) {
+        if (endpointService.getGenericEndpoints().size() != 0 && endpointId.toString().contains("genericEndpoint")) {
             GenericEndpoint genericEndpoint = endpointService.getGenericEndpoint(endpointId);
             if (genericEndpoint != null) return genericEndpoint;
-            else return configModelService.getConfigModel().getConnectorDescription().getHasEndpoint()
+        }
+        if (configModelService.getConfigModel().getConnectorDescription().getHasEndpoint().size() != 0
+                && endpointId.toString().contains("connectorEndpoint")) {
+            return configModelService.getConfigModel().getConnectorDescription().getHasEndpoint()
                     .stream().filter(connectorEndpoint -> connectorEndpoint.getId().equals(endpointId))
                     .findAny().orElse(null);
         }

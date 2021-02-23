@@ -2,6 +2,8 @@ package de.fraunhofer.isst.configmanager.configmanagement.entities.converter;
 
 import de.fraunhofer.iais.eis.ConfigurationModel;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
@@ -13,6 +15,7 @@ import java.io.IOException;
 @Converter
 public class ConfigModelConverter implements AttributeConverter<ConfigurationModel, String> {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigModelConverter.class);
     private final Serializer serializer = new Serializer();
 
     /**
@@ -27,7 +30,7 @@ public class ConfigModelConverter implements AttributeConverter<ConfigurationMod
         try {
             return serializer.serialize(configurationModel);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage());
             return null;
         }
     }
@@ -43,7 +46,7 @@ public class ConfigModelConverter implements AttributeConverter<ConfigurationMod
         try {
             return serializer.deserialize(s, ConfigurationModel.class);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage());
             return null;
         }
     }
