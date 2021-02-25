@@ -2,7 +2,6 @@ package de.fraunhofer.isst.configmanager.communication.clients;
 
 import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.ResourceRepresentation;
-import de.fraunhofer.isst.configmanager.configmanagement.service.listeners.ConfigModelListener;
 
 import java.io.IOException;
 import java.net.URI;
@@ -12,7 +11,7 @@ import java.net.URI;
  * configurations for the dataspace connector.
  * The implementations of the ConfigManager are oriented according to the structure of the dataspace connectors.
  */
-public interface DefaultConnectorClient extends ConfigModelListener {
+public interface DefaultConnectorClient{
 
     /**
      * The method helps to update connector in the broker. For this only the id of the corresponding broker
@@ -32,15 +31,6 @@ public interface DefaultConnectorClient extends ConfigModelListener {
      * @throws IOException when sending the request fails
      */
     String unregisterAtBroker(String brokerURI) throws IOException;
-
-    /**
-     * The boolean method helps to send the current configuration model to the target connector.
-     *
-     * @param configurationModel current configuration model that is sent to the target Connector
-     * @return true if connector accepted configuration
-     * @throws IOException when request cannot be sent
-     */
-    boolean sendConfiguration(String configurationModel) throws IOException;
 
     /**
      * The method returns the current configuration model.

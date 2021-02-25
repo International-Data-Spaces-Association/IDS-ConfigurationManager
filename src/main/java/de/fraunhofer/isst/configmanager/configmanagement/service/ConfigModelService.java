@@ -6,7 +6,6 @@ import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorCl
 import de.fraunhofer.isst.configmanager.configmanagement.entities.config.ConfigModelObject;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.ConfigModelList;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.ConfigModelRepository;
-import de.fraunhofer.isst.configmanager.configmanagement.service.listeners.ConfigModelListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,14 +27,12 @@ public class ConfigModelService {
 
     private final ConfigModelRepository configModelRepository;
     private ConfigModelList configModelList;
-    private final List<ConfigModelListener> listeners;
     private final DefaultConnectorClient client;
 
     @Autowired
-    public ConfigModelService(ConfigModelRepository configModelRepository, List<ConfigModelListener> listeners,
+    public ConfigModelService(ConfigModelRepository configModelRepository,
                               DefaultConnectorClient client) {
         this.configModelRepository = configModelRepository;
-        this.listeners = listeners;
         this.client = client;
         this.configModelList = new ConfigModelList();
         if (configModelRepository.findAll().isEmpty()) {
@@ -60,17 +57,16 @@ public class ConfigModelService {
         } else {
             LOGGER.info("Reloading old configuration");
             configModelList = configModelRepository.findAll().get(0);
+            LOGGER.warn("Old configuration is invalid, using Connectors configuration!");
+            ConfigurationModel configmodel = null;
             try {
-                var valid = client.sendConfiguration(SERIALIZER.serialize(getConfigModel()));
-                if (!valid) {
-                    LOGGER.warn("Old configuration is invalid, using Connectors configuration!");
-                    var configmodel = client.getConfiguration();
-                    updateConfigModel(configmodel);
-                }
+                configmodel = client.getConfiguration();
             } catch (IOException e) {
-                LOGGER.warn("Could not get a valid ConfigurationModel and/or Connector is not reachable!");
+                LOGGER.warn("Could not get Configmodel from Connector!");
             }
+            updateConfigModel(configmodel);
         }
+
     }
 
     /**
@@ -167,29 +163,6 @@ public class ConfigModelService {
     }
 
     /**
-     * The method saves the current state and sends the configuration to the target connector.
-     *
-     * @return true, if state is saved and send the configuration to the target connector
-     */
-    public boolean saveStateAndSend() {
-        var accepted = false;
-        try {
-            var configmodel = getConfigModel();
-            accepted = client.sendConfiguration(SERIALIZER.serialize(configmodel));
-            if (!accepted) {
-                LOGGER.warn("New configuration was not accepted! Trying to get valid config from connector!");
-                if (!updateConfigModel(client.getConfiguration())) {
-                    LOGGER.warn("Could not roll back update of configuration!");
-                }
-            }
-        } catch (IOException e) {
-            LOGGER.warn("Could not send configuration to Client!");
-        }
-        configModelList = configModelRepository.saveAndFlush(configModelList);
-        return accepted;
-    }
-
-    /**
      * This method updates the configuration model with the given parameters.
      *
      * @param loglevel            logging level of the configuration model
@@ -241,17 +214,17 @@ public class ConfigModelService {
      */
     public void updateConfigurationModelProxy(String proxyUri, ArrayList<URI> noProxyUriList,
                                               String username, String password, ProxyImpl proxyImpl) {
-        if (proxyUri!=null && !proxyUri.isEmpty()) {
+        if (proxyUri != null && !proxyUri.isEmpty()) {
             proxyImpl.setProxyURI(URI.create(proxyUri));
         }
         if (noProxyUriList != null) {
             proxyImpl.setNoProxy(noProxyUriList);
         }
-        if (username!=null && !username.isEmpty()) {
+        if (username != null && !username.isEmpty()) {
             proxyImpl.setProxyAuthentication(new BasicAuthenticationBuilder(proxyImpl.getProxyAuthentication().getId())
                     ._authUsername_(username)._authPassword_(proxyImpl.getProxyAuthentication().getAuthPassword()).build());
         }
-        if (password!=null && !password.isEmpty()) {
+        if (password != null && !password.isEmpty()) {
             proxyImpl.setProxyAuthentication(new BasicAuthenticationBuilder(proxyImpl.getProxyAuthentication().getId())
                     ._authUsername_(proxyImpl.getProxyAuthentication().getAuthUsername())._authPassword_(password).build());
         }

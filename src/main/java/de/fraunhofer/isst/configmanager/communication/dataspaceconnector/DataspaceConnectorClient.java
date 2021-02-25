@@ -89,24 +89,6 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
     }
 
     @Override
-    public boolean sendConfiguration(String configurationModel) throws IOException {
-        LOGGER.info(String.format("sending new configuration to %s", dataSpaceConnectorHost));
-        var builder = new Request.Builder();
-        builder.url("https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin/api/configuration");
-        builder.post(RequestBody.create(configurationModel, okhttp3.MediaType.parse("application/ld+json")));
-        builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername, dataSpaceConnectorApiPassword));
-        var request = builder.build();
-        var response = client.newCall(request).execute();
-        if (!response.isSuccessful()) {
-            LOGGER.warn(String.format("Updating ConfigurationModel at %s failed!", dataSpaceConnectorHost));
-            return false;
-        }
-        var body = response.body().string();
-        LOGGER.info("Response: " + body);
-        return true;
-    }
-
-    @Override
     public ConfigurationModel getConfiguration() throws IOException {
         var builder = new Request.Builder();
         builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername, dataSpaceConnectorApiPassword));
@@ -146,18 +128,6 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         var body = response.body().string();
         LOGGER.info(body);
         return SERIALIZER.deserialize(body, BaseConnector.class);
-    }
-
-    @Override
-    public void notifyConfig(ConfigurationModel configurationModel) {
-        String configurationModelJsonLd = null;
-        try {
-            configurationModelJsonLd = SERIALIZER.serialize(configurationModel);
-            sendConfiguration(configurationModelJsonLd);
-        } catch (IOException e) {
-            LOGGER.warn("Could not send new ConfigurationModel!");
-            LOGGER.warn(e.getMessage());
-        }
     }
 
     @Override
