@@ -23,7 +23,6 @@ import java.util.List;
 public class ConfigModelService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigModelService.class);
-    private static final Serializer SERIALIZER = new Serializer();
 
     private final ConfigModelRepository configModelRepository;
     private ConfigModelList configModelList;
@@ -58,13 +57,15 @@ public class ConfigModelService {
             LOGGER.info("Reloading old configuration");
             configModelList = configModelRepository.findAll().get(0);
             LOGGER.warn("Old configuration is invalid, using Connectors configuration!");
-            ConfigurationModel configmodel = null;
+            ConfigurationModel configmodel;
             try {
                 configmodel = client.getConfiguration();
+                if (configmodel != null) {
+                    updateConfigModel(configmodel);
+                }
             } catch (IOException e) {
                 LOGGER.warn("Could not get Configmodel from Connector!");
             }
-            updateConfigModel(configmodel);
         }
 
     }
@@ -214,17 +215,18 @@ public class ConfigModelService {
      */
     public void updateConfigurationModelProxy(String proxyUri, ArrayList<URI> noProxyUriList,
                                               String username, String password, ProxyImpl proxyImpl) {
-        if (proxyUri != null && !proxyUri.isEmpty()) {
+
+        if (proxyUri!=null && !proxyUri.equals("null")) {
             proxyImpl.setProxyURI(URI.create(proxyUri));
         }
         if (noProxyUriList != null) {
             proxyImpl.setNoProxy(noProxyUriList);
         }
-        if (username != null && !username.isEmpty()) {
+        if (username != null && !username.equals("null")) {
             proxyImpl.setProxyAuthentication(new BasicAuthenticationBuilder(proxyImpl.getProxyAuthentication().getId())
                     ._authUsername_(username)._authPassword_(proxyImpl.getProxyAuthentication().getAuthPassword()).build());
         }
-        if (password != null && !password.isEmpty()) {
+        if (password != null && !password.equals("null")) {
             proxyImpl.setProxyAuthentication(new BasicAuthenticationBuilder(proxyImpl.getProxyAuthentication().getId())
                     ._authUsername_(proxyImpl.getProxyAuthentication().getAuthUsername())._authPassword_(password).build());
         }
