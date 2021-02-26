@@ -56,14 +56,30 @@ public class ConfigModelProxyUIController implements ConfigModelProxyApi {
     @Override
     public ResponseEntity<String> updateConfigModelProxy(String proxyUri, ArrayList<URI> noProxyUriList,
                                                          String username, String password) {
-
-        if (configModelService.getConfigModel().getConnectorProxy() == null) {
-            return ResponseEntity.badRequest().body("Could not find any proxy setting to update.");
+        var configmodelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
+        if (proxyUri.equals("null")) {
+            configmodelImpl.setConnectorProxy(null);
+            configModelService.saveState();
+            return ResponseEntity.badRequest().body("Deleted the proxy settings of the configuration " +
+                    "model");
         } else {
-            var proxyImpl = (ProxyImpl) configModelService.getConfigModel().getConnectorProxy().get(0);
-            configModelService.updateConfigurationModelProxy(proxyUri, noProxyUriList, username, password, proxyImpl);
-            return ResponseEntity.ok(Utility.jsonMessage("message", "Successfully updated proxy for the" +
-                    " configuration model with the id: " + proxyImpl.getId().toString()));
+            if (configModelService.getConfigModel().getConnectorProxy() == null) {
+                Proxy proxy = new ProxyBuilder()
+                        ._proxyURI_(URI.create(proxyUri))
+                        ._noProxy_(noProxyUriList)
+                        ._proxyAuthentication_(new BasicAuthenticationBuilder()
+                                ._authUsername_(username)._authPassword_(password).build())
+                        .build();
+                configmodelImpl.setConnectorProxy(Util.asList(proxy));
+                configModelService.saveState();
+                return ResponseEntity.ok("Created a new proxy setting for the configuration model");
+            } else {
+                var proxyImpl = (ProxyImpl) configModelService.getConfigModel().getConnectorProxy().get(0);
+                configModelService.updateConfigurationModelProxy(proxyUri, noProxyUriList, username, password, proxyImpl);
+                configModelService.saveState();
+                return ResponseEntity.ok(Utility.jsonMessage("message", "Successfully updated proxy for the" +
+                        " configuration model"));
+            }
         }
     }
 

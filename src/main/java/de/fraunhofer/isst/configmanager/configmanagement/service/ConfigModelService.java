@@ -216,17 +216,17 @@ public class ConfigModelService {
     public void updateConfigurationModelProxy(String proxyUri, ArrayList<URI> noProxyUriList,
                                               String username, String password, ProxyImpl proxyImpl) {
 
-        if (proxyUri!=null && !proxyUri.equals("null")) {
+        if (proxyUri!=null ) {
             proxyImpl.setProxyURI(URI.create(proxyUri));
         }
         if (noProxyUriList != null) {
             proxyImpl.setNoProxy(noProxyUriList);
         }
-        if (username != null && !username.equals("null")) {
+        if (username != null) {
             proxyImpl.setProxyAuthentication(new BasicAuthenticationBuilder(proxyImpl.getProxyAuthentication().getId())
                     ._authUsername_(username)._authPassword_(proxyImpl.getProxyAuthentication().getAuthPassword()).build());
         }
-        if (password != null && !password.equals("null")) {
+        if (password != null) {
             proxyImpl.setProxyAuthentication(new BasicAuthenticationBuilder(proxyImpl.getProxyAuthentication().getId())
                     ._authUsername_(proxyImpl.getProxyAuthentication().getAuthUsername())._authPassword_(password).build());
         }
