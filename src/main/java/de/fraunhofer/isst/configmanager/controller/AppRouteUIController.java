@@ -330,18 +330,4 @@ public class AppRouteUIController implements AppRouteApi {
             configModelService.saveState();
         }
     }
-
-    /**
-     * This method validates the created app route for correctness and completeness
-     *
-     * @param routeId id of the app route
-     * @return a suitable http response depending on success
-     */
-    @Override
-    public ResponseEntity<String> validateAppRoute(URI routeId) {
-
-        String validationMessage = appRouteService.validateAppRoute(routeId);
-        return ResponseEntity.ok(validationMessage);
-
-    }
 }

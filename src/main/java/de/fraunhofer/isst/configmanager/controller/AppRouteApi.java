@@ -39,12 +39,6 @@ public interface AppRouteApi {
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully get all app routes")})
     ResponseEntity<String> getAppRoutes();
 
-    @GetMapping(value = "/approute/validate", produces = "application/ld+json")
-    @Operation(summary = "Validates the created routes for completeness and correctness")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "Validated the created routes for completeness" +
-            " and correctness")})
-    ResponseEntity<String> validateAppRoute(@RequestParam(value = "routeId") URI routeId);
-
     // Interfaces for managing route steps
     @GetMapping(value = "/approute/step", produces = "application/ld+json")
     @Operation(summary = "Returns the specific route step")

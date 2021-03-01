@@ -1,7 +1,6 @@
 package de.fraunhofer.isst.configmanager.configmanagement.service;
 
 import de.fraunhofer.iais.eis.*;
-import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.config.ConfigModelObject;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.ConfigModelList;
@@ -77,7 +76,9 @@ public class ConfigModelService {
      * @param connectorStatus     status of the connector
      * @param connectorDeployMode deploy mode of the connector
      * @param trustStore          the certificate
+     * @param trustStorePassword  password for the trust store
      * @param keyStore            repository for certificates
+     * @param keyStorePassword    password for the key store
      * @return configurationmodel
      */
     public ConfigurationModel createConfigModel(String loglevel, String connectorStatus, String connectorDeployMode,
@@ -216,7 +217,7 @@ public class ConfigModelService {
     public void updateConfigurationModelProxy(String proxyUri, ArrayList<URI> noProxyUriList,
                                               String username, String password, ProxyImpl proxyImpl) {
 
-        if (proxyUri!=null ) {
+        if (proxyUri != null) {
             proxyImpl.setProxyURI(URI.create(proxyUri));
         }
         if (noProxyUriList != null) {
