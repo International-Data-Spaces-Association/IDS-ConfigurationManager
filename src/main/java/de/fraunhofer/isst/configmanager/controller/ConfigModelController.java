@@ -41,7 +41,6 @@ public class ConfigModelController implements ConfigModelApi {
      * This method creates a configuration model with the given parameters.
      *
      * @param loglevel            loglevel of the configuration model
-     * @param connectorStatus     connector status of the configuration model
      * @param connectorDeployMode connector deploy mode of the configuration model
      * @param trustStore          trustStore of the configuration model
      * @param trustStorePassword  password of the trust store
@@ -50,11 +49,11 @@ public class ConfigModelController implements ConfigModelApi {
      * @return a suitable http response depending on success
      */
     @Override
-    public ResponseEntity<String> createConfigModel(String loglevel, String connectorStatus, String connectorDeployMode,
+    public ResponseEntity<String> createConfigModel(String loglevel, String connectorDeployMode,
                                                     String trustStore, String trustStorePassword, String keyStore,
                                                     String keyStorePassword) {
 
-        ConfigurationModel configurationModel = configModelService.createConfigModel(loglevel, connectorStatus,
+        ConfigurationModel configurationModel = configModelService.createConfigModel(loglevel,
                 connectorDeployMode, trustStore, trustStorePassword, keyStore, keyStorePassword);
         if (configurationModel != null) {
             return ResponseEntity.ok(Utility.jsonMessage("message", "Successfully created a new configuration" +
@@ -68,7 +67,6 @@ public class ConfigModelController implements ConfigModelApi {
      * This method updates the configuration model with the given parameters.
      *
      * @param loglevel            loglevel of the configuration model
-     * @param connectorStatus     connector status of the configuration model
      * @param connectorDeployMode connector deploy mode of the configuration model
      * @param trustStore          trustStore of the configuration model
      * @param trustStorePassword  password of the trust store
@@ -77,11 +75,11 @@ public class ConfigModelController implements ConfigModelApi {
      * @return a suitable http response depending on success
      */
     @Override
-    public ResponseEntity<String> updateConfigModel(String loglevel, String connectorStatus, String connectorDeployMode,
+    public ResponseEntity<String> updateConfigModel(String loglevel, String connectorDeployMode,
                                                     String trustStore, String trustStorePassword, String keyStore,
                                                     String keyStorePassword) {
 
-        var result = configModelService.updateConfigurationModel(loglevel, connectorStatus,
+        var result = configModelService.updateConfigurationModel(loglevel,
                 connectorDeployMode, trustStore, trustStorePassword, keyStore, keyStorePassword);
         if (result) {
             return ResponseEntity.ok(Utility.jsonMessage("message", "Successfully updated the configuration" +

@@ -3,6 +3,7 @@ package de.fraunhofer.isst.configmanager.configmanagement.service;
 import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.config.ConfigModelObject;
+//import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.ConfigModelList;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.ConfigModelList;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.ConfigModelRepository;
 import org.slf4j.Logger;
@@ -42,9 +43,9 @@ public class ConfigModelService {
                 LOGGER.info("Received configuration from running Connector!");
             } catch (IOException e) {
                 LOGGER.warn("Could not get Configmodel from Connector! Using placeholder!");
+
                 createConfigModel(
                         "NO_LOGGING",
-                        "CONNECTOR_OFFLINE",
                         "TEST_DEPLOYMENT",
                         "http://t",
                         "tPassword",
@@ -73,7 +74,6 @@ public class ConfigModelService {
      * The method creates a configuration model with the given parameters.
      *
      * @param loglevel            loglevel of the configuration model
-     * @param connectorStatus     status of the connector
      * @param connectorDeployMode deploy mode of the connector
      * @param trustStore          the certificate
      * @param trustStorePassword  password for the trust store
@@ -81,7 +81,7 @@ public class ConfigModelService {
      * @param keyStorePassword    password for the key store
      * @return configurationmodel
      */
-    public ConfigurationModel createConfigModel(String loglevel, String connectorStatus, String connectorDeployMode,
+    public ConfigurationModel createConfigModel(String loglevel, String connectorDeployMode,
                                                 String trustStore, String trustStorePassword, String keyStore,
                                                 String keyStorePassword) {
 
@@ -96,7 +96,7 @@ public class ConfigModelService {
         ConfigurationModel configurationModel = new ConfigurationModelBuilder()
                 ._configurationModelLogLevel_(LogLevel.valueOf(loglevel))
                 ._connectorDescription_(connector)
-                ._connectorStatus_(ConnectorStatus.valueOf(connectorStatus))
+                ._connectorStatus_(ConnectorStatus.CONNECTOR_OFFLINE)
                 ._connectorDeployMode_(ConnectorDeployMode.valueOf(connectorDeployMode))
                 ._trustStore_(URI.create(trustStore))
                 ._trustStorePassword_(trustStorePassword)
@@ -168,7 +168,6 @@ public class ConfigModelService {
      * This method updates the configuration model with the given parameters.
      *
      * @param loglevel            logging level of the configuration model
-     * @param connectorStatus     connector status of the configuration model
      * @param connectorDeployMode connector deploy mode of the configuration model
      * @param trustStore          trust store of the configuration model
      * @param trustStorePassword  password of the trust store
@@ -176,16 +175,13 @@ public class ConfigModelService {
      * @param keyStorePassword    password of the key store
      * @return true, if configuration model is updated
      */
-    public boolean updateConfigurationModel(String loglevel, String connectorStatus, String connectorDeployMode,
+    public boolean updateConfigurationModel(String loglevel, String connectorDeployMode,
                                             String trustStore, String trustStorePassword, String keyStore,
                                             String keyStorePassword) {
 
         ConfigurationModelImpl configModelImpl = (ConfigurationModelImpl) getConfigModel();
         if (loglevel != null) {
             configModelImpl.setConfigurationModelLogLevel(LogLevel.valueOf(loglevel));
-        }
-        if (connectorStatus != null) {
-            configModelImpl.setConnectorStatus(ConnectorStatus.valueOf(connectorStatus));
         }
         if (connectorDeployMode != null) {
             configModelImpl.setConnectorDeployMode(ConnectorDeployMode.valueOf(connectorDeployMode));
