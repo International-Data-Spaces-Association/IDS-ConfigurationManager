@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
+import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.BackendSource;
 import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.ResourceRepresentation;
+import de.fraunhofer.isst.configmanager.configmanagement.service.EndpointService;
 import de.fraunhofer.isst.configmanager.util.OkHttpUtils;
 import okhttp3.*;
 import org.slf4j.Logger;
@@ -37,6 +39,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
 
     private final OkHttpClient client = OkHttpUtils.getUnsafeOkHttpClient();
     private final DataSpaceConnectorResourceMapper dataSpaceConnectorResourceMapper;
+    private final EndpointService endpointService;
 
     @Value("${dataspace.connector.host}")
     private String dataSpaceConnectorHost;
@@ -50,8 +53,10 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
     @Value("${dataspace.connector.port}")
     private Integer dataSpaceConnectorPort;
 
-    public DataspaceConnectorClient(DataSpaceConnectorResourceMapper dataSpaceConnectorResourceMapper) {
+    public DataspaceConnectorClient(DataSpaceConnectorResourceMapper dataSpaceConnectorResourceMapper,
+                                    EndpointService endpointService) {
         this.dataSpaceConnectorResourceMapper = dataSpaceConnectorResourceMapper;
+        this.endpointService = endpointService;
     }
 
     @Override
@@ -251,9 +256,11 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
     }
 
     @Override
-    public String registerResourceRepresentation(String resourceID, Representation representation) throws IOException {
+    public String registerResourceRepresentation(String resourceID, Representation representation, String endpointId) throws IOException {
         LOGGER.info(String.format("registering resource at %s", dataSpaceConnectorHost));
         var mappedRepresentation = dataSpaceConnectorResourceMapper.mapRepresentation(representation);
+        var backendSource = dataSpaceConnectorResourceMapper.createBackendSource(endpointId, representation);
+        mappedRepresentation.setSource(backendSource);
         var mappedResourceID = dataSpaceConnectorResourceMapper.readUUIDFromURI(URI.create(resourceID));
         var resourceJsonLD = MAPPER.writeValueAsString(mappedRepresentation);
         LOGGER.info("mapped representation: " + resourceJsonLD);
@@ -277,11 +284,13 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
     }
 
     @Override
-    public String updateResourceRepresentation(String resourceID, String representationID, Representation representation) throws IOException {
+    public String updateResourceRepresentation(String resourceID, String representationID, Representation representation, String endpointId) throws IOException {
         LOGGER.info(String.format("updating representation %s for resource %s at %s", representationID, resourceID, dataSpaceConnectorHost));
         var mappedResourceID = dataSpaceConnectorResourceMapper.readUUIDFromURI(URI.create(resourceID));
         var mappedRepresentationID = dataSpaceConnectorResourceMapper.getMappedId(URI.create(representationID));
         var mappedRepresentation = dataSpaceConnectorResourceMapper.mapRepresentation(representation);
+        var backendSource = dataSpaceConnectorResourceMapper.createBackendSource(endpointId, representation);
+        mappedRepresentation.setSource(backendSource);
         var resourceJsonLD = MAPPER.writeValueAsString(mappedRepresentation);
         LOGGER.info("mapped representation: " + resourceJsonLD);
         var builder = new Request.Builder();

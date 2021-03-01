@@ -117,7 +117,7 @@ public interface DefaultConnectorClient{
      * @return Response of the target Connector
      * @throws IOException when an error occurs while sending the request
      */
-    String registerResourceRepresentation(String resourceID, Representation representation) throws IOException;
+    String registerResourceRepresentation(String resourceID, Representation representation, String endpointId) throws IOException;
 
     /**
      * Send a resource representation update request to a connector.
@@ -128,7 +128,7 @@ public interface DefaultConnectorClient{
      * @return Response of the target Connector
      * @throws IOException when an error occurs while sending the request
      */
-    String updateResourceRepresentation(String resourceID, String representationID, Representation representation)
+    String updateResourceRepresentation(String resourceID, String representationID, Representation representation, String endpointId)
             throws IOException;
 
     /**

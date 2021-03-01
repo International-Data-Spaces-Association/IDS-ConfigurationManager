@@ -1,8 +1,6 @@
 package de.fraunhofer.isst.configmanager.communication.dataspaceconnector;
 
-import de.fraunhofer.iais.eis.Artifact;
-import de.fraunhofer.iais.eis.Representation;
-import de.fraunhofer.iais.eis.Resource;
+import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.iais.eis.util.RdfResource;
 import de.fraunhofer.iais.eis.util.TypedLiteral;
@@ -11,6 +9,7 @@ import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.R
 import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.ResourceMetadata;
 import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.ResourceRepresentation;
 import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.repos.ResourceIDPairRepository;
+import de.fraunhofer.isst.configmanager.configmanagement.service.EndpointService;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -29,6 +28,7 @@ import java.util.stream.Collectors;
 public class DataSpaceConnectorResourceMapper {
 
     private static final Serializer SERIALIZER = new Serializer();
+    private final EndpointService endpointService;
 
     /**
      * Pattern is created, which has the following structure:
@@ -41,8 +41,10 @@ public class DataSpaceConnectorResourceMapper {
     private final ResourceIDPairRepository resourceIDPairRepository;
 
 
-    public DataSpaceConnectorResourceMapper(ResourceIDPairRepository resourceIDPairRepository) {
+    public DataSpaceConnectorResourceMapper(ResourceIDPairRepository resourceIDPairRepository,
+                                            EndpointService endpointService) {
         this.resourceIDPairRepository = resourceIDPairRepository;
+        this.endpointService = endpointService;
     }
 
     /**
@@ -139,12 +141,6 @@ public class DataSpaceConnectorResourceMapper {
             byteSize = artifact.getByteSize().intValue();
         }
         resourceRepresentation.setByteSize(byteSize);
-        var backendSource = new BackendSource();
-        backendSource.setPassword("");
-        backendSource.setUrl(URI.create("https://example.com"));
-        backendSource.setUsername("");
-        backendSource.setType(resolveSourceType(representation));
-        resourceRepresentation.setSource(backendSource);
         resourceRepresentation.setType(representation.getMediaType().getFilenameExtension());
         return resourceRepresentation;
     }
@@ -226,5 +222,28 @@ public class DataSpaceConnectorResourceMapper {
             uuid = pairs.get(0).getUuid();
         }
         return uuid;
+    }
+
+    public BackendSource createBackendSource(String endpointId, Representation representation) {
+        var backendSource = new BackendSource();
+        var endpoint = (GenericEndpoint) endpointService.getGenericEndpoints()
+                .stream()
+                .filter(endP -> endP.getId().equals(URI.create(endpointId))).findAny().orElse(null);
+
+        if (endpoint != null) {
+            BasicAuthenticationImpl basicAuth =
+                    (BasicAuthenticationImpl) endpoint.getGenericEndpointAuthentication();
+            if (basicAuth != null) {
+                backendSource.setPassword(endpoint.getAccessURL().toString());
+                backendSource.setUrl(URI.create(basicAuth.getAuthUsername()));
+                backendSource.setUsername(basicAuth.getAuthPassword());
+            } else {
+                backendSource.setPassword("");
+                backendSource.setUrl(URI.create("https://example.com"));
+                backendSource.setUsername("");
+            }
+        }
+        backendSource.setType(resolveSourceType(representation));
+        return backendSource;
     }
 }

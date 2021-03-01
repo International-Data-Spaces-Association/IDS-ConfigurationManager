@@ -101,12 +101,12 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
             jsonObject.put("resourceID", resourceId.toString());
             jsonObject.put("representationID", representation.getId().toString());
 
-            var response = client.registerResourceRepresentation(resourceId.toString(), representation);
+            var response = client.registerResourceRepresentation(resourceId.toString(), representation, endpointId.toString());
             jsonObject.put("connectorResponse", response);
-            // Updates the custom resource representation of the connector
-            ResponseEntity<String> res =
-                    utilService.addEndpointToConnectorRepresentation(endpointId, resourceId, representation);
-            logger.info("Response of updates custom resource representation: {}", res);
+//            // Updates the custom resource representation of the connector
+//            ResponseEntity<String> res =
+//                    utilService.addEndpointToConnectorRepresentation(endpointId, resourceId, representation);
+//            logger.info("Response of updates custom resource representation: {}", res);
             // Saves the endpoint id associated with the representation id in the database
             representationEndpointService.createRepresentationEndpoint(endpointId, representation.getId());
             return ResponseEntity.ok(jsonObject.toJSONString());
@@ -164,13 +164,14 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
                 var response = client.updateResourceRepresentation(
                         resourceId.toString(),
                         representationId.toString(),
-                        catalogCandidate
+                        catalogCandidate,
+                        endpointId.toString()
                 );
 
-                // Updates the custom resource representation of the connector
-                ResponseEntity<String> res =
-                        utilService.addEndpointToConnectorRepresentation(endpointId, resourceId, catalogCandidate);
-                logger.info("Response of updates custom resource representation: {}", res);
+//                // Updates the custom resource representation of the connector
+//                ResponseEntity<String> res =
+//                        utilService.addEndpointToConnectorRepresentation(endpointId, resourceId, catalogCandidate);
+//                logger.info("Response of updates custom resource representation: {}", res);
 
                 configModelService.saveState();
                 var jsonObject = new JSONObject();
