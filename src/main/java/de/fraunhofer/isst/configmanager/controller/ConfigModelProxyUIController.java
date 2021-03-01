@@ -60,7 +60,7 @@ public class ConfigModelProxyUIController implements ConfigModelProxyApi {
         if (proxyUri.equals("null")) {
             configmodelImpl.setConnectorProxy(null);
             configModelService.saveState();
-            return ResponseEntity.badRequest().body("Deleted the proxy settings of the configuration " +
+            return ResponseEntity.ok("Deleted the proxy settings of the configuration " +
                     "model");
         } else {
             if (configModelService.getConfigModel().getConnectorProxy() == null) {

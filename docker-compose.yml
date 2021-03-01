@@ -1,0 +1,9 @@
+version: '3.5'
+
+services:
+  configmanager:
+    build:
+      context: .
+    container_name: 'configmanager-container'
+    ports:
+      - 8081:8081
