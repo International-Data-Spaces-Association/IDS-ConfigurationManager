@@ -242,7 +242,7 @@ public class AppRouteUIController implements AppRouteApi {
             try {
                 return ResponseEntity.ok(objectMapper.writeValueAsString(endpointInformation));
             } catch (JsonProcessingException e) {
-                return ResponseEntity.badRequest().body("Could not parse endpoint information to JSON");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not parse endpoint information to JSON");
             }
         } else {
             return ResponseEntity.badRequest().body("Could not get endpoint information");

@@ -140,40 +140,80 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Could not find any resources!\"}");
         }
 
-        // Determine the correct resource representation from the resource catalog of the connector
-        RepresentationImpl catalogCandidate = resourceService.getResourceRepresentationInCatalog(representationId);
-        if (catalogCandidate != null) {
-            // Check if parameters are null and when not update it with new values
-            resourceService.updateRepresentation(language, filenameExtension, bytesize, sourceType, catalogCandidate);
+        ResourceImpl oldResourceCatalog = (ResourceImpl) resourceService.getResource(resourceId);
+        URI oldRepresentationId = oldResourceCatalog.getRepresentation().get(0).getId();
+        if (oldResourceCatalog != null) {
+            oldResourceCatalog.setRepresentation(null);
         }
-
-        // Try to update resource representation in the app routes, if it exists
         if (configModelService.getConfigModel().getAppRoute() == null) {
-            logger.info("Could not find any app route to update the resource representation");
+            logger.info("Could not delete the old representation from the resource");
         } else {
-            RepresentationImpl appRouteCandidate = resourceService.getResourceRepresentationInAppRoute(resourceId, representationId);
-            // Check if parameters are null and when not update it with new values
-            if (appRouteCandidate != null) {
-                resourceService.updateRepresentation(language, filenameExtension, bytesize, sourceType, appRouteCandidate);
+            ResourceImpl oldResourceRoute = (ResourceImpl) resourceService.getResourceInAppRoute(resourceId);
+            if (oldResourceRoute != null) {
+                oldResourceRoute.setRepresentation(null);
             }
         }
 
+
+        // Create representation for resource
+        Representation representation = new RepresentationBuilder(oldRepresentationId).build();
+        var representationImpl = (RepresentationImpl) representation;
+        if (language != null) {
+            representationImpl.setLanguage(Language.valueOf(language));
+        }
+        if (filenameExtension != null) {
+            representationImpl.setMediaType(new IANAMediaTypeBuilder()
+                    ._filenameExtension_(filenameExtension).build());
+        }
+        if (bytesize != null) {
+            representationImpl.setInstance(Util.asList(new ArtifactBuilder()
+                    ._byteSize_(BigInteger.valueOf(bytesize)).build()));
+        }
+        if (sourceType != null) {
+            representationImpl.setProperty("ids:sourceType", sourceType);
+        }
+
+        // Update representation in resource catalog
+        for (ResourceCatalog resourceCatalog : configModelService.getConfigModel()
+                .getConnectorDescription().getResourceCatalog()) {
+            for (Resource resource : resourceCatalog.getOfferedResource()) {
+                if (resourceId.equals(resource.getId())) {
+                    var resourceImpl = (ResourceImpl) resource;
+                    resourceImpl.setRepresentation(Util.asList(representationImpl));
+                    break;
+                }
+            }
+        }
+
+        // Update representation in app route
+        for (AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
+            for (RouteStep routeStep : appRoute.getHasSubRoute()) {
+                for (Resource resource : routeStep.getAppRouteOutput()) {
+                    if (resourceId.equals(resource.getId())) {
+                        var resourceImpl = (ResourceImpl) resource;
+                        resourceImpl.setRepresentation(Util.asList(representationImpl));
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Update the backend connection to the new endpoint
+        resourceService.updateBackendConnection(resourceId, endpointId);
+
         try {
+
+            configModelService.saveState();
+
             // Update the resource representation in the dataspace connector
-            if (catalogCandidate != null) {
+            if (representationImpl != null) {
                 var response = client.updateResourceRepresentation(
                         resourceId.toString(),
                         representationId.toString(),
-                        catalogCandidate,
+                        representationImpl,
                         endpointId.toString()
                 );
 
-//                // Updates the custom resource representation of the connector
-//                ResponseEntity<String> res =
-//                        utilService.addEndpointToConnectorRepresentation(endpointId, resourceId, catalogCandidate);
-//                logger.info("Response of updates custom resource representation: {}", res);
-
-                configModelService.saveState();
                 var jsonObject = new JSONObject();
                 jsonObject.put("connectorResponse", response);
                 jsonObject.put("resourceID", resourceId.toString());

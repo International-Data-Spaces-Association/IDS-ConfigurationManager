@@ -3,7 +3,6 @@ package de.fraunhofer.isst.configmanager.configmanagement.service;
 import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.config.ConfigModelObject;
-//import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.ConfigModelList;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.ConfigModelList;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.ConfigModelRepository;
 import org.slf4j.Logger;
@@ -43,7 +42,6 @@ public class ConfigModelService {
                 LOGGER.info("Received configuration from running Connector!");
             } catch (IOException e) {
                 LOGGER.warn("Could not get Configmodel from Connector! Using placeholder!");
-
                 createConfigModel(
                         "NO_LOGGING",
                         "TEST_DEPLOYMENT",
@@ -56,18 +54,21 @@ public class ConfigModelService {
         } else {
             LOGGER.info("Reloading old configuration");
             configModelList = configModelRepository.findAll().get(0);
-            LOGGER.warn("Old configuration is invalid, using Connectors configuration!");
-            ConfigurationModel configmodel;
-            try {
-                configmodel = client.getConfiguration();
-                if (configmodel != null) {
-                    updateConfigModel(configmodel);
-                }
-            } catch (IOException e) {
-                LOGGER.warn("Could not get Configmodel from Connector!");
-            }
         }
-
+//        else {
+//            LOGGER.info("Reloading old configuration");
+//            configModelList = configModelRepository.findAll().get(0);
+//            try {
+//                var valid = client.sendConfiguration(serializer.serialize(getConfigModel()));
+//                if (!valid) {
+//                    LOGGER.warn("Old configuration is invalid, using Connectors configuration!");
+//                    var configmodel = client.getConfiguration();
+//                    updateConfigModel(configmodel);
+//                }
+//            } catch (IOException e) {
+//                LOGGER.warn("Could not get a valid ConfigurationModel and/or Connector is not reachable!");
+//            }
+//        }
     }
 
     /**

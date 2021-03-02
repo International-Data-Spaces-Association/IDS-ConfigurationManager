@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
-import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.BackendSource;
 import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.ResourceRepresentation;
 import de.fraunhofer.isst.configmanager.configmanagement.service.EndpointService;
 import de.fraunhofer.isst.configmanager.util.OkHttpUtils;
@@ -97,7 +96,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
     public ConfigurationModel getConfiguration() throws IOException {
         var builder = new Request.Builder();
         builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername, dataSpaceConnectorApiPassword));
-        builder.url("https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin/api/example/configuration");
+        builder.url("https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin/api/configuration");
         builder.get();
         var request = builder.build();
         var response = client.newCall(request).execute();
@@ -106,6 +105,24 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         }
         var body = response.body().string();
         return SERIALIZER.deserialize(body, ConfigurationModel.class);
+    }
+
+    @Override
+    public boolean sendConfiguration(String configurationModel) throws IOException {
+        LOGGER.info(String.format("sending new configuration to %s", dataSpaceConnectorHost));
+        var builder = new Request.Builder();
+        builder.url("https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin/api/configuration");
+        builder.post(RequestBody.create(configurationModel, okhttp3.MediaType.parse("application/ld+json")));
+        builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername, dataSpaceConnectorApiPassword));
+        var request = builder.build();
+        var response = client.newCall(request).execute();
+        if (!response.isSuccessful()) {
+            LOGGER.warn(String.format("Updating ConfigurationModel at %s failed!", dataSpaceConnectorHost));
+            return false;
+        }
+        var body = response.body().string();
+        LOGGER.info("Response: " + body);
+        return true;
     }
 
     @Override
@@ -262,10 +279,17 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         var backendSource = dataSpaceConnectorResourceMapper.createBackendSource(endpointId, representation);
         mappedRepresentation.setSource(backendSource);
         var mappedResourceID = dataSpaceConnectorResourceMapper.readUUIDFromURI(URI.create(resourceID));
+        var mappedRepresentationID = dataSpaceConnectorResourceMapper.readUUIDFromURI(representation.getId());
         var resourceJsonLD = MAPPER.writeValueAsString(mappedRepresentation);
         LOGGER.info("mapped representation: " + resourceJsonLD);
         var builder = new Request.Builder();
-        builder.url("https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin/api/resources/" + mappedResourceID + "/representation");
+        builder.url(new HttpUrl.Builder()
+                .scheme("https")
+                .host(dataSpaceConnectorHost)
+                .port(dataSpaceConnectorPort)
+                .addPathSegments("admin/api/resources/" + mappedResourceID + "/representation")
+                .addQueryParameter("id", mappedRepresentationID.toString())
+                .build());
         builder.post(RequestBody.create(resourceJsonLD, okhttp3.MediaType.parse("application/ld+json")));
         builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername, dataSpaceConnectorApiPassword));
         var request = builder.build();

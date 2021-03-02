@@ -40,6 +40,15 @@ public interface DefaultConnectorClient{
      */
     ConfigurationModel getConfiguration() throws IOException;
 
+    /**
+     * The boolean method helps to send the current configuration model to the target connector.
+     *
+     * @param configurationModel current configuration model that is sent to the target Connector
+     * @return true if connector accepted configuration
+     * @throws IOException when request cannot be sent
+     */
+    boolean sendConfiguration(String configurationModel) throws IOException;
+
 
     /**
      * This method returns the self declaration of a connector.

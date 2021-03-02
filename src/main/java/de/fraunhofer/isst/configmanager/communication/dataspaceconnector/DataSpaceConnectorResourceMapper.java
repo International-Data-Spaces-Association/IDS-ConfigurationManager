@@ -135,6 +135,7 @@ public class DataSpaceConnectorResourceMapper {
      */
     public ResourceRepresentation mapRepresentation(Representation representation) {
         var resourceRepresentation = new ResourceRepresentation();
+        resourceRepresentation.setUuid(readUUIDFromURI(representation.getId()));
         int byteSize = 0;
         if (representation.getInstance() != null && !representation.getInstance().isEmpty()) {
             var artifact = (Artifact) representation.getInstance().get(0);
@@ -224,6 +225,13 @@ public class DataSpaceConnectorResourceMapper {
         return uuid;
     }
 
+    /**
+     * This method creates a new backend source for the representation
+     *
+     * @param endpointId     id of the endpoint
+     * @param representation representation
+     * @return backend source
+     */
     public BackendSource createBackendSource(String endpointId, Representation representation) {
         var backendSource = new BackendSource();
         var endpoint = (GenericEndpoint) endpointService.getGenericEndpoints()
@@ -234,9 +242,9 @@ public class DataSpaceConnectorResourceMapper {
             BasicAuthenticationImpl basicAuth =
                     (BasicAuthenticationImpl) endpoint.getGenericEndpointAuthentication();
             if (basicAuth != null) {
-                backendSource.setPassword(endpoint.getAccessURL().toString());
-                backendSource.setUrl(URI.create(basicAuth.getAuthUsername()));
-                backendSource.setUsername(basicAuth.getAuthPassword());
+                backendSource.setPassword(basicAuth.getAuthPassword());
+                backendSource.setUrl(URI.create(endpoint.getAccessURL().toString()));
+                backendSource.setUsername(basicAuth.getAuthUsername());
             } else {
                 backendSource.setPassword("");
                 backendSource.setUrl(URI.create("https://example.com"));
