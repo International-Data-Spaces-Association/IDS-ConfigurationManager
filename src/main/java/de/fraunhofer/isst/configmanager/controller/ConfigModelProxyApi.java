@@ -4,21 +4,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.net.URI;
 import java.util.ArrayList;
 
 public interface ConfigModelProxyApi {
-
-    @PostMapping(value = "/configmodel/proxy", produces = "application/ld+json")
-    @Operation(summary = "Creates a new proxy for the configuration model")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully created a new proxy for the " +
-            "configuration model")})
-    ResponseEntity<String> createConfigModelProxy(@RequestParam("proxyUri") String proxyUri,
-                                                  @RequestParam(value = "noProxyUri", required = false) ArrayList<URI> noProxyUriList,
-                                                  @RequestParam(value = "username", required = false) String username,
-                                                  @RequestParam(value = "password", required = false) String password);
 
     @PutMapping(value = "/configmodel/proxy", produces = "application/ld+json")
     @Operation(summary = "Updates a the proxy at the configuration model")
@@ -46,6 +40,5 @@ public interface ConfigModelProxyApi {
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully deleted the proxy from the" +
             " configuration model")})
     ResponseEntity<String> deleteConfigModelProxy(@RequestParam("proxyId") URI proxyId);
-
 
 }

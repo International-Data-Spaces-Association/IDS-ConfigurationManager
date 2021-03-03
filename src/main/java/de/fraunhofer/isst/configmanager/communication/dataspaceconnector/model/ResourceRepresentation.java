@@ -21,8 +21,8 @@ import java.util.UUID;
         example = "{\n" +
                 "      \"type\": \"json\",\n" +
                 "      \"byteSize\": 105,\n" +
-                "      \"sourceType\": \"http-get\",\n" +
                 "      \"source\": {\n" +
+                "        \"type\":\"http-get\", \n"+
                 "        \"url\": \"https://samples.openweathermap.org/data/2.5/weather?lat=35&lon=139&appid=439d4b804bc8187953eb36d2a8c26a02\",\n" +
                 "        \"username\": \"-\",\n" +
                 "        \"password\": \"-\",\n" +
@@ -31,36 +31,6 @@ import java.util.UUID;
                 "    }"
 )
 public class ResourceRepresentation implements Serializable {
-    @Schema(
-            name = "SourceType",
-            description = "Information of the backend system.",
-            oneOf = SourceType.class
-    )
-    public enum SourceType {
-        @JsonProperty("local")
-        LOCAL("local"),
-        @JsonProperty("http-get")
-        HTTP_GET("http-get"),
-        @JsonProperty("http-get-basicauth")
-        HTTP_GET_BASICAUTH("http-get-basicauth"),
-        @JsonProperty("https-get")
-        HTTPS_GET("https-get"),
-        @JsonProperty("https-get-basicauth")
-        HTTPS_GET_BASICAUTH("https-get-basicauth"),
-        @JsonProperty("mongodb")
-        MONGODB("mongodb");
-
-        private final String type;
-
-        SourceType(String string) {
-            type = string;
-        }
-
-        @Override
-        public String toString() {
-            return type;
-        }
-    }
 
     @Id
     @JsonProperty("uuid")
@@ -71,9 +41,6 @@ public class ResourceRepresentation implements Serializable {
 
     @JsonProperty("byteSize")
     private Integer byteSize;
-
-    @JsonProperty("sourceType")
-    private SourceType sourceType;
 
     @JsonProperty("source")
     @Column(columnDefinition = "BLOB")
@@ -91,14 +58,12 @@ public class ResourceRepresentation implements Serializable {
      * @param uuid       a {@link java.util.UUID} object.
      * @param type       a {@link java.lang.String} object.
      * @param byteSize   a {@link java.lang.Integer} object.
-     * @param sourceType a {@link de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.ResourceRepresentation.SourceType} object.
      * @param source     a {@link de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.BackendSource} object.
      */
-    public ResourceRepresentation(UUID uuid, String type, Integer byteSize, SourceType sourceType, BackendSource source) {
+    public ResourceRepresentation(UUID uuid, String type, Integer byteSize,BackendSource source) {
         this.uuid = uuid;
         this.type = type;
         this.byteSize = byteSize;
-        this.sourceType = sourceType;
         this.source = source;
     }
 
@@ -154,25 +119,6 @@ public class ResourceRepresentation implements Serializable {
      */
     public void setByteSize(Integer byteSize) {
         this.byteSize = byteSize;
-    }
-
-    /**
-     * <p>Getter for the field <code>sourceType</code>.</p>
-     *
-     * @return a {@link de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.ResourceRepresentation.SourceType} object.
-     */
-    public SourceType getSourceType() {
-        return sourceType;
-    }
-
-    /**
-     * <p>Setter for the field <code>sourceType</code>.</p>
-     *
-     * @param sourceType a {@link de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.ResourceRepresentation.SourceType}
-     *                   object.
-     */
-    public void setSourceType(SourceType sourceType) {
-        this.sourceType = sourceType;
     }
 
     /**

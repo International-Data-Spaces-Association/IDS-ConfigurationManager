@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.List;
 
 public interface ResourceUIApi {
 
@@ -33,30 +32,26 @@ public interface ResourceUIApi {
     @Operation(summary = "Creates a resource for the connector")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully created a resource for the" +
             " connector")})
-    ResponseEntity<String> createResource(@RequestParam("routeId") URI routeId,
-                                          @RequestParam("title") String title,
+    ResponseEntity<String> createResource(@RequestParam("title") String title,
                                           @RequestParam("description") String description,
                                           @RequestParam("language") String language,
                                           @RequestParam("keyword") ArrayList<String> keywords,
                                           @RequestParam("version") String version,
                                           @RequestParam("standardlicense") String standardlicense,
-                                          @RequestParam("publisher") String publisher,
-                                          @RequestParam(value = "brokerList", required = false) List<URI> brokerlist);
+                                          @RequestParam("publisher") String publisher);
 
     @PutMapping(value = "/resource", produces = "application/ld+json")
     @Operation(summary = "Updates the specific resource at the connector")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully updated the specific resource at the " +
             "connector")})
-    ResponseEntity<String> updateResource(@RequestParam("routeId") URI routeId,
-                                          @RequestParam("resourceId") URI resourceId,
+    ResponseEntity<String> updateResource(@RequestParam("resourceId") URI resourceId,
                                           @RequestParam(value = "title", required = false) String title,
                                           @RequestParam(value = "description", required = false) String description,
                                           @RequestParam(value = "language", required = false) String language,
                                           @RequestParam(value = "keyword", required = false) ArrayList<String> keywords,
                                           @RequestParam(value = "version", required = false) String version,
                                           @RequestParam(value = "standardlicense", required = false) String standardlicense,
-                                          @RequestParam(value = "publisher", required = false) String publisher,
-                                          @RequestParam(value = "brokerList", required = false) List<URI> brokerlist);
+                                          @RequestParam(value = "publisher", required = false) String publisher);
 
     @DeleteMapping(value = "/resource")
     @Operation(summary = "Deletes the specific resource from the connector")

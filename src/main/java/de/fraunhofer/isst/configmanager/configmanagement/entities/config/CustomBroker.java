@@ -1,10 +1,8 @@
 package de.fraunhofer.isst.configmanager.configmanagement.entities.config;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.net.URI;
+import java.util.List;
 
 /**
  * A custom broker entity, to be able to persist the broker in the intern database.
@@ -20,7 +18,10 @@ public class CustomBroker {
 
     private String title;
 
-    private String selfDeclaration;
+    private BrokerStatus brokerStatus;
+
+    @ElementCollection
+    private List<String> registeredResources;
 
     public CustomBroker() {
     }
@@ -53,12 +54,19 @@ public class CustomBroker {
         this.title = title;
     }
 
-    public String getSelfDeclaration() {
-        return selfDeclaration;
+    public BrokerStatus getBrokerStatus() {
+        return brokerStatus;
     }
 
-    public void setSelfDeclaration(String selfDeclaration) {
-        this.selfDeclaration = selfDeclaration;
+    public void setBrokerStatus(BrokerStatus brokerStatus) {
+        this.brokerStatus = brokerStatus;
     }
 
+    public List<String> getRegisteredResources() {
+        return registeredResources;
+    }
+
+    public void setRegisteredResources(List<String> registeredResources) {
+        this.registeredResources = registeredResources;
+    }
 }

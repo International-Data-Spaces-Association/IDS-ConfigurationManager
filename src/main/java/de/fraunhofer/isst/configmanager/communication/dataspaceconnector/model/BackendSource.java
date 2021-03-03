@@ -18,6 +18,40 @@ import java.net.URI;
         oneOf = BackendSource.class
 )
 public class BackendSource implements Serializable {
+
+    /**
+     * This enum is used to describe how the backend is accessed.
+     */
+    @Schema(
+            name = "Type",
+            description = "Information of the backend system.",
+            oneOf = Type.class
+    )
+    public enum Type {
+        @JsonProperty("local")
+        LOCAL("local"),
+        @JsonProperty("http-get")
+        HTTP_GET("http-get"),
+        @JsonProperty("https-get")
+        HTTPS_GET("https-get"),
+        @JsonProperty("https-get-basicauth")
+        HTTPS_GET_BASICAUTH("https-get-basicauth");
+
+        private final String type;
+
+        Type(String string) {
+            type = string;
+        }
+
+        @Override
+        public String toString() {
+            return type;
+        }
+    }
+
+    @JsonProperty("type")
+    private Type type;
+
     @JsonProperty("url")
     private URI url;
 
@@ -26,9 +60,6 @@ public class BackendSource implements Serializable {
 
     @JsonProperty("password")
     private String password;
-
-    @JsonProperty("system")
-    private String system;
 
     /**
      * <p>Constructor for BackendSource.</p>
@@ -39,17 +70,36 @@ public class BackendSource implements Serializable {
     /**
      * <p>Constructor for BackendSource.</p>
      *
-     * @param url a {@link java.net.URI} object.
+     * @param type     The backend type
+     * @param url      a {@link java.net.URI} object.
      * @param username a {@link java.lang.String} object.
      * @param password a {@link java.lang.String} object.
-     * @param system a {@link java.lang.String} object.
      */
-    public BackendSource(URI url, String username, String password, String system) {
+    public BackendSource(Type type, URI url, String username, String password) {
+        this.type = type;
         this.url = url;
         this.username = username;
         this.password = password;
-        this.system = system;
     }
+
+    /**
+     * <p>Getter for the field <code>type</code>.</p>
+     *
+     * @return a {@link de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.BackendSource.Type} object.
+     */
+    public Type getType() {
+        return type;
+    }
+
+    /**
+     * <p>Setter for the field <code>type</code>.</p>
+     *
+     * @param type a {@link de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.BackendSource.Type} object.
+     */
+    public void setType(Type type) {
+        this.type = type;
+    }
+
 
     /**
      * <p>Getter for the field <code>url</code>.</p>
@@ -103,23 +153,5 @@ public class BackendSource implements Serializable {
      */
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    /**
-     * <p>Getter for the field <code>system</code>.</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getSystem() {
-        return system;
-    }
-
-    /**
-     * <p>Setter for the field <code>system</code>.</p>
-     *
-     * @param system a {@link java.lang.String} object.
-     */
-    public void setSystem(String system) {
-        this.system = system;
     }
 }
