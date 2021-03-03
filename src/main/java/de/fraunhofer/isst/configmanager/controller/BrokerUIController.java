@@ -6,7 +6,6 @@ import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorCl
 import de.fraunhofer.isst.configmanager.configmanagement.entities.config.BrokerStatus;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.config.CustomBroker;
 import de.fraunhofer.isst.configmanager.configmanagement.service.BrokerService;
-import de.fraunhofer.isst.configmanager.configmanagement.service.ResourceService;
 import de.fraunhofer.isst.configmanager.util.Utility;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import net.minidev.json.JSONObject;
@@ -33,17 +32,14 @@ public class BrokerUIController implements BrokerUIApi {
 
     private final static Logger logger = LoggerFactory.getLogger(BrokerUIController.class);
 
-    private final ResourceService resourceService;
     private final BrokerService brokerService;
     private final DefaultConnectorClient client;
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public BrokerUIController(ResourceService resourceService,
-                              BrokerService brokerService,
+    public BrokerUIController(BrokerService brokerService,
                               DefaultConnectorClient client,
                               ObjectMapper objectMapper) {
-        this.resourceService = resourceService;
         this.brokerService = brokerService;
         this.client = client;
         this.objectMapper = objectMapper;
@@ -266,11 +262,16 @@ public class BrokerUIController implements BrokerUIApi {
         }
     }
 
+    /**
+     * This method returns the register status for a resource
+     *
+     * @param resourceId id of the resource
+     * @return a suitable http response depending on success
+     */
     @Override
     public ResponseEntity<String> getRegisterStatusForResource(URI resourceId) {
 
         var jsonObjet = brokerService.getRegisStatusForResource(resourceId);
-
         if (jsonObjet == null) {
             return ResponseEntity.badRequest().body("Could not get registration status for resource");
         } else {

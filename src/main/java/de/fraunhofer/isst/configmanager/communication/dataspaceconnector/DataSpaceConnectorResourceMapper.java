@@ -131,7 +131,7 @@ public class DataSpaceConnectorResourceMapper {
      * The method maps the representation from the information model to a representation object of a dataspace connector.
      *
      * @param representation
-     * @return
+     * @return resource representation
      */
     public ResourceRepresentation mapRepresentation(Representation representation) {
         var resourceRepresentation = new ResourceRepresentation();
@@ -154,7 +154,7 @@ public class DataSpaceConnectorResourceMapper {
      * @param accessUrl      accessUrl for an endpoint
      * @param username       username for an endpoint
      * @param password       password for an endpoint
-     * @return
+     * @return resource representation
      */
     public ResourceRepresentation mapCustomRepresentation(Representation representation, String accessUrl,
                                                           String username, String password) {

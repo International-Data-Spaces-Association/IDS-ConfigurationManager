@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigInteger;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -189,34 +188,6 @@ public class ResourceService {
     }
 
     /**
-     * @param resourceId       id of the resource
-     * @param representationId id of the representation
-     * @return representation implementation
-     */
-    public RepresentationImpl getResourceRepresentationInAppRoute(URI resourceId, URI representationId) {
-        for (AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
-            if (appRoute.getHasSubRoute() != null) {
-                for (RouteStep routeStep : appRoute.getHasSubRoute()) {
-                    if (routeStep.getAppRouteOutput() != null) {
-                        for (Resource resource : routeStep.getAppRouteOutput()) {
-                            if (resourceId.equals(resource.getId())) {
-                                if (resource.getRepresentation() != null) {
-                                    for (Representation representation : resource.getRepresentation()) {
-                                        if (representationId.equals(representation.getId())) {
-                                            return (RepresentationImpl) representation;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
      * @param representationId id of the representation
      * @return representation implementation
      */
@@ -278,35 +249,6 @@ public class ResourceService {
 
         }
         return deleted;
-    }
-
-    /**
-     * @param language           language of the representation
-     * @param filenameExtension  filename extension
-     * @param bytesize           byte size of the representation
-     * @param sourceType         source type of the representation
-     * @param representationImpl representation implementation
-     */
-    public void updateRepresentation(String language, String filenameExtension, Long bytesize, String sourceType,
-                                     RepresentationImpl representationImpl) {
-        if (representationImpl != null) {
-            if (language != null) {
-                representationImpl.setLanguage(Language.valueOf(language));
-            }
-            if (filenameExtension != null) {
-                representationImpl.setMediaType(null);
-                representationImpl.setMediaType(new IANAMediaTypeBuilder()
-                        ._filenameExtension_(filenameExtension).build());
-            }
-            if (bytesize != null) {
-                representationImpl.setInstance(null);
-                representationImpl.setInstance(Util.asList(new ArtifactBuilder()
-                        ._byteSize_(BigInteger.valueOf(bytesize)).build()));
-            }
-            if (sourceType != null) {
-                representationImpl.setProperty("ids:sourceType", sourceType);
-            }
-        }
     }
 
     /**

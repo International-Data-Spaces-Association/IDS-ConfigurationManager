@@ -86,6 +86,17 @@ public class ConnectorService {
                 ._securityProfile_(SecurityProfile.BASE_SECURITY_PROFILE).build();
     }
 
+    /**
+     * @param title                title of the connector
+     * @param description          description of the connector
+     * @param endpointAccessURL    access url of the endpoint
+     * @param version              version of the connector
+     * @param curator              curator of the connector
+     * @param maintainer           maintainer of the connector
+     * @param inboundModelVersion  inbound model version of the connector
+     * @param outboundModelVersion outbound model version of the connector
+     * @return true, if connector is updated
+     */
     public boolean updateConnector(String title, String description, String endpointAccessURL, String version,
                                    String curator, String maintainer, String inboundModelVersion, String outboundModelVersion) {
 

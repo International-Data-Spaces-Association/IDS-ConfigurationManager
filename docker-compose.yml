@@ -4,6 +4,6 @@ services:
   configmanager:
     build:
       context: .
-    container_name: 'configmanager-container'
+    container_name: 'configurationmanager-container'
     ports:
       - 8081:8081
