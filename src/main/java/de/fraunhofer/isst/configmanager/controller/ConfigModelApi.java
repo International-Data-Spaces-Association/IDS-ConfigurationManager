@@ -14,19 +14,21 @@ public interface ConfigModelApi {
     @Operation(summary = "Creates a new configuration model")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully created a new configuration model")})
     ResponseEntity<String> createConfigModel(@RequestParam("loglevel") String loglevel,
-                                             @RequestParam("connectorStatus") String connectorStatus,
                                              @RequestParam("connectorDeployMode") String connectorDeployMode,
                                              @RequestParam("trustStore") String trustStore,
-                                             @RequestParam("keyStore") String keyStore);
+                                             @RequestParam("trustStorePassword") String trustStorePassword,
+                                             @RequestParam("keyStore") String keyStore,
+                                             @RequestParam("keyStorePassword") String keyStorePassword);
 
     @PutMapping(value = "/configmodel")
     @Operation(summary = "Updates the configuration model")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully updated the configuration model")})
     ResponseEntity<String> updateConfigModel(@RequestParam(value = "loglevel", required = false) String loglevel,
-                                             @RequestParam(value = "connectorStatus", required = false) String connectorStatus,
                                              @RequestParam(value = "connectorDeployMode", required = false) String connectorDeployMode,
                                              @RequestParam(value = "trustStore", required = false) String trustStore,
-                                             @RequestParam(value = "keyStore", required = false) String keyStore);
+                                             @RequestParam(value = "trustStorePassword", required = false) String trustStorePassword,
+                                             @RequestParam(value = "keyStore", required = false) String keyStore,
+                                             @RequestParam(value = "keyStorePassword", required = false) String keyStorePassword);
 
 
     @GetMapping(value = "/configmodel", produces = "application/ld+json")

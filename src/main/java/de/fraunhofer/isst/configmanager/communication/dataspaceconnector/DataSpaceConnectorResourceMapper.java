@@ -1,15 +1,15 @@
 package de.fraunhofer.isst.configmanager.communication.dataspaceconnector;
 
-import de.fraunhofer.iais.eis.Artifact;
-import de.fraunhofer.iais.eis.Representation;
-import de.fraunhofer.iais.eis.Resource;
+import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.iais.eis.util.RdfResource;
+import de.fraunhofer.iais.eis.util.TypedLiteral;
 import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.BackendSource;
 import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.ResourceIDPair;
 import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.ResourceMetadata;
 import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.ResourceRepresentation;
 import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.repos.ResourceIDPairRepository;
+import de.fraunhofer.isst.configmanager.configmanagement.service.EndpointService;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 public class DataSpaceConnectorResourceMapper {
 
     private static final Serializer SERIALIZER = new Serializer();
+    private final EndpointService endpointService;
 
     /**
      * Pattern is created, which has the following structure:
@@ -40,8 +41,10 @@ public class DataSpaceConnectorResourceMapper {
     private final ResourceIDPairRepository resourceIDPairRepository;
 
 
-    public DataSpaceConnectorResourceMapper(ResourceIDPairRepository resourceIDPairRepository) {
+    public DataSpaceConnectorResourceMapper(ResourceIDPairRepository resourceIDPairRepository,
+                                            EndpointService endpointService) {
         this.resourceIDPairRepository = resourceIDPairRepository;
+        this.endpointService = endpointService;
     }
 
     /**
@@ -128,23 +131,17 @@ public class DataSpaceConnectorResourceMapper {
      * The method maps the representation from the information model to a representation object of a dataspace connector.
      *
      * @param representation
-     * @return
+     * @return resource representation
      */
     public ResourceRepresentation mapRepresentation(Representation representation) {
         var resourceRepresentation = new ResourceRepresentation();
+        resourceRepresentation.setUuid(readUUIDFromURI(representation.getId()));
         int byteSize = 0;
         if (representation.getInstance() != null && !representation.getInstance().isEmpty()) {
             var artifact = (Artifact) representation.getInstance().get(0);
             byteSize = artifact.getByteSize().intValue();
         }
         resourceRepresentation.setByteSize(byteSize);
-        var backendSource = new BackendSource();
-        backendSource.setPassword("");
-        backendSource.setSystem("");
-        backendSource.setUrl(URI.create("https://example.com"));
-        backendSource.setUsername("");
-        resourceRepresentation.setSource(backendSource);
-        resourceRepresentation.setSourceType(resolveSourceType(representation));
         resourceRepresentation.setType(representation.getMediaType().getFilenameExtension());
         return resourceRepresentation;
     }
@@ -157,7 +154,7 @@ public class DataSpaceConnectorResourceMapper {
      * @param accessUrl      accessUrl for an endpoint
      * @param username       username for an endpoint
      * @param password       password for an endpoint
-     * @return
+     * @return resource representation
      */
     public ResourceRepresentation mapCustomRepresentation(Representation representation, String accessUrl,
                                                           String username, String password) {
@@ -170,11 +167,10 @@ public class DataSpaceConnectorResourceMapper {
         resourceRepresentation.setByteSize(byteSize);
         var backendSource = new BackendSource();
         backendSource.setPassword(password);
-        backendSource.setSystem("");
         backendSource.setUrl(URI.create(accessUrl));
         backendSource.setUsername(username);
+        backendSource.setType(resolveSourceType(representation));
         resourceRepresentation.setSource(backendSource);
-        resourceRepresentation.setSourceType(resolveSourceType(representation));
         resourceRepresentation.setType(representation.getMediaType().getFilenameExtension());
         return resourceRepresentation;
     }
@@ -185,11 +181,16 @@ public class DataSpaceConnectorResourceMapper {
      * @param representation
      * @return a source type
      */
-    private ResourceRepresentation.SourceType resolveSourceType(Representation representation) {
-        String propertyString = (String) representation.getProperties().getOrDefault("ids:sourceType", null);
-        if(propertyString == null) propertyString = (String) representation.getProperties().get("sourceType");
-        ResourceRepresentation.SourceType sourceType;
-        sourceType = ResourceRepresentation.SourceType.valueOf(propertyString);
+    private BackendSource.Type resolveSourceType(Representation representation) {
+        BackendSource.Type sourceType;
+        TypedLiteral typedLiteral = (TypedLiteral) representation.getProperties()
+                .getOrDefault("https://w3id.org/idsa/core/sourceType", null);
+        if (typedLiteral != null) {
+            sourceType = BackendSource.Type.valueOf(typedLiteral.getValue());
+        } else {
+            String propName = (String) representation.getProperties().get("ids:sourceType");
+            sourceType = BackendSource.Type.valueOf(propName);
+        }
         return sourceType;
     }
 
@@ -222,5 +223,35 @@ public class DataSpaceConnectorResourceMapper {
             uuid = pairs.get(0).getUuid();
         }
         return uuid;
+    }
+
+    /**
+     * This method creates a new backend source for the representation
+     *
+     * @param endpointId     id of the endpoint
+     * @param representation representation
+     * @return backend source
+     */
+    public BackendSource createBackendSource(String endpointId, Representation representation) {
+        var backendSource = new BackendSource();
+        var endpoint = (GenericEndpoint) endpointService.getGenericEndpoints()
+                .stream()
+                .filter(endP -> endP.getId().equals(URI.create(endpointId))).findAny().orElse(null);
+
+        if (endpoint != null) {
+            BasicAuthenticationImpl basicAuth =
+                    (BasicAuthenticationImpl) endpoint.getGenericEndpointAuthentication();
+            if (basicAuth != null) {
+                backendSource.setPassword(basicAuth.getAuthPassword());
+                backendSource.setUrl(URI.create(endpoint.getAccessURL().toString()));
+                backendSource.setUsername(basicAuth.getAuthUsername());
+            } else {
+                backendSource.setPassword("");
+                backendSource.setUrl(URI.create("https://example.com"));
+                backendSource.setUsername("");
+            }
+        }
+        backendSource.setType(resolveSourceType(representation));
+        return backendSource;
     }
 }

@@ -2,7 +2,9 @@ package de.fraunhofer.isst.configmanager.controller;
 
 import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
+import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelService;
+import de.fraunhofer.isst.configmanager.util.Utility;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +18,7 @@ import java.util.ArrayList;
 
 /**
  * The controller class implements the ConfigModelProxyApi and offers the possibilities to manage
- * the proxy settings in the configurationmanager.
+ * the proxy settings in the configuration manager.
  */
 @RestController
 @RequestMapping("/api/ui")
@@ -30,42 +32,16 @@ public class ConfigModelProxyUIController implements ConfigModelProxyApi {
     public ConfigModelProxyUIController(ConfigModelService configModelService, Serializer serializer) {
         this.configModelService = configModelService;
         this.serializer = serializer;
-    }
 
-    /**
-     * This method creates a connector proxy for the configuration model with the given parameters.
-     *
-     * @param proxyUri       uri of the proxy
-     * @param noProxyUriList list of no proxy uri's
-     * @param username       username for the authentication
-     * @param password       password for the authentication
-     * @return a suitable http response depending on success
-     */
-    @Override
-    public ResponseEntity<String> createConfigModelProxy(String proxyUri, ArrayList<URI> noProxyUriList,
-                                                         String username, String password) {
-        var configModelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
-
-        if (configModelImpl.getConnectorProxy() == null) {
-            configModelImpl.setConnectorProxy(new ArrayList<>());
+        if (configModelService.getConfigModel().getConnectorProxy() == null) {
+            var configModelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
+            Proxy proxy = new ProxyBuilder()
+                    ._proxyURI_(URI.create("http://test"))
+                    ._noProxy_(Util.asList())
+                    ._proxyAuthentication_(new BasicAuthenticationBuilder()._authPassword_("")._authUsername_("").build())
+                    .build();
+            configModelImpl.setConnectorProxy(Util.asList(proxy));
         }
-        ArrayList<Proxy> proxies = (ArrayList<Proxy>) configModelImpl.getConnectorProxy();
-        proxies.add(new ProxyBuilder()
-                ._proxyURI_(URI.create(proxyUri))
-                ._noProxy_(noProxyUriList)
-                ._proxyAuthentication_(new BasicAuthenticationBuilder()
-                        ._authUsername_(username)
-                        ._authPassword_(password)
-                        .build())
-                .build());
-        configModelImpl.setConnectorProxy(proxies);
-        configModelService.saveState();
-
-        var jsonObject = new JSONObject();
-        jsonObject.put("message", "Successfully created a new proxy for the configuration model with the id: "
-                + proxies.get(0).getId().toString());
-
-        return ResponseEntity.ok(jsonObject.toJSONString());
     }
 
     /**
@@ -80,16 +56,31 @@ public class ConfigModelProxyUIController implements ConfigModelProxyApi {
     @Override
     public ResponseEntity<String> updateConfigModelProxy(String proxyUri, ArrayList<URI> noProxyUriList,
                                                          String username, String password) {
-
-        var proxyImpl = (ProxyImpl) configModelService.getConfigModel().getConnectorProxy().get(0);
-        if (proxyImpl != null) {
-            configModelService.updateConfigurationModelProxy(proxyUri, noProxyUriList, username, password, proxyImpl);
-            var jsonObject = new JSONObject();
-            jsonObject.put("message", "Successfully updated proxy for the configuration model with the id: " +
-                    proxyImpl.getId().toString());
-            return ResponseEntity.ok(jsonObject.toJSONString());
+        var configmodelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
+        if (proxyUri.equals("null")) {
+            configmodelImpl.setConnectorProxy(null);
+            configModelService.saveState();
+            return ResponseEntity.ok("Deleted the proxy settings of the configuration " +
+                    "model");
+        } else {
+            if (configModelService.getConfigModel().getConnectorProxy() == null) {
+                Proxy proxy = new ProxyBuilder()
+                        ._proxyURI_(URI.create(proxyUri))
+                        ._noProxy_(noProxyUriList)
+                        ._proxyAuthentication_(new BasicAuthenticationBuilder()
+                                ._authUsername_(username)._authPassword_(password).build())
+                        .build();
+                configmodelImpl.setConnectorProxy(Util.asList(proxy));
+                configModelService.saveState();
+                return ResponseEntity.ok("Created a new proxy setting for the configuration model");
+            } else {
+                var proxyImpl = (ProxyImpl) configModelService.getConfigModel().getConnectorProxy().get(0);
+                configModelService.updateConfigurationModelProxy(proxyUri, noProxyUriList, username, password, proxyImpl);
+                configModelService.saveState();
+                return ResponseEntity.ok(Utility.jsonMessage("message", "Successfully updated proxy for the" +
+                        " configuration model"));
+            }
         }
-        return ResponseEntity.badRequest().body("Could not update proxy for the configuration model");
     }
 
     /**
@@ -139,10 +130,8 @@ public class ConfigModelProxyUIController implements ConfigModelProxyApi {
 
         if (configModelImpl.getConnectorProxy().removeIf(proxy -> proxy.getId().equals(proxyId))) {
             configModelService.saveState();
-            var jsonObject = new JSONObject();
-            jsonObject.put("message", "Successfully deleted connector proxy with the id: " +
-                    proxyId.toString());
-            return ResponseEntity.ok(jsonObject.toJSONString());
+            return ResponseEntity.ok(Utility.jsonMessage("message", "Successfully deleted connector proxy with the id: " +
+                    proxyId.toString()));
         } else {
             return ResponseEntity.badRequest().body("Could not delete the connector proxy");
         }

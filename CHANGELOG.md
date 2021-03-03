@@ -1,16 +1,46 @@
 # Changelog
+
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
+to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [4.0.0] - 2021-03-03
+
+### Added
+
+- New petri net module was created to create a petri net for defined app routes
+  (can currently be visualized, will be used for validation of AppRoutes later)
+
+### Feature
+
+- App routes can be created to publish data or resources via defined routes
+    - App routes can be created
+    - Route steps can be created (with or without a resource)
+    - App route deploy method can be changed
+- Dummy data apps can be loaded to simulate data processing workflows
+- Connector endpoints and generic endpoints can now be managed
+
+### Fixes
+
+- General bugfixes in the logic of the application
+- API calls to the dataspace connector
+
+### Changes
+- Deleted unnecessary classes and methods 
+- Reworked the code in the configuration manager
 
 ## [Unreleased]
 
 ## [1.0.1] - 2021-02-02
+
 ### Added
+
 - POM: Licenses, clean up and version updates, infomodel 4.0.2-SNAPSHOT
 - README: Update to the latest state according to POM
 
 ## [0.0.1] - 2020-07-15
+
 ### Added
+
 - REST - API for the UI
