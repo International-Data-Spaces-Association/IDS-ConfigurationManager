@@ -4,6 +4,7 @@ import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.util.TypedLiteral;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.EndpointInformationRepository;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.endpointInfo.EndpointInformation;
 import de.fraunhofer.isst.configmanager.util.CalenderUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -405,34 +406,41 @@ public class ResourceService {
      * @param endpointId id of the endpoint
      */
     public void updateBackendConnection(URI resourceId, URI endpointId) {
-
-        RouteStepImpl foundRouteStep = null;
-        AppRouteImpl appRouteImpl = null;
-        for (AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
-            for (RouteStep routeStep : appRoute.getHasSubRoute()) {
-                for (Resource resource : routeStep.getAppRouteOutput()) {
-                    if (resourceId.equals(resource.getId())) {
-                        appRouteImpl = (AppRouteImpl) appRoute;
-                        foundRouteStep = (RouteStepImpl) routeStep;
-                        break;
+        if (configModelService.getConfigModel().getAppRoute() != null) {
+            RouteStepImpl foundRouteStep = null;
+            AppRouteImpl appRouteImpl = null;
+            for( AppRoute appRoute : configModelService.getConfigModel().getAppRoute() ) {
+                for( RouteStep routeStep : appRoute.getHasSubRoute() ) {
+                    for( Resource resource : routeStep.getAppRouteOutput() ) {
+                        if( resourceId.equals(resource.getId()) ) {
+                            appRouteImpl = (AppRouteImpl) appRoute;
+                            foundRouteStep = (RouteStepImpl) routeStep;
+                            break;
+                        }
                     }
+                }
+            }
+
+            // Set app route start and subroute start to the updated endpoint
+            if( appRouteImpl != null && foundRouteStep != null ) {
+                var endpoint = endpointService.getGenericEndpoint(endpointId);
+                if( endpoint != null ) {
+                    appRouteImpl.setAppRouteStart(Util.asList(endpoint));
+                    foundRouteStep.setAppRouteStart(Util.asList(endpoint));
                 }
             }
         }
 
-        // Set app route start and subroute start to the updated endpoint
-        if (appRouteImpl != null && foundRouteStep != null) {
-            var endpoint = endpointService.getGenericEndpoint(endpointId);
-            if (endpoint != null) {
-                appRouteImpl.setAppRouteStart(Util.asList(endpoint));
-                foundRouteStep.setAppRouteStart(Util.asList(endpoint));
-            }
-        }
-
         // Set first entry of endpoint informations to the new endpoint
-        var endpointInfo = endpointInformationRepository.findAll().get(0);
-        endpointInfo.setEndpointId(endpointId.toString());
-        endpointInformationRepository.save(endpointInfo);
+        if(endpointInformationRepository.findAll().size() > 0) {
+            var endpointInfo = endpointInformationRepository.findAll().get(0);
+            endpointInfo.setEndpointId(endpointId.toString());
+            endpointInformationRepository.saveAndFlush(endpointInfo);
+        }else{
+            var endpointInformation = new EndpointInformation();
+            endpointInformation.setEndpointId(endpointId.toString());
+            endpointInformationRepository.saveAndFlush(endpointInformation);
+        }
     }
 
     /**
