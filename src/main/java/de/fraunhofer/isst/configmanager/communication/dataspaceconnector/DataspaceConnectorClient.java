@@ -311,13 +311,14 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
     public String updateResourceRepresentation(String resourceID, String representationID, Representation representation, String endpointId) throws IOException {
         LOGGER.info(String.format("updating representation %s for resource %s at %s", representationID, resourceID, dataSpaceConnectorHost));
         var mappedResourceID = dataSpaceConnectorResourceMapper.readUUIDFromURI(URI.create(resourceID));
-        var mappedRepresentationID = dataSpaceConnectorResourceMapper.getMappedId(URI.create(representationID));
+        var mappedRepresentationID = dataSpaceConnectorResourceMapper.readUUIDFromURI(URI.create(representationID));
         var mappedRepresentation = dataSpaceConnectorResourceMapper.mapRepresentation(representation);
         var backendSource = dataSpaceConnectorResourceMapper.createBackendSource(endpointId, representation);
         mappedRepresentation.setSource(backendSource);
         var resourceJsonLD = MAPPER.writeValueAsString(mappedRepresentation);
         LOGGER.info("mapped representation: " + resourceJsonLD);
         var builder = new Request.Builder();
+        LOGGER.info("Calling DSC at: https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin/api/resources/" + mappedResourceID + "/" + mappedRepresentationID);
         builder.url("https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin/api/resources/" + mappedResourceID + "/" + mappedRepresentationID);
         builder.put(RequestBody.create(resourceJsonLD, okhttp3.MediaType.parse("application/ld+json")));
         builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername, dataSpaceConnectorApiPassword));
@@ -381,7 +382,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         var resourceJsonLD = MAPPER.writeValueAsString(mappedResource);
         var builder = new Request.Builder();
         builder.url("https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin/api/resources/" + resourceUUID);
-        builder.put(RequestBody.create(resourceJsonLD, okhttp3.MediaType.parse("application/json")));
+        builder.put(RequestBody.create(resourceJsonLD, okhttp3.MediaType.parse("application/ld+json")));
         builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername, dataSpaceConnectorApiPassword));
         var request = builder.build();
         var response = client.newCall(request).execute();
