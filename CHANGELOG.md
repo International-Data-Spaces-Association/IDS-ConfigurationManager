@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.0] - UNRELEASED
+
+### Fixes
+- Updating Resource Representation at DSC
+- Endpoint-Information handling
+- Sending ConfigManager Connector-Setting to DSC
+- Updating Config on CM start-up with config of connected Connector
+- Minor Change: Improved broker controller error handling now possible for UI
+- Deleting Resources at DSC when deleted via CM
+- receive complete backend-access URL (GUI fix) 
+
 ## [4.0.0] - 2021-03-03
 
 ### Added
