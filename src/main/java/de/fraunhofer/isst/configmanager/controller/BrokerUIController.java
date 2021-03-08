@@ -158,16 +158,24 @@ public class BrokerUIController implements BrokerUIApi {
     @Override
     public ResponseEntity<String> registerConnector(URI brokerUri) {
         var broker = brokerService.getById(brokerUri);
+        var jsonObject = new JSONObject();
         if (broker != null) {
             try {
-                brokerService.setBrokerStatus(brokerUri, BrokerStatus.REGISTERED);
-                return ResponseEntity.ok(client.updateAtBroker(brokerUri.toString()));
+                String response = client.updateAtBroker(brokerUri.toString());
+                if (!response.contains("RejectionMessage")) {
+                    brokerService.setBrokerStatus(brokerUri, BrokerStatus.REGISTERED);
+                    jsonObject.put("success", true);
+                } else {
+                    jsonObject.put("success", false);
+                }
+                return ResponseEntity.ok(jsonObject.toJSONString());
             } catch (IOException e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(String.format("Could not parse response from Connector: %s", e.getMessage()));
+                logger.error(e.getMessage(), e);
+                jsonObject.put("success", false);
+                return ResponseEntity.ok(jsonObject.toJSONString());
             }
         } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body("Could not find the broker");
         }
     }
 
@@ -180,16 +188,24 @@ public class BrokerUIController implements BrokerUIApi {
     @Override
     public ResponseEntity<String> unregisterConnector(URI brokerUri) {
         var broker = brokerService.getById(brokerUri);
+        var jsonObject = new JSONObject();
         if (broker != null) {
             try {
-                brokerService.setBrokerStatus(brokerUri, BrokerStatus.UNREGISTERED);
-                return ResponseEntity.ok(client.unregisterAtBroker(brokerUri.toString()));
+                String response = client.unregisterAtBroker(brokerUri.toString());
+                if (!response.contains("RejectionMessage")) {
+                    brokerService.setBrokerStatus(brokerUri, BrokerStatus.UNREGISTERED);
+                    jsonObject.put("success", true);
+                } else {
+                    jsonObject.put("success", false);
+                }
+                return ResponseEntity.ok(jsonObject.toJSONString());
             } catch (IOException e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(String.format("Could not parse response from Connector: %s", e.getMessage()));
+                logger.error(e.getMessage(), e);
+                jsonObject.put("success", false);
+                return ResponseEntity.ok(jsonObject.toJSONString());
             }
         } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body("Could not find the broker");
         }
     }
 
@@ -202,15 +218,19 @@ public class BrokerUIController implements BrokerUIApi {
     @Override
     public ResponseEntity<String> updateConnector(URI brokerUri) {
         var broker = brokerService.getById(brokerUri);
+        var jsonObject = new JSONObject();
         if (broker != null) {
             try {
-                return ResponseEntity.ok(client.updateAtBroker(brokerUri.toString()));
+                String response = client.updateAtBroker(brokerUri.toString());
+                jsonObject.put("success", !response.contains("RejectionMessage"));
+                return ResponseEntity.ok(jsonObject.toJSONString());
             } catch (IOException e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(String.format("Could not parse response from Connector: %s", e.getMessage()));
+                logger.error(e.getMessage(), e);
+                jsonObject.put("success", false);
+                return ResponseEntity.ok(jsonObject.toJSONString());
             }
         } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body("Could not find the broker");
         }
     }
 
@@ -224,17 +244,25 @@ public class BrokerUIController implements BrokerUIApi {
     @Override
     public ResponseEntity<String> updateResourceAtBroker(URI brokerUri, URI resourceId) {
         var broker = brokerService.getById(brokerUri);
-
+        var jsonObject = new JSONObject();
         if (broker != null) {
             try {
-                brokerService.setResourceAtBroker(brokerUri, resourceId);
-                return ResponseEntity.ok(client.updateResourceAtBroker(brokerUri.toString(), resourceId));
+                String response = client.updateResourceAtBroker(brokerUri.toString(), resourceId);
+                if (response.contains("RejectionMessage") || response.equals("Could not load resource.")
+                        || response.equals("The communication with the broker failed.")) {
+                    jsonObject.put("success", false);
+                } else {
+                    brokerService.setResourceAtBroker(brokerUri, resourceId);
+                    jsonObject.put("success", true);
+                }
+                return ResponseEntity.ok(jsonObject.toJSONString());
             } catch (IOException e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(String.format("Could not parse response from Connector: %s", e.getMessage()));
+                logger.error(e.getMessage(), e);
+                jsonObject.put("success", false);
+                return ResponseEntity.ok(jsonObject.toJSONString());
             }
         } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body("Could not find the broker");
         }
     }
 
@@ -248,17 +276,25 @@ public class BrokerUIController implements BrokerUIApi {
     @Override
     public ResponseEntity<String> deleteResourceAtBroker(URI brokerUri, URI resourceId) {
         var broker = brokerService.getById(brokerUri);
-
+        var jsonObject = new JSONObject();
         if (broker != null) {
             try {
-                brokerService.deleteResourceAtBroker(brokerUri, resourceId);
-                return ResponseEntity.ok(client.deleteResourceAtBroker(brokerUri.toString(), resourceId));
+                String response = client.deleteResourceAtBroker(brokerUri.toString(), resourceId);
+                if (response.contains("RejectionMessage") || response.equals("Could not load resource.")
+                        || response.equals("The communication with the broker failed.")) {
+                    jsonObject.put("success", false);
+                } else {
+                    brokerService.deleteResourceAtBroker(brokerUri, resourceId);
+                    jsonObject.put("success", true);
+                }
+                return ResponseEntity.ok(jsonObject.toJSONString());
             } catch (IOException e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(String.format("Could not parse response from Connector: %s", e.getMessage()));
+                logger.error(e.getMessage(), e);
+                jsonObject.put("success", false);
+                return ResponseEntity.ok(jsonObject.toJSONString());
             }
         } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body("Could not find the broker");
         }
     }
 

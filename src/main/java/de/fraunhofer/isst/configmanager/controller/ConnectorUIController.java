@@ -4,6 +4,8 @@ import de.fraunhofer.iais.eis.BaseConnector;
 import de.fraunhofer.iais.eis.ConfigurationModelImpl;
 import de.fraunhofer.iais.eis.Connector;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
+import de.fraunhofer.iais.eis.util.Util;
+import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConnectorService;
 import de.fraunhofer.isst.configmanager.util.Utility;
@@ -33,13 +35,17 @@ public class ConnectorUIController implements ConnectorUIApi {
     private final ConnectorService connectorService;
     private final ConfigModelService configModelService;
     private final Serializer serializer;
+    private final DefaultConnectorClient client;
 
     @Autowired
-    public ConnectorUIController(ConnectorService connectorService, ConfigModelService configModelService,
-                                 Serializer serializer) {
+    public ConnectorUIController(ConnectorService connectorService,
+                                 ConfigModelService configModelService,
+                                 Serializer serializer,
+                                 DefaultConnectorClient client) {
         this.configModelService = configModelService;
         this.connectorService = connectorService;
         this.serializer = serializer;
+        this.client = client;
     }
 
     /**
@@ -133,8 +139,29 @@ public class ConnectorUIController implements ConnectorUIApi {
 
         boolean updated = connectorService.updateConnector(title, description, endpointAccessURL, version,
                 curator, maintainer, inboundModelVersion, outboundModelVersion);
+        var jsonObject = new JSONObject();
         if (updated) {
-            return ResponseEntity.ok(Utility.jsonMessage("message", "Successfully updated the connector"));
+            jsonObject.put("message", "Successfully updated the connector");
+            ConfigurationModelImpl configurationModel = (ConfigurationModelImpl) configModelService.getConfigModel();
+            if (configurationModel.getAppRoute() != null) {
+                configurationModel.setAppRoute(Util.asList());
+            }
+            try {
+                var valid = client.sendConfiguration(serializer.serialize(configurationModel));
+                if (valid) {
+                    jsonObject.put("connectorResponse", "Successfully updated the connector " +
+                            "description of the configuration model");
+                    return ResponseEntity.ok(jsonObject.toJSONString());
+                } else {
+                    jsonObject.put("connectorResponse", "Failed to update the connector. " +
+                            "The configuration model is not valid");
+                    return ResponseEntity.badRequest().body(jsonObject.toJSONString());
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                jsonObject.put("connectorResponse", "Failed to send the new configuration to the client");
+                return ResponseEntity.badRequest().body(jsonObject.toJSONString());
+            }
         } else {
             return ResponseEntity.badRequest().body("Could not update the connector");
         }
