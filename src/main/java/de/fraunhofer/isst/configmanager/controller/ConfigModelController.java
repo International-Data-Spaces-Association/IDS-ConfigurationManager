@@ -1,7 +1,10 @@
 package de.fraunhofer.isst.configmanager.controller;
 
 import de.fraunhofer.iais.eis.ConfigurationModel;
+import de.fraunhofer.iais.eis.ConfigurationModelImpl;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
+import de.fraunhofer.iais.eis.util.Util;
+import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.util.Utility;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,11 +33,14 @@ public class ConfigModelController implements ConfigModelApi {
 
     private final Serializer serializer;
     private final ConfigModelService configModelService;
+    private final DefaultConnectorClient client;
 
     @Autowired
-    public ConfigModelController(Serializer serializer, ConfigModelService configModelService) {
+    public ConfigModelController(Serializer serializer, ConfigModelService configModelService,
+                                 DefaultConnectorClient client) {
         this.serializer = serializer;
         this.configModelService = configModelService;
+        this.client = client;
     }
 
     /**
@@ -82,10 +88,27 @@ public class ConfigModelController implements ConfigModelApi {
         var result = configModelService.updateConfigurationModel(loglevel,
                 connectorDeployMode, trustStore, trustStorePassword, keyStore, keyStorePassword);
         if (result) {
-            return ResponseEntity.ok(Utility.jsonMessage("message", "Successfully updated the configuration" +
-                    " model with the id: " + configModelService.getConfigModel().getId().toString()));
+            var jsonObject = new JSONObject();
+            jsonObject.put("message", "Successfully updated the configuration model");
+            try {
+                // The configuration model is sent to the client without the app routes at this point,
+                // because of the different infomodels.
+                ConfigurationModelImpl configurationModel = (ConfigurationModelImpl) configModelService.getConfigModel();
+                configurationModel.setAppRoute(Util.asList());
+                var valid = client.sendConfiguration(serializer.serialize(configurationModel));
+                if (valid) {
+                    jsonObject.put("connectorResponse", "Successfully updated the configuration model at the client");
+                    return ResponseEntity.ok(jsonObject.toJSONString());
+                } else {
+                    jsonObject.put("connectorResponse", "Failed to update the configuration model at the client");
+                    return ResponseEntity.badRequest().body(jsonObject.toJSONString());
+                }
+            } catch (IOException e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problems while sending configuration" +
+                        " to the client");
+            }
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Connector did not accent the new Configuration!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to update the configuration model");
         }
     }
 
