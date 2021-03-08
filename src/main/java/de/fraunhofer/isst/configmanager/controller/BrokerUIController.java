@@ -222,12 +222,7 @@ public class BrokerUIController implements BrokerUIApi {
         if (broker != null) {
             try {
                 String response = client.updateAtBroker(brokerUri.toString());
-                if (!response.contains("RejectionMessage")) {
-                    jsonObject.put("success", true);
-                } else {
-                    jsonObject.put("success", false);
-
-                }
+                jsonObject.put("success", !response.contains("RejectionMessage"));
                 return ResponseEntity.ok(jsonObject.toJSONString());
             } catch (IOException e) {
                 logger.error(e.getMessage(), e);
@@ -254,7 +249,7 @@ public class BrokerUIController implements BrokerUIApi {
             try {
                 String response = client.updateResourceAtBroker(brokerUri.toString(), resourceId);
                 if (response.contains("RejectionMessage") || response.equals("Could not load resource.")
-                        || response.equals("he communication with the broker failed.")) {
+                        || response.equals("The communication with the broker failed.")) {
                     jsonObject.put("success", false);
                 } else {
                     brokerService.setResourceAtBroker(brokerUri, resourceId);
@@ -286,7 +281,7 @@ public class BrokerUIController implements BrokerUIApi {
             try {
                 String response = client.deleteResourceAtBroker(brokerUri.toString(), resourceId);
                 if (response.contains("RejectionMessage") || response.equals("Could not load resource.")
-                        || response.equals("he communication with the broker failed.")) {
+                        || response.equals("The communication with the broker failed.")) {
                     jsonObject.put("success", false);
                 } else {
                     brokerService.deleteResourceAtBroker(brokerUri, resourceId);
