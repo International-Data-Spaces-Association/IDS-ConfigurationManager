@@ -3,10 +3,13 @@ package de.fraunhofer.isst.configmanager.controller;
 import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.iais.eis.util.Util;
+import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.util.Utility;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import net.minidev.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,13 +28,18 @@ import java.util.ArrayList;
 @Tag(name = "ConfigModel - Proxy Management", description = "Endpoints for managing the proxy from the configuration model")
 public class ConfigModelProxyUIController implements ConfigModelProxyApi {
 
+    private final static Logger LOGGER = LoggerFactory.getLogger(ConfigModelProxyUIController.class);
+
     private final ConfigModelService configModelService;
     private final Serializer serializer;
+    private final DefaultConnectorClient client;
 
     @Autowired
-    public ConfigModelProxyUIController(ConfigModelService configModelService, Serializer serializer) {
+    public ConfigModelProxyUIController(ConfigModelService configModelService, Serializer serializer,
+                                        DefaultConnectorClient client) {
         this.configModelService = configModelService;
         this.serializer = serializer;
+        this.client = client;
 
         if (configModelService.getConfigModel().getConnectorProxy() == null) {
             var configModelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
@@ -57,11 +65,11 @@ public class ConfigModelProxyUIController implements ConfigModelProxyApi {
     public ResponseEntity<String> updateConfigModelProxy(String proxyUri, ArrayList<URI> noProxyUriList,
                                                          String username, String password) {
         var configmodelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
+        var jsonObject = new JSONObject();
         if (proxyUri.equals("null")) {
             configmodelImpl.setConnectorProxy(null);
             configModelService.saveState();
-            return ResponseEntity.ok("Deleted the proxy settings of the configuration " +
-                    "model");
+            jsonObject.put("message", "Deleted the proxy settings of the configuration model");
         } else {
             if (configModelService.getConfigModel().getConnectorProxy() == null) {
                 Proxy proxy = new ProxyBuilder()
@@ -72,14 +80,33 @@ public class ConfigModelProxyUIController implements ConfigModelProxyApi {
                         .build();
                 configmodelImpl.setConnectorProxy(Util.asList(proxy));
                 configModelService.saveState();
-                return ResponseEntity.ok("Created a new proxy setting for the configuration model");
+                jsonObject.put("message", "Created a new proxy setting for the configuration model");
             } else {
                 var proxyImpl = (ProxyImpl) configModelService.getConfigModel().getConnectorProxy().get(0);
                 configModelService.updateConfigurationModelProxy(proxyUri, noProxyUriList, username, password, proxyImpl);
                 configModelService.saveState();
-                return ResponseEntity.ok(Utility.jsonMessage("message", "Successfully updated proxy for the" +
-                        " configuration model"));
+                jsonObject.put("message", "Successfully updated proxy for the configuration model");
             }
+        }
+        // Send updated configuration to the client
+        ConfigurationModelImpl configurationModel = (ConfigurationModelImpl) configModelService.getConfigModel();
+        if (configurationModel.getAppRoute() != null) {
+            configurationModel.setAppRoute(Util.asList());
+        }
+        try {
+            // The configuration model is sent to the client without the app routes at this point,
+            // because of the different infomodels.
+            var valid = client.sendConfiguration(serializer.serialize(configurationModel));
+            if (valid) {
+                jsonObject.put("connectorResponse", "Updated the configuration model at the client");
+                return ResponseEntity.ok(jsonObject.toJSONString());
+            } else {
+                jsonObject.put("connectorResponse", "Failed to update the configuration model at the client");
+                return ResponseEntity.badRequest().body(jsonObject.toJSONString());
+            }
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage(), e);
+            return ResponseEntity.badRequest().body("Problems while sending new configuration to the client");
         }
     }
 
@@ -93,7 +120,7 @@ public class ConfigModelProxyUIController implements ConfigModelProxyApi {
         try {
             return ResponseEntity.ok(serializer.serialize(configModelService.getConfigModel().getConnectorProxy()));
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
             return ResponseEntity.badRequest().body("Could not get connector proxy from the configuration model");
         }
     }
