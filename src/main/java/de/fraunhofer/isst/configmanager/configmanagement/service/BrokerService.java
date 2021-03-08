@@ -202,7 +202,6 @@ public class BrokerService {
                             jsonObject.put("brokerId", customBroker.getBrokerUri().toString());
                             jsonObject.put("brokerStatus", customBroker.getBrokerStatus().toString());
                             jsonObject.put("resourceId", resourceId.toString());
-                            jsonObject.put("resourceStatus", "REGISTERED");
                             jsonArray.add(jsonObject);
                         }
                     }
