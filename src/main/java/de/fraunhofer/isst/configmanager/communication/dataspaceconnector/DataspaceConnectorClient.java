@@ -153,6 +153,36 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
     }
 
     @Override
+    public Resource getResource(String accessURL, String resourceId) throws IOException {
+        var builder = new Request.Builder();
+        var urlBuilder = new HttpUrl.Builder()
+                .scheme("https")
+                .host(dataSpaceConnectorHost)
+                .port(dataSpaceConnectorPort)
+                .addPathSegments("admin/api/request/description")
+                .addQueryParameter("recipient", accessURL)
+                .addQueryParameter("requestedResource", resourceId);
+        var url = urlBuilder.build();
+        LOGGER.info(url.toString());
+        builder.url(url);
+        builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername, dataSpaceConnectorApiPassword));
+        builder.post(RequestBody.create(null, new byte[0]));
+        var request = builder.build();
+        var response = client.newCall(request).execute();
+        if (!response.isSuccessful()) {
+            LOGGER.warn(String.format("Could not get BaseConnector from %s!", dataSpaceConnectorHost));
+        }
+        var body = response.body().string();
+        var splitBody = body.split("\n");
+        String uuid = splitBody[0].substring(12);
+        LOGGER.info(uuid);
+        String resource = splitBody[1].substring(10);
+        LOGGER.info(resource);
+        Resource extractResource = SERIALIZER.deserialize(resource, Resource.class);
+        return extractResource;
+    }
+
+    @Override
     public String registerResource(Resource resource) throws IOException {
         LOGGER.info(String.format("registering resource at %s", dataSpaceConnectorHost));
         var mappedResource = dataSpaceConnectorResourceMapper.getMetadata(resource);

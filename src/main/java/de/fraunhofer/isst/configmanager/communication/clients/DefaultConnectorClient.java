@@ -11,7 +11,7 @@ import java.net.URI;
  * configurations for the dataspace connector.
  * The implementations of the ConfigManager are oriented according to the structure of the dataspace connectors.
  */
-public interface DefaultConnectorClient{
+public interface DefaultConnectorClient {
 
     /**
      * The method helps to update connector in the broker. For this only the id of the corresponding broker
@@ -58,6 +58,15 @@ public interface DefaultConnectorClient{
      * @return base connector
      */
     BaseConnector getBaseConnector(String accessURL, String resourceId) throws IOException;
+
+    /**
+     * This method returns the uuid of a resource and the resource.
+     *
+     * @param accessURL  url of the connector
+     * @param resourceId id of the resource
+     * @return map from the id of the resource and the resource itself
+     */
+    Resource getResource(String accessURL, String resourceId) throws IOException;
 
 
     /**
