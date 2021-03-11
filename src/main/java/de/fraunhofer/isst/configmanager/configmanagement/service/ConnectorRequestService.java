@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,12 +28,24 @@ public class ConnectorRequestService {
         this.client = client;
     }
 
-    public List<Resource> requestSelfDescription(URI recipientId) {
-
+    /**
+     * This method returns from the connector the requested resources.
+     *
+     * @param recipientId id of the recipient
+     * @return list of resources
+     */
+    public List<Resource> requestResourcesFromConnector(URI recipientId) {
         try {
             BaseConnector connector = client.getBaseConnector(recipientId.toString(), "");
             if (connector != null && connector.getResourceCatalog() != null) {
-                return (List<Resource>) connector.getResourceCatalog();
+
+                List<Resource> resourceList = new ArrayList<>();
+                for (ResourceCatalog resourceCatalog : connector.getResourceCatalog()) {
+                    if (resourceCatalog != null && resourceCatalog.getRequestedResource() != null) {
+                        resourceList.addAll(resourceCatalog.getRequestedResource());
+                    }
+                }
+                return resourceList;
             } else {
                 LOGGER.info("Could not determine the resources of the connector");
                 return null;
@@ -43,6 +56,13 @@ public class ConnectorRequestService {
         }
     }
 
+    /**
+     * This method gets the resource from the client using the connector uri und requested resource uri.
+     *
+     * @param recipientId   id of the recipient
+     * @param reqResourceId id of the requested resource
+     * @return resource
+     */
     public Resource requestResource(URI recipientId, URI reqResourceId) {
 
         try {

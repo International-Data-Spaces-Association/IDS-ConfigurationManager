@@ -12,7 +12,6 @@ import java.net.URI;
 public interface ConnectorRequestApi {
 
     // Endpoints for invoking external connector requests
-
     @PostMapping(value = "/request/description", produces = "application/ld+json")
     @Operation(summary = "Request metadata from another IDS connector.")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully requested  metadata from IDS connector")})

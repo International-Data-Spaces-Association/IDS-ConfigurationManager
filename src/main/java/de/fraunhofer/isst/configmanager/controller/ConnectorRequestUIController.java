@@ -66,7 +66,7 @@ public class ConnectorRequestUIController implements ConnectorRequestApi {
                 return ResponseEntity.badRequest().body("Could not get resource from the requested connector");
             }
         } else {
-            List<Resource> resources = connectorRequestService.requestSelfDescription(recipientId);
+            List<Resource> resources = connectorRequestService.requestResourcesFromConnector(recipientId);
             if (resources != null && resources.size() > 0) {
                 JSONArray customResourceList = connectorRequestService.createResourceList(resources);
                 try {
@@ -76,7 +76,6 @@ public class ConnectorRequestUIController implements ConnectorRequestApi {
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problems while parsing " +
                             "the list to JSON");
                 }
-
             } else {
                 return ResponseEntity.badRequest().body("Could not get resources from the requested connector");
             }
