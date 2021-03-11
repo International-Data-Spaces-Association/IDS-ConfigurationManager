@@ -42,7 +42,7 @@ public class ConfigModelService {
                 updateConfigModel(client.getConfiguration());
                 LOGGER.info("Received configuration from running Connector!");
             } catch (IOException e) {
-                LOGGER.warn("Could not get Configmodel from Connector! Using old Config if available!");
+                LOGGER.warn("Could not get Configmodel from Connector! Using old Config if available! Error establishing connection to connector: " + e.getMessage());
 
                 if(configModelRepository.findAll().size() > 0) {
                     configModelList = configModelRepository.findAll().get(0);
