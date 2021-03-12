@@ -101,8 +101,8 @@ This is a list of currently implemented features, which is continuously updated.
 
 | Library/Component | Version | License | Owner | Contact |
 | ------ | ------ | ------ | ------ | ------ |
-| IDS Information Model Library | 4.0.2-SNAPSHOT | Apache 2.0 | Fraunhofer IAIS | [Sebastian Bader](mailto:sebastian.bader@iais.fraunhofer.de) |
-| IDS Information Model Serializer Library | 4.0.2-SNAPSHOT | Apache 2.0 | Fraunhofer IAIS | [Sebastian Bader](mailto:sebastian.bader@iais.fraunhofer.de) |
+| IDS Information Model Library | 4.0.2 | Apache 2.0 | Fraunhofer IAIS | [Sebastian Bader](mailto:sebastian.bader@iais.fraunhofer.de) |
+| IDS Information Model Serializer Library | 4.0.2 | Apache 2.0 | Fraunhofer IAIS | [Sebastian Bader](mailto:sebastian.bader@iais.fraunhofer.de) |
 | [Dataspace Connector](https://github.com/International-Data-Spaces-Association/DataspaceConnector) | latest | Apache 2.0 | Fraunhofer ISST | [Julia Pampus](mailto:julia.pampus@isst.fraunhofer.de) |
 | [Configuration Manager UI](https://github.com/International-Data-Spaces-Association/IDS-ConfigurationManager-UI) | latest | Apache 2.0 | Fraunhofer FKIE | [Bastian Weltjen](mailto:bastian.weltjen@fkie.fraunhofer.de) |
 
