@@ -14,7 +14,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Updating Config on CM start-up with config of connected Connector
 - Minor Change: Improved broker controller error handling now possible for UI
 - Deleting Resources at DSC when deleted via CM
-- receive complete backend-access URL (GUI fix) 
+- receive complete backend-access URL (GUI fix)
+- docs: update contribution-guideline and add code-of-conduct files 
 
 ## [4.0.0] - 2021-03-03
 
