@@ -9,6 +9,7 @@
 <a href="https://github.com/International-Data-Spaces-Association/IDS-ConfigurationManager/issues"><img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat"></a>
 <img src="https://img.shields.io/github/languages/code-size/International-Data-Spaces-Association/IDS-ConfigurationManager">
 <img src="https://img.shields.io/github/contributors/International-Data-Spaces-Association/IDS-ConfigurationManager">
+<img src="https://img.shields.io/badge/Dependabot-Active-green">
 </p>
 
 # IDS - Configuration Manager
