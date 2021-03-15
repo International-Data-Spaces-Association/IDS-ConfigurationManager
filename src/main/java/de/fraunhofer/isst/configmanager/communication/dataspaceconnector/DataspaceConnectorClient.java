@@ -95,13 +95,15 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
     @Override
     public ConfigurationModel getConfiguration() throws IOException {
         var builder = new Request.Builder();
+        var connectorUrl = "https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin/api/configuration";
         builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername, dataSpaceConnectorApiPassword));
-        builder.url("https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin/api/configuration");
+        builder.url(connectorUrl);
         builder.get();
         var request = builder.build();
         var response = client.newCall(request).execute();
         if (!response.isSuccessful()) {
-            LOGGER.warn(String.format("Could not get ConfigurationModel from %s!", dataSpaceConnectorHost));
+            LOGGER.warn("Could not get ConfigurationModel from {} with user {}. Response: {} - {}",
+                    connectorUrl, dataSpaceConnectorApiUsername, response.code(), response.message());
         }
         var body = response.body().string();
         return SERIALIZER.deserialize(body, ConfigurationModel.class);
