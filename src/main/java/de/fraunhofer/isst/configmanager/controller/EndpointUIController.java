@@ -7,7 +7,6 @@ import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.configmanagement.service.EndpointService;
-import de.fraunhofer.isst.configmanager.configmanagement.service.RepresentationEndpointService;
 import de.fraunhofer.isst.configmanager.configmanagement.service.UtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import net.minidev.json.JSONArray;
@@ -36,7 +35,6 @@ public class EndpointUIController implements EndpointUIApi {
     private final ObjectMapper objectMapper;
     private final ConfigModelService configModelService;
     private final UtilService utilService;
-    private final RepresentationEndpointService representationEndpointService;
     private final EndpointService endpointService;
     private final DefaultConnectorClient client;
 
@@ -45,14 +43,12 @@ public class EndpointUIController implements EndpointUIApi {
                                 ObjectMapper objectMapper,
                                 ConfigModelService configModelService,
                                 UtilService utilService,
-                                RepresentationEndpointService representationEndpointService,
                                 EndpointService endpointService,
                                 DefaultConnectorClient client) {
         this.serializer = serializer;
         this.objectMapper = objectMapper;
         this.configModelService = configModelService;
         this.utilService = utilService;
-        this.representationEndpointService = representationEndpointService;
         this.endpointService = endpointService;
         this.client = client;
     }
