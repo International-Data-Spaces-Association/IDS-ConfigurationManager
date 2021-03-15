@@ -26,6 +26,7 @@ public class ConfigModelService {
     private final ConfigModelRepository configModelRepository;
     private ConfigModelList configModelList;
     private final DefaultConnectorClient client;
+    private boolean startUp = true;
 
     @Autowired
     public ConfigModelService(ConfigModelRepository configModelRepository,
@@ -33,42 +34,34 @@ public class ConfigModelService {
         this.configModelRepository = configModelRepository;
         this.client = client;
         this.configModelList = new ConfigModelList();
-        if (configModelRepository.findAll().isEmpty()) {
-            LOGGER.warn("No configuration found! Trying to get current Configuration from Connector!");
+        if (startUp) {
+            startUp = false; //initially load conifguration from connector at ConfigManagerStartUp
+            LOGGER.warn("Initial StartUp! Trying to get current Configuration from Connector!");
+
             try {
-                var configmodel = client.getConfiguration();
-                this.configModelList.getConfigModelObjects().add(new ConfigModelObject(configmodel));
-                configModelList = configModelRepository.saveAndFlush(configModelList);
+                updateConfigModel(client.getConfiguration());
                 LOGGER.info("Received configuration from running Connector!");
             } catch (IOException e) {
-                LOGGER.warn("Could not get Configmodel from Connector! Using placeholder!");
-                createConfigModel(
-                        "NO_LOGGING",
-                        "TEST_DEPLOYMENT",
-                        "http://t",
-                        "tPassword",
-                        "http://k",
-                        "kPassword"
-                );
+                LOGGER.warn("Could not get Configmodel from Connector! Using old Config if available! Error establishing connection to connector: " + e.getMessage());
+
+                if(configModelRepository.findAll().size() > 0) {
+                    configModelList = configModelRepository.findAll().get(0);
+                }else{
+                    LOGGER.warn("Connector Config not reachable and no old config available! Using new placeholder Config.");
+                    createConfigModel(
+                            "NO_LOGGING",
+                            "TEST_DEPLOYMENT",
+                            "http://t",
+                            "tPassword",
+                            "http://k",
+                            "kPassword"
+                    );
+                }
             }
         } else {
-            LOGGER.info("Reloading old configuration");
+            LOGGER.info("No StartUp! Reloading old configuration");
             configModelList = configModelRepository.findAll().get(0);
         }
-//        else {
-//            LOGGER.info("Reloading old configuration");
-//            configModelList = configModelRepository.findAll().get(0);
-//            try {
-//                var valid = client.sendConfiguration(serializer.serialize(getConfigModel()));
-//                if (!valid) {
-//                    LOGGER.warn("Old configuration is invalid, using Connectors configuration!");
-//                    var configmodel = client.getConfiguration();
-//                    updateConfigModel(configmodel);
-//                }
-//            } catch (IOException e) {
-//                LOGGER.warn("Could not get a valid ConfigurationModel and/or Connector is not reachable!");
-//            }
-//        }
     }
 
     /**
@@ -125,13 +118,21 @@ public class ConfigModelService {
      * @return true, if configuration model is updated
      */
     public boolean updateConfigModel(ConfigurationModel configurationModel) {
-        for (int i = 0; i < configModelList.getConfigModelObjects().size(); i++) {
-            if (configModelList.getConfigModelObjects().get(i).getConfigurationModel().getId()
-                    .equals(configurationModel.getId())) {
-                configModelList.getConfigModelObjects().get(i).setConfigurationModel(configurationModel);
-                configModelList = configModelRepository.saveAndFlush(configModelList);
-                return true;
+        if(configModelList.getConfigModelObjects().size() > 0) {
+            for( int i = 0; i < configModelList.getConfigModelObjects().size(); i++ ) {
+                if( configModelList.getConfigModelObjects().get(i).getConfigurationModel().getId()
+                                   .equals(configurationModel.getId()) ) {
+                    configModelList.getConfigModelObjects().get(i).setConfigurationModel(configurationModel);
+                    configModelList = configModelRepository.saveAndFlush(configModelList);
+                    return true;
+                }
             }
+        }else{
+            ConfigModelObject configurationModelObject = new ConfigModelObject();
+            configurationModelObject.setConfigurationModel(configurationModel);
+            configModelList.getConfigModelObjects().add(configurationModelObject);
+            configModelList = configModelRepository.saveAndFlush(configModelList);
+            return true;
         }
         return false;
     }

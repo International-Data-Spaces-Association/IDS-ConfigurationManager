@@ -129,26 +129,19 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
                                                                String language,
                                                                String filenameExtension, Long bytesize,
                                                                String sourceType) {
-
-        if (configModelService.getConfigModel() == null
-                || configModelService.getConfigModel().getConnectorDescription().getResourceCatalog() == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Could not find any resources!\"}");
-        }
-
         ResourceImpl oldResourceCatalog = (ResourceImpl) resourceService.getResource(resourceId);
         URI oldRepresentationId = oldResourceCatalog.getRepresentation().get(0).getId();
         if (oldResourceCatalog != null) {
             oldResourceCatalog.setRepresentation(null);
         }
         if (configModelService.getConfigModel().getAppRoute() == null) {
-            logger.info("Could not delete the old representation from the resource");
+            logger.info("No AppRoute in ConfigModel!");
         } else {
             ResourceImpl oldResourceRoute = (ResourceImpl) resourceService.getResourceInAppRoute(resourceId);
             if (oldResourceRoute != null) {
                 oldResourceRoute.setRepresentation(null);
             }
         }
-
         // Create representation for resource
         Representation representation = new RepresentationBuilder(oldRepresentationId).build();
         var representationImpl = (RepresentationImpl) representation;
@@ -166,7 +159,6 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
         if (sourceType != null) {
             representationImpl.setProperty("ids:sourceType", sourceType);
         }
-
         // Update representation in resource catalog
         for (ResourceCatalog resourceCatalog : configModelService.getConfigModel()
                 .getConnectorDescription().getResourceCatalog()) {
@@ -178,27 +170,25 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
                 }
             }
         }
-
         // Update representation in app route
-        for (AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
-            for (RouteStep routeStep : appRoute.getHasSubRoute()) {
-                for (Resource resource : routeStep.getAppRouteOutput()) {
-                    if (resourceId.equals(resource.getId())) {
-                        var resourceImpl = (ResourceImpl) resource;
-                        resourceImpl.setRepresentation(Util.asList(representationImpl));
-                        break;
+        if (configModelService.getConfigModel().getAppRoute() != null) {
+            for( AppRoute appRoute : configModelService.getConfigModel().getAppRoute() ) {
+                for( RouteStep routeStep : appRoute.getHasSubRoute() ) {
+                    for( Resource resource : routeStep.getAppRouteOutput() ) {
+                        if( resourceId.equals(resource.getId()) ) {
+                            var resourceImpl = (ResourceImpl) resource;
+                            resourceImpl.setRepresentation(Util.asList(representationImpl));
+                            break;
+                        }
                     }
                 }
             }
         }
-
         // Update the backend connection to the new endpoint
         resourceService.updateBackendConnection(resourceId, endpointId);
 
         try {
-
             configModelService.saveState();
-
             // Update the resource representation in the dataspace connector
             if (representationImpl != null) {
                 var response = client.updateResourceRepresentation(
@@ -207,7 +197,6 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
                         representationImpl,
                         endpointId.toString()
                 );
-
                 var jsonObject = new JSONObject();
                 jsonObject.put("connectorResponse", response);
                 jsonObject.put("resourceID", resourceId.toString());
