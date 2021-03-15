@@ -44,7 +44,7 @@ public class ConnectorRequestService {
                 List<Resource> resourceList = new ArrayList<>();
                 for (ResourceCatalog resourceCatalog : connector.getResourceCatalog()) {
                     if (resourceCatalog != null && resourceCatalog.getOfferedResource() != null) {
-                        resourceList.addAll(resourceCatalog.getRequestedResource());
+                        resourceList.addAll(resourceCatalog.getOfferedResource());
                     }
                 }
                 return resourceList;
@@ -62,13 +62,13 @@ public class ConnectorRequestService {
      * This method gets the resource from the client using the connector uri und requested resource uri.
      *
      * @param recipientId   id of the recipient
-     * @param reqResourceId id of the requested resource
+     * @param requestedResourceId id of the requested resource
      * @return resource
      */
-    public Resource requestResource(URI recipientId, URI reqResourceId) {
+    public Resource requestResource(URI recipientId, URI requestedResourceId) {
 
         try {
-            Resource resource = client.getResource(recipientId.toString(), reqResourceId.toString());
+            Resource resource = client.getResource(recipientId.toString(), requestedResourceId.toString());
             if (resource != null) {
                 return resource;
             } else {
@@ -95,50 +95,29 @@ public class ConnectorRequestService {
             var jsonObject = new JSONObject();
 
             jsonObject.put("resourceId", resource.getId().toString());
-            jsonObject.put("title", resource.getTitle().get(0).getValue());
-            jsonObject.put("description", resource.getDescription().get(0).getValue());
-            jsonObject.put("keyword", resource.getKeyword());
-            jsonObject.put("version", resource.getVersion());
-            jsonObject.put("standardlicense", resource.getStandardLicense().toString());
-            jsonObject.put("publisher", resource.getPublisher().toString());
-
+            if (resource.getTitle() != null) {
+                jsonObject.put("title", resource.getTitle().get(0).getValue());
+            }
+            if (resource.getDescription() != null) {
+                jsonObject.put("description", resource.getDescription().get(0).getValue());
+            }
+            if (resource.getLanguage() != null) {
+                jsonObject.put("language", resource.getLanguage().get(0).getLabel().get(0).getValue());
+            }
+            if (resource.getKeyword() != null) {
+                jsonObject.put("keyword", resource.getKeyword());
+            }
+            if (resource.getVersion() != null) {
+                jsonObject.put("version", resource.getVersion());
+            }
+            if (resource.getStandardLicense() != null) {
+                jsonObject.put("standardlicense", resource.getStandardLicense().toString());
+            }
+            if (resource.getPublisher() != null) {
+                jsonObject.put("publisher", resource.getPublisher().toString());
+            }
             jsonArray.add(jsonObject);
         }
         return jsonArray;
     }
-
-//    /**
-//     * This method returns the content of a resource as json array.
-//     *
-//     * @param resource the resource
-//     * @return json array with resource content
-//     */
-//    public JSONArray getResourceContent(Resource resource) {
-//
-//        // ToDO: Inquire how many artifacts and contractoffers there can be
-//        var jsonArray = new JSONArray();
-//
-//        // Get artifact from resource
-//        if (resource.getRepresentation() != null) {
-//            var artifact = new JSONObject();
-//            for (Representation representation : resource.getRepresentation()) {
-//                if (representation != null && representation.getInstance() != null) {
-//                    for (RepresentationInstance representationInstance : representation.getInstance()) {
-//                        Artifact artifactTmp = (Artifact) representationInstance;
-//                        artifact.put(artifactTmp.getId().toString(), artifactTmp);
-//                    }
-//                }
-//            }
-//            jsonArray.add(artifact);
-//        }
-//
-//        //Get contract from resource
-//        if (resource.getContractOffer() != null && resource.getContractOffer().size() > 0) {
-//            ContractOffer contractOffer = resource.getContractOffer().get(0);
-//            var contract = new JSONObject();
-//            contract.put(contractOffer.getId().toString(), contractOffer);
-//            jsonArray.add(contract);
-//        }
-//        return jsonArray;
-//    }
 }

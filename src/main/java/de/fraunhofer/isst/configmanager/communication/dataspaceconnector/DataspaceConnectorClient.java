@@ -175,7 +175,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
             LOGGER.warn(String.format("Could not get BaseConnector from %s!", dataSpaceConnectorHost));
         }
         var body = response.body().string();
-        var splitBody = body.split("\n");
+        var splitBody = body.split("\n", 2);
         String uuid = splitBody[0].substring(12);
         LOGGER.info(uuid);
         String resource = splitBody[1].substring(10);

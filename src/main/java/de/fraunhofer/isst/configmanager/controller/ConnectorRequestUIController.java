@@ -5,12 +5,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConnectorRequestService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import net.minidev.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.net.URI;
@@ -20,6 +23,9 @@ import java.util.List;
  * The controller class implements the ConnectorRequestApi and offers the possibilities to manage
  * the request to external connectors.
  */
+@RestController
+@RequestMapping("/api/ui")
+@Tag(name = "Connector Request Management", description = "Endpoints for managing connector requests")
 public class ConnectorRequestUIController implements ConnectorRequestApi {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(ConnectorRequestUIController.class);
@@ -41,14 +47,14 @@ public class ConnectorRequestUIController implements ConnectorRequestApi {
      * This method request metadata from an IDS connector.
      *
      * @param recipientId   uri of the requested IDS connector
-     * @param reqResourceId uri of the requested resource
+     * @param requestedResourceId uri of the requested resource
      * @return if reqResourceId is set, then the resource will be returned otherwise the IDS connector
      */
     @Override
-    public ResponseEntity<String> requestMetadata(URI recipientId, URI reqResourceId) {
+    public ResponseEntity<String> requestMetadata(URI recipientId, URI requestedResourceId) {
 
-        if (reqResourceId != null) {
-            Resource resource = connectorRequestService.requestResource(recipientId, reqResourceId);
+        if (requestedResourceId != null) {
+            Resource resource = connectorRequestService.requestResource(recipientId, requestedResourceId);
             if (resource != null) {
                 try {
                     return ResponseEntity.ok(serializer.serialize(resource));
@@ -56,19 +62,6 @@ public class ConnectorRequestUIController implements ConnectorRequestApi {
                     LOGGER.error(e.getMessage());
                     return ResponseEntity.badRequest().body("Problems while serializing the resource");
                 }
-//                JSONArray resourceContent = connectorRequestService.getResourceContent(resource);
-//                if (resourceContent != null) {
-//                    try {
-//                        return ResponseEntity.ok(objectMapper.writeValueAsString(resourceContent));
-//                    } catch (JsonProcessingException e) {
-//                        LOGGER.error(e.getMessage(), e);
-//                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problems while parsing " +
-//                                "the list to JSON");
-//                    }
-//                } else {
-//                    return ResponseEntity.badRequest().body("Could not get resource content from the requested connector");
-//
-//                }
             } else {
                 return ResponseEntity.badRequest().body("Could not get resource from the requested connector");
             }

@@ -16,5 +16,5 @@ public interface ConnectorRequestApi {
     @Operation(summary = "Request metadata from another IDS connector.")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully requested  metadata from IDS connector")})
     ResponseEntity<String> requestMetadata(@RequestParam("recipientId") URI recipientId,
-                                           @RequestParam(value = "reqResourceId", required = false) URI reqResourceId);
+                                           @RequestParam(value = "requestedResourceId", required = false) URI requestedResourceId);
 }
