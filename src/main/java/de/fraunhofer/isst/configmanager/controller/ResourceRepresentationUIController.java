@@ -6,7 +6,6 @@ import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelService;
-import de.fraunhofer.isst.configmanager.configmanagement.service.RepresentationEndpointService;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ResourceService;
 import de.fraunhofer.isst.configmanager.configmanagement.service.UtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -36,7 +35,6 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
 
     private final ConfigModelService configModelService;
     private final UtilService utilService;
-    private final RepresentationEndpointService representationEndpointService;
     private final ResourceService resourceService;
     private final DefaultConnectorClient client;
     private final Serializer serializer;
@@ -46,14 +44,12 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
                                               UtilService utilService,
                                               ResourceService resourceService,
                                               DefaultConnectorClient client,
-                                              Serializer serializer,
-                                              RepresentationEndpointService representationEndpointService) {
+                                              Serializer serializer) {
         this.client = client;
         this.configModelService = configModelService;
         this.utilService = utilService;
         this.resourceService = resourceService;
         this.serializer = serializer;
-        this.representationEndpointService = representationEndpointService;
     }
 
     /**
@@ -103,7 +99,6 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
 
             var response = client.registerResourceRepresentation(resourceId.toString(), representation, endpointId.toString());
             jsonObject.put("connectorResponse", response);
-            representationEndpointService.createRepresentationEndpoint(endpointId, representation.getId());
             return ResponseEntity.ok(jsonObject.toJSONString());
         } catch (IOException e) {
             logger.error(e.getMessage());
