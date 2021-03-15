@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
@@ -49,19 +50,25 @@ public class ConnectorRequestUIController implements ConnectorRequestApi {
         if (reqResourceId != null) {
             Resource resource = connectorRequestService.requestResource(recipientId, reqResourceId);
             if (resource != null) {
-                JSONArray resourceContent = connectorRequestService.getResourceContent(resource);
-                if (resourceContent != null) {
-                    try {
-                        return ResponseEntity.ok(objectMapper.writeValueAsString(resourceContent));
-                    } catch (JsonProcessingException e) {
-                        LOGGER.error(e.getMessage(), e);
-                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problems while parsing " +
-                                "the list to JSON");
-                    }
-                } else {
-                    return ResponseEntity.badRequest().body("Could not get resource content from the requested connector");
-
+                try {
+                    return ResponseEntity.ok(serializer.serialize(resource));
+                } catch (IOException e) {
+                    LOGGER.error(e.getMessage());
+                    return ResponseEntity.badRequest().body("Problems while serializing the resource");
                 }
+//                JSONArray resourceContent = connectorRequestService.getResourceContent(resource);
+//                if (resourceContent != null) {
+//                    try {
+//                        return ResponseEntity.ok(objectMapper.writeValueAsString(resourceContent));
+//                    } catch (JsonProcessingException e) {
+//                        LOGGER.error(e.getMessage(), e);
+//                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problems while parsing " +
+//                                "the list to JSON");
+//                    }
+//                } else {
+//                    return ResponseEntity.badRequest().body("Could not get resource content from the requested connector");
+//
+//                }
             } else {
                 return ResponseEntity.badRequest().body("Could not get resource from the requested connector");
             }

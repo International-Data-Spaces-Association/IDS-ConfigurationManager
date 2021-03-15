@@ -1,6 +1,8 @@
 package de.fraunhofer.isst.configmanager.configmanagement.service;
 
-import de.fraunhofer.iais.eis.*;
+import de.fraunhofer.iais.eis.BaseConnector;
+import de.fraunhofer.iais.eis.Resource;
+import de.fraunhofer.iais.eis.ResourceCatalog;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -41,7 +43,7 @@ public class ConnectorRequestService {
 
                 List<Resource> resourceList = new ArrayList<>();
                 for (ResourceCatalog resourceCatalog : connector.getResourceCatalog()) {
-                    if (resourceCatalog != null && resourceCatalog.getRequestedResource() != null) {
+                    if (resourceCatalog != null && resourceCatalog.getOfferedResource() != null) {
                         resourceList.addAll(resourceCatalog.getRequestedResource());
                     }
                 }
@@ -105,38 +107,38 @@ public class ConnectorRequestService {
         return jsonArray;
     }
 
-    /**
-     * This method returns the content of a resource as json array.
-     *
-     * @param resource the resource
-     * @return json array with resource content
-     */
-    public JSONArray getResourceContent(Resource resource) {
-
-        // ToDO: Inquire how many artifacts and contractoffers there can be
-        var jsonArray = new JSONArray();
-
-        // Get artifact from resource
-        if (resource.getRepresentation() != null) {
-            var artifact = new JSONObject();
-            for (Representation representation : resource.getRepresentation()) {
-                if (representation != null && representation.getInstance() != null) {
-                    for (RepresentationInstance representationInstance : representation.getInstance()) {
-                        Artifact artifactTmp = (Artifact) representationInstance;
-                        artifact.put(artifactTmp.getId().toString(), artifactTmp);
-                    }
-                }
-            }
-            jsonArray.add(artifact);
-        }
-
-        //Get contract from resource
-        if (resource.getContractOffer() != null && resource.getContractOffer().size() > 0) {
-            ContractOffer contractOffer = resource.getContractOffer().get(0);
-            var contract = new JSONObject();
-            contract.put(contractOffer.getId().toString(), contractOffer);
-            jsonArray.add(contract);
-        }
-        return jsonArray;
-    }
+//    /**
+//     * This method returns the content of a resource as json array.
+//     *
+//     * @param resource the resource
+//     * @return json array with resource content
+//     */
+//    public JSONArray getResourceContent(Resource resource) {
+//
+//        // ToDO: Inquire how many artifacts and contractoffers there can be
+//        var jsonArray = new JSONArray();
+//
+//        // Get artifact from resource
+//        if (resource.getRepresentation() != null) {
+//            var artifact = new JSONObject();
+//            for (Representation representation : resource.getRepresentation()) {
+//                if (representation != null && representation.getInstance() != null) {
+//                    for (RepresentationInstance representationInstance : representation.getInstance()) {
+//                        Artifact artifactTmp = (Artifact) representationInstance;
+//                        artifact.put(artifactTmp.getId().toString(), artifactTmp);
+//                    }
+//                }
+//            }
+//            jsonArray.add(artifact);
+//        }
+//
+//        //Get contract from resource
+//        if (resource.getContractOffer() != null && resource.getContractOffer().size() > 0) {
+//            ContractOffer contractOffer = resource.getContractOffer().get(0);
+//            var contract = new JSONObject();
+//            contract.put(contractOffer.getId().toString(), contractOffer);
+//            jsonArray.add(contract);
+//        }
+//        return jsonArray;
+//    }
 }
