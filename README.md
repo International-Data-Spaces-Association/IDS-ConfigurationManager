@@ -7,6 +7,7 @@
 <p align="center">
 <a href="https://github.com/International-Data-Spaces-Association/IDS-ConfigurationManager/blob/development/LICENSE"><img src="https://img.shields.io/github/license/International-Data-Spaces-Association/IDS-ConfigurationManager"></a>
 <a href="https://github.com/International-Data-Spaces-Association/IDS-ConfigurationManager/issues"><img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat"></a>
+<img src="https://img.shields.io/github/workflow/status/International-Data-Spaces-Association/IDS-ConfigurationManager/Development-Maven-Build">
 <img src="https://img.shields.io/github/languages/code-size/International-Data-Spaces-Association/IDS-ConfigurationManager">
 <img src="https://img.shields.io/github/contributors/International-Data-Spaces-Association/IDS-ConfigurationManager">
 <img src="https://img.shields.io/badge/Dependabot-Active-green">
