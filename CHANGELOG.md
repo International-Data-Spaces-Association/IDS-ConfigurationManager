@@ -8,6 +8,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [4.2.0] - UNRELEASED
 
 ### Added
+- New API for returning the requested resources of a connected connector (/resources/requested)
 - New API for returning the enum-name of a policy for a given policy-pattern (/policy-pattern with request-body patter)
 
 ### Fixes
