@@ -375,6 +375,23 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
     }
 
     @Override
+    public String getPolicyPattern(String policy) throws IOException {
+        LOGGER.info(String.format("Get pattern for policy"));
+        var builder = new Request.Builder();
+        builder.url("https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin/api/example/policy-validation");
+        builder.post(RequestBody.create(policy, okhttp3.MediaType.parse("application/ld+json")));
+        builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername, dataSpaceConnectorApiPassword));
+        var request = builder.build();
+        var response = client.newCall(request).execute();
+        if (!response.isSuccessful()) {
+            LOGGER.warn(String.format("Pattern for policy could not be determined"));
+        }
+        var body = response.body().string();
+        LOGGER.info("Response: " + body);
+        return body;
+    }
+
+    @Override
     public String updateResource(URI resourceID, Resource resource) throws IOException {
         LOGGER.info(String.format("updating resource at %s", dataSpaceConnectorHost));
         var mappedResource = dataSpaceConnectorResourceMapper.getMetadata(resource);

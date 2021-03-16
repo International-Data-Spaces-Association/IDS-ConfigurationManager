@@ -11,7 +11,7 @@ import java.net.URI;
  * configurations for the dataspace connector.
  * The implementations of the ConfigManager are oriented according to the structure of the dataspace connectors.
  */
-public interface DefaultConnectorClient{
+public interface DefaultConnectorClient {
 
     /**
      * The method helps to update connector in the broker. For this only the id of the corresponding broker
@@ -161,4 +161,13 @@ public interface DefaultConnectorClient{
      * @throws IOException when an error occurs while sending the request
      */
     String updateResourceContract(String resourceID, Contract contract) throws IOException;
+
+    /**
+     * Returns the policy pattern for a given string.
+     *
+     * @param policy string, representing a policy
+     * @return policy pattern
+     * @throws IOException when an error occurs while sending the request
+     */
+    String getPolicyPattern(String policy) throws IOException;
 }
