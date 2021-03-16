@@ -474,7 +474,7 @@ public class ResourceService {
         if (baseConnector.getResourceCatalog() != null) {
             for (ResourceCatalog resourceCatalog : baseConnector.getResourceCatalog()) {
                 if (resourceCatalog.getRequestedResource() != null) {
-                    for (Resource resource : resourceCatalog.getOfferedResource()) {
+                    for (Resource resource : resourceCatalog.getRequestedResource()) {
                         resourceList.add(resource);
                     }
                 }
