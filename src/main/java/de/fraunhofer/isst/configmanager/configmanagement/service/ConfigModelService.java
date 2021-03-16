@@ -90,7 +90,7 @@ public class ConfigModelService {
         ConfigurationModel configurationModel = new ConfigurationModelBuilder()
                 ._configurationModelLogLevel_(LogLevel.valueOf(loglevel))
                 ._connectorDescription_(connector)
-                ._connectorStatus_(ConnectorStatus.CONNECTOR_OFFLINE)
+                ._connectorStatus_(ConnectorStatus.CONNECTOR_ONLINE)
                 ._connectorDeployMode_(ConnectorDeployMode.valueOf(connectorDeployMode))
                 ._trustStore_(URI.create(trustStore))
                 ._trustStorePassword_(trustStorePassword)
@@ -122,14 +122,24 @@ public class ConfigModelService {
             for( int i = 0; i < configModelList.getConfigModelObjects().size(); i++ ) {
                 if( configModelList.getConfigModelObjects().get(i).getConfigurationModel().getId()
                                    .equals(configurationModel.getId()) ) {
-                    configModelList.getConfigModelObjects().get(i).setConfigurationModel(configurationModel);
+
+                    //Default overwrite connectorstatus to ONLINE
+                    var connectedConnectorConfigmodel = (ConfigurationModelImpl) configurationModel;
+                    connectedConnectorConfigmodel.setConnectorStatus(ConnectorStatus.CONNECTOR_ONLINE);
+
+                    configModelList.getConfigModelObjects().get(i).setConfigurationModel(connectedConnectorConfigmodel);
                     configModelList = configModelRepository.saveAndFlush(configModelList);
                     return true;
                 }
             }
         }else{
+            //Default overwrite connectorstatus to ONLINE
+            var connectedConnectorConfigmodel = (ConfigurationModelImpl) configurationModel;
+            connectedConnectorConfigmodel.setConnectorStatus(ConnectorStatus.CONNECTOR_ONLINE);
+
             ConfigModelObject configurationModelObject = new ConfigModelObject();
-            configurationModelObject.setConfigurationModel(configurationModel);
+            configurationModelObject.setConfigurationModel(connectedConnectorConfigmodel);
+
             configModelList.getConfigModelObjects().add(configurationModelObject);
             configModelList = configModelRepository.saveAndFlush(configModelList);
             return true;
@@ -198,6 +208,10 @@ public class ConfigModelService {
         if (keyStorePassword != null) {
             configModelImpl.setKeyStorePassword(keyStorePassword);
         }
+
+        //Set Default CONNECTOR ONLINE
+        configModelImpl.setConnectorStatus(ConnectorStatus.CONNECTOR_ONLINE);
+
         return saveState();
     }
 
