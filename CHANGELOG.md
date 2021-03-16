@@ -9,6 +9,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixes
 - Fix: For non-existing proxy configurations, "http://test" is no longer used as the default proxy configuration.
+- Workaround: Use BrokerUpdateMessage and send complete catalog instead of ResourceUpdateMessage when updating a resource at a Broker
 
 ## [4.1.0] - 2021-03-15
 
