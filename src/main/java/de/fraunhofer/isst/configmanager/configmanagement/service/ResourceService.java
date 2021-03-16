@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Service class for managing resources.
@@ -274,6 +275,7 @@ public class ResourceService {
                     .map(resources -> resources != null && resources.removeIf(resource -> resource.getId().equals(resourceId)))
                     .reduce(false, (a, b) -> a || b);
         }
+        configModelService.saveState();
         return deleted;
     }
 
@@ -409,10 +411,10 @@ public class ResourceService {
         if (configModelService.getConfigModel().getAppRoute() != null) {
             RouteStepImpl foundRouteStep = null;
             AppRouteImpl appRouteImpl = null;
-            for( AppRoute appRoute : configModelService.getConfigModel().getAppRoute() ) {
-                for( RouteStep routeStep : appRoute.getHasSubRoute() ) {
-                    for( Resource resource : routeStep.getAppRouteOutput() ) {
-                        if( resourceId.equals(resource.getId()) ) {
+            for (AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
+                for (RouteStep routeStep : appRoute.getHasSubRoute()) {
+                    for (Resource resource : routeStep.getAppRouteOutput()) {
+                        if (resourceId.equals(resource.getId())) {
                             appRouteImpl = (AppRouteImpl) appRoute;
                             foundRouteStep = (RouteStepImpl) routeStep;
                             break;
@@ -422,9 +424,9 @@ public class ResourceService {
             }
 
             // Set app route start and subroute start to the updated endpoint
-            if( appRouteImpl != null && foundRouteStep != null ) {
+            if (appRouteImpl != null && foundRouteStep != null) {
                 var endpoint = endpointService.getGenericEndpoint(endpointId);
-                if( endpoint != null ) {
+                if (endpoint != null) {
                     appRouteImpl.setAppRouteStart(Util.asList(endpoint));
                     foundRouteStep.setAppRouteStart(Util.asList(endpoint));
                 }
@@ -432,11 +434,11 @@ public class ResourceService {
         }
 
         // Set first entry of endpoint informations to the new endpoint
-        if(endpointInformationRepository.findAll().size() > 0) {
+        if (endpointInformationRepository.findAll().size() > 0) {
             var endpointInfo = endpointInformationRepository.findAll().get(0);
             endpointInfo.setEndpointId(endpointId.toString());
             endpointInformationRepository.saveAndFlush(endpointInfo);
-        }else{
+        } else {
             var endpointInformation = new EndpointInformation();
             endpointInformation.setEndpointId(endpointId.toString());
             endpointInformationRepository.saveAndFlush(endpointInformation);
@@ -458,5 +460,26 @@ public class ResourceService {
                 .flatMap(Collection::stream)
                 .filter(resource -> resource.getId().equals(resourceId))
                 .findAny().orElse(null);
+    }
+
+    /**
+     * This method returns a list of requested resources
+     *
+     * @param baseConnector the base connector
+     * @return resources
+     */
+    public List<Resource> getRequestedResources(BaseConnector baseConnector) {
+
+        List<Resource> resourceList = new ArrayList<>();
+        if (baseConnector.getResourceCatalog() != null) {
+            for (ResourceCatalog resourceCatalog : baseConnector.getResourceCatalog()) {
+                if (resourceCatalog.getRequestedResource() != null) {
+                    for (Resource resource : resourceCatalog.getOfferedResource()) {
+                        resourceList.add(resource);
+                    }
+                }
+            }
+        }
+        return resourceList;
     }
 }

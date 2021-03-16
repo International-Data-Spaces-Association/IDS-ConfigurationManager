@@ -170,4 +170,13 @@ public interface DefaultConnectorClient {
      * @throws IOException when an error occurs while sending the request
      */
     String getPolicyPattern(String policy) throws IOException;
+
+
+    /**
+     * Returns the self declaration of a connector
+     *
+     * @return base connector
+     * @throws IOException when an error occurs while sending the request
+     */
+    BaseConnector getSelfDeclaration() throws IOException;
 }
