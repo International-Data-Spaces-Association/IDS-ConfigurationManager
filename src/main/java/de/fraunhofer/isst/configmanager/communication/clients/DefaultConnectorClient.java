@@ -170,4 +170,22 @@ public interface DefaultConnectorClient {
      * @throws IOException when an error occurs while sending the request
      */
     String updateResourceContract(String resourceID, Contract contract) throws IOException;
+
+    /**
+     * Returns the policy pattern for a given string.
+     *
+     * @param policy string, representing a policy
+     * @return policy pattern
+     * @throws IOException when an error occurs while sending the request
+     */
+    String getPolicyPattern(String policy) throws IOException;
+
+
+    /**
+     * Returns the self declaration of a connector
+     *
+     * @return base connector
+     * @throws IOException when an error occurs while sending the request
+     */
+    BaseConnector getSelfDeclaration() throws IOException;
 }

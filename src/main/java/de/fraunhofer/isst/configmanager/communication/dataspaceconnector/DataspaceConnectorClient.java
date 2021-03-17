@@ -110,6 +110,22 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
     }
 
     @Override
+    public BaseConnector getSelfDeclaration() throws IOException {
+        var builder = new Request.Builder();
+        var connectorUrl = "https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin/api/connector";
+        builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername, dataSpaceConnectorApiPassword));
+        builder.url(connectorUrl);
+        builder.get();
+        var request = builder.build();
+        var response = client.newCall(request).execute();
+        if (!response.isSuccessful()) {
+            LOGGER.warn("Could not get BaseConnector");
+        }
+        var body = response.body().string();
+        return SERIALIZER.deserialize(body, BaseConnector.class);
+    }
+
+    @Override
     public boolean sendConfiguration(String configurationModel) throws IOException {
         LOGGER.info(String.format("sending new configuration to %s", dataSpaceConnectorHost));
         var builder = new Request.Builder();
@@ -398,6 +414,23 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         var response = client.newCall(request).execute();
         if (!response.isSuccessful()) {
             LOGGER.warn(String.format("Updating Contract at %s failed!", dataSpaceConnectorHost));
+        }
+        var body = response.body().string();
+        LOGGER.info("Response: " + body);
+        return body;
+    }
+
+    @Override
+    public String getPolicyPattern(String policy) throws IOException {
+        LOGGER.info(String.format("Get pattern for policy"));
+        var builder = new Request.Builder();
+        builder.url("https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin/api/example/policy-validation");
+        builder.post(RequestBody.create(policy, okhttp3.MediaType.parse("application/ld+json")));
+        builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername, dataSpaceConnectorApiPassword));
+        var request = builder.build();
+        var response = client.newCall(request).execute();
+        if (!response.isSuccessful()) {
+            LOGGER.warn(String.format("Pattern for policy could not be determined"));
         }
         var body = response.body().string();
         LOGGER.info("Response: " + body);

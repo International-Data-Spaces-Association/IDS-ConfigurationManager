@@ -7,3 +7,5 @@ services:
     container_name: 'configurationmanager-container'
     ports:
       - 8081:8081
+    environment:
+      - CUSTOM_APP_NAME=Einfache Wetterwarnungen auf Gemeindeebene

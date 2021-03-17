@@ -1,5 +1,6 @@
 package de.fraunhofer.isst.configmanager.controller;
 
+import de.fraunhofer.iais.eis.BaseConnector;
 import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.iais.eis.ResourceImpl;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The controller class implements the ResourceUIApi and offers the possibilities to manage
@@ -92,6 +94,24 @@ public class ResourceUIController implements ResourceUIApi {
             }
         } else {
             return ResponseEntity.badRequest().body("Could not determine the resources");
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> getRequestedResources() {
+
+        try {
+            BaseConnector baseConnector = client.getSelfDeclaration();
+            if (baseConnector != null) {
+                List<Resource> resourceList = resourceService.getRequestedResources(baseConnector);
+                return ResponseEntity.ok(serializer.serialize(resourceList));
+            } else {
+                return ResponseEntity.badRequest().body("Could not get the self declaration from the connector");
+            }
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+            return ResponseEntity.badRequest().body("Problems occurred while determining the requested resources " +
+                    "from the connector");
         }
     }
 
