@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [4.2.0] - UNRELEASED
+## [4.2.0] - 2021-03-17
 
 ### Added
 - New API for returning the requested resources of a connected connector (/resources/requested)
@@ -13,7 +13,6 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - New Docker-Compose Env-Variable CUSTOM_APP_NAME to set name for Demo-App
 
 ### Fixes
-- Fix: For non-existing proxy configurations, "http://test" is no longer used as the default proxy configuration.
 - Workaround: Use BrokerUpdateMessage and send complete catalog instead of ResourceUpdateMessage when updating a resource at a Broker
 
 ## [4.1.0] - 2021-03-15
