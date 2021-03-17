@@ -44,7 +44,7 @@ public class ConfigModelProxyUIController implements ConfigModelProxyApi {
         if (configModelService.getConfigModel().getConnectorProxy() == null) {
             var configModelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
             Proxy proxy = new ProxyBuilder()
-                    ._proxyURI_(URI.create(""))
+                    ._proxyURI_(URI.create("http://test"))
                     ._noProxy_(Util.asList())
                     ._proxyAuthentication_(new BasicAuthenticationBuilder()._authPassword_("")._authUsername_("").build())
                     .build();
