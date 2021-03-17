@@ -16,6 +16,7 @@ import java.math.BigInteger;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Service class for managing created apps.
@@ -35,9 +36,10 @@ public class AppService {
             logger.info("No custom app is found! Creating custom apps.");
             List<CustomApp> customAppList = new ArrayList<>();
 
-            // Create custom app with endpoints
-            CustomApp customApp1 = new CustomApp();
-            customApp1.setTitle("Custom App 1");
+            var customApp1 = new CustomApp();
+            var appName = System.getenv("CUSTOM_APP_NAME");
+            customApp1.setTitle(Objects.requireNonNullElse(appName, "Custom App 1"));
+            logger.info("Created custom app with title: " + customApp1.getTitle());
 
             List<CustomAppEndpoint> customAppEndpoints = new ArrayList<>();
 
