@@ -10,6 +10,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 - New API for returning the requested resources of a connected connector (/resources/requested)
 - New API for returning the enum-name of a policy for a given policy-pattern (/policy-pattern with request-body patter)
+- New Docker-Compose Env-Variable CUSTOM_APP_NAME to set name for Demo-App
 
 ### Fixes
 - Fix: For non-existing proxy configurations, "http://test" is no longer used as the default proxy configuration.
