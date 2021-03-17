@@ -201,6 +201,36 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
     }
 
     @Override
+    public String requestContractAgreement(String recipientId, String requestedArtifactId, String contractOffer) throws IOException {
+        LOGGER.info("Request contract agreement with recipient: {} and artifact: {}", recipientId, requestedArtifactId);
+        var builder = new Request.Builder();
+        var urlBuilder = new HttpUrl.Builder()
+                .scheme("https")
+                .host(dataSpaceConnectorHost)
+                .port(dataSpaceConnectorPort)
+                .addPathSegments("admin/api/request/contract")
+                .addQueryParameter("recipient", recipientId)
+                .addQueryParameter("requestedArtifact", requestedArtifactId);
+        var url = urlBuilder.build();
+        LOGGER.info(url.toString());
+        builder.url(url);
+        builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername, dataSpaceConnectorApiPassword));
+        if (contractOffer != null && !contractOffer.isBlank()) {
+            builder.post(RequestBody.create(contractOffer, okhttp3.MediaType.parse("application/ld+json")));
+        } else {
+            builder.post(RequestBody.create(null, new byte[0]));
+        }
+        var request = builder.build();
+        var response = client.newCall(request).execute();
+        if (!response.isSuccessful()) {
+            LOGGER.warn("Could not request contract agreement");
+        }
+        var body = response.body().string();
+        LOGGER.info("Response: " + body);
+        return body;
+    }
+
+    @Override
     public String registerResource(Resource resource) throws IOException {
         LOGGER.info(String.format("registering resource at %s", dataSpaceConnectorHost));
         var mappedResource = dataSpaceConnectorResourceMapper.getMetadata(resource);

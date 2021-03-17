@@ -1,16 +1,14 @@
 package de.fraunhofer.isst.configmanager.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConnectorRequestService;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,7 +44,7 @@ public class ConnectorRequestUIController implements ConnectorRequestApi {
     /**
      * This method request metadata from an IDS connector.
      *
-     * @param recipientId   uri of the requested IDS connector
+     * @param recipientId         uri of the requested IDS connector
      * @param requestedResourceId uri of the requested resource
      * @return if reqResourceId is set, then the resource will be returned otherwise the IDS connector
      */
@@ -68,17 +66,29 @@ public class ConnectorRequestUIController implements ConnectorRequestApi {
         } else {
             List<Resource> resources = connectorRequestService.requestResourcesFromConnector(recipientId);
             if (resources != null && resources.size() > 0) {
-                JSONArray customResourceList = connectorRequestService.createResourceList(resources);
                 try {
-                    return ResponseEntity.ok(objectMapper.writeValueAsString(customResourceList));
-                } catch (JsonProcessingException e) {
+                    return ResponseEntity.ok(serializer.serialize(resources));
+                } catch (IOException e) {
                     LOGGER.error(e.getMessage(), e);
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problems while parsing " +
-                            "the list to JSON");
+                    return ResponseEntity.badRequest().body("Problems while serializing the list of resources");
                 }
             } else {
                 return ResponseEntity.badRequest().body("Could not get resources from the requested connector");
             }
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> requestContract(URI recipientId, URI requestedArtifactId, String contractOffer) {
+
+        String contractAgreementId = connectorRequestService
+                .requestContractAgreement(recipientId.toString(), requestedArtifactId.toString(), contractOffer);
+        if (contractAgreementId != null) {
+            var jsonObject = new JSONObject();
+            jsonObject.put("agreementId", contractAgreementId);
+            return ResponseEntity.ok(jsonObject.toJSONString());
+        } else {
+            return ResponseEntity.badRequest().body("Could not get agreement id for the contract");
         }
     }
 }

@@ -4,8 +4,6 @@ import de.fraunhofer.iais.eis.BaseConnector;
 import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.iais.eis.ResourceCatalog;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
-import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +59,7 @@ public class ConnectorRequestService {
     /**
      * This method gets the resource from the client using the connector uri und requested resource uri.
      *
-     * @param recipientId   id of the recipient
+     * @param recipientId         id of the recipient
      * @param requestedResourceId id of the requested resource
      * @return resource
      */
@@ -82,42 +80,20 @@ public class ConnectorRequestService {
     }
 
     /**
-     * This method creates a custom resource list with specified attributes
+     * This method requests the id of the contract agreement
      *
-     * @param resources list of resources
-     * @return json array of resources
+     * @param recipientId         id of the recipient
+     * @param requestedArtifactId id of the requested artifact
+     * @param contractOffer       contact offer for the requested resource
+     * @return string, contract acgreement id
      */
-    public JSONArray createResourceList(List<Resource> resources) {
+    public String requestContractAgreement(String recipientId, String requestedArtifactId, String contractOffer) {
 
-        var jsonArray = new JSONArray();
-
-        for (Resource resource : resources) {
-            var jsonObject = new JSONObject();
-
-            jsonObject.put("resourceId", resource.getId().toString());
-            if (resource.getTitle() != null) {
-                jsonObject.put("title", resource.getTitle().get(0).getValue());
-            }
-            if (resource.getDescription() != null) {
-                jsonObject.put("description", resource.getDescription().get(0).getValue());
-            }
-            if (resource.getLanguage() != null) {
-                jsonObject.put("language", resource.getLanguage().get(0).getLabel().get(0).getValue());
-            }
-            if (resource.getKeyword() != null) {
-                jsonObject.put("keyword", resource.getKeyword());
-            }
-            if (resource.getVersion() != null) {
-                jsonObject.put("version", resource.getVersion());
-            }
-            if (resource.getStandardLicense() != null) {
-                jsonObject.put("standardlicense", resource.getStandardLicense().toString());
-            }
-            if (resource.getPublisher() != null) {
-                jsonObject.put("publisher", resource.getPublisher().toString());
-            }
-            jsonArray.add(jsonObject);
+        try {
+            return client.requestContractAgreement(recipientId, requestedArtifactId, contractOffer);
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage(), e);
         }
-        return jsonArray;
+        return null;
     }
 }
