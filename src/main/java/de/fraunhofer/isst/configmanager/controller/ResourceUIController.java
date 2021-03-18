@@ -78,12 +78,6 @@ public class ResourceUIController implements ResourceUIApi {
     @Override
     public ResponseEntity<String> getResources() {
 
-        if (configModelService.getConfigModel() == null
-                || configModelService.getConfigModel().getConnectorDescription() == null
-                || configModelService.getConfigModel().getConnectorDescription().getResourceCatalog() == null) {
-            return ResponseEntity.ok(new JSONArray().toJSONString());
-        }
-
         ArrayList<Resource> resources = resourceService.getResources();
         if (resources != null) {
             try {
@@ -190,7 +184,6 @@ public class ResourceUIController implements ResourceUIApi {
         // Save and send request to dataspace connector
         var jsonObject = new JSONObject();
         try {
-            configModelService.saveState();
             jsonObject.put("resourceID", resource.getId().toString());
             var response = client.registerResource(resource);
             jsonObject.put("connectorResponse", response);
@@ -226,7 +219,6 @@ public class ResourceUIController implements ResourceUIApi {
 
         // Save the updated resource and update the resource in the dataspace connector
         try {
-            configModelService.saveState();
             var response = client.updateResource(resourceId, updatedResource);
             var jsonObject = new JSONObject();
             jsonObject.put("connectorResponse", response);

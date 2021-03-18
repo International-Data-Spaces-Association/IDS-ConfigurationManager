@@ -3,11 +3,8 @@ package de.fraunhofer.isst.configmanager.configmanagement.service;
 import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.util.TypedLiteral;
 import de.fraunhofer.iais.eis.util.Util;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.config.BaseConnectorObject;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.ConnectorList;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.ConnectorListRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.ConfigModelRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,21 +17,21 @@ import java.util.List;
  * notified when the current configuration changes
  */
 @Service
+@Slf4j
 public class ConnectorService {
 
-    private final static Logger logger = LoggerFactory.getLogger(ConnectorService.class);
-    private final ConnectorListRepository connectorListRepository;
-    private ConnectorList connectors;
     private final ConfigModelService configModelService;
+    private ConfigModelRepository configModelRepository;
 
     @Autowired
-    public ConnectorService(ConnectorListRepository connectorListRepository, ConfigModelService configModelService) {
-        this.connectorListRepository = connectorListRepository;
+    public ConnectorService(ConfigModelService configModelService, ConfigModelRepository configModelRepository) {
         this.configModelService = configModelService;
+        this.configModelRepository = configModelRepository;
 
         // If no connector is found in the database, a default connector is created at this point.
-        if (connectorListRepository.count() == 0) {
-            logger.info("Db is empty! Creating default configuration");
+        if (configModelRepository.findAll().get(0).getConfigurationModel().getConnectorDescription() == null) {
+            log.info("No connector description is found in the configuration model! Creating default connector " +
+                    "description");
             BaseConnector connector = new BaseConnectorBuilder()
                     ._inboundModelVersion_(new ArrayList<>(List.of("3.1.0")))
                     ._outboundModelVersion_("3.1.0")
@@ -42,37 +39,25 @@ public class ConnectorService {
                     ._maintainer_(URI.create("https://example.com"))
                     ._curator_(URI.create("https://example.com"))
                     .build();
-            BaseConnectorObject configObject = new BaseConnectorObject(connector);
-            connectors = new ConnectorList();
-            connectors.getConnectorConfigs().add(configObject);
-            connectors = connectorListRepository.saveAndFlush(connectors);
-        } else {
-            logger.info("Loading configurations from db");
-            connectors = connectorListRepository.findAll().stream().findAny().get();
+            ConfigurationModelImpl configurationModel = (ConfigurationModelImpl) configModelService.getConfigModel();
+            configurationModel.setConnectorDescription(connector);
         }
     }
 
     /**
-     * @return all currently managed connectors
-     */
-    public List<Connector> getConnectors() {
-        return this.connectors.getConnectors();
-    }
-
-    /**
-     * @param title                 the title of the connector
-     * @param description           the description of the connector
-     * @param endpointAccessURL     the access url to the connector
-     * @param version               the version of the connector
-     * @param curator               the curator of the connector
-     * @param maintainer            the maintainer of the connector
-     * @param inboundedModelVersion the inbounded model version of the connector
-     * @param outbundedModelVersion the outbunded model version of the connector
+     * @param title                  the title of the connector
+     * @param description            the description of the connector
+     * @param endpointAccessURL      the access url to the connector
+     * @param version                the version of the connector
+     * @param curator                the curator of the connector
+     * @param maintainer             the maintainer of the connector
+     * @param inboundedModelVersion  the inbounded model version of the connector
+     * @param outboundedModelVersion the outbounded model version of the connector
      * @return base connector
      */
     public BaseConnector createConnector(String title, String description, String endpointAccessURL,
                                          String version, String curator, String maintainer,
-                                         String inboundedModelVersion, String outbundedModelVersion) {
+                                         String inboundedModelVersion, String outboundedModelVersion) {
 
         return new BaseConnectorBuilder()
                 ._title_(Util.asList(new TypedLiteral(title)))
@@ -82,7 +67,7 @@ public class ConnectorService {
                 ._curator_(URI.create(curator))
                 ._maintainer_(URI.create(maintainer))
                 ._inboundModelVersion_(Util.asList(inboundedModelVersion))
-                ._outboundModelVersion_(outbundedModelVersion)
+                ._outboundModelVersion_(outboundedModelVersion)
                 ._securityProfile_(SecurityProfile.BASE_SECURITY_PROFILE).build();
     }
 

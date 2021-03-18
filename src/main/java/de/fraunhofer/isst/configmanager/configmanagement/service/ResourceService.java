@@ -3,14 +3,17 @@ package de.fraunhofer.isst.configmanager.configmanagement.service;
 import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.util.TypedLiteral;
 import de.fraunhofer.iais.eis.util.Util;
+import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.EndpointInformationRepository;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.endpointInfo.EndpointInformation;
 import de.fraunhofer.isst.configmanager.util.CalenderUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,19 +23,22 @@ import java.util.List;
  * Service class for managing resources.
  */
 @Service
+@Slf4j
 public class ResourceService {
 
-    private final static Logger logger = LoggerFactory.getLogger(ResourceService.class);
     private final ConfigModelService configModelService;
     private final EndpointService endpointService;
     private final EndpointInformationRepository endpointInformationRepository;
+    private final DefaultConnectorClient client;
 
     @Autowired
     public ResourceService(ConfigModelService configModelService, EndpointService endpointService,
-                           EndpointInformationRepository endpointInformationRepository) {
+                           EndpointInformationRepository endpointInformationRepository,
+                           DefaultConnectorClient client) {
         this.configModelService = configModelService;
         this.endpointService = endpointService;
         this.endpointInformationRepository = endpointInformationRepository;
+        this.client = client;
     }
 
     /**
@@ -104,21 +110,34 @@ public class ResourceService {
     public ArrayList<Resource> getResources() {
         ArrayList<Resource> resources = new ArrayList<>();
 
-        for (ResourceCatalog resourceCatalog : configModelService.getConfigModel()
-                .getConnectorDescription().getResourceCatalog()) {
-            if (resourceCatalog != null && resourceCatalog.getOfferedResource() != null) {
-                for (Resource resource : resourceCatalog.getOfferedResource()) {
-                    if (resource != null) {
-                        resources.add(resource);
-                    }
+        BaseConnector baseConnector = null;
+        try {
+            baseConnector = client.getSelfDeclaration();
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
+        if (baseConnector != null && baseConnector.getResourceCatalog() != null) {
+            for (ResourceCatalog resourceCatalog : baseConnector.getResourceCatalog()) {
+                if (resourceCatalog.getOfferedResource() != null) {
+                    resources.addAll(resourceCatalog.getOfferedResource());
                 }
             }
         }
+//        for (ResourceCatalog resourceCatalog : configModelService.getConfigModel()
+//                .getConnectorDescription().getResourceCatalog()) {
+//            if (resourceCatalog != null && resourceCatalog.getOfferedResource() != null) {
+//                for (Resource resource : resourceCatalog.getOfferedResource()) {
+//                    if (resource != null) {
+//                        resources.add(resource);
+//                    }
+//                }
+//            }
+//        }
         return resources;
     }
 
     /**
-     * This method updates the resource contract with the given paraemters
+     * This method updates the resource contract with the given parameters
      *
      * @param resourceId    id of the resource
      * @param contractOffer the contract offer which will be updated
@@ -135,7 +154,7 @@ public class ResourceService {
                         var resourceImpl = (ResourceImpl) resource;
                         resourceImpl.setContractOffer(Util.asList(contractOffer));
                         updated = true;
-                        logger.info("Updated resource representation in the resource catalog");
+                        log.info("Updated resource representation in the resource catalog");
                         break;
                     }
                 }
@@ -144,7 +163,7 @@ public class ResourceService {
 
         // Update resource representation in app route
         if (configModelService.getConfigModel().getAppRoute() == null) {
-            logger.info("Could not find any app route");
+            log.info("Could not find any app route");
         } else {
             for (AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
                 if (appRoute.getHasSubRoute() != null) {
@@ -155,7 +174,7 @@ public class ResourceService {
                                     var resourceImpl = (ResourceImpl) resource;
                                     resourceImpl.setContractOffer(Util.asList(contractOffer));
                                     updated = true;
-                                    logger.info("Updated resource representation in the app route");
+                                    log.info("Updated resource representation in the app route");
                                     break;
                                 }
                             }
@@ -227,7 +246,7 @@ public class ResourceService {
 
         // Delete representation in app route if exists
         if (configModelService.getConfigModel().getAppRoute() == null) {
-            logger.info("No app route found to delete the resource representation");
+            log.info("No app route found to delete the resource representation");
         } else {
             Resource foundresource = null;
             for (AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
@@ -266,7 +285,7 @@ public class ResourceService {
                 .reduce(false, (a, b) -> a || b);
 
         if (configModelService.getConfigModel().getAppRoute() == null) {
-            logger.info("Could not find any app route to delete the resource");
+            log.info("Could not find any app route to delete the resource");
         } else {
             deleted |= configModelService.getConfigModel().getAppRoute().stream()
                     .map(AppRoute::getHasSubRoute)
@@ -296,9 +315,6 @@ public class ResourceService {
         for (String keyword : keywords) {
             keys.add(new TypedLiteral(keyword));
         }
-
-        var configModulIMpl = (ConfigurationModelImpl) configModelService.getConfigModel();
-
         // Create the resource with the given parameters
         Resource resource = new ResourceBuilder()
                 ._title_(Util.asList(new TypedLiteral(title)))
@@ -312,32 +328,6 @@ public class ResourceService {
                 ._modified_(CalenderUtil.getGregorianNow())
                 .build();
         var resourceImpl = (ResourceImpl) resource;
-
-        // Set Resource in Connector
-        var connectorImpl = (BaseConnectorImpl) configModulIMpl.getConnectorDescription();
-
-        if (connectorImpl.getResourceCatalog() == null) {
-            // New resource catalog will be set, if it is not existing
-            connectorImpl.setResourceCatalog(new ArrayList<>());
-        }
-        var oldCatalog = configModulIMpl.getConnectorDescription().getResourceCatalog()
-                .stream().findAny();
-        ArrayList<Resource> resources;
-        if (oldCatalog.isPresent()) {
-            //get the offers as List of Resources instead of Capture of ? extends Resource
-            resources = (ArrayList<Resource>) oldCatalog.get().getOfferedResource();
-            //add the resource to the list
-            resources.add(resourceImpl);
-        } else {
-            // Resource will be added to the list of offered resources and the resource catalog of the connector will be
-            // updated.
-            resources = new ArrayList<>();
-            resources.add(resourceImpl);
-            var catalog = new ResourceCatalogBuilder()
-                    ._offeredResource_(resources)
-                    ._requestedResource_(new ArrayList<>()).build();
-            connectorImpl.setResourceCatalog(Util.asList(catalog));
-        }
         return resourceImpl;
     }
 
@@ -354,50 +344,39 @@ public class ResourceService {
      */
     public ResourceImpl updateResource(URI resourceId, String title, String description, String language,
                                        ArrayList<String> keywords, String version, String standardlicense, String publisher) {
+        var resourceImpl = (ResourceImpl) getResources()
+                .stream().filter(resource -> resource.getId().equals(resourceId)).findAny().orElse(null);
 
-        // Update resource in resource catalog
-        ResourceImpl resourceImpl = null;
-        var configModelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
-        var catalogs = configModelImpl.getConnectorDescription().getResourceCatalog();
-        // Find the correct resource in the resource catalog of the connector
-        for (var catalog : catalogs) {
-            for (var offerdResource : catalog.getOfferedResource()) {
-                if (resourceId.equals(offerdResource.getId())) {
-                    resourceImpl = (ResourceImpl) offerdResource;
-                    break;
-                }
-            }
-        }
         // Update the resource with the given parameters
         if (resourceImpl != null) {
             updateResourceContent(title, description, language, keywords, version, standardlicense,
                     publisher, resourceImpl);
         }
 
-        // Update the resource in the app route
-        if (configModelService.getConfigModel().getAppRoute() == null) {
-            logger.info("Could not find any app route to update the resource");
-        } else {
-            ResourceImpl resourceImplApp = null;
-            for (AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
-                if (appRoute.getHasSubRoute() != null) {
-                    for (RouteStep routeStep : appRoute.getHasSubRoute()) {
-                        if (routeStep.getAppRouteOutput() != null) {
-                            for (Resource resource : routeStep.getAppRouteOutput()) {
-                                if (resourceId.equals(resource.getId())) {
-                                    resourceImplApp = (ResourceImpl) resource;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            if (resourceImplApp != null) {
-                updateResourceContent(title, description, language, keywords, version, standardlicense,
-                        publisher, resourceImplApp);
-            }
-        }
+//        // Update the resource in the app route
+//        if (configModelService.getConfigModel().getAppRoute() == null) {
+//            log.info("Could not find any app route to update the resource");
+//        } else {
+//            ResourceImpl resourceImplApp = null;
+//            for (AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
+//                if (appRoute.getHasSubRoute() != null) {
+//                    for (RouteStep routeStep : appRoute.getHasSubRoute()) {
+//                        if (routeStep.getAppRouteOutput() != null) {
+//                            for (Resource resource : routeStep.getAppRouteOutput()) {
+//                                if (resourceId.equals(resource.getId())) {
+//                                    resourceImplApp = (ResourceImpl) resource;
+//                                    break;
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//            if (resourceImplApp != null) {
+//                updateResourceContent(title, description, language, keywords, version, standardlicense,
+//                        publisher, resourceImplApp);
+//            }
+//        }
         return resourceImpl;
     }
 
