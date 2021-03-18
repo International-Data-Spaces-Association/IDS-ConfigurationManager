@@ -49,9 +49,7 @@ public class ResourceService {
      */
     public Resource getResource(URI resourceId) {
         try {
-            return configModelService.getConfigModel().getConnectorDescription().getResourceCatalog().stream()
-                    .map(ResourceCatalog::getOfferedResource)
-                    .flatMap(Collection::stream)
+            return getResources().stream()
                     .dropWhile(res -> !res.getId().equals(resourceId))
                     .findFirst()
                     .orElse(null);
