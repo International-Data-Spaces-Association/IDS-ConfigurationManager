@@ -8,6 +8,7 @@ import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorCl
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ResourceService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
@@ -29,6 +30,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/ui")
+@Slf4j
 @Tag(name = "Resource Management", description = "Endpoints for managing the resource in the configuration manager")
 public class ResourceUIController implements ResourceUIApi {
 
@@ -56,6 +58,7 @@ public class ResourceUIController implements ResourceUIApi {
      */
     @Override
     public ResponseEntity<String> getResource(URI resourceId) {
+        log.info(">> GET /resource resourceId: " + resourceId);
 
         Resource resource = resourceService.getResource(resourceId);
 
@@ -77,6 +80,7 @@ public class ResourceUIController implements ResourceUIApi {
      */
     @Override
     public ResponseEntity<String> getResources() {
+        log.info(">> GET /resources");
 
         ArrayList<Resource> resources = resourceService.getResources();
         if (resources != null) {
@@ -93,6 +97,7 @@ public class ResourceUIController implements ResourceUIApi {
 
     @Override
     public ResponseEntity<String> getRequestedResources() {
+        log.info(">> GET /resources/requested");
 
         try {
             BaseConnector baseConnector = client.getSelfDeclaration();
@@ -117,6 +122,7 @@ public class ResourceUIController implements ResourceUIApi {
      */
     @Override
     public ResponseEntity<String> getResourceInJson(URI resourceId) {
+        log.info(">> GET /resource/json resourceId: " + resourceId);
 
         Resource resource = resourceService.getResource(resourceId);
 
@@ -140,6 +146,7 @@ public class ResourceUIController implements ResourceUIApi {
      */
     @Override
     public ResponseEntity<String> deleteResource(URI resourceId) {
+        log.info(">> DELETE /resource resourceId: " + resourceId);
 
         boolean deleted = resourceService.deleteResource(resourceId);
 
@@ -176,7 +183,8 @@ public class ResourceUIController implements ResourceUIApi {
     public ResponseEntity<String> createResource(String title, String description, String language,
                                                  ArrayList<String> keywords, String version, String standardlicense,
                                                  String publisher) {
-
+        log.info(">> POST /resource title: " + title + " description: " + description + " language: " + language + " keywords: " + keywords + " version: " + version + " standardlicense: " + standardlicense
+        + " publisher: " + publisher);
 
         ResourceImpl resource = resourceService.createResource(title, description, language, keywords,
                 version, standardlicense, publisher);
@@ -213,6 +221,8 @@ public class ResourceUIController implements ResourceUIApi {
     public ResponseEntity<String> updateResource(URI resourceId, String title, String description, String language,
                                                  ArrayList<String> keywords, String version, String standardlicense,
                                                  String publisher) {
+        log.info(">> PUT /resource title: " + title + " description: " + description + " language: " + language + " keywords: " + keywords + " version: " + version + " standardlicense: " + standardlicense
+                + " publisher: " + publisher);
 
         ResourceImpl updatedResource = resourceService.updateResource(resourceId, title, description, language, keywords,
                 version, standardlicense, publisher);

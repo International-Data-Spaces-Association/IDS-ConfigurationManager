@@ -10,6 +10,7 @@ import de.fraunhofer.isst.configmanager.configmanagement.service.RepresentationE
 import de.fraunhofer.isst.configmanager.configmanagement.service.ResourceService;
 import de.fraunhofer.isst.configmanager.configmanagement.service.UtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,7 @@ import java.net.URI;
  * the resource representations in the configuration manager.
  */
 @RestController
+@Slf4j
 @RequestMapping("/api/ui")
 @Tag(name = "Resource representation Management", description = "Endpoints for managing the representation of a resource")
 public class ResourceRepresentationUIController implements ResourceRepresentationApi {
@@ -70,6 +72,9 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
     @Override
     public ResponseEntity<String> createResourceRepresentation(URI resourceId, URI endpointId, String language,
                                                                String filenameExtension, Long bytesize, String sourceType) {
+        log.info(">> POST /resource/representation resourceId: " + resourceId + " endpointId: " + endpointId + " language: " + language
+                + " filenameExtension: " + filenameExtension + " bytesize: " + bytesize + " sourceType: " + sourceType);
+
         if (configModelService.getConfigModel() == null ||
                 configModelService.getConfigModel().getConnectorDescription().getResourceCatalog() == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Could not find any resources!\"}");
@@ -129,6 +134,10 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
                                                                String language,
                                                                String filenameExtension, Long bytesize,
                                                                String sourceType) {
+        log.info(">> PUT /resource/representation resourceId: " + resourceId + " representationId: " + representationId
+        + " endpointId: " + endpointId + " language: " + language + " filenameExtension: " + filenameExtension + " bytesize: " + bytesize
+        + " sourceType: " + sourceType);
+
         ResourceImpl oldResourceCatalog = (ResourceImpl) resourceService.getResource(resourceId);
         URI oldRepresentationId = oldResourceCatalog.getRepresentation().get(0).getId();
         if (oldResourceCatalog != null) {
@@ -188,7 +197,6 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
         resourceService.updateBackendConnection(resourceId, endpointId);
 
         try {
-            configModelService.saveState();
             // Update the resource representation in the dataspace connector
             if (representationImpl != null) {
                 var response = client.updateResourceRepresentation(
@@ -220,11 +228,8 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
      */
     @Override
     public ResponseEntity<String> getResourceRepresentation(URI representationId) {
+        log.info(">> GET /resource/representation representationId: " + representationId);
 
-        if (configModelService.getConfigModel() == null ||
-                configModelService.getConfigModel().getConnectorDescription().getResourceCatalog() == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Could not find any resources!\"}");
-        }
         RepresentationImpl representation = resourceService.getResourceRepresentationInCatalog(representationId);
         if (representation != null) {
             try {
@@ -249,9 +254,9 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
      */
     @Override
     public ResponseEntity<String> getResourceRepresentationInJson(URI resourceId, URI representationId) {
+        log.info(">> GET /resource/representation/json resourceId: " + resourceId + " representationId: " + representationId);
 
-        for (ResourceCatalog resourceCatalog : configModelService.getConfigModel().getConnectorDescription().getResourceCatalog()) {
-            for (Resource resource : resourceCatalog.getOfferedResource()) {
+            for (Resource resource : resourceService.getResources()) {
                 if (resourceId.equals(resource.getId())) {
                     for (Representation representation : resource.getRepresentation()) {
                         if (representationId.equals(representation.getId())) {
@@ -268,7 +273,6 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
                         }
                     }
                 }
-            }
         }
         return ResponseEntity.badRequest().body("Could not get resource representation");
     }
@@ -282,18 +286,13 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
      */
     @Override
     public ResponseEntity<String> deleteResourceRepresentation(URI resourceId, URI representationId) {
-
-        if (configModelService.getConfigModel() == null
-                || configModelService.getConfigModel().getConnectorDescription().getResourceCatalog() == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Could not find any resources!\"}");
-        }
+        log.info(">> DELETE /resource/representation resourceId: " + resourceId + " representationId: " + representationId);
 
         boolean deleted = resourceService.deleteResourceRepresentation(resourceId, representationId);
         if (deleted) {
             try {
                 var response = client.deleteResourceRepresentation(resourceId.toString(),
                         representationId.toString());
-                configModelService.saveState();
                 var jsonObject = new JSONObject();
                 jsonObject.put("connectorResponse", response);
                 jsonObject.put("resourceID", resourceId.toString());

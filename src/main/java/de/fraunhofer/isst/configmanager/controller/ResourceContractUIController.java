@@ -6,6 +6,7 @@ import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorCl
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ResourceService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,7 @@ import java.net.URI;
  */
 @RestController
 @RequestMapping("/api/ui")
+@Slf4j
 @Tag(name = "Resource contracts Management", description = "Endpoints for managing the contracts of a resource")
 public class ResourceContractUIController implements ResourceContractApi {
 
@@ -53,6 +55,7 @@ public class ResourceContractUIController implements ResourceContractApi {
      */
     @Override
     public ResponseEntity<String> getResourceContract(URI resourceId) {
+        log.info(">> GET /resource/contract resourceId: " + resourceId);
 
         if (configModelService.getConfigModel() == null ||
                 configModelService.getConfigModel().getConnectorDescription().getResourceCatalog() == null) {
@@ -82,6 +85,7 @@ public class ResourceContractUIController implements ResourceContractApi {
      */
     @Override
     public ResponseEntity<String> updateResourceContract(URI resourceId, String contractJson) {
+        log.info(">> PUT /resource/contract resourceId: " + resourceId + " contractJson: " + contractJson);
 
         if (configModelService.getConfigModel() == null ||
                 configModelService.getConfigModel().getConnectorDescription().getResourceCatalog() == null) {

@@ -70,7 +70,7 @@ public class AppRouteUIController implements AppRouteApi {
      */
     @Override
     public ResponseEntity<String> createAppRoute(String description) {
-
+        log.info(">> POST /approute description: " + description);
         AppRoute appRoute = appRouteService.createAppRoute(description);
 
         if (appRoute != null) {
@@ -94,6 +94,8 @@ public class AppRouteUIController implements AppRouteApi {
      */
     @Override
     public ResponseEntity<String> updateAppRoute(URI routeId, String description) {
+        log.info(">> PUT /approute routeId: " + routeId + " description: " + description);
+
         boolean updated = appRouteService.updateAppRoute(routeId, description);
 
         if (updated) {
@@ -113,6 +115,8 @@ public class AppRouteUIController implements AppRouteApi {
      */
     @Override
     public ResponseEntity<String> deleteAppRoute(URI routeId) {
+        log.info(">> DELETE /approute routeId: " + routeId);
+
         boolean deleted = appRouteService.deleteAppRoute(routeId);
         if (deleted) {
             log.info("App route with id: " + routeId + " is deleted.");
@@ -131,6 +135,8 @@ public class AppRouteUIController implements AppRouteApi {
      */
     @Override
     public ResponseEntity<String> getAppRoute(URI routeId) {
+        log.info(">> GET /approute routeId: " + routeId);
+
         AppRoute appRoute = appRouteService.getAppRoute(routeId);
 
         if (appRoute != null) {
@@ -156,6 +162,8 @@ public class AppRouteUIController implements AppRouteApi {
      */
     @Override
     public ResponseEntity<String> getAppRoutes() {
+        log.info(">> GET /approutes");
+
         List<AppRoute> appRouteList = appRouteService.getAppRoutes();
         try {
             if (appRouteList == null) {
@@ -188,6 +196,9 @@ public class AppRouteUIController implements AppRouteApi {
     public ResponseEntity<String> createAppRouteStep(URI routeId, URI startId, int startCoordinateX,
                                                      int startCoordinateY, URI endID, int endCoordinateX,
                                                      int endCoordinateY, URI resourceId) {
+        log.info(">> POST /approute/step routeId: " + routeId + " startId: " + startId + " startCoordinateX: " + startCoordinateX
+        + " startCoordinateY: "+ startCoordinateY + " endID: " + endID + " endCoordinateX: " + endCoordinateX
+        + " endCoordinateY: " + endCoordinateY + " resourceId: " + resourceId);
 
         RouteStep routeStep = appRouteService.createAppRouteStep(routeId, startId, startCoordinateX, startCoordinateY,
                 endID, endCoordinateX, endCoordinateY, resourceId);
@@ -213,6 +224,7 @@ public class AppRouteUIController implements AppRouteApi {
      */
     @Override
     public ResponseEntity<String> deleteAppRouteStep(URI routeId, URI routeStepId) {
+        log.info(">> DELETE /approute/step routeId: " + routeId + " routeStepId: " + routeStepId);
 
         boolean deleted = appRouteService.deleteAppRouteStep(routeId, routeStepId);
         if (deleted) {
@@ -233,6 +245,7 @@ public class AppRouteUIController implements AppRouteApi {
      */
     @Override
     public ResponseEntity<String> getAppRouteStep(URI routeId, URI routeStepId) {
+        log.info(">> GET /approute/step routeId: " + routeId + " routeStepId: " + routeStepId);
 
         RouteStep routeStep = appRouteService.getSubroute(routeId, routeStepId);
         if (routeStep != null) {
@@ -259,6 +272,7 @@ public class AppRouteUIController implements AppRouteApi {
      */
     @Override
     public ResponseEntity<String> getEndpointInformation(URI routeId, URI endpointId) {
+        log.info(">> GET /approute/step/endpoint/info routeId: " + routeId + " endpointId: " + endpointId);
 
         EndpointInformation endpointInformation = appRouteService.getEndpointInformation(routeId, endpointId);
         if (endpointInformation != null) {
@@ -281,6 +295,8 @@ public class AppRouteUIController implements AppRouteApi {
      */
     @Override
     public ResponseEntity<String> getAllEndpointInfo() {
+        log.info(">> GET /approute/step/endpoints/info");
+
         List<EndpointInformation> endpointInformations = appRouteService.getAllEndpointInfo();
         if (endpointInformations != null) {
             try {
@@ -304,6 +320,7 @@ public class AppRouteUIController implements AppRouteApi {
      */
     @Override
     public ResponseEntity<String> updateRouteDeployMethod(DeployMethod deployMethod) {
+        log.info(">> PUT /route/deploymethod deployMethod: " + deployMethod);
 
         if (routeDeployMethodRepository.count() != 0) {
             RouteDeployMethod existingDeployMethod = routeDeployMethodRepository.findAll().get(0);
@@ -326,6 +343,8 @@ public class AppRouteUIController implements AppRouteApi {
      */
     @Override
     public ResponseEntity<String> getRouteDeployMethod() {
+        log.info(">> GET /route/deploymethod");
+
         List<RouteDeployMethod> routeDeployMethods = routeDeployMethodRepository.findAll();
         try {
             log.info("Returning the deploy route method");
@@ -342,7 +361,6 @@ public class AppRouteUIController implements AppRouteApi {
      * @param deployMethod deploy method of the route
      */
     private void updateDeployMethodFromRoutes(DeployMethod deployMethod) {
-
         ArrayList<AppRoute> appRouteList = (ArrayList<AppRoute>) configModelService.getConfigModel().getAppRoute();
         if (appRouteList != null) {
             // Update deploy method from app routes

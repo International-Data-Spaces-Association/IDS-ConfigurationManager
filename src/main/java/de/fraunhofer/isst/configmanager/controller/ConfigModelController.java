@@ -7,6 +7,7 @@ import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
  */
 @RestController
 @RequestMapping("/api/ui")
+@Slf4j
 @Tag(name = "ConfigModel Management", description = "Endpoints for managing the configuration model")
 public class ConfigModelController implements ConfigModelApi {
 
@@ -64,6 +66,10 @@ public class ConfigModelController implements ConfigModelApi {
                                                     String keyStorePassword, String proxyUri, ArrayList<URI> noProxyUriList,
                                                     String username, String password) {
 
+        log.info(">> PUT /configmodel loglevel: " + loglevel + " connectorDeployMode: " + connectorDeployMode + " trustStore: " + trustStore
+        + " trustStorePassword: " + trustStorePassword + " keyStore: " + keyStore + " keyStorePassword: " + keyStorePassword + " proxyUri: " + proxyUri
+        + " username: " + username + " password: " + password);
+
         var result = configModelService.updateConfigurationModel(loglevel, connectorDeployMode, trustStore,
                 trustStorePassword, keyStore, keyStorePassword, proxyUri, noProxyUriList, username, password);
         if (result) {
@@ -98,6 +104,7 @@ public class ConfigModelController implements ConfigModelApi {
      */
     @Override
     public ResponseEntity<String> getConfigModel() {
+        log.info(">> GET /configmodel");
         try {
             return ResponseEntity.ok(serializer.serialize(configModelService.getConfigModel()));
         } catch (IOException e) {
@@ -113,6 +120,7 @@ public class ConfigModelController implements ConfigModelApi {
      */
     @Override
     public ResponseEntity<String> getConfigModelJson() {
+        log.info(">> GET /configmodel/json");
 
         ConfigurationModel configurationModel = configModelService.getConfigModel();
 

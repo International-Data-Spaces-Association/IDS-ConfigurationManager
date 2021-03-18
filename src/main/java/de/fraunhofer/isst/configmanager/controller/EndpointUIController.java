@@ -10,6 +10,7 @@ import de.fraunhofer.isst.configmanager.configmanagement.service.EndpointService
 import de.fraunhofer.isst.configmanager.configmanagement.service.RepresentationEndpointService;
 import de.fraunhofer.isst.configmanager.configmanagement.service.UtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/ui")
+@Slf4j
 @Tag(name = "Endpoints Management", description = "Different endpoint types can be managed here")
 public class EndpointUIController implements EndpointUIApi {
 
@@ -67,6 +69,7 @@ public class EndpointUIController implements EndpointUIApi {
      */
     @Override
     public ResponseEntity<String> createGenericEndpoint(String accessURL, String username, String password) {
+        log.info(">> POST /generic/endpoint accessURL: " + accessURL + " username: " + username + " password: " + password);
 
         GenericEndpoint genericEndpoint =
                 endpointService.createGenericEndpoint(accessURL, username, password);
@@ -87,6 +90,7 @@ public class EndpointUIController implements EndpointUIApi {
      */
     @Override
     public ResponseEntity<String> getGenericEndpoints() {
+        log.info(">> GET /generic/endpoints");
 
         List<Endpoint> endpoints = endpointService.getGenericEndpoints();
         try {
@@ -104,6 +108,7 @@ public class EndpointUIController implements EndpointUIApi {
      */
     @Override
     public ResponseEntity<String> getGenericEndpoint(URI endpointId) {
+        log.info(">> GET /generic/endpoint endpointId: " + endpointId);
 
         GenericEndpoint genericEndpoint = endpointService.getGenericEndpoint(endpointId);
         if (genericEndpoint != null) {
@@ -125,6 +130,8 @@ public class EndpointUIController implements EndpointUIApi {
      */
     @Override
     public ResponseEntity<String> deleteGenericEndpoint(URI endpointId) {
+        log.info(">> DELETE /generic/endpoint endpointId: " + endpointId);
+
         boolean deleted = endpointService.deleteGenericEndpoint(endpointId);
         if (deleted) {
             return ResponseEntity.ok("Deleted the generic endpoint with id: " + endpointId);
@@ -145,6 +152,7 @@ public class EndpointUIController implements EndpointUIApi {
     @Override
     public ResponseEntity<String> updateGenericEndpoint(URI endpointId, String accessURL, String username, String
             password) {
+        log.info(">> PUT /generic/endpoint endpointId: " + endpointId + " accessURL: " + accessURL + " username: " + password);
 
         boolean updated = endpointService.updateGenericEndpoint(endpointId, accessURL, username, password);
         if (updated) {
@@ -161,6 +169,7 @@ public class EndpointUIController implements EndpointUIApi {
      */
     @Override
     public ResponseEntity<String> getConnectorEndpoints() {
+        log.info(">> GET /connector/endpoints");
 
         if (configModelService.getConfigModel().getConnectorDescription() == null) {
             return ResponseEntity.badRequest().body("Could not get the connector");

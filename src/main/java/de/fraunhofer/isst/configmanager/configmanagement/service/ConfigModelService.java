@@ -180,7 +180,7 @@ public class ConfigModelService {
             configModelImpl.setKeyStorePassword(keyStorePassword);
         }
         //Set Default CONNECTOR ONLINE
-        configModelImpl.setConnectorStatus(ConnectorStatus.CONNECTOR_ONLINE);
+        configModelImpl.setConnectorStatus(configModelImpl.getConnectorStatus());
 
         // Update configuration model proxy
         if (proxyUri != null) {
