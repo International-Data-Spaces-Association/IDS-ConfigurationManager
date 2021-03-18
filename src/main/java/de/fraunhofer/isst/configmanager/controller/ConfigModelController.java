@@ -6,7 +6,6 @@ import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelService;
-import de.fraunhofer.isst.configmanager.util.Utility;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 
 /**
  * The controller class implements the ConfigModelApi and offers the possibilities to manage
@@ -44,52 +44,31 @@ public class ConfigModelController implements ConfigModelApi {
     }
 
     /**
-     * This method creates a configuration model with the given parameters.
-     *
-     * @param loglevel            loglevel of the configuration model
-     * @param connectorDeployMode connector deploy mode of the configuration model
-     * @param trustStore          trustStore of the configuration model
-     * @param trustStorePassword  password of the trust store
-     * @param keyStore            keyStore of the configuration model
-     * @param keyStorePassword    password of the key store
-     * @return a suitable http response depending on success
-     */
-    @Override
-    public ResponseEntity<String> createConfigModel(String loglevel, String connectorDeployMode,
-                                                    String trustStore, String trustStorePassword, String keyStore,
-                                                    String keyStorePassword) {
-
-        ConfigurationModel configurationModel = configModelService.createConfigModel(loglevel,
-                connectorDeployMode, trustStore, trustStorePassword, keyStore, keyStorePassword);
-        if (configurationModel != null) {
-            return ResponseEntity.ok(Utility.jsonMessage("message", "Successfully created a new configuration" +
-                    " model with the id: " + configurationModel.getId()));
-        } else {
-            return ResponseEntity.badRequest().body("Could not create configuration model");
-        }
-    }
-
-    /**
      * This method updates the configuration model with the given parameters.
      *
-     * @param loglevel            loglevel of the configuration model
+     * @param loglevel            logging level of the configuration model
      * @param connectorDeployMode connector deploy mode of the configuration model
-     * @param trustStore          trustStore of the configuration model
+     * @param trustStore          trust store of the configuration model
      * @param trustStorePassword  password of the trust store
-     * @param keyStore            keyStore of the configuration model
+     * @param keyStore            key store of the configuration model
      * @param keyStorePassword    password of the key store
+     * @param proxyUri            the uri of the proxy
+     * @param noProxyUriList      list of no proxy uri's
+     * @param username            username for the authentication
+     * @param password            password for the authentication
      * @return a suitable http response depending on success
      */
     @Override
     public ResponseEntity<String> updateConfigModel(String loglevel, String connectorDeployMode,
                                                     String trustStore, String trustStorePassword, String keyStore,
-                                                    String keyStorePassword) {
+                                                    String keyStorePassword, String proxyUri, ArrayList<URI> noProxyUriList,
+                                                    String username, String password) {
 
-        var result = configModelService.updateConfigurationModel(loglevel,
-                connectorDeployMode, trustStore, trustStorePassword, keyStore, keyStorePassword);
+        var result = configModelService.updateConfigurationModel(loglevel, connectorDeployMode, trustStore,
+                trustStorePassword, keyStore, keyStorePassword, proxyUri, noProxyUriList, username, password);
         if (result) {
             var jsonObject = new JSONObject();
-            jsonObject.put("message", "Successfully updated the configuration model");
+            jsonObject.put("message", "Successfully updated the configuration model in the configuration manager");
             try {
                 // The configuration model is sent to the client without the app routes at this point,
                 // because of the different infomodels.
@@ -147,21 +126,5 @@ public class ConfigModelController implements ConfigModelApi {
         configModelJson.put("keyStorePassword", configurationModel.getKeyStorePassword());
 
         return ResponseEntity.ok(configModelJson.toJSONString());
-    }
-
-    /**
-     * This method deletes a configuration model with the given id.
-     *
-     * @param configmodelId id of the configuration model
-     * @return a suitable http response depending on success
-     */
-    @Override
-    public ResponseEntity<String> deleteConfigModel(URI configmodelId) {
-
-        if (configModelService.deleteConfigModel(configmodelId)) {
-            return ResponseEntity.ok(Utility.jsonMessage("message", "ConfigModel with ID: " + configmodelId + " is deleted"));
-        } else {
-            return ResponseEntity.badRequest().body("Could not delete the configuration model with ID: " + configmodelId);
-        }
     }
 }

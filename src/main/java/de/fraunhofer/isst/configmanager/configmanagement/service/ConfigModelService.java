@@ -1,6 +1,7 @@
 package de.fraunhofer.isst.configmanager.configmanagement.service;
 
 import de.fraunhofer.iais.eis.*;
+import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.config.ConfigModelObject;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.ConfigModelList;
@@ -44,9 +45,9 @@ public class ConfigModelService {
             } catch (IOException e) {
                 LOGGER.warn("Could not get Configmodel from Connector! Using old Config if available! Error establishing connection to connector: " + e.getMessage());
 
-                if(configModelRepository.findAll().size() > 0) {
+                if (configModelRepository.findAll().size() > 0) {
                     configModelList = configModelRepository.findAll().get(0);
-                }else{
+                } else {
                     LOGGER.warn("Connector Config not reachable and no old config available! Using new placeholder Config.");
                     createConfigModel(
                             "NO_LOGGING",
@@ -118,10 +119,10 @@ public class ConfigModelService {
      * @return true, if configuration model is updated
      */
     public boolean updateConfigModel(ConfigurationModel configurationModel) {
-        if(configModelList.getConfigModelObjects().size() > 0) {
-            for( int i = 0; i < configModelList.getConfigModelObjects().size(); i++ ) {
-                if( configModelList.getConfigModelObjects().get(i).getConfigurationModel().getId()
-                                   .equals(configurationModel.getId()) ) {
+        if (configModelList.getConfigModelObjects().size() > 0) {
+            for (int i = 0; i < configModelList.getConfigModelObjects().size(); i++) {
+                if (configModelList.getConfigModelObjects().get(i).getConfigurationModel().getId()
+                        .equals(configurationModel.getId())) {
 
                     //Default overwrite connectorstatus to ONLINE
                     var connectedConnectorConfigmodel = (ConfigurationModelImpl) configurationModel;
@@ -132,7 +133,7 @@ public class ConfigModelService {
                     return true;
                 }
             }
-        }else{
+        } else {
             //Default overwrite connectorstatus to ONLINE
             var connectedConnectorConfigmodel = (ConfigurationModelImpl) configurationModel;
             connectedConnectorConfigmodel.setConnectorStatus(ConnectorStatus.CONNECTOR_ONLINE);
@@ -183,11 +184,16 @@ public class ConfigModelService {
      * @param trustStorePassword  password of the trust store
      * @param keyStore            key store of the configuration model
      * @param keyStorePassword    password of the key store
+     * @param proxyUri            the uri of the proxy
+     * @param noProxyUriList      list of no proxy uri's
+     * @param username            username for the authentication
+     * @param password            password for the authentication
      * @return true, if configuration model is updated
      */
     public boolean updateConfigurationModel(String loglevel, String connectorDeployMode,
                                             String trustStore, String trustStorePassword, String keyStore,
-                                            String keyStorePassword) {
+                                            String keyStorePassword, String proxyUri, ArrayList<URI> noProxyUriList,
+                                            String username, String password) {
 
         ConfigurationModelImpl configModelImpl = (ConfigurationModelImpl) getConfigModel();
         if (loglevel != null) {
@@ -208,39 +214,61 @@ public class ConfigModelService {
         if (keyStorePassword != null) {
             configModelImpl.setKeyStorePassword(keyStorePassword);
         }
-
         //Set Default CONNECTOR ONLINE
         configModelImpl.setConnectorStatus(ConnectorStatus.CONNECTOR_ONLINE);
 
+        // Update configuration model proxy
+        if (proxyUri != null) {
+            updateProxySettings(proxyUri, noProxyUriList, username, password, configModelImpl);
+        }
         return saveState();
     }
 
     /**
-     * This method updates the proxy settings from the configuration model with the given parameters.
+     * This method updates the proxy settings
      *
-     * @param proxyUri       uri of the proxy
-     * @param noProxyUriList list of no proxy uri's
-     * @param username       username for the authentication
-     * @param password       password for the authentication
-     * @param proxyImpl      proxy implementation
+     * @param proxyUri        the uri of the proxy
+     * @param noProxyUriList  list of no proxy uri's
+     * @param username        username for the authentication
+     * @param password        password for the authentication
+     * @param configmodelImpl configuration model implementation
      */
-    public void updateConfigurationModelProxy(String proxyUri, ArrayList<URI> noProxyUriList,
-                                              String username, String password, ProxyImpl proxyImpl) {
+    public void updateProxySettings(String proxyUri, ArrayList<URI> noProxyUriList,
+                                    String username, String password,
+                                    ConfigurationModelImpl configmodelImpl) {
+        if (proxyUri.equals("null")) {
+            configmodelImpl.setConnectorProxy(null);
+        } else {
+            if (getConfigModel().getConnectorProxy() == null) {
+                Proxy proxy = new ProxyBuilder()
+                        ._proxyURI_(URI.create(proxyUri))
+                        ._noProxy_(noProxyUriList)
+                        ._proxyAuthentication_(new BasicAuthenticationBuilder()
+                                ._authUsername_(username)._authPassword_(password).build())
+                        .build();
+                configmodelImpl.setConnectorProxy(Util.asList(proxy));
+            } else {
+                var proxyImpl = (ProxyImpl) getConfigModel().getConnectorProxy().get(0);
 
-        if (proxyUri != null) {
-            proxyImpl.setProxyURI(URI.create(proxyUri));
+                proxyImpl.setProxyURI(URI.create(proxyUri));
+                if (noProxyUriList != null) {
+                    proxyImpl.setNoProxy(noProxyUriList);
+                }
+                if (username != null && !username.equals("null")) {
+
+                    proxyImpl.setProxyAuthentication(new BasicAuthenticationBuilder()._authUsername_(username)
+                            ._authPassword_(password).build());
+                }
+                if (username != null && username.equals("null")
+                        && password != null && password.equals("null")) {
+                    proxyImpl.setProxyAuthentication(null);
+                }
+                if (password != null && !password.equals("null")) {
+
+                    proxyImpl.setProxyAuthentication(new BasicAuthenticationBuilder()._authUsername_(username)
+                            ._authPassword_(password).build());
+                }
+            }
         }
-        if (noProxyUriList != null) {
-            proxyImpl.setNoProxy(noProxyUriList);
-        }
-        if (username != null) {
-            proxyImpl.setProxyAuthentication(new BasicAuthenticationBuilder(proxyImpl.getProxyAuthentication().getId())
-                    ._authUsername_(username)._authPassword_(proxyImpl.getProxyAuthentication().getAuthPassword()).build());
-        }
-        if (password != null) {
-            proxyImpl.setProxyAuthentication(new BasicAuthenticationBuilder(proxyImpl.getProxyAuthentication().getId())
-                    ._authUsername_(proxyImpl.getProxyAuthentication().getAuthUsername())._authPassword_(password).build());
-        }
-        saveState();
     }
 }
