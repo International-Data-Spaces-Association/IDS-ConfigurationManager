@@ -178,6 +178,7 @@ public class BrokerUIController implements BrokerUIApi {
             try {
                 String response = client.updateAtBroker(brokerUri.toString());
                 if (!response.contains("RejectionMessage")) {
+                    brokerService.sentSelfDescToBroker(brokerUri);
                     brokerService.setBrokerStatus(brokerUri, BrokerStatus.REGISTERED);
                     jsonObject.put("success", true);
                 } else {
@@ -210,6 +211,7 @@ public class BrokerUIController implements BrokerUIApi {
             try {
                 String response = client.unregisterAtBroker(brokerUri.toString());
                 if (!response.contains("RejectionMessage")) {
+                    brokerService.unregisteredAtBroker(brokerUri);
                     brokerService.setBrokerStatus(brokerUri, BrokerStatus.UNREGISTERED);
                     jsonObject.put("success", true);
                 } else {
@@ -242,6 +244,7 @@ public class BrokerUIController implements BrokerUIApi {
             try {
                 String response = client.updateAtBroker(brokerUri.toString());
                 jsonObject.put("success", !response.contains("RejectionMessage"));
+                if(!response.contains("RejectionMessage")) brokerService.sentSelfDescToBroker(brokerUri);
                 return ResponseEntity.ok(jsonObject.toJSONString());
             } catch (IOException e) {
                 logger.error(e.getMessage(), e);
