@@ -86,12 +86,6 @@ public class ResourceContractUIController implements ResourceContractApi {
     @Override
     public ResponseEntity<String> updateResourceContract(URI resourceId, String contractJson) {
         log.info(">> PUT /resource/contract resourceId: " + resourceId + " contractJson: " + contractJson);
-
-        if (configModelService.getConfigModel() == null ||
-                configModelService.getConfigModel().getConnectorDescription().getResourceCatalog() == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Could not find any resources!\"}");
-        }
-
         // Create the updated contract offer
         ContractOffer contractOffer = null;
         if (contractJson != null) {
@@ -107,10 +101,9 @@ public class ResourceContractUIController implements ResourceContractApi {
         if (contractOffer != null) {
             var jsonObject = new JSONObject();
             try {
-                configModelService.saveState();
                 jsonObject.put("resourceID", resourceId.toString());
                 jsonObject.put("contractID", contractOffer.getId().toString());
-                var response = client.updateResourceContract(resourceId.toString(), contractOffer);
+                var response = client.updateResourceContract(resourceId.toString(), contractJson);
                 resourceService.updateResourceContractInAppRoute(resourceId, contractOffer);
                 jsonObject.put("connectorResponse", response);
                 return ResponseEntity.ok(jsonObject.toJSONString());

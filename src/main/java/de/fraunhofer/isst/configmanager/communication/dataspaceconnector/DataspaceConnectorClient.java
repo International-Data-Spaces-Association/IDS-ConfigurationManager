@@ -373,13 +373,13 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
     }
 
     @Override
-    public String updateResourceContract(String resourceID, Contract contract) throws IOException {
+    public String updateResourceContract(String resourceID, String contract) throws IOException {
         LOGGER.info(String.format("updating contract for resource at %s", dataSpaceConnectorHost));
         var mappedResourceID = dataSpaceConnectorResourceMapper.readUUIDFromURI(URI.create(resourceID));
-        var resourceJsonLD = SERIALIZER.serialize(contract);
+//        var resourceJsonLD = SERIALIZER.serialize(contract);
         var builder = new Request.Builder();
         builder.url("https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin/api/resources/" + mappedResourceID + "/contract");
-        builder.put(RequestBody.create(resourceJsonLD, okhttp3.MediaType.parse("application/ld+json")));
+        builder.put(RequestBody.create(contract, okhttp3.MediaType.parse("application/ld+json")));
         builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername, dataSpaceConnectorApiPassword));
         var request = builder.build();
         var response = client.newCall(request).execute();
