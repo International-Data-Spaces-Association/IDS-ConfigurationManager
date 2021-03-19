@@ -260,7 +260,7 @@ public class AppRouteService {
                             ._appRouteOutput_(Util.asList(resourceImpl))
                             .build();
                 } else {
-                    logger.info("Subroute is created without Resource!!!");
+                    logger.info("---- Subroute is created without Resource!!!");
                     routeStep = new RouteStepBuilder()._routeDeployMethod_(deployMethod)
                             ._appRouteStart_(Util.asList(startEndpoint))
                             ._appRouteEnd_(Util.asList(endpoint))

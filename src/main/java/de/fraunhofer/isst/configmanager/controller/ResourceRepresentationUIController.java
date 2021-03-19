@@ -130,7 +130,7 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
             URI oldRepresentationId = oldResourceCatalog.getRepresentation().get(0).getId();
             oldResourceCatalog.setRepresentation(null);
             if (configModelService.getConfigModel().getAppRoute() == null) {
-                logger.info("No AppRoute in ConfigModel!");
+                logger.info("---- No AppRoute in ConfigModel!");
             } else {
                 ResourceImpl oldResourceRoute = (ResourceImpl) resourceService.getResourceInAppRoute(resourceId);
                 if (oldResourceRoute != null) {

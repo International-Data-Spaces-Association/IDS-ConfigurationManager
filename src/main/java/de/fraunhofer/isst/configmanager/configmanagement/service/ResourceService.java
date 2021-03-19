@@ -145,7 +145,7 @@ public class ResourceService {
     public void updateResourceContractInAppRoute(URI resourceId, ContractOffer contractOffer) {
         // Update resource representation in app route
         if (configModelService.getConfigModel().getAppRoute() == null) {
-            log.info("Could not find any app route");
+            log.info("---- Could not find any app route");
         } else {
             for (AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
                 if (appRoute.getHasSubRoute() != null) {
@@ -155,7 +155,7 @@ public class ResourceService {
                                 if (resourceId.equals(resource.getId())) {
                                     var resourceImpl = (ResourceImpl) resource;
                                     resourceImpl.setContractOffer(Util.asList(contractOffer));
-                                    log.info("Updated resource representation in the app route");
+                                    log.info("---- Updated resource representation in the app route");
                                     break;
                                 }
                             }
@@ -205,7 +205,7 @@ public class ResourceService {
      */
     public void deleteResourceRepresentationFromAppRoute(URI resourceId, URI representationId) {
         if (configModelService.getConfigModel().getAppRoute() == null) {
-            log.info("Could not find any app route to delete the resource");
+            log.info("---- Could not find any app route to delete the resource");
         } else {
             for(var route : configModelService.getConfigModel().getAppRoute()){
                 if(route == null) continue;
@@ -260,7 +260,7 @@ public class ResourceService {
      */
     public void deleteResourceFromAppRoute(URI resourceId) {
         if (configModelService.getConfigModel().getAppRoute() == null) {
-            log.info("Could not find any app route to delete the resource");
+            log.info("---- Could not find any app route to delete the resource");
         } else {
             for(var route : configModelService.getConfigModel().getAppRoute()){
                 if(route == null) continue;
@@ -348,7 +348,7 @@ public class ResourceService {
     public void updateResourceInAppRoute(ResourceImpl newResource) {
         // Update the resource in the app route
         if (configModelService.getConfigModel().getAppRoute() == null) {
-            log.info("Could not find any app route to update the resource");
+            log.info("---- Could not find any app route to update the resource");
         } else {
             for (AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
                 if (appRoute.getHasSubRoute() != null) {

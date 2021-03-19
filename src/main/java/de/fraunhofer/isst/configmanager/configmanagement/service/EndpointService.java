@@ -47,7 +47,7 @@ public class EndpointService {
             endpointImpl.setGenericEndpointAuthentication(new BasicAuthenticationBuilder()._authUsername_(username)
                     ._authPassword_(password).build());
         } else{
-            logger.info("No authentication was created because username and password were not entered.");
+            logger.info("---- No authentication was created because username and password were not entered.");
         }
         // Save the endpoint
         CustomGenericEndpointObject customGenericEndpointObject = new CustomGenericEndpointObject(endpoint);
