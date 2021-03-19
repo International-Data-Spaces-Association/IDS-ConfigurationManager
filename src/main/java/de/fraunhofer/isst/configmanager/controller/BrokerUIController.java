@@ -248,11 +248,10 @@ public class BrokerUIController implements BrokerUIApi {
                 return ResponseEntity.ok(jsonObject.toJSONString());
             } catch (IOException e) {
                 logger.error(e.getMessage(), e);
-                jsonObject.put("success", false);
-                return ResponseEntity.ok(jsonObject.toJSONString());
+                return ResponseEntity.badRequest().body("Could not connect to the Connector!");
             }
         } else {
-            return ResponseEntity.badRequest().body("Could not find the broker");
+            return ResponseEntity.badRequest().body("Could not find the broker with URI: " + brokerUri);
         }
     }
 
@@ -303,7 +302,13 @@ public class BrokerUIController implements BrokerUIApi {
     public ResponseEntity<String> deleteResourceAtBroker(URI brokerUri, URI resourceId) {
         log.info(">> POST /broker/delete/resource brokerUri: " + brokerUri + " resourceId: " + resourceId);
 
-        return updateConnector(brokerUri);
+        var response = updateConnector(brokerUri);
+
+        if(response.getStatusCode() != HttpStatus.BAD_REQUEST) {
+            brokerService.deleteResourceAtBroker(brokerUri, resourceId);
+        }
+
+        return response;
 
 //        var broker = brokerService.getById(brokerUri);
 //        var jsonObject = new JSONObject();

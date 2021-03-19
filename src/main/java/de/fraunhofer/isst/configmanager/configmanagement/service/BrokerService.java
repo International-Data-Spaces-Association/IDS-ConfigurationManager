@@ -165,19 +165,6 @@ public class BrokerService {
         }
     }
 
-    public void removeResourceAtBroker(URI brokerId, URI resourceId) {
-        CustomBroker customBroker = getById(brokerId);
-        if (customBroker != null) {
-            if (customBroker.getRegisteredResources() == null) {
-                customBroker.setRegisteredResources(new ArrayList<>());
-            }
-            List<String> registeredResources = customBroker.getRegisteredResources();
-            registeredResources.remove(resourceId.toString());
-            customBroker.setRegisteredResources(registeredResources);
-            customBrokerRepository.save(customBroker);
-        }
-    }
-
     public void sentSelfDescToBroker(URI brokerId){
         CustomBroker customBroker = getById(brokerId);
         customBroker.setRegisteredResources(
