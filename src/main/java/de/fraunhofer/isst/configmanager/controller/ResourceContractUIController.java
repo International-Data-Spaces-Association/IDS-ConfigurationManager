@@ -104,13 +104,14 @@ public class ResourceContractUIController implements ResourceContractApi {
         }
 
         // Update the resource contract
-        if (contractOffer != null && resourceService.updateResourceContract(resourceId, contractOffer)) {
+        if (contractOffer != null) {
             var jsonObject = new JSONObject();
             try {
                 configModelService.saveState();
                 jsonObject.put("resourceID", resourceId.toString());
                 jsonObject.put("contractID", contractOffer.getId().toString());
                 var response = client.updateResourceContract(resourceId.toString(), contractOffer);
+                resourceService.updateResourceContractInAppRoute(resourceId, contractOffer);
                 jsonObject.put("connectorResponse", response);
                 return ResponseEntity.ok(jsonObject.toJSONString());
             } catch (IOException e) {

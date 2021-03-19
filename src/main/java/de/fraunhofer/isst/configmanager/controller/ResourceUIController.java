@@ -147,22 +147,16 @@ public class ResourceUIController implements ResourceUIApi {
     @Override
     public ResponseEntity<String> deleteResource(URI resourceId) {
         log.info(">> DELETE /resource resourceId: " + resourceId);
-
-        boolean deleted = resourceService.deleteResource(resourceId);
-
-        if (deleted) {
-            try {
-                var response = client.deleteResource(resourceId);
-                var jsonObject = new JSONObject();
-                jsonObject.put("connectorResponse", response);
-                jsonObject.put("resourceID", resourceId.toString());
-                return ResponseEntity.ok(jsonObject.toJSONString());
-            } catch (IOException e) {
-                e.printStackTrace();
-                return ResponseEntity.badRequest().body("Could not send delete request to connector");
-            }
-        } else {
-            return ResponseEntity.badRequest().body("Could not delete the resource");
+        try {
+            var response = client.deleteResource(resourceId);
+            resourceService.deleteResourceFromAppRoute(resourceId);
+            var jsonObject = new JSONObject();
+            jsonObject.put("connectorResponse", response);
+            jsonObject.put("resourceID", resourceId.toString());
+            return ResponseEntity.ok(jsonObject.toJSONString());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("Could not send delete request to connector");
         }
     }
 
@@ -224,16 +218,22 @@ public class ResourceUIController implements ResourceUIApi {
         log.info(">> PUT /resource title: " + title + " description: " + description + " language: " + language + " keywords: " + keywords + " version: " + version + " standardlicense: " + standardlicense
                 + " publisher: " + publisher);
 
-        ResourceImpl updatedResource = resourceService.updateResource(resourceId, title, description, language, keywords,
-                version, standardlicense, publisher);
+
 
         // Save the updated resource and update the resource in the dataspace connector
         try {
-            var response = client.updateResource(resourceId, updatedResource);
-            var jsonObject = new JSONObject();
-            jsonObject.put("connectorResponse", response);
-            jsonObject.put("resourceID", resourceId.toString());
-            return ResponseEntity.ok(jsonObject.toJSONString());
+            ResourceImpl updatedResource = resourceService.updateResource(resourceId, title, description, language, keywords,
+                    version, standardlicense, publisher);
+            if(updatedResource != null){
+                var response = client.updateResource(resourceId, updatedResource);
+                resourceService.updateResourceInAppRoute(updatedResource);
+                var jsonObject = new JSONObject();
+                jsonObject.put("connectorResponse", response);
+                jsonObject.put("resourceID", resourceId.toString());
+                return ResponseEntity.ok(jsonObject.toJSONString());
+            }else{
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("No resource with ID %s was found!", resourceId));
+            }
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }

@@ -141,24 +141,7 @@ public class ResourceService {
      * @param contractOffer the contract offer which will be updated
      * @return true, if resource contract is updated
      */
-    public boolean updateResourceContract(URI resourceId, ContractOffer contractOffer) {
-        boolean updated = false;
-        // Update resource representation in resource catalog
-        for (ResourceCatalog resourceCatalog : configModelService.getConfigModel()
-                .getConnectorDescription().getResourceCatalog()) {
-            if (resourceCatalog.getOfferedResource() != null) {
-                for (Resource resource : resourceCatalog.getOfferedResource()) {
-                    if (resourceId.equals(resource.getId())) {
-                        var resourceImpl = (ResourceImpl) resource;
-                        resourceImpl.setContractOffer(Util.asList(contractOffer));
-                        updated = true;
-                        log.info("Updated resource representation in the resource catalog");
-                        break;
-                    }
-                }
-            }
-        }
-
+    public void updateResourceContractInAppRoute(URI resourceId, ContractOffer contractOffer) {
         // Update resource representation in app route
         if (configModelService.getConfigModel().getAppRoute() == null) {
             log.info("Could not find any app route");
@@ -171,7 +154,6 @@ public class ResourceService {
                                 if (resourceId.equals(resource.getId())) {
                                     var resourceImpl = (ResourceImpl) resource;
                                     resourceImpl.setContractOffer(Util.asList(contractOffer));
-                                    updated = true;
                                     log.info("Updated resource representation in the app route");
                                     break;
                                 }
@@ -181,7 +163,7 @@ public class ResourceService {
                 }
             }
         }
-        return updated;
+        return;
     }
 
     /**
@@ -191,15 +173,10 @@ public class ResourceService {
      * @return contract offer
      */
     public ContractOffer getResourceContract(URI resourceId) {
-        for (ResourceCatalog resourceCatalog : configModelService.getConfigModel()
-                .getConnectorDescription().getResourceCatalog()) {
-            if (resourceCatalog.getOfferedResource() != null) {
-                for (Resource resource : resourceCatalog.getOfferedResource()) {
-                    if (resourceId.equals(resource.getId())) {
-                        if (resource.getContractOffer().get(0) != null) {
-                            return resource.getContractOffer().get(0);
-                        }
-                    }
+        for (Resource resource : getResources()){
+            if(resourceId.equals(resource.getId())){
+                if(resource.getContractOffer().get(0) != null) {
+                    return resource.getContractOffer().get(0);
                 }
             }
         }
@@ -211,10 +188,8 @@ public class ResourceService {
      * @return representation implementation
      */
     public RepresentationImpl getResourceRepresentationInCatalog(URI representationId) {
-        return (RepresentationImpl) configModelService.getConfigModel()
-                .getConnectorDescription().getResourceCatalog().stream()
-                .map(ResourceCatalog::getOfferedResource)
-                .flatMap(Collection::stream)
+        return (RepresentationImpl) getResources()
+                .stream()
                 .map(DigitalContent::getRepresentation)
                 .flatMap(Collection::stream)
                 .filter(representation -> representation.getId().equals(representationId))
@@ -227,21 +202,7 @@ public class ResourceService {
      * @param representationId id of the representation
      * @return true, if representation is deleted
      */
-    public boolean deleteResourceRepresentation(URI resourceId, URI representationId) {
-        var deleted = false;
-
-        // Delete representation in catalog
-        for (ResourceCatalog resourceCatalog : configModelService.getConfigModel().getConnectorDescription().getResourceCatalog()) {
-            if (resourceCatalog != null) {
-                var resource = resourceCatalog.getOfferedResource().stream()
-                        .filter(resource1 -> resource1.getId().equals(resourceId)).findAny().orElse(null);
-                if (resource != null) {
-                    deleted |= resource.getRepresentation()
-                            .removeIf(representation -> representation.getId().equals(representationId));
-                }
-            }
-        }
-
+    public void deleteResourceRepresentationFromAppRoute(URI resourceId, URI representationId) {
         // Delete representation in app route if exists
         if (configModelService.getConfigModel().getAppRoute() == null) {
             log.info("No app route found to delete the resource representation");
@@ -262,38 +223,29 @@ public class ResourceService {
                 }
             }
             if (foundresource != null) {
-                deleted |= foundresource.getRepresentation()
-                        .removeIf(representation -> representation.getId().equals(representationId));
+                foundresource.getRepresentation().removeIf(representation -> representation.getId().equals(representationId));
             }
 
         }
-        return deleted;
+        return;
     }
 
     /**
      * @param resourceId id of the resource
      * @return true, if resource is deleted
      */
-    public boolean deleteResource(URI resourceId) {
-
-        boolean deleted = configModelService.getConfigModel().getConnectorDescription().getResourceCatalog()
-                .stream()
-                .map(ResourceCatalog::getOfferedResource)
-                .map(resources -> resources.removeIf(resource -> resource.getId().equals(resourceId)))
-                .reduce(false, (a, b) -> a || b);
-
+    public void deleteResourceFromAppRoute(URI resourceId) {
         if (configModelService.getConfigModel().getAppRoute() == null) {
             log.info("Could not find any app route to delete the resource");
         } else {
-            deleted |= configModelService.getConfigModel().getAppRoute().stream()
+            configModelService.getConfigModel().getAppRoute().stream()
                     .map(AppRoute::getHasSubRoute)
                     .flatMap(Collection::stream)
                     .map(RouteStep::getAppRouteOutput)
-                    .map(resources -> resources != null && resources.removeIf(resource -> resource.getId().equals(resourceId)))
-                    .reduce(false, (a, b) -> a || b);
+                    .map(resources -> resources != null && resources.removeIf(resource -> resource.getId().equals(resourceId)));
         }
         configModelService.saveState();
-        return deleted;
+        return;
     }
 
     /**
@@ -329,53 +281,45 @@ public class ResourceService {
         return resourceImpl;
     }
 
-    /**
-     * @param resourceId      id of the resource
-     * @param title           title of the resource
-     * @param description     description of the resource
-     * @param language        language of the resource
-     * @param keywords        keywords for the resource
-     * @param version         version of the resource
-     * @param standardlicense standard license for the resource
-     * @param publisher       the publisher of the resource
-     * @return resource implementation
-     */
     public ResourceImpl updateResource(URI resourceId, String title, String description, String language,
                                        ArrayList<String> keywords, String version, String standardlicense, String publisher) {
-        var resourceImpl = (ResourceImpl) getResources()
-                .stream().filter(resource -> resource.getId().equals(resourceId)).findAny().orElse(null);
-
-        // Update the resource with the given parameters
-        if (resourceImpl != null) {
-            updateResourceContent(title, description, language, keywords, version, standardlicense,
-                    publisher, resourceImpl);
+        //Get a Resource and update if it exists
+        for (Resource resource : getResources()){
+            if(resource.getId().equals(resourceId)){
+                ResourceImpl resImpl = (ResourceImpl) resource;
+                updateResourceContent(title, description, language, keywords, version, standardlicense,
+                        publisher, resImpl);
+                return resImpl;
+            }
         }
-
-//        // Update the resource in the app route
-//        if (configModelService.getConfigModel().getAppRoute() == null) {
-//            log.info("Could not find any app route to update the resource");
-//        } else {
-//            ResourceImpl resourceImplApp = null;
-//            for (AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
-//                if (appRoute.getHasSubRoute() != null) {
-//                    for (RouteStep routeStep : appRoute.getHasSubRoute()) {
-//                        if (routeStep.getAppRouteOutput() != null) {
-//                            for (Resource resource : routeStep.getAppRouteOutput()) {
-//                                if (resourceId.equals(resource.getId())) {
-//                                    resourceImplApp = (ResourceImpl) resource;
-//                                    break;
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//            if (resourceImplApp != null) {
-//                updateResourceContent(title, description, language, keywords, version, standardlicense,
-//                        publisher, resourceImplApp);
-//            }
-//        }
-        return resourceImpl;
+        return null;
+    }
+    /**
+     * @param newResource new Resource old version should be replaced with
+     * @return resource implementation
+     */
+    public void updateResourceInAppRoute(ResourceImpl newResource) {
+        // Update the resource in the app route
+        if (configModelService.getConfigModel().getAppRoute() == null) {
+            log.info("Could not find any app route to update the resource");
+        } else {
+            for (AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
+                if (appRoute.getHasSubRoute() != null) {
+                    for (RouteStep routeStep : appRoute.getHasSubRoute()) {
+                        if (routeStep.getAppRouteOutput() != null) {
+                            for (Resource resource : routeStep.getAppRouteOutput()) {
+                                if (newResource.getId().equals(resource.getId())) {
+                                    ArrayList<Resource> output = (ArrayList<Resource>) routeStep.getAppRouteOutput();
+                                    output.remove(resource);
+                                    output.add(newResource);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return;
     }
 
     /**

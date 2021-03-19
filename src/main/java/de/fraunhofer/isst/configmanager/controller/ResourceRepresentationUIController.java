@@ -287,22 +287,16 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
     @Override
     public ResponseEntity<String> deleteResourceRepresentation(URI resourceId, URI representationId) {
         log.info(">> DELETE /resource/representation resourceId: " + resourceId + " representationId: " + representationId);
-
-        boolean deleted = resourceService.deleteResourceRepresentation(resourceId, representationId);
-        if (deleted) {
-            try {
-                var response = client.deleteResourceRepresentation(resourceId.toString(),
-                        representationId.toString());
-                var jsonObject = new JSONObject();
-                jsonObject.put("connectorResponse", response);
-                jsonObject.put("resourceID", resourceId.toString());
-                jsonObject.put("representationID", representationId.toString());
-                return ResponseEntity.ok(jsonObject.toJSONString());
-            } catch (IOException e) {
-                return ResponseEntity.badRequest().body("Problems while deleting the representation at the connector");
-            }
-        } else {
-            return ResponseEntity.badRequest().body("Could not delete the resource representation");
+        try {
+            var response = client.deleteResourceRepresentation(resourceId.toString(), representationId.toString());
+            resourceService.deleteResourceRepresentationFromAppRoute(resourceId, representationId);
+            var jsonObject = new JSONObject();
+            jsonObject.put("connectorResponse", response);
+            jsonObject.put("resourceID", resourceId.toString());
+            jsonObject.put("representationID", representationId.toString());
+            return ResponseEntity.ok(jsonObject.toJSONString());
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().body("Problems while deleting the representation at the connector");
         }
     }
 }
