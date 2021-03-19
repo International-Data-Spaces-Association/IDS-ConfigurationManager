@@ -88,18 +88,6 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
                         ._byteSize_(BigInteger.valueOf(bytesize)).build())).build();
         representation.setProperty("ids:sourceType", sourceType);
 
-        // Add representation in resource catalog
-        for (ResourceCatalog resourceCatalog : configModelService.getConfigModel()
-                .getConnectorDescription().getResourceCatalog()) {
-            for (Resource resource : resourceCatalog.getOfferedResource()) {
-                if (resourceId.equals(resource.getId())) {
-                    var resourceImpl = (ResourceImpl) resource;
-                    resourceImpl.setRepresentation(Util.asList(representation));
-                    break;
-                }
-            }
-        }
-
         var jsonObject = new JSONObject();
         try {
             configModelService.saveState();
@@ -139,83 +127,72 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
         + " sourceType: " + sourceType);
 
         ResourceImpl oldResourceCatalog = (ResourceImpl) resourceService.getResource(resourceId);
-        URI oldRepresentationId = oldResourceCatalog.getRepresentation().get(0).getId();
         if (oldResourceCatalog != null) {
+            URI oldRepresentationId = oldResourceCatalog.getRepresentation().get(0).getId();
             oldResourceCatalog.setRepresentation(null);
-        }
-        if (configModelService.getConfigModel().getAppRoute() == null) {
-            logger.info("No AppRoute in ConfigModel!");
-        } else {
-            ResourceImpl oldResourceRoute = (ResourceImpl) resourceService.getResourceInAppRoute(resourceId);
-            if (oldResourceRoute != null) {
-                oldResourceRoute.setRepresentation(null);
-            }
-        }
-        // Create representation for resource
-        Representation representation = new RepresentationBuilder(oldRepresentationId).build();
-        var representationImpl = (RepresentationImpl) representation;
-        if (language != null) {
-            representationImpl.setLanguage(Language.valueOf(language));
-        }
-        if (filenameExtension != null) {
-            representationImpl.setMediaType(new IANAMediaTypeBuilder()
-                    ._filenameExtension_(filenameExtension).build());
-        }
-        if (bytesize != null) {
-            representationImpl.setInstance(Util.asList(new ArtifactBuilder()
-                    ._byteSize_(BigInteger.valueOf(bytesize)).build()));
-        }
-        if (sourceType != null) {
-            representationImpl.setProperty("ids:sourceType", sourceType);
-        }
-        // Update representation in resource catalog
-        for (ResourceCatalog resourceCatalog : configModelService.getConfigModel()
-                .getConnectorDescription().getResourceCatalog()) {
-            for (Resource resource : resourceCatalog.getOfferedResource()) {
-                if (resourceId.equals(resource.getId())) {
-                    var resourceImpl = (ResourceImpl) resource;
-                    resourceImpl.setRepresentation(Util.asList(representationImpl));
-                    break;
+            if (configModelService.getConfigModel().getAppRoute() == null) {
+                logger.info("No AppRoute in ConfigModel!");
+            } else {
+                ResourceImpl oldResourceRoute = (ResourceImpl) resourceService.getResourceInAppRoute(resourceId);
+                if (oldResourceRoute != null) {
+                    oldResourceRoute.setRepresentation(null);
                 }
             }
-        }
-        // Update representation in app route
-        if (configModelService.getConfigModel().getAppRoute() != null) {
-            for( AppRoute appRoute : configModelService.getConfigModel().getAppRoute() ) {
-                for( RouteStep routeStep : appRoute.getHasSubRoute() ) {
-                    for( Resource resource : routeStep.getAppRouteOutput() ) {
-                        if( resourceId.equals(resource.getId()) ) {
-                            var resourceImpl = (ResourceImpl) resource;
-                            resourceImpl.setRepresentation(Util.asList(representationImpl));
-                            break;
+            // Create representation for resource
+            Representation representation = new RepresentationBuilder(oldRepresentationId).build();
+            var representationImpl = (RepresentationImpl) representation;
+            if (language != null) {
+                representationImpl.setLanguage(Language.valueOf(language));
+            }
+            if (filenameExtension != null) {
+                representationImpl.setMediaType(new IANAMediaTypeBuilder()
+                        ._filenameExtension_(filenameExtension).build());
+            }
+            if (bytesize != null) {
+                representationImpl.setInstance(Util.asList(new ArtifactBuilder()
+                        ._byteSize_(BigInteger.valueOf(bytesize)).build()));
+            }
+            if (sourceType != null) {
+                representationImpl.setProperty("ids:sourceType", sourceType);
+            }
+            // Update representation in app route
+            if (configModelService.getConfigModel().getAppRoute() != null) {
+                for (AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
+                    for (RouteStep routeStep : appRoute.getHasSubRoute()) {
+                        for (Resource resource : routeStep.getAppRouteOutput()) {
+                            if (resourceId.equals(resource.getId())) {
+                                var resourceImpl = (ResourceImpl) resource;
+                                resourceImpl.setRepresentation(Util.asList(representationImpl));
+                                break;
+                            }
                         }
                     }
                 }
             }
-        }
-        // Update the backend connection to the new endpoint
-        resourceService.updateBackendConnection(resourceId, endpointId);
+            // Update the backend connection to the new endpoint
+            resourceService.updateBackendConnection(resourceId, endpointId);
 
-        try {
-            // Update the resource representation in the dataspace connector
-            if (representationImpl != null) {
-                var response = client.updateResourceRepresentation(
-                        resourceId.toString(),
-                        representationId.toString(),
-                        representationImpl,
-                        endpointId.toString()
-                );
-                var jsonObject = new JSONObject();
-                jsonObject.put("connectorResponse", response);
-                jsonObject.put("resourceID", resourceId.toString());
-                jsonObject.put("representationID", representationId.toString());
-                return ResponseEntity.ok(jsonObject.toJSONString());
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No representation with given IDs found!");
+            try {
+                // Update the resource representation in the dataspace connector
+                if (representationImpl != null) {
+                    var response = client.updateResourceRepresentation(
+                            resourceId.toString(),
+                            representationId.toString(),
+                            representationImpl,
+                            endpointId.toString()
+                    );
+                    var jsonObject = new JSONObject();
+                    jsonObject.put("connectorResponse", response);
+                    jsonObject.put("resourceID", resourceId.toString());
+                    jsonObject.put("representationID", representationId.toString());
+                    return ResponseEntity.ok(jsonObject.toJSONString());
+                } else {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No representation with given IDs found!");
+                }
+            } catch (IOException e) {
+                configModelService.saveState();
+                logger.error(e.getMessage());
             }
-        } catch (IOException e) {
-            configModelService.saveState();
-            logger.error(e.getMessage());
         }
         return ResponseEntity.badRequest().body("Could not update the representation of the resource");
     }
