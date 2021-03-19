@@ -122,7 +122,6 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
             LOGGER.warn("Could not get BaseConnector");
         }
         var body = response.body().string();
-        LOGGER.info(body);
         return SERIALIZER.deserialize(body, BaseConnector.class);
     }
 
@@ -140,7 +139,6 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
             return false;
         }
         var body = response.body().string();
-        LOGGER.info("Response: " + body);
         return true;
     }
 
@@ -167,7 +165,6 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
             LOGGER.warn(String.format("Could not get BaseConnector from %s!", dataSpaceConnectorHost));
         }
         var body = response.body().string();
-        LOGGER.info(body);
         return SERIALIZER.deserialize(body, BaseConnector.class);
     }
 
@@ -197,7 +194,6 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
             LOGGER.warn(String.format("Registering Resource at %s failed!", dataSpaceConnectorHost));
         }
         var body = response.body().string();
-        LOGGER.info("Response: " + body);
         return body;
     }
 
@@ -216,7 +212,6 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
             LOGGER.warn(String.format("Deleting Resource at %s failed!", dataSpaceConnectorHost));
         }
         var body = response.body().string();
-        LOGGER.info("Response: " + body);
         return body;
     }
 
@@ -242,7 +237,6 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
             LOGGER.warn(String.format("Updating Resource at Broker %s failed!", brokerUri));
         }
         var body = response.body().string();
-        LOGGER.info("Response: " + body);
         return body;
     }
 
@@ -267,7 +261,6 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
             LOGGER.warn(String.format("Deleting Resource at Broker %s failed!", brokerUri));
         }
         var body = response.body().string();
-        LOGGER.info("Response: " + body);
         return body;
     }
 
@@ -287,7 +280,6 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
             LOGGER.warn(String.format("Deleting Representation at %s failed!", dataSpaceConnectorHost));
         }
         var body = response.body().string();
-        LOGGER.info("Response: " + body);
         return body;
     }
 
