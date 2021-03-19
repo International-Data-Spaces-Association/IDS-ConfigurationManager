@@ -13,7 +13,7 @@
 
     <groupId>de.fraunhofer.isst</groupId>
     <artifactId>configurationmanager</artifactId>
-    <version>4.1.0</version>
+    <version>5.0.0</version>
     <name>Configuration Manager</name>
     <description>Configuration Manager developed by the Fraunhofer ISST</description>
 
@@ -236,5 +236,13 @@
             </plugin>
         </plugins>
     </build>
+         
+    <distributionManagement>
+        <repository>
+                <id>github</id>
+                <name>GitHub Packages</name>
+                <url>https://maven.pkg.github.com/International-Data-Spaces-Association/IDS-ConfigurationManager</url>
+        </repository>
+    </distributionManagement>
 
 </project>

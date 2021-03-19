@@ -1,5 +1,6 @@
 package de.fraunhofer.isst.configmanager.configmanagement.service;
 
+import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.config.BrokerStatus;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.config.CustomBroker;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.CustomBrokerRepository;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Service class for the custom broker.
@@ -22,10 +24,12 @@ public class BrokerService {
 
     private final static Logger logger = LoggerFactory.getLogger(BrokerService.class);
     private final CustomBrokerRepository customBrokerRepository;
+    private final ResourceService resourceService;
 
     @Autowired
-    public BrokerService(CustomBrokerRepository customBrokerRepository) {
+    public BrokerService(CustomBrokerRepository customBrokerRepository, ResourceService resourceService) {
         this.customBrokerRepository = customBrokerRepository;
+        this.resourceService = resourceService;
 
         // If no broker is found in the database, a default broker is created at this point.
         if (customBrokerRepository.count() == 0) {
@@ -159,6 +163,34 @@ public class BrokerService {
             customBroker.setRegisteredResources(registeredResources);
             customBrokerRepository.save(customBroker);
         }
+    }
+
+    public void removeResourceAtBroker(URI brokerId, URI resourceId) {
+        CustomBroker customBroker = getById(brokerId);
+        if (customBroker != null) {
+            if (customBroker.getRegisteredResources() == null) {
+                customBroker.setRegisteredResources(new ArrayList<>());
+            }
+            List<String> registeredResources = customBroker.getRegisteredResources();
+            registeredResources.remove(resourceId.toString());
+            customBroker.setRegisteredResources(registeredResources);
+            customBrokerRepository.save(customBroker);
+        }
+    }
+
+    public void sentSelfDescToBroker(URI brokerId){
+        CustomBroker customBroker = getById(brokerId);
+        customBroker.setRegisteredResources(
+                resourceService.getResources().stream().map(Resource::getId).map(URI::toString)
+                        .collect(Collectors.toList())
+        );
+        customBrokerRepository.save(customBroker);
+    }
+
+    public void unregisteredAtBroker(URI brokerId){
+        CustomBroker customBroker = getById(brokerId);
+        customBroker.setRegisteredResources(new ArrayList<>());
+        customBrokerRepository.save(customBroker);
     }
 
     /**

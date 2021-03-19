@@ -16,6 +16,7 @@ import java.math.BigInteger;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Service class for managing created apps.
@@ -35,9 +36,10 @@ public class AppService {
             logger.info("No custom app is found! Creating custom apps.");
             List<CustomApp> customAppList = new ArrayList<>();
 
-            // Create custom app with endpoints
-            CustomApp customApp1 = new CustomApp();
-            customApp1.setTitle("Custom App 1");
+            var customApp1 = new CustomApp();
+            var appName = System.getenv("CUSTOM_APP_NAME");
+            customApp1.setTitle(Objects.requireNonNullElse(appName, "Custom App 1"));
+            logger.info("Created custom app with title: " + customApp1.getTitle());
 
             List<CustomAppEndpoint> customAppEndpoints = new ArrayList<>();
 
@@ -58,24 +60,24 @@ public class AppService {
             customAppList.add(customApp1);
 
 
-            // Create custom app 2 with endpoints
-            CustomApp customApp2 = new CustomApp();
-            customApp2.setTitle("Custom App 2");
-            List<CustomAppEndpoint> customAppEndpoints2 = new ArrayList<>();
-            AppEndpoint appEndpoint3 = Utility.createAppEndpoint(AppEndpointType.INPUT_ENDPOINT, new BigInteger("82"),
-                    "documentation", "information", "http://app3",
-                    "iPath", "oPath", Language.DE, "JSON", "path");
-            CustomAppEndpoint customAppEndpoint3 = new CustomAppEndpoint(appEndpoint3);
-            AppEndpoint appEndpoint4 = Utility.createAppEndpoint(AppEndpointType.OUTPUT_ENDPOINT, new BigInteger("83"),
-                    "documentation", "information", "http://app4",
-                    "iPath", "oPath", Language.DE, "JSON", "path");
-            CustomAppEndpoint customAppEndpoint4 = new CustomAppEndpoint(appEndpoint4);
-
-            customAppEndpoints2.add(customAppEndpoint3);
-            customAppEndpoints2.add(customAppEndpoint4);
-            customApp2.setAppEndpointList(customAppEndpoints2);
-
-            customAppList.add(customApp2);
+//            // Create custom app 2 with endpoints
+//            CustomApp customApp2 = new CustomApp();
+//            customApp2.setTitle("Custom App 2");
+//            List<CustomAppEndpoint> customAppEndpoints2 = new ArrayList<>();
+//            AppEndpoint appEndpoint3 = Utility.createAppEndpoint(AppEndpointType.INPUT_ENDPOINT, new BigInteger("82"),
+//                    "documentation", "information", "http://app3",
+//                    "iPath", "oPath", Language.DE, "JSON", "path");
+//            CustomAppEndpoint customAppEndpoint3 = new CustomAppEndpoint(appEndpoint3);
+//            AppEndpoint appEndpoint4 = Utility.createAppEndpoint(AppEndpointType.OUTPUT_ENDPOINT, new BigInteger("83"),
+//                    "documentation", "information", "http://app4",
+//                    "iPath", "oPath", Language.DE, "JSON", "path");
+//            CustomAppEndpoint customAppEndpoint4 = new CustomAppEndpoint(appEndpoint4);
+//
+//            customAppEndpoints2.add(customAppEndpoint3);
+//            customAppEndpoints2.add(customAppEndpoint4);
+//            customApp2.setAppEndpointList(customAppEndpoints2);
+//
+//            customAppList.add(customApp2);
 
             customAppRepository.saveAll(customAppList);
         }

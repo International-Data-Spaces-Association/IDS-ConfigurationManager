@@ -8,6 +8,7 @@ import de.fraunhofer.isst.configmanager.configmanagement.entities.config.CustomB
 import de.fraunhofer.isst.configmanager.configmanagement.service.BrokerService;
 import de.fraunhofer.isst.configmanager.util.Utility;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/ui")
 @Tag(name = "Broker Management", description = "Endpoints for managing the brokers in the configuration manager")
+@Slf4j
 public class BrokerUIController implements BrokerUIApi {
 
     private final static Logger logger = LoggerFactory.getLogger(BrokerUIController.class);
@@ -54,6 +56,7 @@ public class BrokerUIController implements BrokerUIApi {
      */
     @Override
     public ResponseEntity<String> createBroker(URI brokerUri, String title) {
+        log.info(">> POST /broker brokerUri: " + brokerUri + " title: " + title);
 
         CustomBroker brokerObject = brokerService.createCustomBroker(brokerUri, title);
 
@@ -73,6 +76,8 @@ public class BrokerUIController implements BrokerUIApi {
      */
     @Override
     public ResponseEntity<String> updateBroker(URI brokerId, String title) {
+        log.info(">> PUT /broker brokerId: " + brokerId + " title: " + title);
+
         if (brokerService.updateBroker(brokerId, title)) {
             var jsonObject = new JSONObject();
             jsonObject.put("message", "Updated the broker");
@@ -91,6 +96,8 @@ public class BrokerUIController implements BrokerUIApi {
      */
     @Override
     public ResponseEntity<String> deleteBroker(URI brokerUri) {
+        log.info(">> DELETE /broker brokerUri " + brokerUri);
+
         if (brokerService.deleteBroker(brokerUri)) {
             return ResponseEntity.ok(Utility.jsonMessage("message", "Broker with ID: " + brokerUri + " is deleted"));
         } else {
@@ -106,6 +113,8 @@ public class BrokerUIController implements BrokerUIApi {
      */
     @Override
     public ResponseEntity<String> getBroker(URI brokerId) {
+        log.info(">> GET /broker brokerId: " + brokerId);
+
         CustomBroker broker = brokerService.getById(brokerId);
 
         if (broker != null) {
@@ -125,6 +134,8 @@ public class BrokerUIController implements BrokerUIApi {
      */
     @Override
     public ResponseEntity<String> getAllBrokers() {
+        log.info(">> GET /brokers");
+
         List<CustomBroker> brokers = brokerService.getCustomBrokers();
         try {
             return new ResponseEntity<>(objectMapper.writeValueAsString(brokers), HttpStatus.OK);
@@ -141,6 +152,8 @@ public class BrokerUIController implements BrokerUIApi {
      */
     @Override
     public ResponseEntity<String> getAllBrokerUris() {
+        log.info(">> GET /broker/list");
+
         List<URI> brokerUris = brokerService.getAllBrokerUris();
         if (brokerUris != null) {
             return ResponseEntity.ok(brokerUris.toString());
@@ -157,12 +170,15 @@ public class BrokerUIController implements BrokerUIApi {
      */
     @Override
     public ResponseEntity<String> registerConnector(URI brokerUri) {
+        log.info(">> POST /broker/register brokerUri: " + brokerUri);
+
         var broker = brokerService.getById(brokerUri);
         var jsonObject = new JSONObject();
         if (broker != null) {
             try {
                 String response = client.updateAtBroker(brokerUri.toString());
                 if (!response.contains("RejectionMessage")) {
+                    brokerService.sentSelfDescToBroker(brokerUri);
                     brokerService.setBrokerStatus(brokerUri, BrokerStatus.REGISTERED);
                     jsonObject.put("success", true);
                 } else {
@@ -187,12 +203,15 @@ public class BrokerUIController implements BrokerUIApi {
      */
     @Override
     public ResponseEntity<String> unregisterConnector(URI brokerUri) {
+        log.info(">> POST /broker/unregister brokerUri: " + brokerUri);
+
         var broker = brokerService.getById(brokerUri);
         var jsonObject = new JSONObject();
         if (broker != null) {
             try {
                 String response = client.unregisterAtBroker(brokerUri.toString());
                 if (!response.contains("RejectionMessage")) {
+                    brokerService.unregisteredAtBroker(brokerUri);
                     brokerService.setBrokerStatus(brokerUri, BrokerStatus.UNREGISTERED);
                     jsonObject.put("success", true);
                 } else {
@@ -217,12 +236,15 @@ public class BrokerUIController implements BrokerUIApi {
      */
     @Override
     public ResponseEntity<String> updateConnector(URI brokerUri) {
+        log.info(">> POST /broker/update brokerUri: " + brokerUri);
+
         var broker = brokerService.getById(brokerUri);
         var jsonObject = new JSONObject();
         if (broker != null) {
             try {
                 String response = client.updateAtBroker(brokerUri.toString());
                 jsonObject.put("success", !response.contains("RejectionMessage"));
+                if(!response.contains("RejectionMessage")) brokerService.sentSelfDescToBroker(brokerUri);
                 return ResponseEntity.ok(jsonObject.toJSONString());
             } catch (IOException e) {
                 logger.error(e.getMessage(), e);
@@ -243,27 +265,31 @@ public class BrokerUIController implements BrokerUIApi {
      */
     @Override
     public ResponseEntity<String> updateResourceAtBroker(URI brokerUri, URI resourceId) {
-        var broker = brokerService.getById(brokerUri);
-        var jsonObject = new JSONObject();
-        if (broker != null) {
-            try {
-                String response = client.updateResourceAtBroker(brokerUri.toString(), resourceId);
-                if (response.contains("RejectionMessage") || response.equals("Could not load resource.")
-                        || response.equals("The communication with the broker failed.")) {
-                    jsonObject.put("success", false);
-                } else {
-                    brokerService.setResourceAtBroker(brokerUri, resourceId);
-                    jsonObject.put("success", true);
-                }
-                return ResponseEntity.ok(jsonObject.toJSONString());
-            } catch (IOException e) {
-                logger.error(e.getMessage(), e);
-                jsonObject.put("success", false);
-                return ResponseEntity.ok(jsonObject.toJSONString());
-            }
-        } else {
-            return ResponseEntity.badRequest().body("Could not find the broker");
-        }
+        log.info(">> POST /broker/update/resource brokerUri: " + brokerUri + " resourceId: " + resourceId);
+
+        return updateConnector(brokerUri);
+
+//        var broker = brokerService.getById(brokerUri);
+//        var jsonObject = new JSONObject();
+//        if (broker != null) {
+//            try {
+//                String response = client.updateResourceAtBroker(brokerUri.toString(), resourceId);
+//                if (response.contains("RejectionMessage") || response.equals("Could not load resource.")
+//                        || response.equals("The communication with the broker failed.")) {
+//                    jsonObject.put("success", false);
+//                } else {
+//                    brokerService.setResourceAtBroker(brokerUri, resourceId);
+//                    jsonObject.put("success", true);
+//                }
+//                return ResponseEntity.ok(jsonObject.toJSONString());
+//            } catch (IOException e) {
+//                logger.error(e.getMessage(), e);
+//                jsonObject.put("success", false);
+//                return ResponseEntity.ok(jsonObject.toJSONString());
+//            }
+//        } else {
+//            return ResponseEntity.badRequest().body("Could not find the broker");
+//        }
     }
 
     /**
@@ -275,27 +301,31 @@ public class BrokerUIController implements BrokerUIApi {
      */
     @Override
     public ResponseEntity<String> deleteResourceAtBroker(URI brokerUri, URI resourceId) {
-        var broker = brokerService.getById(brokerUri);
-        var jsonObject = new JSONObject();
-        if (broker != null) {
-            try {
-                String response = client.deleteResourceAtBroker(brokerUri.toString(), resourceId);
-                if (response.contains("RejectionMessage") || response.equals("Could not load resource.")
-                        || response.equals("The communication with the broker failed.")) {
-                    jsonObject.put("success", false);
-                } else {
-                    brokerService.deleteResourceAtBroker(brokerUri, resourceId);
-                    jsonObject.put("success", true);
-                }
-                return ResponseEntity.ok(jsonObject.toJSONString());
-            } catch (IOException e) {
-                logger.error(e.getMessage(), e);
-                jsonObject.put("success", false);
-                return ResponseEntity.ok(jsonObject.toJSONString());
-            }
-        } else {
-            return ResponseEntity.badRequest().body("Could not find the broker");
-        }
+        log.info(">> POST /broker/delete/resource brokerUri: " + brokerUri + " resourceId: " + resourceId);
+
+        return updateConnector(brokerUri);
+
+//        var broker = brokerService.getById(brokerUri);
+//        var jsonObject = new JSONObject();
+//        if (broker != null) {
+//            try {
+//                String response = client.deleteResourceAtBroker(brokerUri.toString(), resourceId);
+//                if (response.contains("RejectionMessage") || response.equals("Could not load resource.")
+//                        || response.equals("The communication with the broker failed.")) {
+//                    jsonObject.put("success", false);
+//                } else {
+//                    brokerService.deleteResourceAtBroker(brokerUri, resourceId);
+//                    jsonObject.put("success", true);
+//                }
+//                return ResponseEntity.ok(jsonObject.toJSONString());
+//            } catch (IOException e) {
+//                logger.error(e.getMessage(), e);
+//                jsonObject.put("success", false);
+//                return ResponseEntity.ok(jsonObject.toJSONString());
+//            }
+//        } else {
+//            return ResponseEntity.badRequest().body("Could not find the broker");
+//        }
     }
 
     /**
@@ -306,6 +336,7 @@ public class BrokerUIController implements BrokerUIApi {
      */
     @Override
     public ResponseEntity<String> getRegisterStatusForResource(URI resourceId) {
+        log.info(">> GET /broker/resource/information resourceId: " + resourceId);
 
         var jsonObjet = brokerService.getRegisStatusForResource(resourceId);
         if (jsonObjet == null) {

@@ -22,6 +22,11 @@ public interface ResourceUIApi {
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully returned all resources from the connector")})
     ResponseEntity<String> getResources();
 
+    @GetMapping(value = "/resources/requested", produces = "application/ld+json")
+    @Operation(summary = "Returns all requested resources from the connector")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully returned all requested resources from the connector")})
+    ResponseEntity<String> getRequestedResources();
+
     @GetMapping(value = "/resource/json", produces = "application/ld+json")
     @Operation(summary = "Returns the specific resource from the connector in JSON format")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully returned the specific resource " +
