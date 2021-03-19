@@ -102,7 +102,7 @@ public class ResourceUIController implements ResourceUIApi {
         try {
             BaseConnector baseConnector = client.getSelfDeclaration();
             if (baseConnector != null) {
-                List<Resource> resourceList = resourceService.getRequestedResources(baseConnector);
+                List<Resource> resourceList = resourceService.getRequestedResources();
                 return ResponseEntity.ok(serializer.serialize(resourceList));
             } else {
                 return ResponseEntity.badRequest().body("Could not get the self declaration from the connector");

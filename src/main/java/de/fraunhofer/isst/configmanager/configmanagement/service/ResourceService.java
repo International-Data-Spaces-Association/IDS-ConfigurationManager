@@ -434,21 +434,35 @@ public class ResourceService {
     /**
      * This method returns a list of requested resources
      *
-     * @param baseConnector the base connector
      * @return resources
      */
-    public List<Resource> getRequestedResources(BaseConnector baseConnector) {
+    //TODO get from DSC (like offeredResources in getResources())
+    public List<Resource> getRequestedResources() {
+        ArrayList<Resource> resources = new ArrayList<>();
 
-        List<Resource> resourceList = new ArrayList<>();
-        if (baseConnector.getResourceCatalog() != null) {
+        BaseConnector baseConnector = null;
+        try {
+            baseConnector = client.getSelfDeclaration();
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
+        if (baseConnector != null && baseConnector.getResourceCatalog() != null) {
             for (ResourceCatalog resourceCatalog : baseConnector.getResourceCatalog()) {
-                if (resourceCatalog.getRequestedResource() != null) {
-                    for (Resource resource : resourceCatalog.getRequestedResource()) {
-                        resourceList.add(resource);
-                    }
+                if (resourceCatalog.getOfferedResource() != null) {
+                    resources.addAll(resourceCatalog.getRequestedResource());
                 }
             }
         }
-        return resourceList;
+//        for (ResourceCatalog resourceCatalog : configModelService.getConfigModel()
+//                .getConnectorDescription().getResourceCatalog()) {
+//            if (resourceCatalog != null && resourceCatalog.getOfferedResource() != null) {
+//                for (Resource resource : resourceCatalog.getOfferedResource()) {
+//                    if (resource != null) {
+//                        resources.add(resource);
+//                    }
+//                }
+//            }
+//        }
+        return resources;
     }
 }
