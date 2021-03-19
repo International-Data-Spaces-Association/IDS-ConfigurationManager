@@ -122,6 +122,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
             LOGGER.warn("Could not get BaseConnector");
         }
         var body = response.body().string();
+        LOGGER.info(body);
         return SERIALIZER.deserialize(body, BaseConnector.class);
     }
 

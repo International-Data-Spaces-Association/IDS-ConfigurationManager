@@ -238,14 +238,35 @@ public class ResourceService {
         if (configModelService.getConfigModel().getAppRoute() == null) {
             log.info("Could not find any app route to delete the resource");
         } else {
-            configModelService.getConfigModel().getAppRoute().stream()
-                    .map(AppRoute::getHasSubRoute)
-                    .flatMap(Collection::stream)
-                    .map(RouteStep::getAppRouteOutput)
-                    .map(resources -> resources != null && resources.removeIf(resource -> resource.getId().equals(resourceId)));
+            for(var route : configModelService.getConfigModel().getAppRoute()){
+                if(route == null) continue;
+                if(route.getAppRouteOutput() != null) route.getAppRouteOutput().removeIf(resource -> resource.getId().equals(resourceId));
+                for(var subRoute : route.getHasSubRoute()){
+                    deleteFromSubRoutes(subRoute, new ArrayList<>(), resourceId);
+                }
+            }
         }
         configModelService.saveState();
         return;
+    }
+
+    /**
+     * Delete occurrence of a resource with resourceID from all SubRoutes
+     *
+     * @param current current Node in AppRoute
+     * @param visited already visited AppRoutes
+     * @param resourceId ID of the Resource to delete
+     */
+    public void deleteFromSubRoutes(RouteStep current, List<RouteStep> visited, URI resourceId){
+        if(current == null) return;
+        if (current.getAppRouteOutput() != null) current.getAppRouteOutput().removeIf(resource -> resource.getId().equals(resourceId));
+        if(current.getHasSubRoute() == null) return;
+        for(var subRoute : current.getHasSubRoute()){
+            if(!visited.contains(subRoute)){
+                visited.add(current);
+                deleteFromSubRoutes(subRoute, visited, resourceId);
+            }
+        }
     }
 
     /**
