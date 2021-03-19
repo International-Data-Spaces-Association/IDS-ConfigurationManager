@@ -141,6 +141,7 @@ public class ResourceService {
      * @param contractOffer the contract offer which will be updated
      * @return true, if resource contract is updated
      */
+    //TODO recursively update in all subroutes
     public void updateResourceContractInAppRoute(URI resourceId, ContractOffer contractOffer) {
         // Update resource representation in app route
         if (configModelService.getConfigModel().getAppRoute() == null) {
@@ -198,36 +199,59 @@ public class ResourceService {
     }
 
     /**
-     * @param resourceId       id of the resource
-     * @param representationId id of the representation
-     * @return true, if representation is deleted
+     * @param resourceId id of the resource
+     * @param representationId id of the representation to delete
+     * @return true, if resource is deleted
      */
     public void deleteResourceRepresentationFromAppRoute(URI resourceId, URI representationId) {
-        // Delete representation in app route if exists
         if (configModelService.getConfigModel().getAppRoute() == null) {
-            log.info("No app route found to delete the resource representation");
+            log.info("Could not find any app route to delete the resource");
         } else {
-            Resource foundresource = null;
-            for (AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
-                if (appRoute.getHasSubRoute() != null) {
-                    for (RouteStep routeStep : appRoute.getHasSubRoute()) {
-                        if (routeStep.getAppRouteOutput() != null) {
-                            for (Resource resource : routeStep.getAppRouteOutput()) {
-                                if (resourceId.equals(resource.getId())) {
-                                    foundresource = resource;
-                                    break;
-                                }
-                            }
-                        }
+            for(var route : configModelService.getConfigModel().getAppRoute()){
+                if(route == null) continue;
+                if(route.getAppRouteOutput() != null){
+                    for(var resource : route.getAppRouteOutput()){
+                        if(resource.getRepresentation() != null)
+                            resource.getRepresentation().removeIf(representation ->
+                                    representation.getId().equals(representationId)
+                            );
                     }
                 }
+                if(route.getHasSubRoute() == null) continue;
+                for(var subRoute : route.getHasSubRoute()){
+                    deleteRepresentationFromSubRoutes(subRoute, new ArrayList<>(), resourceId, representationId);
+                }
             }
-            if (foundresource != null) {
-                foundresource.getRepresentation().removeIf(representation -> representation.getId().equals(representationId));
-            }
-
         }
+        configModelService.saveState();
         return;
+    }
+
+    /**
+     * Delete occurrence of a resource representation with resourceID and representationID from all SubRoutes
+     *
+     * @param current current Node in AppRoute
+     * @param visited already visited AppRoutes
+     * @param resourceId ID of the Resource for which the representation should be deleted
+     * @param representationId ID of the Representation to delete
+     */
+    private void deleteRepresentationFromSubRoutes(RouteStep current, List<RouteStep> visited, URI resourceId, URI representationId){
+        if(current == null) return;
+        if (current.getAppRouteOutput() != null) {
+            for(var resource : current.getAppRouteOutput()){
+                if(resource.getRepresentation() != null)
+                    resource.getRepresentation().removeIf(representation ->
+                            representation.getId().equals(representationId)
+                    );
+            }
+        }
+        if(current.getHasSubRoute() == null) return;
+        for(var subRoute : current.getHasSubRoute()){
+            if(!visited.contains(subRoute)){
+                visited.add(current);
+                deleteFromSubRoutes(subRoute, visited, resourceId);
+            }
+        }
     }
 
     /**
@@ -241,6 +265,7 @@ public class ResourceService {
             for(var route : configModelService.getConfigModel().getAppRoute()){
                 if(route == null) continue;
                 if(route.getAppRouteOutput() != null) route.getAppRouteOutput().removeIf(resource -> resource.getId().equals(resourceId));
+                if(route.getHasSubRoute() == null) continue;
                 for(var subRoute : route.getHasSubRoute()){
                     deleteFromSubRoutes(subRoute, new ArrayList<>(), resourceId);
                 }
@@ -257,7 +282,7 @@ public class ResourceService {
      * @param visited already visited AppRoutes
      * @param resourceId ID of the Resource to delete
      */
-    public void deleteFromSubRoutes(RouteStep current, List<RouteStep> visited, URI resourceId){
+    private void deleteFromSubRoutes(RouteStep current, List<RouteStep> visited, URI resourceId){
         if(current == null) return;
         if (current.getAppRouteOutput() != null) current.getAppRouteOutput().removeIf(resource -> resource.getId().equals(resourceId));
         if(current.getHasSubRoute() == null) return;
@@ -319,6 +344,7 @@ public class ResourceService {
      * @param newResource new Resource old version should be replaced with
      * @return resource implementation
      */
+    //TODO update recursively in all SubRoutes
     public void updateResourceInAppRoute(ResourceImpl newResource) {
         // Update the resource in the app route
         if (configModelService.getConfigModel().getAppRoute() == null) {
@@ -393,6 +419,7 @@ public class ResourceService {
      * @param resourceId id of the resource
      * @return resource
      */
+    //TODO search in all SubRoutes
     public Resource getResourceInAppRoute(URI resourceId) {
 
         return configModelService.getConfigModel().getAppRoute().stream()
