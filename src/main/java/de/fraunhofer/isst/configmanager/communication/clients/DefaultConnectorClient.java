@@ -160,7 +160,7 @@ public interface DefaultConnectorClient {
      * @return Response of the target Connector
      * @throws IOException when an error occurs while sending the request
      */
-    String updateResourceContract(String resourceID, Contract contract) throws IOException;
+    String updateResourceContract(String resourceID, String contract) throws IOException;
 
     /**
      * Returns the policy pattern for a given string.

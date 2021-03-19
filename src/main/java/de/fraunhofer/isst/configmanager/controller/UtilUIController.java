@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/ui")
 @Tag(name = "Utility", description = "Endpoints for other requirements")
+@Slf4j
 public class UtilUIController {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(UtilUIController.class);
@@ -44,6 +46,7 @@ public class UtilUIController {
     @Operation(summary = "Get the specific enum")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully get the enums")})
     public ResponseEntity<String> getSpecificEnum(@PathVariable String enumName) {
+        log.info(">> GET /api/ui/enum " + enumName);
 
         String enums = utilService.getSpecificEnum(enumName);
         if (enums != null) {
@@ -63,6 +66,7 @@ public class UtilUIController {
     @Operation(summary = "Get pattern of policy")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully get the pattern of policy")})
     public ResponseEntity<String> getPolicyPattern(@RequestBody String policy) {
+        log.info(">> GET /api/ui/policy-pattern " + policy);
 
         String pattern;
         try {

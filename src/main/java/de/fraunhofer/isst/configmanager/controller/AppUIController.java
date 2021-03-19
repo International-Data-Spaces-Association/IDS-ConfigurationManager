@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.customApp.CustomApp;
 import de.fraunhofer.isst.configmanager.configmanagement.service.AppService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/ui")
 @Tag(name = "App Management", description = "Endpoints for managing the app in the configuration manager")
+@Slf4j
 public class AppUIController implements AppUIApi {
 
     private final AppService appService;
@@ -34,6 +36,8 @@ public class AppUIController implements AppUIApi {
      */
     @Override
     public ResponseEntity<String> getApps() {
+        log.info(">> GET /apps");
+
         List<CustomApp> customAppList = appService.getApps();
 
         if (customAppList.size() != 0) {
@@ -55,6 +59,8 @@ public class AppUIController implements AppUIApi {
      */
     @Override
     public ResponseEntity<String> getApp(String id) {
+        log.info(">> GET /app id: " + id);
+
         CustomApp customApp = appService.getApp(id);
 
         if (customApp != null) {

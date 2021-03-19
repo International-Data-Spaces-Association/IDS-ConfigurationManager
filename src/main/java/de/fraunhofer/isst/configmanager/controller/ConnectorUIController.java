@@ -10,6 +10,7 @@ import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelServ
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConnectorService;
 import de.fraunhofer.isst.configmanager.util.Utility;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,7 @@ import java.io.IOException;
  */
 @RestController
 @RequestMapping("/api/ui")
+@Slf4j
 @Tag(name = "Connector Management", description = "Endpoints for managing the connectors in the configuration manager")
 public class ConnectorUIController implements ConnectorUIApi {
 
@@ -55,6 +57,8 @@ public class ConnectorUIController implements ConnectorUIApi {
      */
     @Override
     public ResponseEntity<String> getConnector() {
+        log.info(">> GET /connector");
+
         Connector connector = configModelService.getConfigModel().getConnectorDescription();
         if (connector != null) {
             try {
@@ -73,6 +77,7 @@ public class ConnectorUIController implements ConnectorUIApi {
      */
     @Override
     public ResponseEntity<String> getConnectorJson() {
+        log.info(">> GET /connector/json");
 
         BaseConnector baseConnector = (BaseConnector) configModelService.getConfigModel().getConnectorDescription();
 
@@ -107,6 +112,7 @@ public class ConnectorUIController implements ConnectorUIApi {
     public ResponseEntity<String> createConnector(String title, String description, String endpointAccessURL,
                                                   String version, String curator, String maintainer,
                                                   String inboundModelVersion, String outboundModelVersion) {
+        log.info(">> POST /connector");
 
         BaseConnector baseConnector = connectorService.createConnector(title, description, endpointAccessURL, version,
                 curator, maintainer, inboundModelVersion, outboundModelVersion);
@@ -136,6 +142,9 @@ public class ConnectorUIController implements ConnectorUIApi {
     public ResponseEntity<String> updateConnector(String title, String description, String endpointAccessURL,
                                                   String version, String curator, String maintainer,
                                                   String inboundModelVersion, String outboundModelVersion) {
+        log.info(">> PUT /connector title: " + title + " description: " + " endpointAccessURL: " + endpointAccessURL
+                + " version: " + version + " curator: " + curator + " maintainer: " + maintainer + " inboundModelVersion: "
+                + inboundModelVersion + " outboundModelVersion: " + outboundModelVersion);
 
         boolean updated = connectorService.updateConnector(title, description, endpointAccessURL, version,
                 curator, maintainer, inboundModelVersion, outboundModelVersion);
@@ -174,6 +183,7 @@ public class ConnectorUIController implements ConnectorUIApi {
      */
     @Override
     public ResponseEntity<String> deleteConnector() {
+        log.info(">> DELETE /connector");
 
         if (configModelService.getConfigModel().getConnectorDescription() != null) {
             var configModelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();

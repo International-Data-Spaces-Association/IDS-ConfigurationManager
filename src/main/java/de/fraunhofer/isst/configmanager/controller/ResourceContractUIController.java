@@ -6,6 +6,7 @@ import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorCl
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ResourceService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,7 @@ import java.net.URI;
  */
 @RestController
 @RequestMapping("/api/ui")
+@Slf4j
 @Tag(name = "Resource contracts Management", description = "Endpoints for managing the contracts of a resource")
 public class ResourceContractUIController implements ResourceContractApi {
 
@@ -52,7 +54,9 @@ public class ResourceContractUIController implements ResourceContractApi {
      * @return a suitable http response depending on success
      */
     @Override
+    //TODO use resourceService getResources
     public ResponseEntity<String> getResourceContract(URI resourceId) {
+        log.info(">> GET /resource/contract resourceId: " + resourceId);
 
         if (configModelService.getConfigModel() == null ||
                 configModelService.getConfigModel().getConnectorDescription().getResourceCatalog() == null) {
@@ -82,12 +86,7 @@ public class ResourceContractUIController implements ResourceContractApi {
      */
     @Override
     public ResponseEntity<String> updateResourceContract(URI resourceId, String contractJson) {
-
-        if (configModelService.getConfigModel() == null ||
-                configModelService.getConfigModel().getConnectorDescription().getResourceCatalog() == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Could not find any resources!\"}");
-        }
-
+        log.info(">> PUT /resource/contract resourceId: " + resourceId + " contractJson: " + contractJson);
         // Create the updated contract offer
         ContractOffer contractOffer = null;
         if (contractJson != null) {
@@ -100,13 +99,13 @@ public class ResourceContractUIController implements ResourceContractApi {
         }
 
         // Update the resource contract
-        if (contractOffer != null && resourceService.updateResourceContract(resourceId, contractOffer)) {
+        if (contractOffer != null) {
             var jsonObject = new JSONObject();
             try {
-                configModelService.saveState();
                 jsonObject.put("resourceID", resourceId.toString());
                 jsonObject.put("contractID", contractOffer.getId().toString());
-                var response = client.updateResourceContract(resourceId.toString(), contractOffer);
+                var response = client.updateResourceContract(resourceId.toString(), contractJson);
+                resourceService.updateResourceContractInAppRoute(resourceId, contractOffer);
                 jsonObject.put("connectorResponse", response);
                 return ResponseEntity.ok(jsonObject.toJSONString());
             } catch (IOException e) {

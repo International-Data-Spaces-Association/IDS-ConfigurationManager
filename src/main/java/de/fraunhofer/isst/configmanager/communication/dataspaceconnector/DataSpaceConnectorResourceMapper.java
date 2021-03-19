@@ -110,7 +110,9 @@ public class DataSpaceConnectorResourceMapper {
         metadata.setLicense(resource.getStandardLicense());
         metadata.setOwner(resource.getPublisher());
         metadata.setVersion(resource.getVersion());
-        metadata.setPolicy(SERIALIZER.serialize(resource.getContractOffer()));
+        if(resource.getContractOffer() != null && !resource.getContractOffer().isEmpty()) {
+            metadata.setPolicy(SERIALIZER.serialize(resource.getContractOffer()));
+        }
         metadata.setRepresentations(mapRepresentations(resource.getRepresentation()));
         metadata.setTitle(resource.getTitle().stream().map(RdfResource::getValue).collect(Collectors.joining(";")));
         return metadata;
