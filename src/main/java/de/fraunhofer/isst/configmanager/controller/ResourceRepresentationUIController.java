@@ -75,8 +75,7 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
         log.info(">> POST /resource/representation resourceId: " + resourceId + " endpointId: " + endpointId + " language: " + language
                 + " filenameExtension: " + filenameExtension + " bytesize: " + bytesize + " sourceType: " + sourceType);
 
-        if (configModelService.getConfigModel() == null ||
-                configModelService.getConfigModel().getConnectorDescription().getResourceCatalog() == null) {
+        if (resourceService.getResources() == null || resourceService.getResources().isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Could not find any resources!\"}");
         }
 
