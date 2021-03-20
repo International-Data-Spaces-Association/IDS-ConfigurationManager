@@ -8,12 +8,9 @@ import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorCl
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.configmanagement.service.RepresentationEndpointService;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ResourceService;
-import de.fraunhofer.isst.configmanager.configmanagement.service.UtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,11 +30,7 @@ import java.net.URI;
 @RequestMapping("/api/ui")
 @Tag(name = "Resource representation Management", description = "Endpoints for managing the representation of a resource")
 public class ResourceRepresentationUIController implements ResourceRepresentationApi {
-
-    private final static Logger logger = LoggerFactory.getLogger(ResourceRepresentationUIController.class);
-
     private final ConfigModelService configModelService;
-    private final UtilService utilService;
     private final RepresentationEndpointService representationEndpointService;
     private final ResourceService resourceService;
     private final DefaultConnectorClient client;
@@ -45,14 +38,12 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
 
     @Autowired
     public ResourceRepresentationUIController(ConfigModelService configModelService,
-                                              UtilService utilService,
                                               ResourceService resourceService,
                                               DefaultConnectorClient client,
                                               Serializer serializer,
                                               RepresentationEndpointService representationEndpointService) {
         this.client = client;
         this.configModelService = configModelService;
-        this.utilService = utilService;
         this.resourceService = resourceService;
         this.serializer = serializer;
         this.representationEndpointService = representationEndpointService;
@@ -98,7 +89,7 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
             representationEndpointService.createRepresentationEndpoint(endpointId, representation.getId());
             return ResponseEntity.ok(jsonObject.toJSONString());
         } catch (IOException e) {
-            logger.error(e.getMessage());
+            log.error(e.getMessage(), e);
             jsonObject.put("message", "Could not register the resource representation at the connector");
             return ResponseEntity.badRequest().body(jsonObject.toJSONString());
         }
@@ -130,7 +121,7 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
             URI oldRepresentationId = oldResourceCatalog.getRepresentation().get(0).getId();
             oldResourceCatalog.setRepresentation(null);
             if (configModelService.getConfigModel().getAppRoute() == null) {
-                logger.info("---- No AppRoute in ConfigModel!");
+                log.info("---- No AppRoute in ConfigModel!");
             } else {
                 ResourceImpl oldResourceRoute = (ResourceImpl) resourceService.getResourceInAppRoute(resourceId);
                 if (oldResourceRoute != null) {
@@ -190,7 +181,7 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
                 }
             } catch (IOException e) {
                 configModelService.saveState();
-                logger.error(e.getMessage());
+                log.error(e.getMessage(), e);
             }
         }
         return ResponseEntity.badRequest().body("Could not update the representation of the resource");
@@ -211,7 +202,7 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
             try {
                 return ResponseEntity.ok(serializer.serialize(representation));
             } catch (IOException e) {
-                logger.error(e.getMessage());
+                log.error(e.getMessage(), e);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problems while serializing the " +
                         "representation");
             }
@@ -272,6 +263,7 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
             jsonObject.put("representationID", representationId.toString());
             return ResponseEntity.ok(jsonObject.toJSONString());
         } catch (IOException e) {
+            log.error(e.getMessage(), e);
             return ResponseEntity.badRequest().body("Problems while deleting the representation at the connector");
         }
     }

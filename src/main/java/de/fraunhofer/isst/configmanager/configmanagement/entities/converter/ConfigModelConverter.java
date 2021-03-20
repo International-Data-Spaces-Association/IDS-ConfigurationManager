@@ -30,7 +30,7 @@ public class ConfigModelConverter implements AttributeConverter<ConfigurationMod
         try {
             return serializer.serialize(configurationModel);
         } catch (IOException e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
             return null;
         }
     }
@@ -46,7 +46,7 @@ public class ConfigModelConverter implements AttributeConverter<ConfigurationMod
         try {
             return serializer.deserialize(s, ConfigurationModel.class);
         } catch (IOException e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
             return null;
         }
     }

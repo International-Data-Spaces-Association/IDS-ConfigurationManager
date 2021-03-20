@@ -1,18 +1,13 @@
 package de.fraunhofer.isst.configmanager.controller;
 
-import de.fraunhofer.iais.eis.BaseConnector;
 import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.iais.eis.ResourceImpl;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
-import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ResourceService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The controller class implements the ResourceUIApi and offers the possibilities to manage
@@ -33,19 +27,14 @@ import java.util.List;
 @Slf4j
 @Tag(name = "Resource Management", description = "Endpoints for managing the resource in the configuration manager")
 public class ResourceUIController implements ResourceUIApi {
-
-    private final static Logger logger = LoggerFactory.getLogger(ResourceUIController.class);
-
     private final ResourceService resourceService;
-    private final ConfigModelService configModelService;
     private final DefaultConnectorClient client;
     private final Serializer serializer;
 
     @Autowired
-    public ResourceUIController(ResourceService resourceService, ConfigModelService configModelService,
+    public ResourceUIController(ResourceService resourceService,
                                 DefaultConnectorClient client, Serializer serializer) {
         this.resourceService = resourceService;
-        this.configModelService = configModelService;
         this.client = client;
         this.serializer = serializer;
     }
@@ -66,6 +55,7 @@ public class ResourceUIController implements ResourceUIApi {
             try {
                 return ResponseEntity.ok(serializer.serialize(resource));
             } catch (IOException e) {
+                log.error(e.getMessage(), e);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not serialize resource!");
             }
         } else {
@@ -131,7 +121,7 @@ public class ResourceUIController implements ResourceUIApi {
             jsonObject.put("resourceID", resourceId.toString());
             return ResponseEntity.ok(jsonObject.toJSONString());
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
             return ResponseEntity.badRequest().body("Could not send delete request to connector");
         }
     }
@@ -168,7 +158,7 @@ public class ResourceUIController implements ResourceUIApi {
             return ResponseEntity.ok(jsonObject.toJSONString());
         } catch (IOException e) {
             jsonObject.put("message", "Could not register resource at connector");
-            logger.error(e.getMessage());
+            log.error(e.getMessage(), e);
             return ResponseEntity.badRequest().body(jsonObject.toJSONString());
         }
     }
@@ -211,6 +201,7 @@ public class ResourceUIController implements ResourceUIApi {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("No resource with ID %s was found!", resourceId));
             }
         } catch (IOException e) {
+            log.error(e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }

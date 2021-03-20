@@ -10,8 +10,6 @@ import de.fraunhofer.isst.configmanager.util.Utility;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,9 +29,6 @@ import java.util.List;
 @Tag(name = "Broker Management", description = "Endpoints for managing the brokers in the configuration manager")
 @Slf4j
 public class BrokerUIController implements BrokerUIApi {
-
-    private final static Logger logger = LoggerFactory.getLogger(BrokerUIController.class);
-
     private final BrokerService brokerService;
     private final DefaultConnectorClient client;
     private final ObjectMapper objectMapper;
@@ -121,7 +116,7 @@ public class BrokerUIController implements BrokerUIApi {
             try {
                 return ResponseEntity.ok(objectMapper.writeValueAsString(broker));
             } catch (IOException e) {
-                logger.error(e.getMessage());
+                log.error(e.getMessage(), e);
             }
         }
         return ResponseEntity.badRequest().body("Could not get the specific broker");
@@ -140,7 +135,7 @@ public class BrokerUIController implements BrokerUIApi {
         try {
             return new ResponseEntity<>(objectMapper.writeValueAsString(brokers), HttpStatus.OK);
         } catch (IOException e) {
-            logger.error(e.getMessage());
+            log.error(e.getMessage(), e);
         }
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -186,7 +181,7 @@ public class BrokerUIController implements BrokerUIApi {
                 }
                 return ResponseEntity.ok(jsonObject.toJSONString());
             } catch (IOException e) {
-                logger.error(e.getMessage(), e);
+                log.error(e.getMessage(), e);
                 jsonObject.put("success", false);
                 return ResponseEntity.ok(jsonObject.toJSONString());
             }
@@ -219,7 +214,7 @@ public class BrokerUIController implements BrokerUIApi {
                 }
                 return ResponseEntity.ok(jsonObject.toJSONString());
             } catch (IOException e) {
-                logger.error(e.getMessage(), e);
+                log.error(e.getMessage(), e);
                 jsonObject.put("success", false);
                 return ResponseEntity.ok(jsonObject.toJSONString());
             }
@@ -247,7 +242,7 @@ public class BrokerUIController implements BrokerUIApi {
                 if(!response.contains("RejectionMessage")) brokerService.sentSelfDescToBroker(brokerUri);
                 return ResponseEntity.ok(jsonObject.toJSONString());
             } catch (IOException e) {
-                logger.error(e.getMessage(), e);
+                log.error(e.getMessage(), e);
                 return ResponseEntity.badRequest().body("Could not connect to the Connector!");
             }
         } else {

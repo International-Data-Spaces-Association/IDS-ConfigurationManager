@@ -30,7 +30,7 @@ public class EndpointConverter implements AttributeConverter<Endpoint, String> {
         try {
             return serializer.serialize(endpoint);
         } catch (IOException e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
             return null;
         }
     }
@@ -46,7 +46,7 @@ public class EndpointConverter implements AttributeConverter<Endpoint, String> {
         try {
             return serializer.deserialize(s, Endpoint.class);
         } catch (IOException e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
             return null;
         }
     }

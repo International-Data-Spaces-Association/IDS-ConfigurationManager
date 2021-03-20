@@ -1,5 +1,6 @@
 package de.fraunhofer.isst.configmanager.util;
 
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 
 import javax.net.ssl.*;
@@ -7,6 +8,7 @@ import javax.net.ssl.*;
 /**
  * Utility Class for generating an OkHttpClient which does not validate Certificate Chains.
  */
+@Slf4j
 public class OkHttpUtils {
 
     /**
@@ -50,6 +52,7 @@ public class OkHttpUtils {
 
             return builder.build();
         } catch (Exception e) {
+            log.error(e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }

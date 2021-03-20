@@ -44,6 +44,7 @@ public class AppUIController implements AppUIApi {
             try {
                 return ResponseEntity.ok(objectMapper.writeValueAsString(customAppList));
             } catch (JsonProcessingException e) {
+                log.error(e.getMessage(), e);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problems while parsing to json");
             }
         } else {
@@ -67,6 +68,7 @@ public class AppUIController implements AppUIApi {
             try {
                 return ResponseEntity.ok(objectMapper.writeValueAsString(customApp));
             } catch (JsonProcessingException e) {
+                log.error(e.getMessage(), e);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problems while parsing to json");
             }
         } else {

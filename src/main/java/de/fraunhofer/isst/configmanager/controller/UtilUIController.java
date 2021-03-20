@@ -24,9 +24,6 @@ import java.io.IOException;
 @Tag(name = "Utility", description = "Endpoints for other requirements")
 @Slf4j
 public class UtilUIController {
-
-    private final static Logger LOGGER = LoggerFactory.getLogger(UtilUIController.class);
-
     private final UtilService utilService;
     private final DefaultConnectorClient client;
 
@@ -72,7 +69,7 @@ public class UtilUIController {
         try {
             pattern = client.getPolicyPattern(policy);
         } catch (IOException e) {
-            LOGGER.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             return ResponseEntity.badRequest().body("Failed to determine policy pattern at the client");
         }
         if (pattern != null) {

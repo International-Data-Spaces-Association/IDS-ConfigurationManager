@@ -7,8 +7,6 @@ import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.configmanagement.service.EndpointService;
-import de.fraunhofer.isst.configmanager.configmanagement.service.RepresentationEndpointService;
-import de.fraunhofer.isst.configmanager.configmanagement.service.UtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONArray;
@@ -37,8 +35,6 @@ public class EndpointUIController implements EndpointUIApi {
     private final Serializer serializer;
     private final ObjectMapper objectMapper;
     private final ConfigModelService configModelService;
-    private final UtilService utilService;
-    private final RepresentationEndpointService representationEndpointService;
     private final EndpointService endpointService;
     private final DefaultConnectorClient client;
 
@@ -46,15 +42,11 @@ public class EndpointUIController implements EndpointUIApi {
     public EndpointUIController(Serializer serializer,
                                 ObjectMapper objectMapper,
                                 ConfigModelService configModelService,
-                                UtilService utilService,
-                                RepresentationEndpointService representationEndpointService,
                                 EndpointService endpointService,
                                 DefaultConnectorClient client) {
         this.serializer = serializer;
         this.objectMapper = objectMapper;
         this.configModelService = configModelService;
-        this.utilService = utilService;
-        this.representationEndpointService = representationEndpointService;
         this.endpointService = endpointService;
         this.client = client;
     }
@@ -96,6 +88,7 @@ public class EndpointUIController implements EndpointUIApi {
         try {
             return ResponseEntity.ok(serializer.serialize(endpoints));
         } catch (IOException e) {
+            log.error(e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problems while serializing");
         }
     }
@@ -115,6 +108,7 @@ public class EndpointUIController implements EndpointUIApi {
             try {
                 return ResponseEntity.ok(serializer.serialize(genericEndpoint));
             } catch (IOException e) {
+                log.error(e.getMessage(), e);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problems while serializing");
             }
         } else {
@@ -181,6 +175,7 @@ public class EndpointUIController implements EndpointUIApi {
             try {
                 return ResponseEntity.ok(serializer.serialize(connector.getHasEndpoint()));
             } catch (IOException e) {
+                log.error(e.getMessage(), e);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problems while serializing");
             }
         }
@@ -210,6 +205,7 @@ public class EndpointUIController implements EndpointUIApi {
                 try {
                     return ResponseEntity.ok(serializer.serialize(connectorEndpoint));
                 } catch (IOException e) {
+                    log.error(e.getMessage(), e);
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problems while serializing");
                 }
             }
@@ -240,7 +236,7 @@ public class EndpointUIController implements EndpointUIApi {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
             return ResponseEntity.badRequest().body("Could not determine connector endpoints from client");
         }
     }

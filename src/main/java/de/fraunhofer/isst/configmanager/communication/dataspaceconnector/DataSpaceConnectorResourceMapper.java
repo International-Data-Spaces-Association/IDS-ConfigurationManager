@@ -106,7 +106,7 @@ public class DataSpaceConnectorResourceMapper {
     public ResourceMetadata getMetadata(Resource resource) throws IOException {
         var metadata = new ResourceMetadata();
         metadata.setDescription(resource.getDescription().stream().map(RdfResource::getValue).collect(Collectors.joining(";")));
-        metadata.setKeywords(resource.getKeyword().stream().map(typedLiteral -> typedLiteral.getValue()).collect(Collectors.toList()));
+        metadata.setKeywords(resource.getKeyword().stream().map(RdfResource::getValue).collect(Collectors.toList()));
         metadata.setLicense(resource.getStandardLicense());
         metadata.setOwner(resource.getPublisher());
         metadata.setVersion(resource.getVersion());
@@ -149,35 +149,6 @@ public class DataSpaceConnectorResourceMapper {
     }
 
     /**
-     * Map an IAIS Infomodel Representation to a representation object of Dataspace Connector and add some parameter
-     * via call by value.
-     *
-     * @param representation Representation object in which the endpoint data shall be added
-     * @param accessUrl      accessUrl for an endpoint
-     * @param username       username for an endpoint
-     * @param password       password for an endpoint
-     * @return resource representation
-     */
-    public ResourceRepresentation mapCustomRepresentation(Representation representation, String accessUrl,
-                                                          String username, String password) {
-        var resourceRepresentation = new ResourceRepresentation();
-        int byteSize = 0;
-        if (representation.getInstance() != null && !representation.getInstance().isEmpty()) {
-            var artifact = (Artifact) representation.getInstance().get(0);
-            byteSize = artifact.getByteSize().intValue();
-        }
-        resourceRepresentation.setByteSize(byteSize);
-        var backendSource = new BackendSource();
-        backendSource.setPassword(password);
-        backendSource.setUrl(URI.create(accessUrl));
-        backendSource.setUsername(username);
-        backendSource.setType(resolveSourceType(representation));
-        resourceRepresentation.setSource(backendSource);
-        resourceRepresentation.setType(representation.getMediaType().getFilenameExtension());
-        return resourceRepresentation;
-    }
-
-    /**
      * The method resolves the source type of a representation.
      *
      * @param representation
@@ -200,31 +171,12 @@ public class DataSpaceConnectorResourceMapper {
      * The method deletes the ResourceIDPair object from the database.
      *
      * @param id of the resource
-     * @return true, if ResourceIDPair object is deleted.
      */
-    public boolean deleteResourceIDPair(URI id) {
+    public void deleteResourceIDPair(URI id) {
         var pairs = resourceIDPairRepository.findByUri(id);
-        if (pairs.isEmpty()) return false;
+        if (pairs.isEmpty()) return;
         pairs.forEach(pair -> resourceIDPairRepository.delete(pair));
         resourceIDPairRepository.flush();
-        return true;
-    }
-
-    /**
-     * The method returns the uuid of a resource based on the uri.
-     *
-     * @param id of the resource
-     * @return uuid
-     */
-    private UUID getResourceID(URI id) {
-        UUID uuid;
-        var pairs = resourceIDPairRepository.findByUri(id);
-        if (pairs.isEmpty()) {
-            return null;
-        } else {
-            uuid = pairs.get(0).getUuid();
-        }
-        return uuid;
     }
 
     /**

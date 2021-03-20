@@ -10,14 +10,13 @@ import de.fraunhofer.isst.configmanager.configmanagement.service.EndpointService
 import de.fraunhofer.isst.configmanager.util.OkHttpUtils;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -73,7 +72,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         builder.post(RequestBody.create(brokerURI, okhttp3.MediaType.parse("text/html")));
         builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername, dataSpaceConnectorApiPassword));
         var request = builder.build();
-        return client.newCall(request).execute().body().string();
+        return Objects.requireNonNull(client.newCall(request).execute().body()).string();
     }
 
     @Override
@@ -90,7 +89,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         builder.post(RequestBody.create(brokerURI, okhttp3.MediaType.parse("text/html")));
         builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername, dataSpaceConnectorApiPassword));
         var request = builder.build();
-        return client.newCall(request).execute().body().string();
+        return Objects.requireNonNull(client.newCall(request).execute().body()).string();
     }
 
     @Override
@@ -106,7 +105,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
             log.warn("---- Could not get ConfigurationModel from {} with user {}. Response: {} - {}",
                     connectorUrl, dataSpaceConnectorApiUsername, response.code(), response.message());
         }
-        var body = response.body().string();
+        var body = Objects.requireNonNull(response.body()).string();
         return SERIALIZER.deserialize(body, ConfigurationModel.class);
     }
 
@@ -123,9 +122,8 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
             log.warn("---- Could not get BaseConnector");
         }
 
-        var body = response.body().string();
-        var deserialized = SERIALIZER.deserialize(body, BaseConnector.class);
-        return deserialized;
+        var body = Objects.requireNonNull(response.body()).string();
+        return SERIALIZER.deserialize(body, BaseConnector.class);
     }
 
     @Override
@@ -155,7 +153,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         if (!response.isSuccessful()) {
             log.warn("---- Could not get BaseConnector");
         }
-        var body = response.body().string();
+        var body = Objects.requireNonNull(response.body()).string();
         var mapper = new ObjectMapper();
         return mapper.readTree(body);
     }
@@ -174,7 +172,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
             log.warn(String.format("---- Updating ConfigurationModel at %s failed!", dataSpaceConnectorHost));
             return false;
         }
-        var body = response.body().string();
+        var body = Objects.requireNonNull(response.body()).string();
         return true;
     }
 
@@ -200,7 +198,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         if (!response.isSuccessful()) {
             log.warn(String.format("---- Could not get BaseConnector from %s!", dataSpaceConnectorHost));
         }
-        var body = response.body().string();
+        var body = Objects.requireNonNull(response.body()).string();
         return SERIALIZER.deserialize(body, BaseConnector.class);
     }
 
@@ -229,8 +227,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         if (!response.isSuccessful()) {
             log.warn(String.format("---- Registering Resource at %s failed!", dataSpaceConnectorHost));
         }
-        var body = response.body().string();
-        return body;
+        return Objects.requireNonNull(response.body()).string();
     }
 
     @Override
@@ -247,8 +244,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         if (!response.isSuccessful()) {
             log.warn(String.format("---- Deleting Resource at %s failed!", dataSpaceConnectorHost));
         }
-        var body = response.body().string();
-        return body;
+        return Objects.requireNonNull(response.body()).string();
     }
 
     @Override
@@ -272,8 +268,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         if (!response.isSuccessful()) {
             log.warn(String.format("---- Updating Resource at Broker %s failed!", brokerUri));
         }
-        var body = response.body().string();
-        return body;
+        return Objects.requireNonNull(response.body()).string();
     }
 
     @Override
@@ -296,8 +291,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         if (!response.isSuccessful()) {
             log.warn(String.format("---- Deleting Resource at Broker %s failed!", brokerUri));
         }
-        var body = response.body().string();
-        return body;
+        return Objects.requireNonNull(response.body()).string();
     }
 
     @Override
@@ -315,8 +309,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         if (!response.isSuccessful()) {
             log.warn(String.format("---- Deleting Representation at %s failed!", dataSpaceConnectorHost));
         }
-        var body = response.body().string();
-        return body;
+        return Objects.requireNonNull(response.body()).string();
     }
 
     @Override
@@ -344,7 +337,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         if (!response.isSuccessful()) {
             log.warn(String.format("---- Registering Representation at %s failed!", dataSpaceConnectorHost));
         }
-        var body = response.body().string();
+        var body = Objects.requireNonNull(response.body()).string();
         var uuid = dataSpaceConnectorResourceMapper.createFromResponse(body, representation.getId());
         if (uuid == null) {
             log.warn("---- Could not parse ID from response!");
@@ -374,7 +367,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         if (!response.isSuccessful()) {
             log.warn(String.format("---- Updating Representation at %s failed!", dataSpaceConnectorHost));
         }
-        var body = response.body().string();
+        var body = Objects.requireNonNull(response.body()).string();
         log.info("---- Response: " + body);
         return body;
     }
@@ -395,7 +388,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         if (!response.isSuccessful()) {
             log.warn(String.format("---- Updating custom resource Representation at %s failed!", dataSpaceConnectorHost));
         }
-        var body = response.body().string();
+        var body = Objects.requireNonNull(response.body()).string();
         log.info("---- Response: " + body);
         return body;
     }
@@ -414,7 +407,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         if (!response.isSuccessful()) {
             log.warn(String.format("---- Updating Contract at %s failed!", dataSpaceConnectorHost));
         }
-        var body = response.body().string();
+        var body = Objects.requireNonNull(response.body()).string();
         log.info("---- Response: " + body);
         return body;
     }
@@ -429,9 +422,9 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         var request = builder.build();
         var response = client.newCall(request).execute();
         if (!response.isSuccessful()) {
-            log.warn(String.format("---- Pattern for policy could not be determined"));
+            log.warn("---- Pattern for policy could not be determined");
         }
-        var body = response.body().string();
+        var body = Objects.requireNonNull(response.body()).string();
         log.info("---- Response: " + body);
         return body;
     }
@@ -453,7 +446,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         if (!response.isSuccessful()) {
             log.warn(String.format("---- Updating Resource at %s failed!", dataSpaceConnectorHost));
         }
-        var body = response.body().string();
+        var body = Objects.requireNonNull(response.body()).string();
         log.info("---- Response: " + body);
         return body;
     }

@@ -145,7 +145,8 @@ public class AppRouteUIController implements AppRouteApi {
                 log.info("---- Returning app route");
                 return ResponseEntity.ok(appRouteString);
             } catch (IOException e) {
-                log.error("Problem while serializing app route", e);
+                log.error("Problem while serializing app route!");
+                log.error(e.getMessage(), e);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not serialize app route to jsonld");
             }
         } else {
@@ -174,7 +175,8 @@ public class AppRouteUIController implements AppRouteApi {
                 return ResponseEntity.ok(serializer.serialize(appRouteList));
             }
         } catch (IOException e) {
-            log.error("Problem while serializing app routes list", e);
+            log.error("Problem while serializing app routes list!");
+            log.error(e.getMessage(), e);
             return ResponseEntity.badRequest().body("Problems while serializing");
         }
     }
@@ -254,7 +256,8 @@ public class AppRouteUIController implements AppRouteApi {
                 log.info("Route step found");
                 return ResponseEntity.ok(routeStepString);
             } catch (IOException e) {
-                log.error("Problem while serializing route step", e);
+                log.error("Problem while serializing route step!");
+                log.error(e.getMessage(), e);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not serialize the route step");
             }
         } else {
@@ -281,7 +284,8 @@ public class AppRouteUIController implements AppRouteApi {
                 log.info("Returning endpoint information");
                 return ResponseEntity.ok(endpointInfo);
             } catch (JsonProcessingException e) {
-                log.error("Could not parse endpoint Information to JSON", e);
+                log.error("Could not parse endpoint Information to JSON!");
+                log.error(e.getMessage(), e);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not parse endpoint information to JSON");
             }
         } else {
@@ -304,7 +308,8 @@ public class AppRouteUIController implements AppRouteApi {
                 log.info("Returning all endpoint information");
                 return ResponseEntity.ok(endpointInfos);
             } catch (JsonProcessingException e) {
-                log.error("Could not parse endpoint informations to JSON", e);
+                log.error("Could not parse endpoint informations to JSON!");
+                log.error(e.getMessage(), e);
                 return ResponseEntity.badRequest().body("Could not parse endpoint information to JSON");
             }
         }
@@ -350,7 +355,8 @@ public class AppRouteUIController implements AppRouteApi {
             log.info("Returning the deploy route method");
             return ResponseEntity.ok(objectMapper.writeValueAsString(routeDeployMethods));
         } catch (JsonProcessingException e) {
-            log.error("Could not get deploy method from the app routes", e);
+            log.error("Could not get deploy method from the app routes!");
+            log.error(e.getMessage(), e);
             return ResponseEntity.badRequest().body("Could not get deploy method from the app routes");
         }
     }

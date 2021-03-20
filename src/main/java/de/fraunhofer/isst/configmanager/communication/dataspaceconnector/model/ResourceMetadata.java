@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -37,6 +38,7 @@ import java.util.List;
                 "}\n"
 )
 @Data
+@Slf4j
 public class ResourceMetadata implements Serializable {
     @JsonProperty("title")
     private String title;
@@ -83,7 +85,7 @@ public class ResourceMetadata implements Serializable {
         try {
             jsonString = mapper.writeValueAsString(this);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
         return jsonString;
     }

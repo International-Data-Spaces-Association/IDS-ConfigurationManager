@@ -54,6 +54,7 @@ public class ResourceService {
                     .findFirst()
                     .orElse(null);
         } catch (Exception e) {
+            log.error(e.getMessage(), e);
             return null;
         }
 

@@ -8,8 +8,6 @@ import de.fraunhofer.isst.configmanager.configmanagement.service.ResourceService
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,9 +26,6 @@ import java.net.URI;
 @Slf4j
 @Tag(name = "Resource contracts Management", description = "Endpoints for managing the contracts of a resource")
 public class ResourceContractUIController implements ResourceContractApi {
-
-    private final static Logger logger = LoggerFactory.getLogger(ResourceContractUIController.class);
-
     private final ConfigModelService configModelService;
     private final ResourceService resourceService;
     private final Serializer serializer;
@@ -68,7 +63,7 @@ public class ResourceContractUIController implements ResourceContractApi {
             try {
                 return ResponseEntity.ok(serializer.serialize(contractOffer));
             } catch (IOException e) {
-                logger.error(e.getMessage());
+                log.error(e.getMessage(), e);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problems while parsing serializing " +
                         "the contract offer");
             }
@@ -93,7 +88,7 @@ public class ResourceContractUIController implements ResourceContractApi {
             try {
                 contractOffer = serializer.deserialize(contractJson, ContractOffer.class);
             } catch (IOException e) {
-                logger.error(e.getMessage());
+                log.error(e.getMessage(), e);
                 return ResponseEntity.badRequest().body("Problems while deserializing the contract");
             }
         }
@@ -109,7 +104,7 @@ public class ResourceContractUIController implements ResourceContractApi {
                 jsonObject.put("connectorResponse", response);
                 return ResponseEntity.ok(jsonObject.toJSONString());
             } catch (IOException e) {
-                logger.error(e.getMessage());
+                log.error(e.getMessage(), e);
                 jsonObject.put("message", "Problems while updating the contract at the connector");
                 return ResponseEntity.badRequest().body(jsonObject.toJSONString());
             }

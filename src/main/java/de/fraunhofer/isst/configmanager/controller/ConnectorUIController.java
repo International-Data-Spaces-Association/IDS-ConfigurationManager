@@ -12,8 +12,6 @@ import de.fraunhofer.isst.configmanager.util.Utility;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,9 +29,6 @@ import java.io.IOException;
 @Slf4j
 @Tag(name = "Connector Management", description = "Endpoints for managing the connectors in the configuration manager")
 public class ConnectorUIController implements ConnectorUIApi {
-
-    private final static Logger logger = LoggerFactory.getLogger(ConnectorUIController.class);
-
     private final ConnectorService connectorService;
     private final ConfigModelService configModelService;
     private final Serializer serializer;
@@ -64,7 +59,7 @@ public class ConnectorUIController implements ConnectorUIApi {
             try {
                 return new ResponseEntity<>(serializer.serialize(connector), HttpStatus.OK);
             } catch (IOException e) {
-                logger.error(e.getMessage());
+                log.error(e.getMessage(), e);
             }
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -167,7 +162,7 @@ public class ConnectorUIController implements ConnectorUIApi {
                     return ResponseEntity.badRequest().body(jsonObject.toJSONString());
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error(e.getMessage(), e);
                 jsonObject.put("connectorResponse", "Failed to send the new configuration to the client");
                 return ResponseEntity.badRequest().body(jsonObject.toJSONString());
             }
