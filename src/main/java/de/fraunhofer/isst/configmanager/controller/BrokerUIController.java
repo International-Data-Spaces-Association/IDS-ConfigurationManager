@@ -29,9 +29,9 @@ import java.util.List;
 @Tag(name = "Broker Management", description = "Endpoints for managing the brokers in the configuration manager")
 @Slf4j
 public class BrokerUIController implements BrokerUIApi {
-    private final BrokerService brokerService;
-    private final DefaultConnectorClient client;
-    private final ObjectMapper objectMapper;
+    private transient final BrokerService brokerService;
+    private transient final DefaultConnectorClient client;
+    private transient final ObjectMapper objectMapper;
 
     @Autowired
     public BrokerUIController(BrokerService brokerService,

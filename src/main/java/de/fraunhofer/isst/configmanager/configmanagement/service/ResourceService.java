@@ -24,10 +24,10 @@ import java.util.List;
 @Slf4j
 public class ResourceService {
 
-    private final ConfigModelService configModelService;
-    private final EndpointService endpointService;
-    private final EndpointInformationRepository endpointInformationRepository;
-    private final DefaultConnectorClient client;
+    private transient final ConfigModelService configModelService;
+    private transient final EndpointService endpointService;
+    private transient final EndpointInformationRepository endpointInformationRepository;
+    private transient final DefaultConnectorClient client;
 
     @Autowired
     public ResourceService(ConfigModelService configModelService, EndpointService endpointService,

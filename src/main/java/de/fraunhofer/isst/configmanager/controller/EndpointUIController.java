@@ -32,11 +32,11 @@ import java.util.List;
 @Tag(name = "Endpoints Management", description = "Different endpoint types can be managed here")
 public class EndpointUIController implements EndpointUIApi {
 
-    private final Serializer serializer;
-    private final ObjectMapper objectMapper;
-    private final ConfigModelService configModelService;
-    private final EndpointService endpointService;
-    private final DefaultConnectorClient client;
+    private transient final Serializer serializer;
+    private transient final ObjectMapper objectMapper;
+    private transient final ConfigModelService configModelService;
+    private transient final EndpointService endpointService;
+    private transient final DefaultConnectorClient client;
 
     @Autowired
     public EndpointUIController(Serializer serializer,

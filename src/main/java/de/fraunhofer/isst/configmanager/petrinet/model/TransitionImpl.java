@@ -13,13 +13,13 @@ import java.util.Set;
  */
 public class TransitionImpl implements Transition {
 
-    private URI id;
+    private transient URI id;
 
     @JsonIgnore
-    private Set<Arc> sourceArcs;
+    private transient Set<Arc> sourceArcs;
 
     @JsonIgnore
-    private Set<Arc> targetArcs;
+    private transient Set<Arc> targetArcs;
 
     public TransitionImpl(URI id){
         this.id = id;

@@ -14,7 +14,7 @@ import java.io.IOException;
 @Slf4j
 @Converter
 public class EndpointConverter implements AttributeConverter<Endpoint, String> {
-    private final Serializer serializer = new Serializer();
+    private transient final Serializer serializer = new Serializer();
 
     /**
      * This method serializes the endpoint, which is given in the parameter to a string, to be able to persist it

@@ -19,9 +19,9 @@ public class EndpointInformation {
 
     private String endpointId;
 
-    private int xCoordinate;
+    private transient int xCoordinate;
 
-    private int yCoordinate;
+    private transient int yCoordinate;
 
     public EndpointInformation() {
     }

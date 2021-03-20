@@ -35,20 +35,20 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
     private static final Serializer SERIALIZER = new Serializer();
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    private final OkHttpClient client = OkHttpUtils.getUnsafeOkHttpClient();
-    private final DataSpaceConnectorResourceMapper dataSpaceConnectorResourceMapper;
+    private transient final OkHttpClient client = OkHttpUtils.getUnsafeOkHttpClient();
+    private transient final DataSpaceConnectorResourceMapper dataSpaceConnectorResourceMapper;
 
     @Value("${dataspace.connector.host}")
-    private String dataSpaceConnectorHost;
+    private transient String dataSpaceConnectorHost;
 
     @Value("${dataspace.connector.api.username}")
-    private String dataSpaceConnectorApiUsername;
+    private transient String dataSpaceConnectorApiUsername;
 
     @Value("${dataspace.connector.api.password}")
-    private String dataSpaceConnectorApiPassword;
+    private transient String dataSpaceConnectorApiPassword;
 
     @Value("${dataspace.connector.port}")
-    private Integer dataSpaceConnectorPort;
+    private transient Integer dataSpaceConnectorPort;
 
     public DataspaceConnectorClient(DataSpaceConnectorResourceMapper dataSpaceConnectorResourceMapper) {
         this.dataSpaceConnectorResourceMapper = dataSpaceConnectorResourceMapper;

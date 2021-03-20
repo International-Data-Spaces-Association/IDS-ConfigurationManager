@@ -22,8 +22,8 @@ public class EndpointService {
 
     private final static Logger logger = LoggerFactory.getLogger(EndpointService.class);
 
-    private final CustomGenericEndpointRepository customGenericEndpointRepository;
-    private CustomGenericEndpointList customGenericEndpointList;
+    private transient final CustomGenericEndpointRepository customGenericEndpointRepository;
+    private transient CustomGenericEndpointList customGenericEndpointList;
 
     @Autowired
     public EndpointService(CustomGenericEndpointRepository customGenericEndpointRepository) {

@@ -30,11 +30,11 @@ import java.net.URI;
 @RequestMapping("/api/ui")
 @Tag(name = "Resource representation Management", description = "Endpoints for managing the representation of a resource")
 public class ResourceRepresentationUIController implements ResourceRepresentationApi {
-    private final ConfigModelService configModelService;
-    private final RepresentationEndpointService representationEndpointService;
-    private final ResourceService resourceService;
-    private final DefaultConnectorClient client;
-    private final Serializer serializer;
+    private transient final ConfigModelService configModelService;
+    private transient final RepresentationEndpointService representationEndpointService;
+    private transient final ResourceService resourceService;
+    private transient final DefaultConnectorClient client;
+    private transient final Serializer serializer;
 
     @Autowired
     public ResourceRepresentationUIController(ConfigModelService configModelService,

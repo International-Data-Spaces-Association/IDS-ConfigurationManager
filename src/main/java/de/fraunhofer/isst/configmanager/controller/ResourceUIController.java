@@ -27,9 +27,9 @@ import java.util.ArrayList;
 @Slf4j
 @Tag(name = "Resource Management", description = "Endpoints for managing the resource in the configuration manager")
 public class ResourceUIController implements ResourceUIApi {
-    private final ResourceService resourceService;
-    private final DefaultConnectorClient client;
-    private final Serializer serializer;
+    private transient final ResourceService resourceService;
+    private transient final DefaultConnectorClient client;
+    private transient final Serializer serializer;
 
     @Autowired
     public ResourceUIController(ResourceService resourceService,

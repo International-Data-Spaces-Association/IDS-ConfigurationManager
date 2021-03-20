@@ -28,9 +28,9 @@ import java.util.ArrayList;
 @Slf4j
 @Tag(name = "ConfigModel Management", description = "Endpoints for managing the configuration model")
 public class ConfigModelController implements ConfigModelApi {
-    private final Serializer serializer;
-    private final ConfigModelService configModelService;
-    private final DefaultConnectorClient client;
+    private transient final Serializer serializer;
+    private transient final ConfigModelService configModelService;
+    private transient final DefaultConnectorClient client;
 
     @Autowired
     public ConfigModelController(Serializer serializer, ConfigModelService configModelService,

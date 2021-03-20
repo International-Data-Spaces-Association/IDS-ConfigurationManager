@@ -25,7 +25,7 @@ import java.util.Objects;
 public class AppService {
 
     private final static Logger logger = LoggerFactory.getLogger(AppService.class);
-    private final CustomAppRepository customAppRepository;
+    private transient final CustomAppRepository customAppRepository;
 
     @Autowired
     public AppService(CustomAppRepository customAppRepository) throws URISyntaxException {

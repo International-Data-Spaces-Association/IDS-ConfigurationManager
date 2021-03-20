@@ -14,7 +14,7 @@ import java.io.IOException;
 @Slf4j
 @Converter
 public class ConfigModelConverter implements AttributeConverter<ConfigurationModel, String> {
-    private final Serializer serializer = new Serializer();
+    private transient final Serializer serializer = new Serializer();
 
     /**
      * Converter method converts the value stored in the entity attribute into the data representation

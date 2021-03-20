@@ -26,13 +26,13 @@ public class AppRouteService {
 
     private final static Logger logger = LoggerFactory.getLogger(AppRouteService.class);
 
-    private final ConfigModelService configModelService;
-    private final EndpointService endpointService;
-    private final ResourceService resourceService;
+    private transient final ConfigModelService configModelService;
+    private transient final EndpointService endpointService;
+    private transient final ResourceService resourceService;
 
-    private final RouteDeployMethodRepository routeDeployMethodRepository;
-    private final EndpointInformationRepository endpointInformationRepository;
-    private final CustomAppRepository customAppRepository;
+    private transient final RouteDeployMethodRepository routeDeployMethodRepository;
+    private transient final EndpointInformationRepository endpointInformationRepository;
+    private transient final CustomAppRepository customAppRepository;
 
     @Autowired
     public AppRouteService(ConfigModelService configModelService,

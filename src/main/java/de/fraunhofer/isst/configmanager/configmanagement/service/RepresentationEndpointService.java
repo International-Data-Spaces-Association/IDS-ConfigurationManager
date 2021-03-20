@@ -14,7 +14,7 @@ import java.net.URI;
 @Service
 public class RepresentationEndpointService {
 
-    private final RepresentationEndpointRepository representationEndpointRepository;
+    private transient final RepresentationEndpointRepository representationEndpointRepository;
 
     @Autowired
     public RepresentationEndpointService(RepresentationEndpointRepository representationEndpointRepository) {

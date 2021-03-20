@@ -26,10 +26,10 @@ import java.net.URI;
 @Slf4j
 @Tag(name = "Resource contracts Management", description = "Endpoints for managing the contracts of a resource")
 public class ResourceContractUIController implements ResourceContractApi {
-    private final ConfigModelService configModelService;
-    private final ResourceService resourceService;
-    private final Serializer serializer;
-    private final DefaultConnectorClient client;
+    private transient final ConfigModelService configModelService;
+    private transient final ResourceService resourceService;
+    private transient final Serializer serializer;
+    private transient final DefaultConnectorClient client;
 
     @Autowired
     public ResourceContractUIController(ConfigModelService configModelService,

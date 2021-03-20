@@ -22,8 +22,8 @@ import java.io.IOException;
 @Tag(name = "Utility", description = "Endpoints for other requirements")
 @Slf4j
 public class UtilUIController {
-    private final UtilService utilService;
-    private final DefaultConnectorClient client;
+    private transient final UtilService utilService;
+    private transient final DefaultConnectorClient client;
 
     @Autowired
     public UtilUIController(UtilService utilService, DefaultConnectorClient client) {

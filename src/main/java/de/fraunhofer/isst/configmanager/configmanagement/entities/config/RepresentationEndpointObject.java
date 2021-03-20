@@ -17,7 +17,7 @@ public class RepresentationEndpointObject {
     private long id;
 
     @ElementCollection
-    private Map<URI, URI> map = new HashMap<>();
+    private transient Map<URI, URI> map = new HashMap<>();
 
     public RepresentationEndpointObject() {
     }

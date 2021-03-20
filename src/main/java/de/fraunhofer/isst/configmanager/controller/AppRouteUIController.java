@@ -39,11 +39,11 @@ import java.util.List;
 @Slf4j
 public class AppRouteUIController implements AppRouteApi {
 
-    private final ConfigModelService configModelService;
-    private final AppRouteService appRouteService;
-    private final Serializer serializer;
-    private final RouteDeployMethodRepository routeDeployMethodRepository;
-    private final ObjectMapper objectMapper;
+    private transient final ConfigModelService configModelService;
+    private transient final AppRouteService appRouteService;
+    private transient final Serializer serializer;
+    private transient final RouteDeployMethodRepository routeDeployMethodRepository;
+    private transient final ObjectMapper objectMapper;
 
     @Autowired
     public AppRouteUIController(ConfigModelService configModelService, AppRouteService appRouteService,

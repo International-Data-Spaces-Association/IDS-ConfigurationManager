@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 public class BrokerService {
 
     private final static Logger logger = LoggerFactory.getLogger(BrokerService.class);
-    private final CustomBrokerRepository customBrokerRepository;
-    private final ResourceService resourceService;
+    private transient final CustomBrokerRepository customBrokerRepository;
+    private transient final ResourceService resourceService;
 
     @Autowired
     public BrokerService(CustomBrokerRepository customBrokerRepository, ResourceService resourceService) {

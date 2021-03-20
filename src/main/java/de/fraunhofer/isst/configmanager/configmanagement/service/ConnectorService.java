@@ -20,7 +20,7 @@ import java.util.List;
 @Slf4j
 public class ConnectorService {
 
-    private final ConfigModelService configModelService;
+    private transient final ConfigModelService configModelService;
 
     @Autowired
     public ConnectorService(ConfigModelService configModelService, ConfigModelRepository configModelRepository) {

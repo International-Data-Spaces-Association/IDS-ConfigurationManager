@@ -29,10 +29,10 @@ import java.io.IOException;
 @Slf4j
 @Tag(name = "Connector Management", description = "Endpoints for managing the connectors in the configuration manager")
 public class ConnectorUIController implements ConnectorUIApi {
-    private final ConnectorService connectorService;
-    private final ConfigModelService configModelService;
-    private final Serializer serializer;
-    private final DefaultConnectorClient client;
+    private transient final ConnectorService connectorService;
+    private transient final ConfigModelService configModelService;
+    private transient final Serializer serializer;
+    private transient final DefaultConnectorClient client;
 
     @Autowired
     public ConnectorUIController(ConnectorService connectorService,

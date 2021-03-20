@@ -22,7 +22,7 @@ import java.util.List;
 @Slf4j
 public class ConfigModelService {
 
-    private final ConfigModelRepository configModelRepository;
+    private transient final ConfigModelRepository configModelRepository;
     @Getter
     private ConfigModelObject configModelObject;
 

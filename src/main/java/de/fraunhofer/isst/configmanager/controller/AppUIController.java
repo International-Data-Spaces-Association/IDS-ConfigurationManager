@@ -20,8 +20,8 @@ import java.util.List;
 @Slf4j
 public class AppUIController implements AppUIApi {
 
-    private final AppService appService;
-    private final ObjectMapper objectMapper;
+    private transient final AppService appService;
+    private transient final ObjectMapper objectMapper;
 
     @Autowired
     public AppUIController(AppService appService, ObjectMapper objectMapper) {

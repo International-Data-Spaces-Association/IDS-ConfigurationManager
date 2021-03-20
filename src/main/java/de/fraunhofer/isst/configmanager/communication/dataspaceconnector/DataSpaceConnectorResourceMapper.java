@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 public class DataSpaceConnectorResourceMapper {
 
     private static final Serializer SERIALIZER = new Serializer();
-    private final EndpointService endpointService;
+    private transient final EndpointService endpointService;
 
     /**
      * Pattern is created, which has the following structure:
@@ -38,7 +38,7 @@ public class DataSpaceConnectorResourceMapper {
      */
     private static final Pattern UUID_REGEX = Pattern.compile("[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}");
 
-    private final ResourceIDPairRepository resourceIDPairRepository;
+    private transient final ResourceIDPairRepository resourceIDPairRepository;
 
 
     public DataSpaceConnectorResourceMapper(ResourceIDPairRepository resourceIDPairRepository,
