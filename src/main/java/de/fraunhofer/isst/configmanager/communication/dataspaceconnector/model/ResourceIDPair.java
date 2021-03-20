@@ -11,7 +11,8 @@ import java.net.URI;
 import java.util.UUID;
 
 /**
- * The class helps to store the resource uri and the uuid in the object. This is needed because the implementation
+ * The class helps to store the resource uri and the uuid in the object. This is needed because
+ * the implementation
  * refers to the dataspace connector and there the uuid is used for the unique identification.
  */
 @Entity
@@ -19,11 +20,9 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 public class ResourceIDPair {
-
     @Id
     private UUID uuid;
 
     @Column(unique = true)
     private URI uri;
-
 }
