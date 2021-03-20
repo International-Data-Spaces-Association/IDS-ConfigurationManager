@@ -40,7 +40,7 @@ public class AppUIController implements AppUIApi {
 
         List<CustomApp> customAppList = appService.getApps();
 
-        if (customAppList.size() != 0) {
+        if (!customAppList.isEmpty()) {
             try {
                 return ResponseEntity.ok(objectMapper.writeValueAsString(customAppList));
             } catch (JsonProcessingException e) {

@@ -23,44 +23,34 @@ import java.util.List;
 public class ConfigModelService {
 
     private final ConfigModelRepository configModelRepository;
-    private final DefaultConnectorClient client;
     @Getter
     private ConfigModelObject configModelObject;
-    private boolean startUp = true;
 
     @Autowired
     public ConfigModelService(ConfigModelRepository configModelRepository,
                               DefaultConnectorClient client) {
         this.configModelRepository = configModelRepository;
-        this.client = client;
-        if (startUp) {
-            startUp = false; //initially load conifguration from connector at ConfigManagerStartUp
-            log.warn("---- Initial StartUp! Trying to get current Configuration from Connector!");
-            try {
-                updateConfigModel(client.getConfiguration());
-//                getOfferedResources();
-                log.info("---- Received configuration from running Connector!");
-            } catch (IOException e) {
-                log.warn("---- Could not get Configmodel from Connector! Using old Config if available! " +
-                        "Error establishing connection to connector: " + e.getMessage());
+        log.warn("---- Initial StartUp! Trying to get current Configuration from Connector!");
+        try {
+            updateConfigModel(client.getConfiguration());
+            log.info("---- Received configuration from running Connector!");
+        } catch (IOException e) {
+            log.warn("---- Could not get Configmodel from Connector! Using old Config if available! " +
+                    "Error establishing connection to connector: " + e.getMessage());
 
-                if (configModelRepository.findAll().size() > 0) {
-                    configModelObject = configModelRepository.findAll().get(0);
-                } else {
-                    log.warn("---- Connector Config not reachable and no old config available! Using new placeholder Config.");
-                    createConfigModel(
-                            "NO_LOGGING",
-                            "TEST_DEPLOYMENT",
-                            "http://truststore",
-                            "password",
-                            "http://keystore",
-                            "password"
-                    );
-                }
+            if (configModelRepository.findAll().size() > 0) {
+                configModelObject = configModelRepository.findAll().get(0);
+            } else {
+                log.warn("---- Connector Config not reachable and no old config available! Using new placeholder Config.");
+                createConfigModel(
+                        "NO_LOGGING",
+                        "TEST_DEPLOYMENT",
+                        "http://truststore",
+                        "password",
+                        "http://keystore",
+                        "password"
+                );
             }
-        } else {
-            log.info("---- No StartUp! Reloading old configuration");
-            configModelObject = configModelRepository.findAll().get(0);
         }
     }
 

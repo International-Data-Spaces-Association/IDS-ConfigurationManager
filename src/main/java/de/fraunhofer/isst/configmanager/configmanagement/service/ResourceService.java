@@ -8,8 +8,6 @@ import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.En
 import de.fraunhofer.isst.configmanager.configmanagement.entities.endpointInfo.EndpointInformation;
 import de.fraunhofer.isst.configmanager.util.CalenderUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -72,7 +70,7 @@ public class ResourceService {
      * @param publisher       the publisher of the resource
      * @param resourceImpl    the resource implementation class to set the parameters
      */
-    public void updateResourceContent(String title, String description, String language, ArrayList<String> keywords,
+    public void updateResourceContent(String title, String description, String language, List<String> keywords,
                                       String version, String standardlicense, String publisher, ResourceImpl resourceImpl) {
         if (title != null) {
             resourceImpl.setTitle(Util.asList(new TypedLiteral(title)));
@@ -106,7 +104,7 @@ public class ResourceService {
      *
      * @return list of resources from the connector
      */
-    public ArrayList<Resource> getResources() {
+    public List<Resource> getResources() {
         ArrayList<Resource> resources = new ArrayList<>();
 
         BaseConnector baseConnector = null;
@@ -333,7 +331,7 @@ public class ResourceService {
      * @param publisher       the publisher of the resource
      * @return resource implementation
      */
-    public ResourceImpl createResource(String title, String description, String language, ArrayList<String> keywords,
+    public ResourceImpl createResource(String title, String description, String language, List<String> keywords,
                                        String version, String standardlicense, String publisher) {
 
         ArrayList<TypedLiteral> keys = new ArrayList<>();
@@ -357,7 +355,7 @@ public class ResourceService {
     }
 
     public ResourceImpl updateResource(URI resourceId, String title, String description, String language,
-                                       ArrayList<String> keywords, String version, String standardlicense, String publisher) {
+                                       List<String> keywords, String version, String standardlicense, String publisher) {
         //Get a Resource and update if it exists
         for (Resource resource : getResources()){
             if(resource.getId().equals(resourceId)){

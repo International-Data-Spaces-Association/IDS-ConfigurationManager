@@ -222,7 +222,7 @@ public class AppRouteService {
             Endpoint endpoint = getEndpoint(endID);
 
             // Set app route start and end
-            if (routeSteps.size() == 0) {
+            if (routeSteps.isEmpty()) {
                 appRouteImpl.setAppRouteStart(Util.asList(startEndpoint));
             }
             appRouteImpl.setAppRouteEnd(Util.asList(endpoint));
@@ -282,7 +282,7 @@ public class AppRouteService {
     private Endpoint getEndpoint(URI endpointId) {
         // Search endpoint in the app repository
         List<CustomApp> customAppList = customAppRepository.findAll();
-        if (customAppList.size() != 0 && endpointId.toString().contains("appEndpoint")) {
+        if (!customAppList.isEmpty() && endpointId.toString().contains("appEndpoint")) {
             var customApp = customAppList.stream()
                     .map(CustomApp::getAppEndpointList)
                     .flatMap(Collection::stream)
@@ -315,7 +315,7 @@ public class AppRouteService {
      */
     public EndpointInformation getEndpointInformation(URI routeId, URI endpointId) {
         List<EndpointInformation> endpointInformations = endpointInformationRepository.findAll();
-        if (endpointInformations.size() != 0) {
+        if (!endpointInformations.isEmpty()) {
             for (EndpointInformation endpointInformation : endpointInformations) {
                 if (routeId.toString().equals(endpointInformation.getRouteId()) &&
                         endpointId.toString().equals(endpointInformation.getEndpointId())) {

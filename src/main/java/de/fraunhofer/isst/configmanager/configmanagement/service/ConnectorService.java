@@ -21,12 +21,10 @@ import java.util.List;
 public class ConnectorService {
 
     private final ConfigModelService configModelService;
-    private ConfigModelRepository configModelRepository;
 
     @Autowired
     public ConnectorService(ConfigModelService configModelService, ConfigModelRepository configModelRepository) {
         this.configModelService = configModelService;
-        this.configModelRepository = configModelRepository;
 
         // If no connector is found in the database, a default connector is created at this point.
         if (configModelRepository.findAll().get(0).getConfigurationModel().getConnectorDescription() == null) {

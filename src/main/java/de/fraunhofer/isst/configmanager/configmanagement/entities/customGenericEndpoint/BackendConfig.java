@@ -8,12 +8,12 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 /**
- * The generic abstract class helps to persist objects inherited from the endpoint from the information model.
+ * The class helps to persist objects inherited from the endpoint from the information model.
  */
 @Data
 @NoArgsConstructor
 @MappedSuperclass
-public abstract class BackendConfig<T extends Endpoint> {
+public class BackendConfig<T extends Endpoint> {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;

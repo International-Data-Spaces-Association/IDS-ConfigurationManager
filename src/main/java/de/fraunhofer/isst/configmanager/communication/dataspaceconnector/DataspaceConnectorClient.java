@@ -6,7 +6,6 @@ import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.ResourceRepresentation;
-import de.fraunhofer.isst.configmanager.configmanagement.service.EndpointService;
 import de.fraunhofer.isst.configmanager.util.OkHttpUtils;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
@@ -38,7 +37,6 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
 
     private final OkHttpClient client = OkHttpUtils.getUnsafeOkHttpClient();
     private final DataSpaceConnectorResourceMapper dataSpaceConnectorResourceMapper;
-    private final EndpointService endpointService;
 
     @Value("${dataspace.connector.host}")
     private String dataSpaceConnectorHost;
@@ -52,10 +50,8 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
     @Value("${dataspace.connector.port}")
     private Integer dataSpaceConnectorPort;
 
-    public DataspaceConnectorClient(DataSpaceConnectorResourceMapper dataSpaceConnectorResourceMapper,
-                                    EndpointService endpointService) {
+    public DataspaceConnectorClient(DataSpaceConnectorResourceMapper dataSpaceConnectorResourceMapper) {
         this.dataSpaceConnectorResourceMapper = dataSpaceConnectorResourceMapper;
-        this.endpointService = endpointService;
     }
 
     @Override
@@ -172,7 +168,6 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
             log.warn(String.format("---- Updating ConfigurationModel at %s failed!", dataSpaceConnectorHost));
             return false;
         }
-        var body = Objects.requireNonNull(response.body()).string();
         return true;
     }
 
