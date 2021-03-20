@@ -135,6 +135,34 @@ public class ResourceService {
     }
 
     /**
+     * This method returns all offered resources of a connector as plain json String
+     *
+     * @return list of resources from the connector
+     */
+    public String getOfferedResourcesAsJsonString() {
+        try {
+            return client.getOfferedResourcesAsJsonString();
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+            return null;
+        }
+    }
+
+    /**
+     * This method returns all requested resources of a connector as plain json String
+     *
+     * @return list of resources from the connector
+     */
+    public String getRequestedResourcesAsJsonString() {
+        try {
+            return client.getRequestedResourcesAsJsonString();
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+            return null;
+        }
+    }
+
+    /**
      * This method updates the resource contract with the given parameters
      *
      * @param resourceId    id of the resource
@@ -436,7 +464,6 @@ public class ResourceService {
      *
      * @return resources
      */
-    //TODO get from DSC (like offeredResources in getResources())
     public List<Resource> getRequestedResources() {
         ArrayList<Resource> resources = new ArrayList<>();
 

@@ -179,4 +179,20 @@ public interface DefaultConnectorClient {
      * @throws IOException when an error occurs while sending the request
      */
     BaseConnector getSelfDeclaration() throws IOException;
+
+    /**
+     * Returns the offered resources of the self declaration of a connector
+     *
+     * @return json-string with all offered resources
+     * @throws IOException when an error occurs while sending the request
+     */
+    String getOfferedResourcesAsJsonString() throws IOException;
+
+    /**
+     * Returns the requested resources of the self declaration of a connector
+     *
+     * @return json-string with all requested resources
+     * @throws IOException when an error occurs while sending the request
+     */
+    String getRequestedResourcesAsJsonString() throws IOException;
 }

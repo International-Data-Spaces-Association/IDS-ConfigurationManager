@@ -81,37 +81,13 @@ public class ResourceUIController implements ResourceUIApi {
     @Override
     public ResponseEntity<String> getResources() {
         log.info(">> GET /resources");
-
-        ArrayList<Resource> resources = resourceService.getResources();
-        if (resources != null) {
-            try {
-                return ResponseEntity.ok(serializer.serialize(resources));
-            } catch (IOException e) {
-                logger.error(e.getMessage());
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not serialize resources!");
-            }
-        } else {
-            return ResponseEntity.badRequest().body("Could not determine the resources");
-        }
+        return ResponseEntity.ok(resourceService.getOfferedResourcesAsJsonString());
     }
 
     @Override
     public ResponseEntity<String> getRequestedResources() {
         log.info(">> GET /resources/requested");
-
-        try {
-            BaseConnector baseConnector = client.getSelfDeclaration();
-            if (baseConnector != null) {
-                List<Resource> resourceList = resourceService.getRequestedResources();
-                return ResponseEntity.ok(serializer.serialize(resourceList));
-            } else {
-                return ResponseEntity.badRequest().body("Could not get the self declaration from the connector");
-            }
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-            return ResponseEntity.badRequest().body("Problems occurred while determining the requested resources " +
-                    "from the connector");
-        }
+        return ResponseEntity.ok(resourceService.getRequestedResourcesAsJsonString());
     }
 
     /**

@@ -1,5 +1,6 @@
 package de.fraunhofer.isst.configmanager.communication.dataspaceconnector;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
@@ -121,9 +122,44 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         if (!response.isSuccessful()) {
             LOGGER.warn("---- Could not get BaseConnector");
         }
+
         var body = response.body().string();
-        return SERIALIZER.deserialize(body, BaseConnector.class);
+        var deserialized = SERIALIZER.deserialize(body, BaseConnector.class);
+        return deserialized;
     }
+
+    @Override
+    public String getOfferedResourcesAsJsonString() throws IOException {
+        JsonNode baseConnectorNode = getJsonNodeOfBaseConnector();
+        var offeredResourceNode = baseConnectorNode.findValue("ids:offeredResource");
+        return offeredResourceNode.toString();
+    }
+
+    @Override
+    public String getRequestedResourcesAsJsonString() throws IOException {
+        JsonNode baseConnectorNode = getJsonNodeOfBaseConnector();
+        var offeredResourceNode = baseConnectorNode.findValue("ids:requestedResource");
+        return offeredResourceNode.toString();
+    }
+
+    private JsonNode getJsonNodeOfBaseConnector() throws IOException {
+        var builder = new Request.Builder();
+        var connectorUrl = "https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort +
+                "/admin/api/connector";
+        builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername,
+                dataSpaceConnectorApiPassword));
+        builder.url(connectorUrl);
+        builder.get();
+        var request = builder.build();
+        var response = client.newCall(request).execute();
+        if (!response.isSuccessful()) {
+            LOGGER.warn("---- Could not get BaseConnector");
+        }
+        var body = response.body().string();
+        var mapper = new ObjectMapper();
+        return mapper.readTree(body);
+    }
+
 
     @Override
     public boolean sendConfiguration(String configurationModel) throws IOException {

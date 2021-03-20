@@ -34,6 +34,7 @@ class InfomodelPetriNetBuilderTest {
      * Generate a random PetriNet, try to simulate it and print out the GraphViz representation
      */
     @Test
+    @Disabled
     void testBuildPetriNet() throws IOException {
         //Randomly generate an AppRoute
         var endpointlist = new ArrayList<Endpoint>();
