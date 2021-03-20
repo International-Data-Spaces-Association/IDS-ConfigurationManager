@@ -2,6 +2,7 @@ package de.fraunhofer.isst.configmanager.configmanagement.entities.converter;
 
 import de.fraunhofer.iais.eis.Endpoint;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,10 +13,9 @@ import java.io.IOException;
 /**
  * JPA Converter, for converting Endpoints to and from JsonLD for persisting.
  */
+@Slf4j
 @Converter
 public class EndpointConverter implements AttributeConverter<Endpoint, String> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(EndpointConverter.class);
     private final Serializer serializer = new Serializer();
 
     /**
@@ -30,7 +30,7 @@ public class EndpointConverter implements AttributeConverter<Endpoint, String> {
         try {
             return serializer.serialize(endpoint);
         } catch (IOException e) {
-            LOGGER.error(e.getMessage());
+            log.error(e.getMessage());
             return null;
         }
     }
@@ -46,7 +46,7 @@ public class EndpointConverter implements AttributeConverter<Endpoint, String> {
         try {
             return serializer.deserialize(s, Endpoint.class);
         } catch (IOException e) {
-            LOGGER.error(e.getMessage());
+            log.error(e.getMessage());
             return null;
         }
     }

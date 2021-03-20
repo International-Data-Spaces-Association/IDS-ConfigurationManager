@@ -2,6 +2,7 @@ package de.fraunhofer.isst.configmanager.petrinet.simulator;
 
 import de.fraunhofer.isst.configmanager.petrinet.builder.GraphVizGenerator;
 import de.fraunhofer.isst.configmanager.petrinet.model.*;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,10 +17,8 @@ import java.util.stream.Collectors;
  * (both methods could be running indefinitely, if the given initial PetriNet contains a
  * marker generating circle, so the PetriNet has an infinite amount of reachable states)
  */
+@Slf4j
 public class PetriNetSimulator {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(PetriNetSimulator.class);
-    
     /**
      * Make a step in the current petriNet, finding all transitions that can be used
      * and taking all of them
@@ -59,14 +58,14 @@ public class PetriNetSimulator {
      */
     public static void simulateNet(PetriNet petriNet){
         int i = 0;;
-        LOGGER.info("Starting Simulation!");
-        LOGGER.info(GraphVizGenerator.generateGraphViz(petriNet));
+        log.info("Starting Simulation!");
+        log.info(GraphVizGenerator.generateGraphViz(petriNet));
         while(makeStep(petriNet)){
-            LOGGER.info("Something changed!");
+            log.info("Something changed!");
             i++;
-            LOGGER.info(GraphVizGenerator.generateGraphViz(petriNet));
+            log.info(GraphVizGenerator.generateGraphViz(petriNet));
         }
-        LOGGER.info("Nothing changed! Finished simulation of PetriNet!");
+        log.info("Nothing changed! Finished simulation of PetriNet!");
     }
     
     /**
@@ -127,7 +126,7 @@ public class PetriNetSimulator {
      *                  (if it doesn't already contain an equal PetriNet)
      */
     private static void addStepToStepGraph(PetriNet parent, PetriNet copy, Node transition, StepGraph stepGraph){
-        LOGGER.info("Adding Step!");
+        log.info("Adding Step!");
         Node transitionCopy = null;
         for(var node : copy.getNodes()){
             if(node.getID().equals(transition.getID())){

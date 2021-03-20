@@ -8,6 +8,7 @@ import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorCl
 import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.ResourceRepresentation;
 import de.fraunhofer.isst.configmanager.configmanagement.service.EndpointService;
 import de.fraunhofer.isst.configmanager.util.OkHttpUtils;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,11 +30,10 @@ import java.util.UUID;
  * information model. If this is not the case, a mapping has to be done, see for example
  * {@link de.fraunhofer.isst.configmanager.communication.dataspaceconnector.DataSpaceConnectorResourceMapper}.
  */
+@Slf4j
 @Service
 @ConditionalOnExpression("${dataspace.connector.enabled:false}")
 public class DataspaceConnectorClient implements DefaultConnectorClient {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(DataspaceConnectorClient.class);
     private static final Serializer SERIALIZER = new Serializer();
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
@@ -61,7 +61,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
 
     @Override
     public String updateAtBroker(String brokerURI) throws IOException {
-        LOGGER.info(String.format("---- updating connector %s at broker %s", dataSpaceConnectorHost, brokerURI));
+        log.info(String.format("---- updating connector %s at broker %s", dataSpaceConnectorHost, brokerURI));
         var builder = new Request.Builder();
         builder.url(new HttpUrl.Builder()
                 .scheme("https")
@@ -78,7 +78,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
 
     @Override
     public String unregisterAtBroker(String brokerURI) throws IOException {
-        LOGGER.info(String.format("---- unregistering connector %s at broker %s", dataSpaceConnectorHost, brokerURI));
+        log.info(String.format("---- unregistering connector %s at broker %s", dataSpaceConnectorHost, brokerURI));
         var builder = new Request.Builder();
         builder.url(new HttpUrl.Builder()
                 .scheme("https")
@@ -103,7 +103,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         var request = builder.build();
         var response = client.newCall(request).execute();
         if (!response.isSuccessful()) {
-            LOGGER.warn("---- Could not get ConfigurationModel from {} with user {}. Response: {} - {}",
+            log.warn("---- Could not get ConfigurationModel from {} with user {}. Response: {} - {}",
                     connectorUrl, dataSpaceConnectorApiUsername, response.code(), response.message());
         }
         var body = response.body().string();
@@ -120,7 +120,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         var request = builder.build();
         var response = client.newCall(request).execute();
         if (!response.isSuccessful()) {
-            LOGGER.warn("---- Could not get BaseConnector");
+            log.warn("---- Could not get BaseConnector");
         }
 
         var body = response.body().string();
@@ -153,7 +153,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         var request = builder.build();
         var response = client.newCall(request).execute();
         if (!response.isSuccessful()) {
-            LOGGER.warn("---- Could not get BaseConnector");
+            log.warn("---- Could not get BaseConnector");
         }
         var body = response.body().string();
         var mapper = new ObjectMapper();
@@ -163,7 +163,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
 
     @Override
     public boolean sendConfiguration(String configurationModel) throws IOException {
-        LOGGER.info(String.format("---- sending new configuration to %s", dataSpaceConnectorHost));
+        log.info(String.format("---- sending new configuration to %s", dataSpaceConnectorHost));
         var builder = new Request.Builder();
         builder.url("https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin/api/configuration");
         builder.post(RequestBody.create(configurationModel, okhttp3.MediaType.parse("application/ld+json")));
@@ -171,7 +171,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         var request = builder.build();
         var response = client.newCall(request).execute();
         if (!response.isSuccessful()) {
-            LOGGER.warn(String.format("---- Updating ConfigurationModel at %s failed!", dataSpaceConnectorHost));
+            log.warn(String.format("---- Updating ConfigurationModel at %s failed!", dataSpaceConnectorHost));
             return false;
         }
         var body = response.body().string();
@@ -191,14 +191,14 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
             urlBuilder.addQueryParameter("requestedResource", resourceId);
         }
         var url = urlBuilder.build();
-        LOGGER.info("---- " + url.toString());
+        log.info("---- " + url.toString());
         builder.url(url);
         builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername, dataSpaceConnectorApiPassword));
         builder.post(RequestBody.create(null, new byte[0]));
         var request = builder.build();
         var response = client.newCall(request).execute();
         if (!response.isSuccessful()) {
-            LOGGER.warn(String.format("---- Could not get BaseConnector from %s!", dataSpaceConnectorHost));
+            log.warn(String.format("---- Could not get BaseConnector from %s!", dataSpaceConnectorHost));
         }
         var body = response.body().string();
         return SERIALIZER.deserialize(body, BaseConnector.class);
@@ -206,10 +206,10 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
 
     @Override
     public String registerResource(Resource resource) throws IOException {
-        LOGGER.info(String.format("---- registering resource at %s", dataSpaceConnectorHost));
+        log.info(String.format("---- registering resource at %s", dataSpaceConnectorHost));
         var mappedResource = dataSpaceConnectorResourceMapper.getMetadata(resource);
         var resourceJsonLD = MAPPER.writeValueAsString(mappedResource);
-        LOGGER.info("---- new resource: " + resourceJsonLD);
+        log.info("---- new resource: " + resourceJsonLD);
         var builder = new Request.Builder();
         String path = resource.getId().getPath();
         String idStr = path.substring(path.lastIndexOf('/') + 1);
@@ -220,14 +220,14 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
                 .addPathSegments("admin/api/resources/resource")
                 .addQueryParameter("id", idStr)
                 .build();
-        LOGGER.info("---- " + url.toString());
+        log.info("---- " + url.toString());
         builder.url(url);
         builder.post(RequestBody.create(resourceJsonLD, okhttp3.MediaType.parse("application/ld+json")));
         builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername, dataSpaceConnectorApiPassword));
         var request = builder.build();
         var response = client.newCall(request).execute();
         if (!response.isSuccessful()) {
-            LOGGER.warn(String.format("---- Registering Resource at %s failed!", dataSpaceConnectorHost));
+            log.warn(String.format("---- Registering Resource at %s failed!", dataSpaceConnectorHost));
         }
         var body = response.body().string();
         return body;
@@ -235,7 +235,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
 
     @Override
     public String deleteResource(URI resourceID) throws IOException {
-        LOGGER.info(String.format("---- deleting resource %s at %s", resourceID, dataSpaceConnectorHost));
+        log.info(String.format("---- deleting resource %s at %s", resourceID, dataSpaceConnectorHost));
         String path = resourceID.getPath();
         String idStr = path.substring(path.lastIndexOf('/') + 1);
         var builder = new Request.Builder();
@@ -245,7 +245,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         var request = builder.build();
         var response = client.newCall(request).execute();
         if (!response.isSuccessful()) {
-            LOGGER.warn(String.format("---- Deleting Resource at %s failed!", dataSpaceConnectorHost));
+            log.warn(String.format("---- Deleting Resource at %s failed!", dataSpaceConnectorHost));
         }
         var body = response.body().string();
         return body;
@@ -253,7 +253,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
 
     @Override
     public String updateResourceAtBroker(String brokerUri, URI resourceID) throws IOException {
-        LOGGER.info(String.format("---- updating resource at Broker %s", brokerUri));
+        log.info(String.format("---- updating resource at Broker %s", brokerUri));
         String path = resourceID.getPath();
         String idStr = path.substring(path.lastIndexOf('/') + 1);
         UUID resourceUUID = UUID.fromString(idStr);
@@ -270,7 +270,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         var request = builder.build();
         var response = client.newCall(request).execute();
         if (!response.isSuccessful()) {
-            LOGGER.warn(String.format("---- Updating Resource at Broker %s failed!", brokerUri));
+            log.warn(String.format("---- Updating Resource at Broker %s failed!", brokerUri));
         }
         var body = response.body().string();
         return body;
@@ -278,7 +278,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
 
     @Override
     public String deleteResourceAtBroker(String brokerUri, URI resourceID) throws IOException {
-        LOGGER.info(String.format("---- deleting resource %s at Broker %s", resourceID, brokerUri));
+        log.info(String.format("---- deleting resource %s at Broker %s", resourceID, brokerUri));
         String path = resourceID.getPath();
         String idStr = path.substring(path.lastIndexOf('/') + 1);
         var builder = new Request.Builder();
@@ -294,7 +294,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         var request = builder.build();
         var response = client.newCall(request).execute();
         if (!response.isSuccessful()) {
-            LOGGER.warn(String.format("---- Deleting Resource at Broker %s failed!", brokerUri));
+            log.warn(String.format("---- Deleting Resource at Broker %s failed!", brokerUri));
         }
         var body = response.body().string();
         return body;
@@ -302,7 +302,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
 
     @Override
     public String deleteResourceRepresentation(String resourceID, String representationID) throws IOException {
-        LOGGER.info(String.format("---- deleting representation %s from resource %s at %s", representationID, resourceID, dataSpaceConnectorHost));
+        log.info(String.format("---- deleting representation %s from resource %s at %s", representationID, resourceID, dataSpaceConnectorHost));
         var builder = new Request.Builder();
         var mappedResourceID = dataSpaceConnectorResourceMapper.readUUIDFromURI(URI.create(resourceID));
         var mappedRepresentationID = dataSpaceConnectorResourceMapper.getMappedId(URI.create(representationID));
@@ -313,7 +313,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         var request = builder.build();
         var response = client.newCall(request).execute();
         if (!response.isSuccessful()) {
-            LOGGER.warn(String.format("---- Deleting Representation at %s failed!", dataSpaceConnectorHost));
+            log.warn(String.format("---- Deleting Representation at %s failed!", dataSpaceConnectorHost));
         }
         var body = response.body().string();
         return body;
@@ -321,14 +321,14 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
 
     @Override
     public String registerResourceRepresentation(String resourceID, Representation representation, String endpointId) throws IOException {
-        LOGGER.info(String.format("---- registering resource at %s", dataSpaceConnectorHost));
+        log.info(String.format("---- registering resource at %s", dataSpaceConnectorHost));
         var mappedRepresentation = dataSpaceConnectorResourceMapper.mapRepresentation(representation);
         var backendSource = dataSpaceConnectorResourceMapper.createBackendSource(endpointId, representation);
         mappedRepresentation.setSource(backendSource);
         var mappedResourceID = dataSpaceConnectorResourceMapper.readUUIDFromURI(URI.create(resourceID));
         var mappedRepresentationID = dataSpaceConnectorResourceMapper.readUUIDFromURI(representation.getId());
         var resourceJsonLD = MAPPER.writeValueAsString(mappedRepresentation);
-        LOGGER.info("---- mapped representation: " + resourceJsonLD);
+        log.info("---- mapped representation: " + resourceJsonLD);
         var builder = new Request.Builder();
         builder.url(new HttpUrl.Builder()
                 .scheme("https")
@@ -342,50 +342,50 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         var request = builder.build();
         var response = client.newCall(request).execute();
         if (!response.isSuccessful()) {
-            LOGGER.warn(String.format("---- Registering Representation at %s failed!", dataSpaceConnectorHost));
+            log.warn(String.format("---- Registering Representation at %s failed!", dataSpaceConnectorHost));
         }
         var body = response.body().string();
         var uuid = dataSpaceConnectorResourceMapper.createFromResponse(body, representation.getId());
         if (uuid == null) {
-            LOGGER.warn("---- Could not parse ID from response!");
+            log.warn("---- Could not parse ID from response!");
         } else {
-            LOGGER.info("---- UUID is : " + uuid);
+            log.info("---- UUID is : " + uuid);
         }
         return body;
     }
 
     @Override
     public String updateResourceRepresentation(String resourceID, String representationID, Representation representation, String endpointId) throws IOException {
-        LOGGER.info(String.format("---- updating representation %s for resource %s at %s", representationID, resourceID, dataSpaceConnectorHost));
+        log.info(String.format("---- updating representation %s for resource %s at %s", representationID, resourceID, dataSpaceConnectorHost));
         var mappedResourceID = dataSpaceConnectorResourceMapper.readUUIDFromURI(URI.create(resourceID));
         var mappedRepresentationID = dataSpaceConnectorResourceMapper.readUUIDFromURI(URI.create(representationID));
         var mappedRepresentation = dataSpaceConnectorResourceMapper.mapRepresentation(representation);
         var backendSource = dataSpaceConnectorResourceMapper.createBackendSource(endpointId, representation);
         mappedRepresentation.setSource(backendSource);
         var resourceJsonLD = MAPPER.writeValueAsString(mappedRepresentation);
-        LOGGER.info("---- mapped representation: " + resourceJsonLD);
+        log.info("---- mapped representation: " + resourceJsonLD);
         var builder = new Request.Builder();
-        LOGGER.info("---- Calling DSC at: https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin/api/resources/" + mappedResourceID + "/" + mappedRepresentationID);
+        log.info("---- Calling DSC at: https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin/api/resources/" + mappedResourceID + "/" + mappedRepresentationID);
         builder.url("https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin/api/resources/" + mappedResourceID + "/" + mappedRepresentationID);
         builder.put(RequestBody.create(resourceJsonLD, okhttp3.MediaType.parse("application/ld+json")));
         builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername, dataSpaceConnectorApiPassword));
         var request = builder.build();
         var response = client.newCall(request).execute();
         if (!response.isSuccessful()) {
-            LOGGER.warn(String.format("---- Updating Representation at %s failed!", dataSpaceConnectorHost));
+            log.warn(String.format("---- Updating Representation at %s failed!", dataSpaceConnectorHost));
         }
         var body = response.body().string();
-        LOGGER.info("---- Response: " + body);
+        log.info("---- Response: " + body);
         return body;
     }
 
     @Override
     public String updateCustomResourceRepresentation(String resourceID, String representationID, ResourceRepresentation resourceRepresentation) throws IOException {
-        LOGGER.info(String.format("---- updating representation %s for resource %s at %s", representationID, resourceID, dataSpaceConnectorHost));
+        log.info(String.format("---- updating representation %s for resource %s at %s", representationID, resourceID, dataSpaceConnectorHost));
         var mappedResourceID = dataSpaceConnectorResourceMapper.readUUIDFromURI(URI.create(resourceID));
         var mappedRepresentationID = dataSpaceConnectorResourceMapper.getMappedId(URI.create(representationID));
         var resourceJsonLD = MAPPER.writeValueAsString(resourceRepresentation);
-        LOGGER.info("---- mapped representation: " + resourceJsonLD);
+        log.info("---- mapped representation: " + resourceJsonLD);
         var builder = new Request.Builder();
         builder.url("https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin/api/resources/" + mappedResourceID + "/" + mappedRepresentationID);
         builder.put(RequestBody.create(resourceJsonLD, okhttp3.MediaType.parse("application/ld+json")));
@@ -393,16 +393,16 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         var request = builder.build();
         var response = client.newCall(request).execute();
         if (!response.isSuccessful()) {
-            LOGGER.warn(String.format("---- Updating custom resource Representation at %s failed!", dataSpaceConnectorHost));
+            log.warn(String.format("---- Updating custom resource Representation at %s failed!", dataSpaceConnectorHost));
         }
         var body = response.body().string();
-        LOGGER.info("---- Response: " + body);
+        log.info("---- Response: " + body);
         return body;
     }
 
     @Override
     public String updateResourceContract(String resourceID, String contract) throws IOException {
-        LOGGER.info(String.format("---- updating contract for resource at %s", dataSpaceConnectorHost));
+        log.info(String.format("---- updating contract for resource at %s", dataSpaceConnectorHost));
         var mappedResourceID = dataSpaceConnectorResourceMapper.readUUIDFromURI(URI.create(resourceID));
 //        var resourceJsonLD = SERIALIZER.serialize(contract);
         var builder = new Request.Builder();
@@ -412,16 +412,16 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         var request = builder.build();
         var response = client.newCall(request).execute();
         if (!response.isSuccessful()) {
-            LOGGER.warn(String.format("---- Updating Contract at %s failed!", dataSpaceConnectorHost));
+            log.warn(String.format("---- Updating Contract at %s failed!", dataSpaceConnectorHost));
         }
         var body = response.body().string();
-        LOGGER.info("---- Response: " + body);
+        log.info("---- Response: " + body);
         return body;
     }
 
     @Override
     public String getPolicyPattern(String policy) throws IOException {
-        LOGGER.info(String.format("---- Get pattern for policy"));
+        log.info(String.format("---- Get pattern for policy"));
         var builder = new Request.Builder();
         builder.url("https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin/api/example/policy-validation");
         builder.post(RequestBody.create(policy, okhttp3.MediaType.parse("application/ld+json")));
@@ -429,16 +429,16 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         var request = builder.build();
         var response = client.newCall(request).execute();
         if (!response.isSuccessful()) {
-            LOGGER.warn(String.format("---- Pattern for policy could not be determined"));
+            log.warn(String.format("---- Pattern for policy could not be determined"));
         }
         var body = response.body().string();
-        LOGGER.info("---- Response: " + body);
+        log.info("---- Response: " + body);
         return body;
     }
 
     @Override
     public String updateResource(URI resourceID, Resource resource) throws IOException {
-        LOGGER.info(String.format("---- updating resource at %s", dataSpaceConnectorHost));
+        log.info(String.format("---- updating resource at %s", dataSpaceConnectorHost));
         var mappedResource = dataSpaceConnectorResourceMapper.getMetadata(resource);
         String path = resourceID.getPath();
         String idStr = path.substring(path.lastIndexOf('/') + 1);
@@ -451,10 +451,10 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         var request = builder.build();
         var response = client.newCall(request).execute();
         if (!response.isSuccessful()) {
-            LOGGER.warn(String.format("---- Updating Resource at %s failed!", dataSpaceConnectorHost));
+            log.warn(String.format("---- Updating Resource at %s failed!", dataSpaceConnectorHost));
         }
         var body = response.body().string();
-        LOGGER.info("---- Response: " + body);
+        log.info("---- Response: " + body);
         return body;
     }
 
