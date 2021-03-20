@@ -4,8 +4,8 @@ import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.util.TypedLiteral;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.EndpointInformationRepository;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.endpointInfo.EndpointInformation;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.configlists.EndpointInformationRepository;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.endpointinfo.EndpointInformation;
 import de.fraunhofer.isst.configmanager.util.CalenderUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -191,7 +191,6 @@ public class ResourceService {
                 }
             }
         }
-        return;
     }
 
     /**
@@ -251,7 +250,6 @@ public class ResourceService {
             }
         }
         configModelService.saveState();
-        return;
     }
 
     /**
@@ -299,7 +297,6 @@ public class ResourceService {
             }
         }
         configModelService.saveState();
-        return;
     }
 
     /**
@@ -350,8 +347,7 @@ public class ResourceService {
                 ._created_(CalenderUtil.getGregorianNow())
                 ._modified_(CalenderUtil.getGregorianNow())
                 .build();
-        var resourceImpl = (ResourceImpl) resource;
-        return resourceImpl;
+        return (ResourceImpl) resource;
     }
 
     public ResourceImpl updateResource(URI resourceId, String title, String description, String language,
@@ -393,7 +389,6 @@ public class ResourceService {
                 }
             }
         }
-        return;
     }
 
     /**

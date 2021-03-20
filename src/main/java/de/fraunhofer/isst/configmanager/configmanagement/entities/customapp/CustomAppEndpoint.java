@@ -1,7 +1,7 @@
-package de.fraunhofer.isst.configmanager.configmanagement.entities.customApp;
+package de.fraunhofer.isst.configmanager.configmanagement.entities.customapp;
 
 import de.fraunhofer.iais.eis.AppEndpoint;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.customGenericEndpoint.BackendConfig;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.customgenericendpoint.BackendConfig;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;

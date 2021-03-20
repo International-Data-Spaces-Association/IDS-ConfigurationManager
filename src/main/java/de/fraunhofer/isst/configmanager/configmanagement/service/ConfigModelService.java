@@ -4,7 +4,7 @@ import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.config.ConfigModelObject;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.ConfigModelRepository;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.configlists.ConfigModelRepository;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

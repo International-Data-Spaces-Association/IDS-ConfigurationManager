@@ -1,4 +1,4 @@
-package de.fraunhofer.isst.configmanager.configmanagement.entities.customApp;
+package de.fraunhofer.isst.configmanager.configmanagement.entities.customapp;
 
 import javax.persistence.*;
 import java.util.List;

@@ -44,10 +44,4 @@ public class ResourceRepresentation implements Serializable {
     @JsonProperty("source")
     @Column(columnDefinition = "BLOB")
     private BackendSource source;
-
-    /**
-     * Constructor for ResourceRepresentation.
-     */
-    public ResourceRepresentation() {
-    }
 }

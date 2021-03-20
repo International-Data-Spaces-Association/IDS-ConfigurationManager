@@ -53,7 +53,7 @@ public class Utility {
 
         MediaType mediatype = new CustomMediaTypeBuilder()._filenameExtension_(mediaType).build();
 
-        AppEndpoint appEndpoint = new AppEndpointBuilder()
+        return new AppEndpointBuilder()
                 ._appEndpointType_(appEndpointType)
                 ._appEndpointPort_(port)
                 ._endpointDocumentation_(Util.asList(new URI(documentation)))
@@ -65,7 +65,5 @@ public class Utility {
                 ._appEndpointMediaType_(mediatype)
                 ._path_(path)
                 .build();
-
-        return appEndpoint;
     }
 }

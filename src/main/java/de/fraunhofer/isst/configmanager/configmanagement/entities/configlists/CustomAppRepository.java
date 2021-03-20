@@ -1,6 +1,6 @@
-package de.fraunhofer.isst.configmanager.configmanagement.entities.configLists;
+package de.fraunhofer.isst.configmanager.configmanagement.entities.configlists;
 
-import de.fraunhofer.isst.configmanager.configmanagement.entities.customApp.CustomApp;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.customapp.CustomApp;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

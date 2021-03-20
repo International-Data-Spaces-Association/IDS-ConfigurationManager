@@ -1,4 +1,4 @@
-package de.fraunhofer.isst.configmanager.configmanagement.entities.customGenericEndpoint;
+package de.fraunhofer.isst.configmanager.configmanagement.entities.customgenericendpoint;
 
 import de.fraunhofer.iais.eis.GenericEndpoint;
 import lombok.NoArgsConstructor;

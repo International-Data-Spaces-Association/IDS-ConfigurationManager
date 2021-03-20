@@ -1,4 +1,4 @@
-package de.fraunhofer.isst.configmanager.configmanagement.entities.routeDeployMethod;
+package de.fraunhofer.isst.configmanager.configmanagement.entities.routedeploymethod;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

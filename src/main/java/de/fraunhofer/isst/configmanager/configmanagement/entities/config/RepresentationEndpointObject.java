@@ -3,8 +3,8 @@ package de.fraunhofer.isst.configmanager.configmanagement.entities.config;
 
 import javax.persistence.*;
 import java.net.URI;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Entity class for caching the resource representation id associated with the endpoint id.
@@ -17,10 +17,7 @@ public class RepresentationEndpointObject {
     private long id;
 
     @ElementCollection
-    private transient Map<URI, URI> map = new HashMap<>();
-
-    public RepresentationEndpointObject() {
-    }
+    private transient Map<URI, URI> map = new ConcurrentHashMap<>();
 
     public Map<URI, URI> getMap() {
         return map;

@@ -70,12 +70,6 @@ public class ResourceMetadata implements Serializable {
     private List<ResourceRepresentation> representations;
 
     /**
-     * Constructor for ResourceMetadata.
-     */
-    public ResourceMetadata() {
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override

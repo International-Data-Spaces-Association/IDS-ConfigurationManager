@@ -3,7 +3,7 @@ package de.fraunhofer.isst.configmanager.configmanagement.service;
 import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.util.TypedLiteral;
 import de.fraunhofer.iais.eis.util.Util;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.ConfigModelRepository;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.configlists.ConfigModelRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

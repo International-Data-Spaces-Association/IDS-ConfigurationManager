@@ -3,12 +3,11 @@ package de.fraunhofer.isst.configmanager.configmanagement.service;
 import de.fraunhofer.iais.eis.AppEndpoint;
 import de.fraunhofer.iais.eis.AppEndpointType;
 import de.fraunhofer.iais.eis.Language;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.CustomAppRepository;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.customApp.CustomApp;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.customApp.CustomAppEndpoint;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.configlists.CustomAppRepository;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.customapp.CustomApp;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.customapp.CustomAppEndpoint;
 import de.fraunhofer.isst.configmanager.util.Utility;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,9 +21,8 @@ import java.util.Objects;
  * Service class for managing created apps.
  */
 @Service
+@Slf4j
 public class AppService {
-
-    private final static Logger logger = LoggerFactory.getLogger(AppService.class);
     private transient final CustomAppRepository customAppRepository;
 
     @Autowired
@@ -33,13 +31,13 @@ public class AppService {
 
         // If db is empty dummy apps will be created
         if (customAppRepository.count() == 0) {
-            logger.info("---- No custom app is found! Creating custom apps.");
+            log.info("---- No custom app is found! Creating custom apps.");
             List<CustomApp> customAppList = new ArrayList<>();
 
             var customApp1 = new CustomApp();
             var appName = System.getenv("CUSTOM_APP_NAME");
             customApp1.setTitle(Objects.requireNonNullElse(appName, "Custom App 1"));
-            logger.info("---- Created custom app with title: " + customApp1.getTitle());
+            log.info("---- Created custom app with title: " + customApp1.getTitle());
 
             List<CustomAppEndpoint> customAppEndpoints = new ArrayList<>();
 
@@ -92,9 +90,8 @@ public class AppService {
 
     public CustomApp getApp(String id) {
 
-        Long appId = Long.valueOf(id);
-        CustomApp app = customAppRepository.findById(appId).orElse(null);
+        var appId = Long.valueOf(id);
 
-        return app;
+        return customAppRepository.findById(appId).orElse(null);
     }
 }

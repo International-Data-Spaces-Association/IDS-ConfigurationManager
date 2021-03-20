@@ -1,7 +1,7 @@
-package de.fraunhofer.isst.configmanager.configmanagement.entities.configLists;
+package de.fraunhofer.isst.configmanager.configmanagement.entities.configlists;
 
 import de.fraunhofer.iais.eis.Endpoint;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.customGenericEndpoint.CustomGenericEndpointObject;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.customgenericendpoint.CustomGenericEndpointObject;
 import lombok.Data;
 
 import javax.persistence.*;

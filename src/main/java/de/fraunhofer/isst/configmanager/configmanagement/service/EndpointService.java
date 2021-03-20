@@ -1,11 +1,10 @@
 package de.fraunhofer.isst.configmanager.configmanagement.service;
 
 import de.fraunhofer.iais.eis.*;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.CustomGenericEndpointList;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.CustomGenericEndpointRepository;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.customGenericEndpoint.CustomGenericEndpointObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.configlists.CustomGenericEndpointList;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.configlists.CustomGenericEndpointRepository;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.customgenericendpoint.CustomGenericEndpointObject;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,10 +17,8 @@ import java.util.NoSuchElementException;
  * Service class for managing generic endpoints
  */
 @Service
+@Slf4j
 public class EndpointService {
-
-    private final static Logger logger = LoggerFactory.getLogger(EndpointService.class);
-
     private transient final CustomGenericEndpointRepository customGenericEndpointRepository;
     private transient CustomGenericEndpointList customGenericEndpointList;
 
@@ -47,7 +44,7 @@ public class EndpointService {
             endpointImpl.setGenericEndpointAuthentication(new BasicAuthenticationBuilder()._authUsername_(username)
                     ._authPassword_(password).build());
         } else{
-            logger.info("---- No authentication was created because username and password were not entered.");
+            log.info("---- No authentication was created because username and password were not entered.");
         }
         // Save the endpoint
         CustomGenericEndpointObject customGenericEndpointObject = new CustomGenericEndpointObject(endpoint);

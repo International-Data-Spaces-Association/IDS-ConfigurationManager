@@ -3,7 +3,7 @@ package de.fraunhofer.isst.configmanager.configmanagement.service;
 import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.BackendSource;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.config.BrokerStatus;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.routeDeployMethod.DeployMethod;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.routedeploymethod.DeployMethod;
 import net.minidev.json.JSONArray;
 import org.springframework.stereotype.Service;
 

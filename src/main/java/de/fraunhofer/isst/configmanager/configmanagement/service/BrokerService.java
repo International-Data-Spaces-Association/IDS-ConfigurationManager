@@ -3,7 +3,8 @@ package de.fraunhofer.isst.configmanager.configmanagement.service;
 import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.config.BrokerStatus;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.config.CustomBroker;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.CustomBrokerRepository;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.configlists.CustomBrokerRepository;
+import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
@@ -20,9 +21,8 @@ import java.util.stream.Collectors;
  * Service class for the custom broker.
  */
 @Service
+@Slf4j
 public class BrokerService {
-
-    private final static Logger logger = LoggerFactory.getLogger(BrokerService.class);
     private transient final CustomBrokerRepository customBrokerRepository;
     private transient final ResourceService resourceService;
 
@@ -33,7 +33,7 @@ public class BrokerService {
 
         // If no broker is found in the database, a default broker is created at this point.
         if (customBrokerRepository.count() == 0) {
-            logger.info("---- Db is empty! Creating custom broker");
+            log.info("---- Db is empty! Creating custom broker");
             CustomBroker customBroker = new CustomBroker();
             customBroker.setBrokerUri(URI.create("https://broker.ids.isst.fraunhofer.de/infrastructure"));
             customBroker.setTitle("IDS Broker");
@@ -109,7 +109,7 @@ public class BrokerService {
             customBrokerRepository.delete(customBroker);
             deleted = true;
         } else {
-            logger.warn(String.format("---- Tried to delete a Broker, but no config with id %s exists!", id.toString()));
+            log.warn(String.format("---- Tried to delete a Broker, but no config with id %s exists!", id.toString()));
         }
         return deleted;
     }
@@ -190,7 +190,7 @@ public class BrokerService {
         CustomBroker customBroker = getById(brokerUri);
         if (customBroker != null) {
             if (customBroker.getRegisteredResources() == null) {
-                logger.info("---- Could not found any resource to delete");
+                log.info("---- Could not found any resource to delete");
             } else {
                 List<String> registeredResources = customBroker.getRegisteredResources();
                 registeredResources.removeIf(s -> s.equals(resourceId.toString()));
@@ -210,14 +210,15 @@ public class BrokerService {
 
         List<CustomBroker> customBrokers = customBrokerRepository.findAll();
         if (customBrokers.isEmpty()) {
-            logger.info("---- Could not find any broker");
+            log.info("---- Could not find any broker");
         } else {
             var jsonArray = new JSONArray();
+            var jsonObject = new JSONObject();
             for (CustomBroker customBroker : customBrokers) {
                 if (customBroker.getRegisteredResources() != null) {
                     for (String id : customBroker.getRegisteredResources()) {
                         if (resourceId.toString().equals(id)) {
-                            var jsonObject = new JSONObject();
+                            jsonObject.clear();
                             jsonObject.put("brokerId", customBroker.getBrokerUri().toString());
                             jsonObject.put("brokerStatus", customBroker.getBrokerStatus().toString());
                             jsonObject.put("resourceId", resourceId.toString());

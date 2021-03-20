@@ -1,4 +1,4 @@
-package de.fraunhofer.isst.configmanager.configmanagement.entities.endpointInfo;
+package de.fraunhofer.isst.configmanager.configmanagement.entities.endpointinfo;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

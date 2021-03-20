@@ -2,14 +2,13 @@ package de.fraunhofer.isst.configmanager.configmanagement.service;
 
 import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.util.Util;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.CustomAppRepository;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.EndpointInformationRepository;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.RouteDeployMethodRepository;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.customApp.CustomApp;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.endpointInfo.EndpointInformation;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.routeDeployMethod.RouteDeployMethod;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.configlists.CustomAppRepository;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.configlists.EndpointInformationRepository;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.configlists.RouteDeployMethodRepository;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.customapp.CustomApp;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.endpointinfo.EndpointInformation;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.routedeploymethod.RouteDeployMethod;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,10 +21,8 @@ import java.util.List;
  * Service class for managing app routes in the configuration manager.
  */
 @Service
+@Slf4j
 public class AppRouteService {
-
-    private final static Logger logger = LoggerFactory.getLogger(AppRouteService.class);
-
     private transient final ConfigModelService configModelService;
     private transient final EndpointService endpointService;
     private transient final ResourceService resourceService;
@@ -260,7 +257,7 @@ public class AppRouteService {
                             ._appRouteOutput_(Util.asList(resourceImpl))
                             .build();
                 } else {
-                    logger.info("---- Subroute is created without Resource!!!");
+                    log.info("---- Subroute is created without Resource!!!");
                     routeStep = new RouteStepBuilder()._routeDeployMethod_(deployMethod)
                             ._appRouteStart_(Util.asList(startEndpoint))
                             ._appRouteEnd_(Util.asList(endpoint))

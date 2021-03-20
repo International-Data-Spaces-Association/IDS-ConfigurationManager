@@ -65,8 +65,7 @@ public class ConfigmanagerApplication {
      */
     @Bean
     public Serializer getSerializer() {
-        var serializer = new Serializer();
-        return serializer;
+        return new Serializer();
     }
 
     /**

@@ -2,7 +2,7 @@ package de.fraunhofer.isst.configmanager.configmanagement.service;
 
 
 import de.fraunhofer.isst.configmanager.configmanagement.entities.config.RepresentationEndpointObject;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.RepresentationEndpointRepository;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.configlists.RepresentationEndpointRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
