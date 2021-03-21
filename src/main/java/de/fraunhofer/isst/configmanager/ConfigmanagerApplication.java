@@ -8,9 +8,12 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +23,8 @@ import java.util.Properties;
  * Main class for starting the configuration manager application.
  */
 @SpringBootApplication
+@EnableScheduling
+@Slf4j
 public class ConfigmanagerApplication {
 
     public static void main(final String[] args) {
@@ -81,4 +86,8 @@ public class ConfigmanagerApplication {
         return objectMapper;
     }
 
+    @Scheduled(fixedRate = 60000)
+    public void logInfoStillAlive() {
+        log.info("Waiting for API call...");
+    }
 }
