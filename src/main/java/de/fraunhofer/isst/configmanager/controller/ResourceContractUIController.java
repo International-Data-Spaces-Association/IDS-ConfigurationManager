@@ -7,6 +7,8 @@ import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelServ
 import de.fraunhofer.isst.configmanager.configmanagement.service.ResourceService;
 import de.fraunhofer.isst.configmanager.util.ValidateApiInput;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +29,12 @@ import java.net.URI;
 @Slf4j
 @Tag(name = "Resource contracts Management", description = "Endpoints for managing the contracts " +
         "of a resource")
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ResourceContractUIController implements ResourceContractApi {
-    private transient final ConfigModelService configModelService;
-    private transient final ResourceService resourceService;
-    private transient final Serializer serializer;
-    private transient final DefaultConnectorClient client;
+    transient ConfigModelService configModelService;
+    transient ResourceService resourceService;
+    transient Serializer serializer;
+    transient DefaultConnectorClient client;
 
     @Autowired
     public ResourceContractUIController(final ConfigModelService configModelService,

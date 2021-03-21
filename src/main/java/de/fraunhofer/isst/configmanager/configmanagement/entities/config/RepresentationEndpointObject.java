@@ -1,8 +1,10 @@
 package de.fraunhofer.isst.configmanager.configmanagement.entities.config;
 
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -17,16 +19,17 @@ import java.util.concurrent.ConcurrentHashMap;
  * Entity class for caching the resource representation id associated with the endpoint id.
  */
 @Entity
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class RepresentationEndpointObject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Getter
     @Setter
-    private long id;
+    long id;
 
     @ElementCollection
-    private transient Map<URI, URI> map = new ConcurrentHashMap<>();
+    transient Map<URI, URI> map = new ConcurrentHashMap<>();
 
     public Map<URI, URI> getMap() {
         return map;

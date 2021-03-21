@@ -5,6 +5,8 @@ import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorCl
 import de.fraunhofer.isst.configmanager.configmanagement.service.ResourceService;
 import de.fraunhofer.isst.configmanager.util.ValidateApiInput;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +28,11 @@ import java.util.ArrayList;
 @Slf4j
 @Tag(name = "Resource Management", description = "Endpoints for managing the resource in the " +
         "configuration manager")
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ResourceUIController implements ResourceUIApi {
-    private transient final ResourceService resourceService;
-    private transient final DefaultConnectorClient client;
-    private transient final Serializer serializer;
+    transient ResourceService resourceService;
+    transient DefaultConnectorClient client;
+    transient Serializer serializer;
 
     @Autowired
     public ResourceUIController(final ResourceService resourceService,

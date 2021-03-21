@@ -7,6 +7,8 @@ import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +30,11 @@ import java.util.ArrayList;
 @Slf4j
 @Tag(name = "ConfigModel Management", description = "Endpoints for managing the configuration " +
         "model")
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ConfigModelController implements ConfigModelApi {
-    private transient final Serializer serializer;
-    private transient final ConfigModelService configModelService;
-    private transient final DefaultConnectorClient client;
+    transient Serializer serializer;
+    transient ConfigModelService configModelService;
+    transient DefaultConnectorClient client;
 
     @Autowired
     public ConfigModelController(final Serializer serializer,

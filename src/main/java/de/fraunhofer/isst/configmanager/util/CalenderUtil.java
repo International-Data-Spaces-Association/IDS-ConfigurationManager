@@ -1,5 +1,6 @@
 package de.fraunhofer.isst.configmanager.util;
 
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -12,6 +13,7 @@ import java.util.GregorianCalendar;
  * This class can be used as a helper class to outsource program code here.
  */
 @Slf4j
+@UtilityClass
 public class CalenderUtil {
 
     /**

@@ -19,6 +19,8 @@ import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorCl
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configlists.EndpointInformationRepository;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.endpointinfo.EndpointInformation;
 import de.fraunhofer.isst.configmanager.util.CalenderUtil;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,12 +36,13 @@ import java.util.List;
  */
 @Service
 @Slf4j
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ResourceService {
 
-    private transient final ConfigModelService configModelService;
-    private transient final EndpointService endpointService;
-    private transient final EndpointInformationRepository endpointInformationRepository;
-    private transient final DefaultConnectorClient client;
+    transient ConfigModelService configModelService;
+    transient EndpointService endpointService;
+    transient EndpointInformationRepository endpointInformationRepository;
+    transient DefaultConnectorClient client;
 
     @Autowired
     public ResourceService(final ConfigModelService configModelService,

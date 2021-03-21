@@ -15,6 +15,8 @@ import de.fraunhofer.isst.configmanager.configmanagement.service.AppRouteService
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.util.Utility;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -38,13 +40,13 @@ import java.util.List;
 @Tag(name = "App Route Management", description = "Endpoints for managing the app routes in the " +
         "configuration manager")
 @Slf4j
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class AppRouteUIController implements AppRouteApi {
-
-    private transient final ConfigModelService configModelService;
-    private transient final AppRouteService appRouteService;
-    private transient final Serializer serializer;
-    private transient final RouteDeployMethodRepository routeDeployMethodRepository;
-    private transient final ObjectMapper objectMapper;
+    transient ConfigModelService configModelService;
+    transient AppRouteService appRouteService;
+    transient Serializer serializer;
+    transient RouteDeployMethodRepository routeDeployMethodRepository;
+    transient ObjectMapper objectMapper;
 
     @Autowired
     public AppRouteUIController(final ConfigModelService configModelService,

@@ -17,6 +17,8 @@ import de.fraunhofer.isst.configmanager.configmanagement.entities.configlists.En
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configlists.RouteDeployMethodRepository;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.customapp.CustomApp;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.endpointinfo.EndpointInformation;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,14 +33,15 @@ import java.util.List;
  */
 @Service
 @Slf4j
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class AppRouteService {
-    private transient final ConfigModelService configModelService;
-    private transient final EndpointService endpointService;
-    private transient final ResourceService resourceService;
+    transient ConfigModelService configModelService;
+    transient EndpointService endpointService;
+    transient ResourceService resourceService;
 
-    private transient final RouteDeployMethodRepository routeDeployMethodRepository;
-    private transient final EndpointInformationRepository endpointInformationRepository;
-    private transient final CustomAppRepository customAppRepository;
+    transient RouteDeployMethodRepository routeDeployMethodRepository;
+    transient EndpointInformationRepository endpointInformationRepository;
+    transient CustomAppRepository customAppRepository;
 
     @Autowired
     public AppRouteService(final ConfigModelService configModelService,

@@ -2,7 +2,9 @@ package de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
 import java.net.URI;
@@ -14,16 +16,17 @@ import java.net.URI;
         oneOf = BackendSource.class
 )
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class BackendSource implements Serializable {
 
     @JsonProperty("type")
-    private Type type;
+    Type type;
     @JsonProperty("url")
-    private URI url;
+    URI url;
     @JsonProperty("username")
-    private String username;
+    String username;
     @JsonProperty("password")
-    private String password;
+    String password;
 
     /**
      * Constructor for BackendSource.

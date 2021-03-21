@@ -1,12 +1,10 @@
 package de.fraunhofer.isst.configmanager.util;
 
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
@@ -14,6 +12,7 @@ import javax.net.ssl.X509TrustManager;
  * Utility Class for generating an OkHttpClient which does not validate Certificate Chains.
  */
 @Slf4j
+@UtilityClass
 public class OkHttpUtils {
 
     /**

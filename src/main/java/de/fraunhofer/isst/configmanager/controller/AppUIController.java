@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.customapp.CustomApp;
 import de.fraunhofer.isst.configmanager.configmanagement.service.AppService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,10 +21,11 @@ import java.util.List;
 @Tag(name = "App Management", description = "Endpoints for managing the app in the configuration " +
         "manager")
 @Slf4j
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class AppUIController implements AppUIApi {
 
-    private transient final AppService appService;
-    private transient final ObjectMapper objectMapper;
+    transient AppService appService;
+    transient ObjectMapper objectMapper;
 
     @Autowired
     public AppUIController(final AppService appService, final ObjectMapper objectMapper) {

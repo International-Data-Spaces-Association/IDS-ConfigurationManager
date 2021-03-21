@@ -8,6 +8,8 @@ import de.fraunhofer.iais.eis.GenericEndpointImpl;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configlists.CustomGenericEndpointList;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configlists.CustomGenericEndpointRepository;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.customgenericendpoint.CustomGenericEndpointObject;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,9 +24,10 @@ import java.util.NoSuchElementException;
  */
 @Service
 @Slf4j
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class EndpointService {
-    private transient final CustomGenericEndpointRepository customGenericEndpointRepository;
-    private transient CustomGenericEndpointList customGenericEndpointList;
+    transient final CustomGenericEndpointRepository customGenericEndpointRepository;
+    transient CustomGenericEndpointList customGenericEndpointList;
 
     @Autowired
     public EndpointService(final CustomGenericEndpointRepository customGenericEndpointRepository) {

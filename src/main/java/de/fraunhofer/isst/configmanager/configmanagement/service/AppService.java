@@ -6,6 +6,8 @@ import de.fraunhofer.isst.configmanager.configmanagement.entities.configlists.Cu
 import de.fraunhofer.isst.configmanager.configmanagement.entities.customapp.CustomApp;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.customapp.CustomAppEndpoint;
 import de.fraunhofer.isst.configmanager.util.Utility;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,8 +23,9 @@ import java.util.Objects;
  */
 @Service
 @Slf4j
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class AppService {
-    private transient final CustomAppRepository customAppRepository;
+    transient CustomAppRepository customAppRepository;
 
     @Autowired
     public AppService(final CustomAppRepository customAppRepository) throws URISyntaxException {

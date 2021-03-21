@@ -1,8 +1,10 @@
 package de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,10 +21,11 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ResourceIDPair {
     @Id
-    private UUID uuid;
+    UUID uuid;
 
     @Column(unique = true)
-    private URI uri;
+    URI uri;
 }

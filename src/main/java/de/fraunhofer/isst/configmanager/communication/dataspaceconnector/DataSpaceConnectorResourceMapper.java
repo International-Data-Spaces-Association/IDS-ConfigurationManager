@@ -14,6 +14,8 @@ import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.R
 import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.ResourceRepresentation;
 import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.repos.ResourceIDPairRepository;
 import de.fraunhofer.isst.configmanager.configmanagement.service.EndpointService;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -29,19 +31,20 @@ import java.util.stream.Collectors;
  * dataspace connector.
  */
 @Service
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class DataSpaceConnectorResourceMapper {
 
-    private static final Serializer SERIALIZER = new Serializer();
+    static Serializer SERIALIZER = new Serializer();
     /**
      * Pattern is created, which has the following structure:
      * Example:
      * URI: https://w3id.org/idsa/autogen/configurationModel/9abd295d-b96f-49fa-8c10-a64179c24049 ->
      * UUID_REGEX: 9abd295d-b96f-49fa-8c10-a64179c24049
      */
-    private static final Pattern UUID_REGEX = Pattern.compile("[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a" +
+    static Pattern UUID_REGEX = Pattern.compile("[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a" +
             "-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}");
-    private transient final EndpointService endpointService;
-    private transient final ResourceIDPairRepository resourceIDPairRepository;
+    transient EndpointService endpointService;
+    transient ResourceIDPairRepository resourceIDPairRepository;
 
 
     public DataSpaceConnectorResourceMapper(final ResourceIDPairRepository resourceIDPairRepository,

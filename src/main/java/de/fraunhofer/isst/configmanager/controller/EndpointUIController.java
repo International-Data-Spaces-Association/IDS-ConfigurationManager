@@ -15,6 +15,8 @@ import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorCl
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.configmanagement.service.EndpointService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -37,13 +39,13 @@ import java.util.List;
 @RequestMapping("/api/ui")
 @Slf4j
 @Tag(name = "Endpoints Management", description = "Different endpoint types can be managed here")
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class EndpointUIController implements EndpointUIApi {
-
-    private transient final Serializer serializer;
-    private transient final ObjectMapper objectMapper;
-    private transient final ConfigModelService configModelService;
-    private transient final EndpointService endpointService;
-    private transient final DefaultConnectorClient client;
+    transient Serializer serializer;
+    transient ObjectMapper objectMapper;
+    transient ConfigModelService configModelService;
+    transient EndpointService endpointService;
+    transient DefaultConnectorClient client;
 
     @Autowired
     public EndpointUIController(final Serializer serializer,

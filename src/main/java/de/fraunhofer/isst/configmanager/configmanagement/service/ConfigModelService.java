@@ -15,7 +15,9 @@ import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.config.ConfigModelObject;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configlists.ConfigModelRepository;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,11 +32,12 @@ import java.util.List;
  */
 @Service
 @Slf4j
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ConfigModelService {
 
-    private transient final ConfigModelRepository configModelRepository;
+    transient final ConfigModelRepository configModelRepository;
     @Getter
-    private ConfigModelObject configModelObject;
+    ConfigModelObject configModelObject;
 
     @Autowired
     public ConfigModelService(final ConfigModelRepository configModelRepository,

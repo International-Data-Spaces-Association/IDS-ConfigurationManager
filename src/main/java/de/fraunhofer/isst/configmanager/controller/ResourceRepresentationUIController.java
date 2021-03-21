@@ -20,6 +20,8 @@ import de.fraunhofer.isst.configmanager.configmanagement.service.RepresentationE
 import de.fraunhofer.isst.configmanager.configmanagement.service.ResourceService;
 import de.fraunhofer.isst.configmanager.util.ValidateApiInput;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,12 +44,13 @@ import java.net.URI;
 @RequestMapping("/api/ui")
 @Tag(name = "Resource representation Management", description = "Endpoints for managing the " +
         "representation of a resource")
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ResourceRepresentationUIController implements ResourceRepresentationApi {
-    private transient final ConfigModelService configModelService;
-    private transient final RepresentationEndpointService representationEndpointService;
-    private transient final ResourceService resourceService;
-    private transient final DefaultConnectorClient client;
-    private transient final Serializer serializer;
+    transient ConfigModelService configModelService;
+    transient RepresentationEndpointService representationEndpointService;
+    transient ResourceService resourceService;
+    transient DefaultConnectorClient client;
+    transient Serializer serializer;
 
     @Autowired
     public ResourceRepresentationUIController(final ConfigModelService configModelService,

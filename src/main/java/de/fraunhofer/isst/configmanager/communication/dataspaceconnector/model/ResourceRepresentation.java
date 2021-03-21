@@ -2,7 +2,9 @@ package de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -30,19 +32,20 @@ import java.util.UUID;
                 "    }"
 )
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ResourceRepresentation implements Serializable {
 
     @Id
     @JsonProperty("uuid")
-    private UUID uuid;
+    UUID uuid;
 
     @JsonProperty("type")
-    private String type;
+    String type;
 
     @JsonProperty("byteSize")
-    private Integer byteSize;
+    Integer byteSize;
 
     @JsonProperty("source")
     @Column(columnDefinition = "BLOB")
-    private BackendSource source;
+    BackendSource source;
 }

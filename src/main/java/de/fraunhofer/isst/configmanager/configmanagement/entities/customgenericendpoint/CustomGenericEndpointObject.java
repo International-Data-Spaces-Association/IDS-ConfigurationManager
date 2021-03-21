@@ -12,9 +12,7 @@ import javax.persistence.Entity;
 @Entity
 @NoArgsConstructor
 public class CustomGenericEndpointObject extends BackendConfig<GenericEndpoint> {
-
     public CustomGenericEndpointObject(final GenericEndpoint endpoint) {
         super(endpoint);
     }
-
 }

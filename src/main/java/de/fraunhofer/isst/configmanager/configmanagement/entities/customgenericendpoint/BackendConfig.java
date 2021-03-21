@@ -2,8 +2,10 @@ package de.fraunhofer.isst.configmanager.configmanagement.entities.customgeneric
 
 import de.fraunhofer.iais.eis.Endpoint;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.converter.EndpointConverter;
+import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -18,14 +20,15 @@ import javax.persistence.MappedSuperclass;
 @Data
 @NoArgsConstructor
 @MappedSuperclass
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class BackendConfig<T extends Endpoint> {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    long id;
 
     @Convert(converter = EndpointConverter.class)
     @Column(columnDefinition = "TEXT")
-    private T endpoint;
+    T endpoint;
 
     public BackendConfig(final T endpoint) {
         this.endpoint = endpoint;

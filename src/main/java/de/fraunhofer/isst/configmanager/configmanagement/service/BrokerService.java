@@ -4,6 +4,8 @@ import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.config.BrokerStatus;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.config.CustomBroker;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configlists.CustomBrokerRepository;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -20,9 +22,10 @@ import java.util.stream.Collectors;
  */
 @Service
 @Slf4j
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class BrokerService {
-    private transient final CustomBrokerRepository customBrokerRepository;
-    private transient final ResourceService resourceService;
+    transient CustomBrokerRepository customBrokerRepository;
+    transient ResourceService resourceService;
 
     @Autowired
     public BrokerService(final CustomBrokerRepository customBrokerRepository,

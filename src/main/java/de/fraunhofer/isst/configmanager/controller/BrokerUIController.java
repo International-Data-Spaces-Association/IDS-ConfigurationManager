@@ -8,6 +8,8 @@ import de.fraunhofer.isst.configmanager.configmanagement.entities.config.CustomB
 import de.fraunhofer.isst.configmanager.configmanagement.service.BrokerService;
 import de.fraunhofer.isst.configmanager.util.Utility;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +31,11 @@ import java.util.List;
 @Tag(name = "Broker Management", description = "Endpoints for managing the brokers in the " +
         "configuration manager")
 @Slf4j
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class BrokerUIController implements BrokerUIApi {
-    private transient final BrokerService brokerService;
-    private transient final DefaultConnectorClient client;
-    private transient final ObjectMapper objectMapper;
+    transient BrokerService brokerService;
+    transient DefaultConnectorClient client;
+    transient ObjectMapper objectMapper;
 
     @Autowired
     public BrokerUIController(final BrokerService brokerService,

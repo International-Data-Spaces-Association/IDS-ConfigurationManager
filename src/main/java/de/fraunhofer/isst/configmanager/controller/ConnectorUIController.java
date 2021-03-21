@@ -10,6 +10,8 @@ import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelServ
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConnectorService;
 import de.fraunhofer.isst.configmanager.util.Utility;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +31,12 @@ import java.io.IOException;
 @Slf4j
 @Tag(name = "Connector Management", description = "Endpoints for managing the connectors in the " +
         "configuration manager")
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ConnectorUIController implements ConnectorUIApi {
-    private transient final ConnectorService connectorService;
-    private transient final ConfigModelService configModelService;
-    private transient final Serializer serializer;
-    private transient final DefaultConnectorClient client;
+    transient ConnectorService connectorService;
+    transient ConfigModelService configModelService;
+    transient Serializer serializer;
+    transient DefaultConnectorClient client;
 
     @Autowired
     public ConnectorUIController(final ConnectorService connectorService,

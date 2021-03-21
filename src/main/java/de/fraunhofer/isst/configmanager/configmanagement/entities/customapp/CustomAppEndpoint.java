@@ -14,9 +14,7 @@ import javax.persistence.Entity;
 @Entity
 @NoArgsConstructor
 public class CustomAppEndpoint extends BackendConfig<AppEndpoint> {
-
     public CustomAppEndpoint(final AppEndpoint appEndpoint) {
         super(appEndpoint);
     }
-
 }

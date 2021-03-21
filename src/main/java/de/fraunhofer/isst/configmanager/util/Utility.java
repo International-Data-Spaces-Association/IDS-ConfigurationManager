@@ -5,9 +5,9 @@ import de.fraunhofer.iais.eis.AppEndpointBuilder;
 import de.fraunhofer.iais.eis.AppEndpointType;
 import de.fraunhofer.iais.eis.CustomMediaTypeBuilder;
 import de.fraunhofer.iais.eis.Language;
-import de.fraunhofer.iais.eis.MediaType;
 import de.fraunhofer.iais.eis.util.TypedLiteral;
 import de.fraunhofer.iais.eis.util.Util;
+import lombok.experimental.UtilityClass;
 import net.minidev.json.JSONObject;
 
 import java.math.BigInteger;
@@ -17,6 +17,7 @@ import java.net.URISyntaxException;
 /**
  * Utility class which can be used to define helper methods.
  */
+@UtilityClass
 public class Utility {
 
     /**

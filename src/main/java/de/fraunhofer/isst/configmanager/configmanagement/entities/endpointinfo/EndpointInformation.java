@@ -1,6 +1,8 @@
 package de.fraunhofer.isst.configmanager.configmanagement.entities.endpointinfo;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,14 +14,15 @@ import javax.persistence.Id;
  */
 @Entity
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class EndpointInformation {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    private String routeId;
-    private String endpointId;
-    private transient int xCoordinate;
-    private transient int yCoordinate;
+    Long id;
+    String routeId;
+    String endpointId;
+    transient int xCoordinate;
+    transient int yCoordinate;
 
     public EndpointInformation() {
     }

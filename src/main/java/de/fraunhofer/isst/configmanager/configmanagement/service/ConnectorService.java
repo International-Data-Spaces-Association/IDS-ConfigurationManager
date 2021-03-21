@@ -9,6 +9,8 @@ import de.fraunhofer.iais.eis.SecurityProfile;
 import de.fraunhofer.iais.eis.util.TypedLiteral;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configlists.ConfigModelRepository;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,9 +25,10 @@ import java.util.List;
  */
 @Service
 @Slf4j
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ConnectorService {
 
-    private transient final ConfigModelService configModelService;
+    transient ConfigModelService configModelService;
 
     @Autowired
     public ConnectorService(final ConfigModelService configModelService,

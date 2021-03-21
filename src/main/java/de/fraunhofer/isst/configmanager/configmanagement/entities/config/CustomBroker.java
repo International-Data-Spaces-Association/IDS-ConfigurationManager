@@ -1,6 +1,8 @@
 package de.fraunhofer.isst.configmanager.configmanagement.entities.config;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -15,15 +17,16 @@ import java.util.List;
  */
 @Entity
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class CustomBroker {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    private URI brokerUri;
-    private String title;
-    private BrokerStatus brokerStatus;
+    Long id;
+    URI brokerUri;
+    String title;
+    BrokerStatus brokerStatus;
     @ElementCollection
-    private List<String> registeredResources;
+    List<String> registeredResources;
 
     public CustomBroker() {
     }

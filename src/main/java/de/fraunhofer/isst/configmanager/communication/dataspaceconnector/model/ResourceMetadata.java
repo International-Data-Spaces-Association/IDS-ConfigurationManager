@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.Column;
@@ -39,35 +41,36 @@ import java.util.List;
 )
 @Data
 @Slf4j
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ResourceMetadata implements Serializable {
     @JsonProperty("title")
-    private String title;
+    String title;
 
     @JsonProperty("description")
-    private String description;
+    String description;
 
     @ElementCollection
     @JsonProperty("keywords")
-    private List<String> keywords;
+    List<String> keywords;
 
     @Column(columnDefinition = "BLOB")
     @JsonProperty("policy")
-    private String policy;
+    String policy;
 
     @JsonProperty("owner")
-    private URI owner;
+    URI owner;
 
     @JsonProperty("license")
-    private URI license;
+    URI license;
 
     @JsonProperty("version")
-    private String version;
+    String version;
 
     @NotNull
     @ElementCollection
     @Column(columnDefinition = "BLOB")
     @JsonProperty("representations")
-    private List<ResourceRepresentation> representations;
+    List<ResourceRepresentation> representations;
 
     /**
      * {@inheritDoc}

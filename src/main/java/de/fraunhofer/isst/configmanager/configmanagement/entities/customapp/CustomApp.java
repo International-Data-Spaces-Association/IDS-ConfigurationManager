@@ -1,6 +1,8 @@
 package de.fraunhofer.isst.configmanager.configmanagement.entities.customapp;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -15,11 +17,12 @@ import java.util.List;
  */
 @Entity
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class CustomApp {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    private String title;
+    Long id;
+    String title;
     @OneToMany(cascade = CascadeType.ALL)
-    private List<CustomAppEndpoint> appEndpointList;
+    List<CustomAppEndpoint> appEndpointList;
 }

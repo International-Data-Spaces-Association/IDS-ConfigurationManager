@@ -10,6 +10,8 @@ import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.ResourceRepresentation;
 import de.fraunhofer.isst.configmanager.util.OkHttpUtils;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Credentials;
 import okhttp3.HttpUrl;
@@ -40,24 +42,25 @@ import java.util.UUID;
 @Slf4j
 @Service
 @ConditionalOnExpression("${dataspace.connector.enabled:false}")
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class DataspaceConnectorClient implements DefaultConnectorClient {
-    private static final Serializer SERIALIZER = new Serializer();
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+    static final Serializer SERIALIZER = new Serializer();
+    static final ObjectMapper MAPPER = new ObjectMapper();
 
-    private transient final OkHttpClient client = OkHttpUtils.getUnsafeOkHttpClient();
-    private transient final DataSpaceConnectorResourceMapper dataSpaceConnectorResourceMapper;
+    transient final OkHttpClient client = OkHttpUtils.getUnsafeOkHttpClient();
+    transient final DataSpaceConnectorResourceMapper dataSpaceConnectorResourceMapper;
 
     @Value("${dataspace.connector.host}")
-    private transient String dataSpaceConnectorHost;
+    transient String dataSpaceConnectorHost;
 
     @Value("${dataspace.connector.api.username}")
-    private transient String dataSpaceConnectorApiUsername;
+    transient String dataSpaceConnectorApiUsername;
 
     @Value("${dataspace.connector.api.password}")
-    private transient String dataSpaceConnectorApiPassword;
+    transient String dataSpaceConnectorApiPassword;
 
     @Value("${dataspace.connector.port}")
-    private transient Integer dataSpaceConnectorPort;
+    transient Integer dataSpaceConnectorPort;
 
     public DataspaceConnectorClient(final DataSpaceConnectorResourceMapper dataSpaceConnectorResourceMapper) {
         this.dataSpaceConnectorResourceMapper = dataSpaceConnectorResourceMapper;
