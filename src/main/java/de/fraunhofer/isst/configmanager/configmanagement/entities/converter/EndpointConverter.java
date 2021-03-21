@@ -17,14 +17,15 @@ public class EndpointConverter implements AttributeConverter<Endpoint, String> {
     private transient final Serializer serializer = new Serializer();
 
     /**
-     * This method serializes the endpoint, which is given in the parameter to a string, to be able to persist it
+     * This method serializes the endpoint, which is given in the parameter to a string, to be
+     * able to persist it
      * in the database.
      *
      * @param endpoint which is be serialized
      * @return serialized endpoint
      */
     @Override
-    public String convertToDatabaseColumn(Endpoint endpoint) {
+    public String convertToDatabaseColumn(final Endpoint endpoint) {
         try {
             return serializer.serialize(endpoint);
         } catch (IOException e) {
@@ -40,7 +41,7 @@ public class EndpointConverter implements AttributeConverter<Endpoint, String> {
      * @return deserialized endpoint
      */
     @Override
-    public Endpoint convertToEntityAttribute(String s) {
+    public Endpoint convertToEntityAttribute(final String s) {
         try {
             return serializer.deserialize(s, Endpoint.class);
         } catch (IOException e) {

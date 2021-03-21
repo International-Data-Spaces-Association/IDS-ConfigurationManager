@@ -17,7 +17,7 @@ public class RepresentationEndpointService {
     private transient final RepresentationEndpointRepository representationEndpointRepository;
 
     @Autowired
-    public RepresentationEndpointService(RepresentationEndpointRepository representationEndpointRepository) {
+    public RepresentationEndpointService(final RepresentationEndpointRepository representationEndpointRepository) {
         this.representationEndpointRepository = representationEndpointRepository;
     }
 
@@ -27,9 +27,9 @@ public class RepresentationEndpointService {
      * @param endpointId       id of the endpoint
      * @param representationId id of the representation
      */
-    public void createRepresentationEndpoint(URI endpointId, URI representationId) {
+    public void createRepresentationEndpoint(final URI endpointId, final URI representationId) {
 
-        RepresentationEndpointObject representationEndpointObject = new RepresentationEndpointObject();
+        final var representationEndpointObject = new RepresentationEndpointObject();
         representationEndpointObject.put(endpointId, representationId);
         representationEndpointRepository.save(representationEndpointObject);
     }

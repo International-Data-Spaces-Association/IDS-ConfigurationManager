@@ -21,7 +21,8 @@ import java.util.UUID;
                 "      \"byteSize\": 105,\n" +
                 "      \"source\": {\n" +
                 "        \"type\":\"http-get\", \n" +
-                "        \"url\": \"https://samples.openweathermap.org/data/2.5/weather?lat=35&lon=139&appid=439d4b804bc8187953eb36d2a8c26a02\",\n" +
+                "        \"url\": \"https://samples.openweathermap.org/data/2" +
+                ".5/weather?lat=35&lon=139&appid=439d4b804bc8187953eb36d2a8c26a02\",\n" +
                 "        \"username\": \"-\",\n" +
                 "        \"password\": \"-\",\n" +
                 "        \"system\": \"Open Weather Map API\"\n" +

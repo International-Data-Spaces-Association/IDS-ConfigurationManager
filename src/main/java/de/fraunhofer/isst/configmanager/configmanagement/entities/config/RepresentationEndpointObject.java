@@ -1,7 +1,14 @@
 package de.fraunhofer.isst.configmanager.configmanagement.entities.config;
 
 
-import javax.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,6 +21,8 @@ public class RepresentationEndpointObject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Getter
+    @Setter
     private long id;
 
     @ElementCollection
@@ -23,15 +32,7 @@ public class RepresentationEndpointObject {
         return map;
     }
 
-    public void put(URI endpointId, URI representationId) {
+    public void put(final URI endpointId, final URI representationId) {
         map.put(endpointId, representationId);
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
     }
 }

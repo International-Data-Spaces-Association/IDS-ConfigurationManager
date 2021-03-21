@@ -15,12 +15,13 @@ import java.util.GregorianCalendar;
 public class CalenderUtil {
 
     /**
-     * This method creates an XMLGreorgianCalender for for time specifications as created or modified.
+     * This method creates an XMLGreorgianCalender for for time specifications as created or
+     * modified.
      *
      * @return XMLGregorianCalender
      */
     public static XMLGregorianCalendar getGregorianNow() {
-        GregorianCalendar c = new GregorianCalendar();
+        final var c = new GregorianCalendar();
         c.setTime(new Date());
         try {
             return DatatypeFactory.newInstance().newXMLGregorianCalendar(c);

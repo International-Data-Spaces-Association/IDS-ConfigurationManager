@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * CRUD repository for caching the resource representation associated with the endpoint
  */
 public interface RepresentationEndpointRepository extends JpaRepository<RepresentationEndpointObject, Long> {
-    
+
 }

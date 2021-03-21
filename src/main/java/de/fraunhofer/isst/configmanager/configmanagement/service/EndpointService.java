@@ -1,6 +1,10 @@
 package de.fraunhofer.isst.configmanager.configmanagement.service;
 
-import de.fraunhofer.iais.eis.*;
+import de.fraunhofer.iais.eis.BasicAuthenticationBuilder;
+import de.fraunhofer.iais.eis.Endpoint;
+import de.fraunhofer.iais.eis.GenericEndpoint;
+import de.fraunhofer.iais.eis.GenericEndpointBuilder;
+import de.fraunhofer.iais.eis.GenericEndpointImpl;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configlists.CustomGenericEndpointList;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configlists.CustomGenericEndpointRepository;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.customgenericendpoint.CustomGenericEndpointObject;
@@ -23,7 +27,7 @@ public class EndpointService {
     private transient CustomGenericEndpointList customGenericEndpointList;
 
     @Autowired
-    public EndpointService(CustomGenericEndpointRepository customGenericEndpointRepository) {
+    public EndpointService(final CustomGenericEndpointRepository customGenericEndpointRepository) {
 
         this.customGenericEndpointRepository = customGenericEndpointRepository;
     }
@@ -36,25 +40,30 @@ public class EndpointService {
      * @param password  password for the authentication
      * @return generic endpoint
      */
-    public GenericEndpoint createGenericEndpoint(String accessURL, String username, String password) {
+    public GenericEndpoint createGenericEndpoint(final String accessURL, final String username,
+                                                 final String password) {
         // Create generic endpoint
-        GenericEndpoint endpoint = new GenericEndpointBuilder()._accessURL_(URI.create(accessURL)).build();
-        var endpointImpl = (GenericEndpointImpl) endpoint;
+        final var endpoint =
+                new GenericEndpointBuilder()._accessURL_(URI.create(accessURL)).build();
+        final var endpointImpl = (GenericEndpointImpl) endpoint;
         if (username != null && password != null) {
             endpointImpl.setGenericEndpointAuthentication(new BasicAuthenticationBuilder()._authUsername_(username)
                     ._authPassword_(password).build());
-        } else{
-            log.info("---- No authentication was created because username and password were not entered.");
+        } else {
+            log.info("---- No authentication was created because username and password were not " +
+                    "entered.");
         }
         // Save the endpoint
-        CustomGenericEndpointObject customGenericEndpointObject = new CustomGenericEndpointObject(endpoint);
+        final var customGenericEndpointObject = new CustomGenericEndpointObject(endpoint);
         if (customGenericEndpointRepository.count() == 0) {
             customGenericEndpointList = new CustomGenericEndpointList();
         } else {
-            customGenericEndpointList = customGenericEndpointRepository.findAll().stream().findAny().get();
+            customGenericEndpointList =
+                    customGenericEndpointRepository.findAll().stream().findAny().get();
         }
         customGenericEndpointList.getCustomGenericEndpointObjects().add(customGenericEndpointObject);
-        customGenericEndpointList = customGenericEndpointRepository.saveAndFlush(customGenericEndpointList);
+        customGenericEndpointList =
+                customGenericEndpointRepository.saveAndFlush(customGenericEndpointList);
         return endpoint;
     }
 
@@ -63,7 +72,8 @@ public class EndpointService {
      */
     public List<Endpoint> getGenericEndpoints() {
         try {
-            customGenericEndpointList = customGenericEndpointRepository.findAll().stream().findAny().get();
+            customGenericEndpointList =
+                    customGenericEndpointRepository.findAll().stream().findAny().get();
             return customGenericEndpointList.getEndpoints();
         } catch (NoSuchElementException e) {
             return new ArrayList<>();
@@ -74,8 +84,9 @@ public class EndpointService {
      * @param id id of the generic endpoint
      * @return generic endpoint
      */
-    public GenericEndpoint getGenericEndpoint(URI id) {
-        customGenericEndpointList = customGenericEndpointRepository.findAll().stream().findAny().get();
+    public GenericEndpoint getGenericEndpoint(final URI id) {
+        customGenericEndpointList =
+                customGenericEndpointRepository.findAll().stream().findAny().get();
         return (GenericEndpoint) this.customGenericEndpointList.getEndpoints()
                 .stream()
                 .filter(endpoint -> endpoint.getId().equals(id))
@@ -86,10 +97,11 @@ public class EndpointService {
      * @param id id of the generic endpoint
      * @return true, if generic endpoint is deleted
      */
-    public boolean deleteGenericEndpoint(URI id) {
-        boolean deleted = customGenericEndpointList.getCustomGenericEndpointObjects()
+    public boolean deleteGenericEndpoint(final URI id) {
+        final boolean deleted = customGenericEndpointList.getCustomGenericEndpointObjects()
                 .removeIf(customGenericEndpointObject -> customGenericEndpointObject.getEndpoint().getId().equals(id));
-        customGenericEndpointList = customGenericEndpointRepository.saveAndFlush(customGenericEndpointList);
+        customGenericEndpointList =
+                customGenericEndpointRepository.saveAndFlush(customGenericEndpointList);
         return deleted;
     }
 
@@ -102,17 +114,18 @@ public class EndpointService {
      * @param password  password for the authentication
      * @return true, if generic endpoint is updated
      */
-    public boolean updateGenericEndpoint(URI id, String accessURL, String username, String password) {
+    public boolean updateGenericEndpoint(final URI id, final String accessURL,
+                                         final String username, final String password) {
         boolean updated = false;
-        GenericEndpoint genericEndpointold = getGenericEndpoint(id);
-        GenericEndpoint genericEndpointNew = getGenericEndpoint(id);
+        final var genericEndpointold = getGenericEndpoint(id);
+        final var genericEndpointNew = getGenericEndpoint(id);
 
         if (genericEndpointNew != null) {
-            var genericEndpointNewImpl = (GenericEndpointImpl) genericEndpointNew;
+            final var genericEndpointNewImpl = (GenericEndpointImpl) genericEndpointNew;
             if (accessURL != null) {
                 genericEndpointNewImpl.setAccessURL(URI.create(accessURL));
             }
-            BasicAuthentication basicAuthentication = genericEndpointNew.getGenericEndpointAuthentication();
+            final var basicAuthentication = genericEndpointNew.getGenericEndpointAuthentication();
 
             if (username != null && password != null) {
                 genericEndpointNewImpl.setGenericEndpointAuthentication(
@@ -132,10 +145,11 @@ public class EndpointService {
             }
         }
 
-        int index = this.getGenericEndpoints().indexOf(genericEndpointold);
+        final int index = this.getGenericEndpoints().indexOf(genericEndpointold);
         if (index != -1) {
             this.getGenericEndpoints().set(index, genericEndpointNew);
-            customGenericEndpointList = customGenericEndpointRepository.saveAndFlush(customGenericEndpointList);
+            customGenericEndpointList =
+                    customGenericEndpointRepository.saveAndFlush(customGenericEndpointList);
             updated = true;
         }
         return updated;

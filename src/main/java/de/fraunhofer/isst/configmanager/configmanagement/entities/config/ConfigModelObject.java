@@ -5,7 +5,12 @@ import de.fraunhofer.isst.configmanager.configmanagement.entities.converter.Conf
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 /**
  * Entity class for the configuration model.
@@ -23,7 +28,7 @@ public class ConfigModelObject {
     @Column(columnDefinition = "TEXT")
     private ConfigurationModel configurationModel;
 
-    public ConfigModelObject(ConfigurationModel configurationModel) {
+    public ConfigModelObject(final ConfigurationModel configurationModel) {
         this.configurationModel = configurationModel;
     }
 

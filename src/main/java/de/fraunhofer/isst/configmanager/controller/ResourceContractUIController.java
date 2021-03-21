@@ -24,7 +24,8 @@ import java.net.URI;
 @RestController
 @RequestMapping("/api/ui")
 @Slf4j
-@Tag(name = "Resource contracts Management", description = "Endpoints for managing the contracts of a resource")
+@Tag(name = "Resource contracts Management", description = "Endpoints for managing the contracts " +
+        "of a resource")
 public class ResourceContractUIController implements ResourceContractApi {
     private transient final ConfigModelService configModelService;
     private transient final ResourceService resourceService;
@@ -32,10 +33,10 @@ public class ResourceContractUIController implements ResourceContractApi {
     private transient final DefaultConnectorClient client;
 
     @Autowired
-    public ResourceContractUIController(ConfigModelService configModelService,
-                                        ResourceService resourceService,
-                                        Serializer serializer,
-                                        DefaultConnectorClient client) {
+    public ResourceContractUIController(final ConfigModelService configModelService,
+                                        final ResourceService resourceService,
+                                        final Serializer serializer,
+                                        final DefaultConnectorClient client) {
         this.configModelService = configModelService;
         this.resourceService = resourceService;
         this.serializer = serializer;
@@ -50,21 +51,23 @@ public class ResourceContractUIController implements ResourceContractApi {
      */
     @Override
     //TODO use resourceService getResources
-    public ResponseEntity<String> getResourceContract(URI resourceId) {
+    public ResponseEntity<String> getResourceContract(final URI resourceId) {
         log.info(">> GET /resource/contract resourceId: " + resourceId);
 
         if (configModelService.getConfigModel() == null ||
                 configModelService.getConfigModel().getConnectorDescription().getResourceCatalog() == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Could not find any resources!\"}");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Could not find " +
+                    "any resources!\"}");
         }
 
-        ContractOffer contractOffer = resourceService.getResourceContract(resourceId);
+        final var contractOffer = resourceService.getResourceContract(resourceId);
         if (contractOffer != null) {
             try {
                 return ResponseEntity.ok(serializer.serialize(contractOffer));
             } catch (IOException e) {
                 log.error(e.getMessage(), e);
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problems while parsing serializing " +
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problems " +
+                        "while parsing serializing " +
                         "the contract offer");
             }
         } else {
@@ -80,7 +83,8 @@ public class ResourceContractUIController implements ResourceContractApi {
      * @return a suitable http response depending on success
      */
     @Override
-    public ResponseEntity<String> updateResourceContract(URI resourceId, String contractJson) {
+    public ResponseEntity<String> updateResourceContract(final URI resourceId,
+                                                         final String contractJson) {
         log.info(">> PUT /resource/contract resourceId: " + resourceId + " contractJson: " + contractJson);
         // Create the updated contract offer
         ContractOffer contractOffer = null;
@@ -89,17 +93,18 @@ public class ResourceContractUIController implements ResourceContractApi {
                 contractOffer = serializer.deserialize(contractJson, ContractOffer.class);
             } catch (IOException e) {
                 log.error(e.getMessage(), e);
-                return ResponseEntity.badRequest().body("Problems while deserializing the contract");
+                return ResponseEntity.badRequest().body("Problems while deserializing the " +
+                        "contract");
             }
         }
 
         // Update the resource contract
         if (contractOffer != null) {
-            var jsonObject = new JSONObject();
+            final var jsonObject = new JSONObject();
             try {
                 jsonObject.put("resourceID", resourceId.toString());
                 jsonObject.put("contractID", contractOffer.getId().toString());
-                var response = client.updateResourceContract(resourceId.toString(), contractJson);
+                final var response = client.updateResourceContract(resourceId.toString(), contractJson);
                 resourceService.updateResourceContractInAppRoute(resourceId, contractOffer);
                 jsonObject.put("connectorResponse", response);
                 return ResponseEntity.ok(jsonObject.toJSONString());

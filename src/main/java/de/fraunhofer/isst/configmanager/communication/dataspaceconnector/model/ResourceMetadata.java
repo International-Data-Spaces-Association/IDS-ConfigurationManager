@@ -74,7 +74,7 @@ public class ResourceMetadata implements Serializable {
      */
     @Override
     public String toString() {
-        ObjectMapper mapper = new ObjectMapper();
+        final var mapper = new ObjectMapper();
         String jsonString = null;
         try {
             jsonString = mapper.writeValueAsString(this);

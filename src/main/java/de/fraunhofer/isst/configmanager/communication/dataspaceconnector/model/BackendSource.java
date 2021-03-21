@@ -28,7 +28,8 @@ public class BackendSource implements Serializable {
     /**
      * Constructor for BackendSource.
      */
-    public BackendSource() { }
+    public BackendSource() {
+    }
 
     /**
      * This enum is used to describe how the backend is accessed.
@@ -53,7 +54,7 @@ public class BackendSource implements Serializable {
 
         private final String type;
 
-        Type(String string) {
+        Type(final String string) {
             type = string;
         }
 

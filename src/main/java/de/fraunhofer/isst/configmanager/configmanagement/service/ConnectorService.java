@@ -1,6 +1,11 @@
 package de.fraunhofer.isst.configmanager.configmanagement.service;
 
-import de.fraunhofer.iais.eis.*;
+import de.fraunhofer.iais.eis.BaseConnector;
+import de.fraunhofer.iais.eis.BaseConnectorBuilder;
+import de.fraunhofer.iais.eis.BaseConnectorImpl;
+import de.fraunhofer.iais.eis.ConfigurationModelImpl;
+import de.fraunhofer.iais.eis.ConnectorEndpointBuilder;
+import de.fraunhofer.iais.eis.SecurityProfile;
 import de.fraunhofer.iais.eis.util.TypedLiteral;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configlists.ConfigModelRepository;
@@ -23,21 +28,24 @@ public class ConnectorService {
     private transient final ConfigModelService configModelService;
 
     @Autowired
-    public ConnectorService(ConfigModelService configModelService, ConfigModelRepository configModelRepository) {
+    public ConnectorService(final ConfigModelService configModelService,
+                            final ConfigModelRepository configModelRepository) {
         this.configModelService = configModelService;
 
         // If no connector is found in the database, a default connector is created at this point.
         if (configModelRepository.findAll().get(0).getConfigurationModel().getConnectorDescription() == null) {
-            log.info("---- No connector description is found in the configuration model! Creating default connector " +
+            log.info("---- No connector description is found in the configuration model! Creating" +
+                    " default connector " +
                     "description");
-            BaseConnector connector = new BaseConnectorBuilder()
+            final var connector = new BaseConnectorBuilder()
                     ._inboundModelVersion_(new ArrayList<>(List.of("3.1.0")))
                     ._outboundModelVersion_("3.1.0")
                     ._securityProfile_(SecurityProfile.BASE_SECURITY_PROFILE)
                     ._maintainer_(URI.create("https://example.com"))
                     ._curator_(URI.create("https://example.com"))
                     .build();
-            ConfigurationModelImpl configurationModel = (ConfigurationModelImpl) configModelService.getConfigModel();
+            final var configurationModel =
+                    (ConfigurationModelImpl) configModelService.getConfigModel();
             configurationModel.setConnectorDescription(connector);
         }
     }
@@ -53,9 +61,12 @@ public class ConnectorService {
      * @param outboundedModelVersion the outbounded model version of the connector
      * @return base connector
      */
-    public BaseConnector createConnector(String title, String description, String endpointAccessURL,
-                                         String version, String curator, String maintainer,
-                                         String inboundedModelVersion, String outboundedModelVersion) {
+    public BaseConnector createConnector(final String title, final String description,
+                                         final String endpointAccessURL,
+                                         final String version, final String curator,
+                                         final String maintainer,
+                                         final String inboundedModelVersion,
+                                         final String outboundedModelVersion) {
 
         return new BaseConnectorBuilder()
                 ._title_(Util.asList(new TypedLiteral(title)))
@@ -80,11 +91,14 @@ public class ConnectorService {
      * @param outboundModelVersion outbound model version of the connector
      * @return true, if connector is updated
      */
-    public boolean updateConnector(String title, String description, String endpointAccessURL, String version,
-                                   String curator, String maintainer, String inboundModelVersion, String outboundModelVersion) {
+    public boolean updateConnector(final String title, final String description,
+                                   final String endpointAccessURL, final String version,
+                                   final String curator, final String maintainer,
+                                   final String inboundModelVersion,
+                                   final String outboundModelVersion) {
 
         boolean updated = false;
-        var connector = (BaseConnectorImpl) configModelService.getConfigModel()
+        final var connector = (BaseConnectorImpl) configModelService.getConfigModel()
                 .getConnectorDescription();
         if (connector != null) {
             if (title != null) {
@@ -115,7 +129,7 @@ public class ConnectorService {
             connector.setSecurityProfile(SecurityProfile.BASE_SECURITY_PROFILE);
             updated = true;
         }
-        var configModelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
+        final var configModelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
         configModelImpl.setConnectorDescription(connector);
         configModelService.saveState();
         return updated;

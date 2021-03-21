@@ -1,6 +1,11 @@
 package de.fraunhofer.isst.configmanager.util;
 
-import de.fraunhofer.iais.eis.*;
+import de.fraunhofer.iais.eis.AppEndpoint;
+import de.fraunhofer.iais.eis.AppEndpointBuilder;
+import de.fraunhofer.iais.eis.AppEndpointType;
+import de.fraunhofer.iais.eis.CustomMediaTypeBuilder;
+import de.fraunhofer.iais.eis.Language;
+import de.fraunhofer.iais.eis.MediaType;
 import de.fraunhofer.iais.eis.util.TypedLiteral;
 import de.fraunhofer.iais.eis.util.Util;
 import net.minidev.json.JSONObject;
@@ -21,8 +26,8 @@ public class Utility {
      * @param value the value of the json object
      * @return json message
      */
-    public static String jsonMessage(String key, String value) {
-        var jsonObect = new JSONObject();
+    public static String jsonMessage(final String key, final String value) {
+        final var jsonObect = new JSONObject();
         jsonObect.put(key, value);
 
         return jsonObect.toJSONString();
@@ -44,14 +49,15 @@ public class Utility {
      * @return app endpoint
      * @throws URISyntaxException if uri can not be created
      */
-    public static AppEndpoint createAppEndpoint(AppEndpointType appEndpointType,
-                                                BigInteger port, String documentation,
-                                                String endpointInformation, String accessURL,
-                                                String inboundPath, String outboundPath,
-                                                Language language, String mediaType,
-                                                String path) throws URISyntaxException {
+    public static AppEndpoint createAppEndpoint(final AppEndpointType appEndpointType,
+                                                final BigInteger port, final String documentation,
+                                                final String endpointInformation,
+                                                final String accessURL,
+                                                final String inboundPath, final String outboundPath,
+                                                final Language language, final String mediaType,
+                                                final String path) throws URISyntaxException {
 
-        MediaType mediatype = new CustomMediaTypeBuilder()._filenameExtension_(mediaType).build();
+        final var mediatype = new CustomMediaTypeBuilder()._filenameExtension_(mediaType).build();
 
         return new AppEndpointBuilder()
                 ._appEndpointType_(appEndpointType)

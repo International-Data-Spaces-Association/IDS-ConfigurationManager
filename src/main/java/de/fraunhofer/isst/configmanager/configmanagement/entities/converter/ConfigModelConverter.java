@@ -17,14 +17,15 @@ public class ConfigModelConverter implements AttributeConverter<ConfigurationMod
     private transient final Serializer serializer = new Serializer();
 
     /**
-     * Converter method converts the value stored in the entity attribute into the data representation
+     * Converter method converts the value stored in the entity attribute into the data
+     * representation
      * to be stored in the database.
      *
      * @param configurationModel which is serialized
      * @return serialized configuration model
      */
     @Override
-    public String convertToDatabaseColumn(ConfigurationModel configurationModel) {
+    public String convertToDatabaseColumn(final ConfigurationModel configurationModel) {
         try {
             return serializer.serialize(configurationModel);
         } catch (IOException e) {
@@ -34,13 +35,14 @@ public class ConfigModelConverter implements AttributeConverter<ConfigurationMod
     }
 
     /**
-     * Converter converts the data stored in the database column into the value to be stored in the entity attribute.
+     * Converter converts the data stored in the database column into the value to be stored in
+     * the entity attribute.
      *
      * @param s the JSON-LD string
      * @return configuration model
      */
     @Override
-    public ConfigurationModel convertToEntityAttribute(String s) {
+    public ConfigurationModel convertToEntityAttribute(final String s) {
         try {
             return serializer.deserialize(s, ConfigurationModel.class);
         } catch (IOException e) {

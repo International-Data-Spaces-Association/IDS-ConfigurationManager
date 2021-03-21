@@ -5,7 +5,12 @@ import de.fraunhofer.isst.configmanager.configmanagement.entities.converter.Endp
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 
 /**
  * The class helps to persist objects inherited from the endpoint from the information model.
@@ -22,7 +27,7 @@ public class BackendConfig<T extends Endpoint> {
     @Column(columnDefinition = "TEXT")
     private T endpoint;
 
-    public BackendConfig(T endpoint) {
+    public BackendConfig(final T endpoint) {
         this.endpoint = endpoint;
     }
 }
