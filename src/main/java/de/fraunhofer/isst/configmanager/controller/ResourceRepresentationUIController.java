@@ -18,6 +18,7 @@ import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorCl
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.configmanagement.service.RepresentationEndpointService;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ResourceService;
+import de.fraunhofer.isst.configmanager.util.ValidateApiInput;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
@@ -82,6 +83,11 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
         log.info(">> POST /resource/representation resourceId: " + resourceId + " endpointId: " + endpointId + " language: " + language
                 + " filenameExtension: " + filenameExtension + " bytesize: " + bytesize + " " +
                 "sourceType: " + sourceType);
+
+        if (ValidateApiInput.notValid(resourceId.toString(), sourceType)) {
+            return ResponseEntity.badRequest().body("All validated parameter have undefined as " +
+                    "value!");
+        }
 
         if (resourceService.getResources() == null || resourceService.getResources().isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Could not find " +

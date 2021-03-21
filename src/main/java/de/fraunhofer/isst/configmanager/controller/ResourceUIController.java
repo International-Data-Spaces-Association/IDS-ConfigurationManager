@@ -1,10 +1,9 @@
 package de.fraunhofer.isst.configmanager.controller;
 
-import de.fraunhofer.iais.eis.Resource;
-import de.fraunhofer.iais.eis.ResourceImpl;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ResourceService;
+import de.fraunhofer.isst.configmanager.util.ValidateApiInput;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
@@ -50,6 +49,11 @@ public class ResourceUIController implements ResourceUIApi {
     public ResponseEntity<String> getResource(final URI resourceId) {
         log.info(">> GET /resource resourceId: " + resourceId);
 
+        if (ValidateApiInput.notValid(resourceId.toString())) {
+            return ResponseEntity.badRequest().body("All validated parameter have undefined as " +
+                    "value!");
+        }
+
         final var resource = resourceService.getResource(resourceId);
 
         if (resource != null) {
@@ -92,6 +96,11 @@ public class ResourceUIController implements ResourceUIApi {
     public ResponseEntity<String> getResourceInJson(final URI resourceId) {
         log.info(">> GET /resource/json resourceId: " + resourceId);
 
+        if (ValidateApiInput.notValid(resourceId.toString())) {
+            return ResponseEntity.badRequest().body("All validated parameter have undefined as " +
+                    "value!");
+        }
+
         final var resource = resourceService.getResource(resourceId);
 
         final var resourceJson = new JSONObject();
@@ -116,6 +125,12 @@ public class ResourceUIController implements ResourceUIApi {
     @Override
     public ResponseEntity<String> deleteResource(final URI resourceId) {
         log.info(">> DELETE /resource resourceId: " + resourceId);
+
+        if (ValidateApiInput.notValid(resourceId.toString())) {
+            return ResponseEntity.badRequest().body("All validated parameter have undefined as " +
+                    "value!");
+        }
+
         try {
             final var response = client.deleteResource(resourceId);
             resourceService.deleteResourceFromAppRoute(resourceId);
@@ -153,6 +168,13 @@ public class ResourceUIController implements ResourceUIApi {
                 "language: " + language + " keywords: " + keywords + " version: " + version + " " +
                 "standardlicense: " + standardlicense
                 + " publisher: " + publisher);
+
+        if (ValidateApiInput.notValid(title, description, language, version, standardlicense,
+                publisher)) {
+            return ResponseEntity.badRequest().body("All validated parameter have undefined as " +
+                    "value!");
+        }
+
 
         final var resource = resourceService.createResource(title, description, language,
                 keywords,
@@ -198,6 +220,10 @@ public class ResourceUIController implements ResourceUIApi {
                 "standardlicense: " + standardlicense
                 + " publisher: " + publisher);
 
+        if (ValidateApiInput.notValid(resourceId.toString(), title, description, language, version, standardlicense, publisher)) {
+            return ResponseEntity.badRequest().body("All validated parameter have undefined as " +
+                    "value!");
+        }
 
         // Save the updated resource and update the resource in the dataspace connector
         try {

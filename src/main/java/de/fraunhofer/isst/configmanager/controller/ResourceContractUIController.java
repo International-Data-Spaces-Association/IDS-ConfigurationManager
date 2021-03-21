@@ -5,6 +5,7 @@ import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ResourceService;
+import de.fraunhofer.isst.configmanager.util.ValidateApiInput;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
@@ -86,6 +87,12 @@ public class ResourceContractUIController implements ResourceContractApi {
     public ResponseEntity<String> updateResourceContract(final URI resourceId,
                                                          final String contractJson) {
         log.info(">> PUT /resource/contract resourceId: " + resourceId + " contractJson: " + contractJson);
+
+        if (contractJson.equals("{}") && ValidateApiInput.notValid(resourceId.toString())) {
+            return ResponseEntity.badRequest().body("All validated parameter have undefined as " +
+                    "value!");
+        }
+
         // Create the updated contract offer
         ContractOffer contractOffer = null;
         if (contractJson != null) {
