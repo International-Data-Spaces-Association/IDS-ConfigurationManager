@@ -37,7 +37,7 @@ public class ConnectorService {
 
         // If no connector is found in the database, a default connector is created at this point.
         if (configModelRepository.findAll().get(0).getConfigurationModel().getConnectorDescription() == null) {
-            log.info("---- No connector description is found in the configuration model! Creating" +
+            log.info("---- [ConnectorService] No connector description is found in the configuration model! Creating" +
                     " default connector " +
                     "description");
             final var connector = new BaseConnectorBuilder()

@@ -43,19 +43,19 @@ public class ConfigModelService {
     public ConfigModelService(final ConfigModelRepository configModelRepository,
                               final DefaultConnectorClient client) {
         this.configModelRepository = configModelRepository;
-        log.warn("---- Initial StartUp! Trying to get current Configuration from Connector!");
+        log.warn("---- [ConfigModelService] Initial StartUp! Trying to get current Configuration from Connector!");
         try {
             updateConfigModel(client.getConfiguration());
-            log.info("---- Received configuration from running Connector!");
+            log.info("---- [ConfigModelService] Received configuration from running Connector!");
         } catch (IOException e) {
-            log.warn("---- Could not get Configmodel from Connector! Using old Config if " +
+            log.warn("---- [ConfigModelService] Could not get Configmodel from Connector! Using old Config if " +
                     "available! " +
                     "Error establishing connection to connector: " + e.getMessage());
 
             if (configModelRepository.findAll().size() > 0) {
                 configModelObject = configModelRepository.findAll().get(0);
             } else {
-                log.warn("---- Connector Config not reachable and no old config available! Using " +
+                log.warn("---- [ConfigModelService] Connector Config not reachable and no old config available! Using " +
                         "new placeholder Config.");
                 createConfigModel(
                         "NO_LOGGING",

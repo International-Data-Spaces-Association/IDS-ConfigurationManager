@@ -33,13 +33,13 @@ public class AppService {
 
         // If db is empty dummy apps will be created
         if (customAppRepository.count() == 0) {
-            log.info("---- No custom app is found! Creating custom apps.");
+            log.info("---- [AppService] No custom app is found! Creating custom apps.");
             final List<CustomApp> customAppList = new ArrayList<>();
 
             final var customApp1 = new CustomApp();
             final var appName = System.getenv("CUSTOM_APP_NAME");
             customApp1.setTitle(Objects.requireNonNullElse(appName, "Custom App 1"));
-            log.info("---- Created custom app with title: " + customApp1.getTitle());
+            log.info("---- [AppService] Created custom app with title: " + customApp1.getTitle());
 
             final List<CustomAppEndpoint> customAppEndpoints = new ArrayList<>();
 

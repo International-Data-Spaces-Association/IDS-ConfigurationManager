@@ -9,14 +9,14 @@ import java.util.Arrays;
 @UtilityClass
 public class ValidateApiInput {
     public static boolean notValid(final String... parameter) {
-        log.info("---- Validating API Input ...");
+        log.info("---- [ValidateApiInput] Validating API Input ...");
 
         final var validationResult = Arrays.stream(parameter).dropWhile(param -> param.equals("undefined")).count() == 0;
 
         if (validationResult) {
-            log.error("---- Validating API Input ... Input is NOT valid!");
+            log.error("---- [ValidateApiInput] Validating API Input ... Input is NOT valid!");
         } else {
-            log.info("---- Validating API Input ... Input is valid! ");
+            log.info("---- [ValidateApiInput] Validating API Input ... Input is valid! ");
         }
 
         return validationResult;
