@@ -2,7 +2,9 @@ package de.fraunhofer.isst.configmanager.configmanagement.service;
 
 
 import de.fraunhofer.isst.configmanager.configmanagement.entities.config.RepresentationEndpointObject;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.RepresentationEndpointRepository;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.configlists.RepresentationEndpointRepository;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,12 +14,12 @@ import java.net.URI;
  * Service class to cache the resource representation associated with the endpoint
  */
 @Service
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class RepresentationEndpointService {
-
-    private final RepresentationEndpointRepository representationEndpointRepository;
+    transient  RepresentationEndpointRepository representationEndpointRepository;
 
     @Autowired
-    public RepresentationEndpointService(RepresentationEndpointRepository representationEndpointRepository) {
+    public RepresentationEndpointService(final RepresentationEndpointRepository representationEndpointRepository) {
         this.representationEndpointRepository = representationEndpointRepository;
     }
 
@@ -27,9 +29,9 @@ public class RepresentationEndpointService {
      * @param endpointId       id of the endpoint
      * @param representationId id of the representation
      */
-    public void createRepresentationEndpoint(URI endpointId, URI representationId) {
+    public void createRepresentationEndpoint(final URI endpointId, final URI representationId) {
 
-        RepresentationEndpointObject representationEndpointObject = new RepresentationEndpointObject();
+        final var representationEndpointObject = new RepresentationEndpointObject();
         representationEndpointObject.put(endpointId, representationId);
         representationEndpointRepository.save(representationEndpointObject);
     }

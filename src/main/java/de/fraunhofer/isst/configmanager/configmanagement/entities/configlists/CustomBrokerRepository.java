@@ -1,4 +1,4 @@
-package de.fraunhofer.isst.configmanager.configmanagement.entities.configLists;
+package de.fraunhofer.isst.configmanager.configmanagement.entities.configlists;
 
 import de.fraunhofer.isst.configmanager.configmanagement.entities.config.CustomBroker;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,11 +1,23 @@
 package de.fraunhofer.isst.configmanager.configmanagement.service;
 
-import de.fraunhofer.iais.eis.*;
+import de.fraunhofer.iais.eis.BaseConnectorBuilder;
+import de.fraunhofer.iais.eis.BasicAuthenticationBuilder;
+import de.fraunhofer.iais.eis.ConfigurationModel;
+import de.fraunhofer.iais.eis.ConfigurationModelBuilder;
+import de.fraunhofer.iais.eis.ConfigurationModelImpl;
+import de.fraunhofer.iais.eis.ConnectorDeployMode;
+import de.fraunhofer.iais.eis.ConnectorStatus;
+import de.fraunhofer.iais.eis.LogLevel;
+import de.fraunhofer.iais.eis.ProxyBuilder;
+import de.fraunhofer.iais.eis.ProxyImpl;
+import de.fraunhofer.iais.eis.SecurityProfile;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.config.ConfigModelObject;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.configLists.ConfigModelRepository;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.configlists.ConfigModelRepository;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,47 +32,40 @@ import java.util.List;
  */
 @Service
 @Slf4j
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ConfigModelService {
 
-    private final ConfigModelRepository configModelRepository;
-    private final DefaultConnectorClient client;
+    transient final ConfigModelRepository configModelRepository;
     @Getter
-    private ConfigModelObject configModelObject;
-    private boolean startUp = true;
+    ConfigModelObject configModelObject;
 
     @Autowired
-    public ConfigModelService(ConfigModelRepository configModelRepository,
-                              DefaultConnectorClient client) {
+    public ConfigModelService(final ConfigModelRepository configModelRepository,
+                              final DefaultConnectorClient client) {
         this.configModelRepository = configModelRepository;
-        this.client = client;
-        if (startUp) {
-            startUp = false; //initially load conifguration from connector at ConfigManagerStartUp
-            log.warn("Initial StartUp! Trying to get current Configuration from Connector!");
-            try {
-                updateConfigModel(client.getConfiguration());
-//                getOfferedResources();
-                log.info("Received configuration from running Connector!");
-            } catch (IOException e) {
-                log.warn("Could not get Configmodel from Connector! Using old Config if available! " +
-                        "Error establishing connection to connector: " + e.getMessage());
+        log.warn("---- [ConfigModelService] Initial StartUp! Trying to get current Configuration from Connector!");
+        try {
+            updateConfigModel(client.getConfiguration());
+            log.info("---- [ConfigModelService] Received configuration from running Connector!");
+        } catch (IOException e) {
+            log.warn("---- [ConfigModelService] Could not get Configmodel from Connector! Using old Config if " +
+                    "available! " +
+                    "Error establishing connection to connector: " + e.getMessage());
 
-                if (configModelRepository.findAll().size() > 0) {
-                    configModelObject = configModelRepository.findAll().get(0);
-                } else {
-                    log.warn("Connector Config not reachable and no old config available! Using new placeholder Config.");
-                    createConfigModel(
-                            "NO_LOGGING",
-                            "TEST_DEPLOYMENT",
-                            "http://truststore",
-                            "password",
-                            "http://keystore",
-                            "password"
-                    );
-                }
+            if (configModelRepository.findAll().size() > 0) {
+                configModelObject = configModelRepository.findAll().get(0);
+            } else {
+                log.warn("---- [ConfigModelService] Connector Config not reachable and no old config available! Using " +
+                        "new placeholder Config.");
+                createConfigModel(
+                        "NO_LOGGING",
+                        "TEST_DEPLOYMENT",
+                        "http://truststore",
+                        "password",
+                        "http://keystore",
+                        "password"
+                );
             }
-        } else {
-            log.info("No StartUp! Reloading old configuration");
-            configModelObject = configModelRepository.findAll().get(0);
         }
     }
 
@@ -92,11 +97,14 @@ public class ConfigModelService {
      * @param keyStorePassword    password for the key store
      * @return configurationmodel
      */
-    public ConfigurationModel createConfigModel(String loglevel, String connectorDeployMode,
-                                                String trustStore, String trustStorePassword, String keyStore,
-                                                String keyStorePassword) {
+    public ConfigurationModel createConfigModel(final String loglevel,
+                                                final String connectorDeployMode,
+                                                final String trustStore,
+                                                final String trustStorePassword,
+                                                final String keyStore,
+                                                final String keyStorePassword) {
 
-        BaseConnector connector = new BaseConnectorBuilder()
+        final var connector = new BaseConnectorBuilder()
                 ._inboundModelVersion_(new ArrayList<>(List.of("3.1.0")))
                 ._outboundModelVersion_("3.1.0")
                 ._securityProfile_(SecurityProfile.BASE_SECURITY_PROFILE)
@@ -104,7 +112,7 @@ public class ConfigModelService {
                 ._curator_(URI.create("https://example.com"))
                 .build();
 
-        ConfigurationModel configurationModel = new ConfigurationModelBuilder()
+        final var configurationModel = new ConfigurationModelBuilder()
                 ._configurationModelLogLevel_(LogLevel.valueOf(loglevel))
                 ._connectorDescription_(connector)
                 ._connectorStatus_(ConnectorStatus.CONNECTOR_ONLINE)
@@ -115,7 +123,8 @@ public class ConfigModelService {
                 ._keyStorePassword_(keyStorePassword)
                 .build();
 
-        // The configuration model is added to the list of configuration models and then stored in the database.
+        // The configuration model is added to the list of configuration models and then stored
+        // in the database.
         configModelRepository.saveAndFlush(new ConfigModelObject(configurationModel));
         return configurationModel;
     }
@@ -125,10 +134,11 @@ public class ConfigModelService {
      *
      * @param configurationModel which is updated
      */
-    public void updateConfigModel(ConfigurationModel configurationModel) {
+    public void updateConfigModel(final ConfigurationModel configurationModel) {
 
         configModelRepository.deleteAll();
-        configModelObject = configModelRepository.saveAndFlush(new ConfigModelObject(configurationModel));
+        configModelObject =
+                configModelRepository.saveAndFlush(new ConfigModelObject(configurationModel));
     }
 
     /**
@@ -155,12 +165,15 @@ public class ConfigModelService {
      * @param password            password for the authentication
      * @return true, if configuration model is updated
      */
-    public boolean updateConfigurationModel(String loglevel, String connectorDeployMode,
-                                            String trustStore, String trustStorePassword, String keyStore,
-                                            String keyStorePassword, String proxyUri, ArrayList<URI> noProxyUriList,
-                                            String username, String password) {
+    public boolean updateConfigurationModel(final String loglevel, final String connectorDeployMode,
+                                            final String trustStore,
+                                            final String trustStorePassword, final String keyStore,
+                                            final String keyStorePassword, final String proxyUri,
+                                            final ArrayList<URI> noProxyUriList,
+                                            final String username, final String password) {
 
-        ConfigurationModelImpl configModelImpl = (ConfigurationModelImpl) getConfigModelObject().getConfigurationModel();
+        final var configModelImpl =
+                (ConfigurationModelImpl) getConfigModelObject().getConfigurationModel();
         if (loglevel != null) {
             configModelImpl.setConfigurationModelLogLevel(LogLevel.valueOf(loglevel));
         }
@@ -198,14 +211,14 @@ public class ConfigModelService {
      * @param password        password for the authentication
      * @param configmodelImpl configuration model implementation
      */
-    public void updateProxySettings(String proxyUri, ArrayList<URI> noProxyUriList,
-                                    String username, String password,
-                                    ConfigurationModelImpl configmodelImpl) {
+    public void updateProxySettings(final String proxyUri, final ArrayList<URI> noProxyUriList,
+                                    final String username, final String password,
+                                    final ConfigurationModelImpl configmodelImpl) {
         if (proxyUri.equals("null")) {
             configmodelImpl.setConnectorProxy(null);
         } else {
             if (getConfigModelObject().getConfigurationModel().getConnectorProxy() == null) {
-                Proxy proxy = new ProxyBuilder()
+                final var proxy = new ProxyBuilder()
                         ._proxyURI_(URI.create(proxyUri))
                         ._noProxy_(noProxyUriList)
                         ._proxyAuthentication_(new BasicAuthenticationBuilder()
@@ -213,7 +226,8 @@ public class ConfigModelService {
                         .build();
                 configmodelImpl.setConnectorProxy(Util.asList(proxy));
             } else {
-                var proxyImpl = (ProxyImpl) getConfigModelObject().getConfigurationModel().getConnectorProxy().get(0);
+                final var proxyImpl =
+                        (ProxyImpl) getConfigModelObject().getConfigurationModel().getConnectorProxy().get(0);
 
                 proxyImpl.setProxyURI(URI.create(proxyUri));
                 if (noProxyUriList != null) {

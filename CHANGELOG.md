@@ -5,7 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [5.0.0] - UNRELEASED
+## [x.y.z] - UNRELEASED
+
+### Added
+- Print version number of used ConfigManager in scheduled log
+- Log incoming API calls
+- Interception of "undefined" API-parameter contents for most important APIs (e.g. "undefined" resourceId)
+
+### Changes
+- More detailed error logging with Class-/Methodnames where log is produced
+- Code refactoring
+
+### Fixes
+- POST /api/ui/broker/delete/resource not working
+- GET ​/api​/ui​/broker​/resource​/information does not return brokers
+- Encode API-Input/Output UTF8 (support german umlauts)
+
+## [5.0.0] - 2021-03-19
 
 ### Added
 - New API for returning the requested resources of a connected connector (/resources/requested)
@@ -14,6 +30,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixes
 - Workaround: Use BrokerUpdateMessage and send complete catalog instead of ResourceUpdateMessage when updating a resource at a Broker
+- Send Proxy Settings to Connector
+- Always load resources at startup of Connector
 
 ### Changes
 - Major Change: ProxySettings are now also set calling the /configmodel instead of having a additional API

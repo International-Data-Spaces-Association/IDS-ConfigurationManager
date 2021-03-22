@@ -7,10 +7,10 @@ import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,18 +28,18 @@ import java.util.ArrayList;
 @RestController
 @RequestMapping("/api/ui")
 @Slf4j
-@Tag(name = "ConfigModel Management", description = "Endpoints for managing the configuration model")
+@Tag(name = "ConfigModel Management", description = "Endpoints for managing the configuration " +
+        "model")
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ConfigModelController implements ConfigModelApi {
-
-    private final static Logger logger = LoggerFactory.getLogger(ResourceUIController.class);
-
-    private final Serializer serializer;
-    private final ConfigModelService configModelService;
-    private final DefaultConnectorClient client;
+    transient Serializer serializer;
+    transient ConfigModelService configModelService;
+    transient DefaultConnectorClient client;
 
     @Autowired
-    public ConfigModelController(Serializer serializer, ConfigModelService configModelService,
-                                 DefaultConnectorClient client) {
+    public ConfigModelController(final Serializer serializer,
+                                 final ConfigModelService configModelService,
+                                 final DefaultConnectorClient client) {
         this.serializer = serializer;
         this.configModelService = configModelService;
         this.client = client;
@@ -61,39 +61,55 @@ public class ConfigModelController implements ConfigModelApi {
      * @return a suitable http response depending on success
      */
     @Override
-    public ResponseEntity<String> updateConfigModel(String loglevel, String connectorDeployMode,
-                                                    String trustStore, String trustStorePassword, String keyStore,
-                                                    String keyStorePassword, String proxyUri, ArrayList<URI> noProxyUriList,
-                                                    String username, String password) {
+    public ResponseEntity<String> updateConfigModel(final String loglevel,
+                                                    final String connectorDeployMode,
+                                                    final String trustStore,
+                                                    final String trustStorePassword,
+                                                    final String keyStore,
+                                                    final String keyStorePassword,
+                                                    final String proxyUri,
+                                                    final ArrayList<URI> noProxyUriList,
+                                                    final String username, final String password) {
 
         log.info(">> PUT /configmodel loglevel: " + loglevel + " connectorDeployMode: " + connectorDeployMode + " trustStore: " + trustStore
-        + " trustStorePassword: " + trustStorePassword + " keyStore: " + keyStore + " keyStorePassword: " + keyStorePassword + " proxyUri: " + proxyUri
-        + " username: " + username + " password: " + password);
+                + " trustStorePassword: " + trustStorePassword + " keyStore: " + keyStore + " " +
+                "keyStorePassword: " + keyStorePassword + " proxyUri: " + proxyUri
+                + " username: " + username + " password: " + password);
 
-        var result = configModelService.updateConfigurationModel(loglevel, connectorDeployMode, trustStore,
-                trustStorePassword, keyStore, keyStorePassword, proxyUri, noProxyUriList, username, password);
+        final var result = configModelService.updateConfigurationModel(loglevel, connectorDeployMode,
+                trustStore,
+                trustStorePassword, keyStore, keyStorePassword, proxyUri, noProxyUriList,
+                username, password);
         if (result) {
-            var jsonObject = new JSONObject();
-            jsonObject.put("message", "Successfully updated the configuration model in the configuration manager");
+            final var jsonObject = new JSONObject();
+            jsonObject.put("message", "Successfully updated the configuration model in the " +
+                    "configuration manager");
             try {
-                // The configuration model is sent to the client without the app routes at this point,
+                // The configuration model is sent to the client without the app routes at this
+                // point,
                 // because of the different infomodels.
-                ConfigurationModelImpl configurationModel = (ConfigurationModelImpl) configModelService.getConfigModel();
+                final var configurationModel =
+                        (ConfigurationModelImpl) configModelService.getConfigModel();
                 configurationModel.setAppRoute(Util.asList());
-                var valid = client.sendConfiguration(serializer.serialize(configurationModel));
+                final var valid = client.sendConfiguration(serializer.serialize(configurationModel));
                 if (valid) {
-                    jsonObject.put("connectorResponse", "Successfully updated the configuration model at the client");
+                    jsonObject.put("connectorResponse", "Successfully updated the configuration " +
+                            "model at the client");
                     return ResponseEntity.ok(jsonObject.toJSONString());
                 } else {
-                    jsonObject.put("connectorResponse", "Failed to update the configuration model at the client");
+                    jsonObject.put("connectorResponse", "Failed to update the configuration model" +
+                            " at the client");
                     return ResponseEntity.badRequest().body(jsonObject.toJSONString());
                 }
             } catch (IOException e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problems while sending configuration" +
+                log.error(e.getMessage(), e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problems " +
+                        "while sending configuration" +
                         " to the client");
             }
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to update the configuration model");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to update the " +
+                    "configuration model");
         }
     }
 
@@ -108,7 +124,7 @@ public class ConfigModelController implements ConfigModelApi {
         try {
             return ResponseEntity.ok(serializer.serialize(configModelService.getConfigModel()));
         } catch (IOException e) {
-            logger.error(e.getMessage());
+            log.error(e.getMessage(), e);
             return ResponseEntity.badRequest().body("Could not determine the configuration model");
         }
     }
@@ -122,9 +138,9 @@ public class ConfigModelController implements ConfigModelApi {
     public ResponseEntity<String> getConfigModelJson() {
         log.info(">> GET /configmodel/json");
 
-        ConfigurationModel configurationModel = configModelService.getConfigModel();
+        final var configurationModel = configModelService.getConfigModel();
 
-        JSONObject configModelJson = new JSONObject();
+        final var configModelJson = new JSONObject();
         configModelJson.put("loglevel", configurationModel.getConfigurationModelLogLevel());
         configModelJson.put("connectorStatus", configurationModel.getConnectorStatus());
         configModelJson.put("connectorDeployMode", configurationModel.getConnectorDeployMode());

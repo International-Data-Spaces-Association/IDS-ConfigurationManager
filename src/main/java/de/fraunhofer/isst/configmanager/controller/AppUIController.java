@@ -2,9 +2,11 @@ package de.fraunhofer.isst.configmanager.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.customApp.CustomApp;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.customapp.CustomApp;
 import de.fraunhofer.isst.configmanager.configmanagement.service.AppService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,15 +18,17 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/ui")
-@Tag(name = "App Management", description = "Endpoints for managing the app in the configuration manager")
+@Tag(name = "App Management", description = "Endpoints for managing the app in the configuration " +
+        "manager")
 @Slf4j
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class AppUIController implements AppUIApi {
 
-    private final AppService appService;
-    private final ObjectMapper objectMapper;
+    transient AppService appService;
+    transient ObjectMapper objectMapper;
 
     @Autowired
-    public AppUIController(AppService appService, ObjectMapper objectMapper) {
+    public AppUIController(final AppService appService, final ObjectMapper objectMapper) {
         this.appService = appService;
         this.objectMapper = objectMapper;
     }
@@ -38,13 +42,15 @@ public class AppUIController implements AppUIApi {
     public ResponseEntity<String> getApps() {
         log.info(">> GET /apps");
 
-        List<CustomApp> customAppList = appService.getApps();
+        final var customAppList = appService.getApps();
 
-        if (customAppList.size() != 0) {
+        if (!customAppList.isEmpty()) {
             try {
                 return ResponseEntity.ok(objectMapper.writeValueAsString(customAppList));
             } catch (JsonProcessingException e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problems while parsing to json");
+                log.error(e.getMessage(), e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problems " +
+                        "while parsing to json");
             }
         } else {
             return ResponseEntity.badRequest().body("Could not find any app");
@@ -58,16 +64,18 @@ public class AppUIController implements AppUIApi {
      * @return a suitable http response depending on success
      */
     @Override
-    public ResponseEntity<String> getApp(String id) {
+    public ResponseEntity<String> getApp(final String id) {
         log.info(">> GET /app id: " + id);
 
-        CustomApp customApp = appService.getApp(id);
+        final var customApp = appService.getApp(id);
 
         if (customApp != null) {
             try {
                 return ResponseEntity.ok(objectMapper.writeValueAsString(customApp));
             } catch (JsonProcessingException e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problems while parsing to json");
+                log.error(e.getMessage(), e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problems " +
+                        "while parsing to json");
             }
         } else {
             return ResponseEntity.badRequest().body("Could not get app with id: " + id);

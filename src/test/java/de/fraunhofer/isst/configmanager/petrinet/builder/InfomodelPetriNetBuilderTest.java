@@ -3,10 +3,9 @@ package de.fraunhofer.isst.configmanager.petrinet.builder;
 import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.petrinet.simulator.PetriNetSimulator;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URI;
@@ -18,9 +17,8 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Test building a PetriNet from a randomly generated AppRoute
  */
+@Slf4j
 class InfomodelPetriNetBuilderTest {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(InfomodelPetriNetBuilderTest.class);
     private static final int MINIMUM_ENDPOINT = 5;
     private static final int MAXIMUM_ENDPOINT = 10;
 
@@ -54,13 +52,13 @@ class InfomodelPetriNetBuilderTest {
         //build a petriNet from the generated AppRoute and log generated GraphViz representation
         var petriNet = InfomodelPetriNetBuilder.petriNetFromAppRoute(appRoute, false);
         var ser = new Serializer();
-        LOGGER.info(ser.serialize(appRoute));
-        LOGGER.info(GraphVizGenerator.generateGraphViz(petriNet));
+        log.info(ser.serialize(appRoute));
+        log.info(GraphVizGenerator.generateGraphViz(petriNet));
 
         //build a full Graph of all possible steps in the PetriNet and log generated GraphViz representation
         var graph = PetriNetSimulator.buildStepGraph(petriNet);
-        LOGGER.info(String.valueOf(graph.getArcs().size()));
-        LOGGER.info(GraphVizGenerator.generateGraphViz(graph));
+        log.info(String.valueOf(graph.getArcs().size()));
+        log.info(GraphVizGenerator.generateGraphViz(graph));
     }
 
     /**

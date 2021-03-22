@@ -1,40 +1,41 @@
 package de.fraunhofer.isst.configmanager.configmanagement.entities.config;
 
 
-import javax.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.FieldDefaults;
+
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.net.URI;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Entity class for caching the resource representation id associated with the endpoint id.
  */
 @Entity
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class RepresentationEndpointObject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    @Getter
+    @Setter
+    long id;
 
     @ElementCollection
-    private Map<URI, URI> map = new HashMap<>();
-
-    public RepresentationEndpointObject() {
-    }
+    transient Map<URI, URI> map = new ConcurrentHashMap<>();
 
     public Map<URI, URI> getMap() {
         return map;
     }
 
-    public void put(URI endpointId, URI representationId) {
+    public void put(final URI endpointId, final URI representationId) {
         map.put(endpointId, representationId);
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
     }
 }
