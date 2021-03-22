@@ -18,8 +18,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixes
 - POST /api/ui/broker/delete/resource not working
-- GET ​/api​/ui​/broker​/resource​/information does not return brokers
+- GET /api/ui/broker/resource/information does not return brokers
 - Encode API-Input/Output UTF8 (support german umlauts)
+- Error 404 at PUT /contract 
+- Error 404 at POST /representation. 
 
 ## [5.0.0] - 2021-03-19
 
