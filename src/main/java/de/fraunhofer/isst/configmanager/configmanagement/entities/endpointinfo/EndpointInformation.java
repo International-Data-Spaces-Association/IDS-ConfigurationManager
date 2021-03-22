@@ -21,8 +21,8 @@ public class EndpointInformation {
     Long id;
     String routeId;
     String endpointId;
-    transient int xCoordinate;
-    transient int yCoordinate;
+    int xCoordinate;
+    int yCoordinate;
 
     public EndpointInformation() {
     }
