@@ -58,12 +58,6 @@ public class ResourceContractUIController implements ResourceContractApi {
     public ResponseEntity<String> getResourceContract(final URI resourceId) {
         log.info(">> GET /resource/contract resourceId: " + resourceId);
 
-        if (configModelService.getConfigModel() == null ||
-                configModelService.getConfigModel().getConnectorDescription().getResourceCatalog() == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Could not find " +
-                    "any resources!\"}");
-        }
-
         final var contractOffer = resourceService.getResourceContract(resourceId);
         if (contractOffer != null) {
             try {
