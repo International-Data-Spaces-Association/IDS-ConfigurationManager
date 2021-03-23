@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -350,8 +351,7 @@ public class BrokerUIController implements BrokerUIApi {
 
         final var jsonObjet = brokerService.getRegisStatusForResource(resourceId);
         if (jsonObjet == null) {
-            return ResponseEntity.badRequest().body("Could not get registration status for " +
-                    "resource");
+            return ResponseEntity.ok(new JSONArray().toJSONString());
         } else {
             return ResponseEntity.ok(jsonObjet.toJSONString());
         }
