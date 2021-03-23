@@ -10,7 +10,6 @@ import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.configmanagement.service.EndpointService;
-import de.fraunhofer.isst.configmanager.configmanagement.service.UtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -37,10 +36,10 @@ import java.util.ArrayList;
 @Tag(name = "Endpoints Management", description = "Different endpoint types can be managed here")
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class EndpointUIController implements EndpointUIApi {
+
     transient Serializer serializer;
     transient ObjectMapper objectMapper;
     transient ConfigModelService configModelService;
-    transient UtilService utilService;
     transient EndpointService endpointService;
     transient DefaultConnectorClient client;
 
@@ -48,13 +47,11 @@ public class EndpointUIController implements EndpointUIApi {
     public EndpointUIController(Serializer serializer,
                                 ObjectMapper objectMapper,
                                 ConfigModelService configModelService,
-                                UtilService utilService,
                                 EndpointService endpointService,
                                 DefaultConnectorClient client) {
         this.serializer = serializer;
         this.objectMapper = objectMapper;
         this.configModelService = configModelService;
-        this.utilService = utilService;
         this.endpointService = endpointService;
         this.client = client;
     }

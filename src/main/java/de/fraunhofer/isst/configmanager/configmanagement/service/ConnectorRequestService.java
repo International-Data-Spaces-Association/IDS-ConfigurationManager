@@ -4,6 +4,7 @@ import de.fraunhofer.iais.eis.BaseConnector;
 import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.iais.eis.ResourceCatalog;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +19,9 @@ import java.util.List;
  * Service class for managing external connector requests.
  */
 @Service
+@Slf4j
 public class ConnectorRequestService {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(AppRouteService.class);
     private final DefaultConnectorClient client;
 
     @Autowired
@@ -47,11 +48,11 @@ public class ConnectorRequestService {
                 }
                 return resourceList;
             } else {
-                LOGGER.info("Could not determine the resources of the connector");
+                log.info("Could not determine the resources of the connector");
                 return null;
             }
         } catch (IOException e) {
-            LOGGER.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             return null;
         }
     }
@@ -70,11 +71,11 @@ public class ConnectorRequestService {
             if (resource != null) {
                 return resource;
             } else {
-                LOGGER.info("Could not determine resource");
+                log.info("Could not determine resource");
                 return null;
             }
         } catch (IOException e) {
-            LOGGER.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             return null;
         }
     }
@@ -92,7 +93,7 @@ public class ConnectorRequestService {
         try {
             return client.requestContractAgreement(recipientId, requestedArtifactId, contractOffer);
         } catch (IOException e) {
-            LOGGER.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
         return null;
     }

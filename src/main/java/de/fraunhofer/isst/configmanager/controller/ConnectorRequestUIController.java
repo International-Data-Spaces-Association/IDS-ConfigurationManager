@@ -5,6 +5,7 @@ import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConnectorRequestService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,11 +23,11 @@ import java.util.List;
  * the request to external connectors.
  */
 @RestController
+@Slf4j
 @RequestMapping("/api/ui")
 @Tag(name = "Connector Request Management", description = "Endpoints for managing connector requests")
 public class ConnectorRequestUIController implements ConnectorRequestApi {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(ConnectorRequestUIController.class);
     private final ConnectorRequestService connectorRequestService;
 
     private final ObjectMapper objectMapper;
@@ -57,7 +58,7 @@ public class ConnectorRequestUIController implements ConnectorRequestApi {
                 try {
                     return ResponseEntity.ok(serializer.serialize(resource));
                 } catch (IOException e) {
-                    LOGGER.error(e.getMessage());
+                    log.error(e.getMessage());
                     return ResponseEntity.badRequest().body("Problems while serializing the resource");
                 }
             } else {
@@ -69,7 +70,7 @@ public class ConnectorRequestUIController implements ConnectorRequestApi {
                 try {
                     return ResponseEntity.ok(serializer.serialize(resources));
                 } catch (IOException e) {
-                    LOGGER.error(e.getMessage(), e);
+                    log.error(e.getMessage(), e);
                     return ResponseEntity.badRequest().body("Problems while serializing the list of resources");
                 }
             } else {
