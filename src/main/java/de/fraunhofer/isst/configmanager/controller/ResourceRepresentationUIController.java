@@ -6,8 +6,8 @@ import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelService;
-import de.fraunhofer.isst.configmanager.configmanagement.service.RepresentationEndpointService;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ResourceService;
+import de.fraunhofer.isst.configmanager.configmanagement.service.UtilService;
 import de.fraunhofer.isst.configmanager.util.ValidateApiInput;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
@@ -36,23 +36,24 @@ import java.net.URI;
         "representation of a resource")
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ResourceRepresentationUIController implements ResourceRepresentationApi {
+
     transient ConfigModelService configModelService;
-    transient RepresentationEndpointService representationEndpointService;
+    transient UtilService utilService;
     transient ResourceService resourceService;
     transient DefaultConnectorClient client;
     transient Serializer serializer;
 
     @Autowired
-    public ResourceRepresentationUIController(final ConfigModelService configModelService,
-                                              final ResourceService resourceService,
-                                              final DefaultConnectorClient client,
-                                              final Serializer serializer,
-                                              final RepresentationEndpointService representationEndpointService) {
+    public ResourceRepresentationUIController(ConfigModelService configModelService,
+                                              UtilService utilService,
+                                              ResourceService resourceService,
+                                              DefaultConnectorClient client,
+                                              Serializer serializer) {
         this.client = client;
         this.configModelService = configModelService;
         this.resourceService = resourceService;
+        this.utilService = utilService;
         this.serializer = serializer;
-        this.representationEndpointService = representationEndpointService;
     }
 
     /**
@@ -104,8 +105,6 @@ public class ResourceRepresentationUIController implements ResourceRepresentatio
             final var response = client.registerResourceRepresentation(resourceId.toString(),
                     representation, endpointId.toString());
             jsonObject.put("connectorResponse", response);
-            representationEndpointService.createRepresentationEndpoint(endpointId,
-                    representation.getId());
             return ResponseEntity.ok(jsonObject.toJSONString());
         } catch (IOException e) {
             log.error(e.getMessage(), e);

@@ -36,6 +36,7 @@ import java.util.ArrayList;
 @Tag(name = "Endpoints Management", description = "Different endpoint types can be managed here")
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class EndpointUIController implements EndpointUIApi {
+
     transient Serializer serializer;
     transient ObjectMapper objectMapper;
     transient ConfigModelService configModelService;
@@ -43,11 +44,11 @@ public class EndpointUIController implements EndpointUIApi {
     transient DefaultConnectorClient client;
 
     @Autowired
-    public EndpointUIController(final Serializer serializer,
-                                final ObjectMapper objectMapper,
-                                final ConfigModelService configModelService,
-                                final EndpointService endpointService,
-                                final DefaultConnectorClient client) {
+    public EndpointUIController(Serializer serializer,
+                                ObjectMapper objectMapper,
+                                ConfigModelService configModelService,
+                                EndpointService endpointService,
+                                DefaultConnectorClient client) {
         this.serializer = serializer;
         this.objectMapper = objectMapper;
         this.configModelService = configModelService;
@@ -156,7 +157,7 @@ public class EndpointUIController implements EndpointUIApi {
     public ResponseEntity<String> updateGenericEndpoint(final URI endpointId,
                                                         final String accessURL,
                                                         final String username, final String
-            password) {
+                                                                password) {
         log.info(">> PUT /generic/endpoint endpointId: " + endpointId + " accessURL: " + accessURL + " username: " + password);
 
         final boolean updated = endpointService.updateGenericEndpoint(endpointId, accessURL, username,
