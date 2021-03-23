@@ -72,7 +72,7 @@ public interface DefaultConnectorClient {
      * @param resourceId id of the resource
      * @return map from the id of the resource and the resource itself
      */
-    Resource getResource(String accessURL, String resourceId) throws IOException;
+    Resource getRequestedResource(String accessURL, String resourceId) throws IOException;
 
 
     /**

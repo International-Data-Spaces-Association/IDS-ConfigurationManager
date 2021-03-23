@@ -67,7 +67,7 @@ public class ConnectorRequestService {
     public Resource requestResource(URI recipientId, URI requestedResourceId) {
 
         try {
-            Resource resource = client.getResource(recipientId.toString(), requestedResourceId.toString());
+            Resource resource = client.getRequestedResource(recipientId.toString(), requestedResourceId.toString());
             if (resource != null) {
                 return resource;
             } else {

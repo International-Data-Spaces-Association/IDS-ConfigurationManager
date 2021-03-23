@@ -225,7 +225,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
     }
 
     @Override
-    public Resource getResource(String accessURL, String resourceId) throws IOException {
+    public Resource getRequestedResource(String accessURL, String resourceId) throws IOException {
         var builder = new Request.Builder();
         var urlBuilder = new HttpUrl.Builder()
                 .scheme("https")
