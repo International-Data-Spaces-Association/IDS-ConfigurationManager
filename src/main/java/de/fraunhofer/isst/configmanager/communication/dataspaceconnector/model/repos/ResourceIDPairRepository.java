@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * This repo persists an ResourceIDPair object internally in the H2 database, which helps to store the resource once
+ * This repo persists an ResourceIDPair object internally in the H2 database, which helps to
+ * store the resource once
  * with the uri and once with the uuid.
  */
 public interface ResourceIDPairRepository extends JpaRepository<ResourceIDPair, UUID> {

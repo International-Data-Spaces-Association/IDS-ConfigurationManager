@@ -1,14 +1,16 @@
 package de.fraunhofer.isst.configmanager.controller;
 
-import de.fraunhofer.iais.eis.*;
+import de.fraunhofer.iais.eis.ContractOffer;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
-import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelService;
+import de.fraunhofer.isst.configmanager.configmanagement.service.ResourceService;
+import de.fraunhofer.isst.configmanager.util.ValidateApiInput;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,19 +26,23 @@ import java.net.URI;
  */
 @RestController
 @RequestMapping("/api/ui")
-@Tag(name = "Resource contracts Management", description = "Endpoints for managing the contracts of a resource")
+@Slf4j
+@Tag(name = "Resource contracts Management", description = "Endpoints for managing the contracts " +
+        "of a resource")
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ResourceContractUIController implements ResourceContractApi {
-
-    private final static Logger logger = LoggerFactory.getLogger(ResourceContractUIController.class);
-
-    private final ConfigModelService configModelService;
-    private final Serializer serializer;
-    private final DefaultConnectorClient client;
+    transient ConfigModelService configModelService;
+    transient ResourceService resourceService;
+    transient Serializer serializer;
+    transient DefaultConnectorClient client;
 
     @Autowired
-    public ResourceContractUIController(ConfigModelService configModelService, Serializer serializer,
-                                        DefaultConnectorClient client) {
+    public ResourceContractUIController(final ConfigModelService configModelService,
+                                        final ResourceService resourceService,
+                                        final Serializer serializer,
+                                        final DefaultConnectorClient client) {
         this.configModelService = configModelService;
+        this.resourceService = resourceService;
         this.serializer = serializer;
         this.client = client;
     }
@@ -48,30 +54,22 @@ public class ResourceContractUIController implements ResourceContractApi {
      * @return a suitable http response depending on success
      */
     @Override
-    public ResponseEntity<String> getResourceContract(URI resourceId) {
+    public ResponseEntity<String> getResourceContract(final URI resourceId) {
+        log.info(">> GET /resource/contract resourceId: " + resourceId);
 
-        if (configModelService.getConfigModel() == null ||
-                configModelService.getConfigModel().getConnectorDescription().getResourceCatalog() == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Could not find any resources!\"}");
-        }
-
-        for (ResourceCatalog resourceCatalog : configModelService.getConfigModel()
-                .getConnectorDescription().getResourceCatalog()) {
-            if (resourceCatalog.getOfferedResource() != null) {
-                for (Resource resource : resourceCatalog.getOfferedResource()) {
-                    if (resourceId.equals(resource.getId())) {
-                        if (resource.getContractOffer().get(0) != null) {
-                            try {
-                                return ResponseEntity.ok(serializer.serialize(resource.getContractOffer().get(0)));
-                            } catch (IOException e) {
-                                logger.error(e.getMessage());
-                            }
-                        }
-                    }
-                }
+        final var contractOffer = resourceService.getResourceContract(resourceId);
+        if (contractOffer != null) {
+            try {
+                return ResponseEntity.ok(serializer.serialize(contractOffer));
+            } catch (IOException e) {
+                log.error(e.getMessage(), e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problems " +
+                        "while parsing serializing " +
+                        "the contract offer");
             }
+        } else {
+            return ResponseEntity.badRequest().body("Could not get the resource contract");
         }
-        return ResponseEntity.badRequest().body("Could not find the contract");
     }
 
     /**
@@ -82,11 +80,13 @@ public class ResourceContractUIController implements ResourceContractApi {
      * @return a suitable http response depending on success
      */
     @Override
-    public ResponseEntity<String> updateResourceContract(URI resourceId, String contractJson) {
+    public ResponseEntity<String> updateResourceContract(final URI resourceId,
+                                                         final String contractJson) {
+        log.info(">> PUT /resource/contract resourceId: " + resourceId + " contractJson: " + contractJson);
 
-        if (configModelService.getConfigModel() == null ||
-                configModelService.getConfigModel().getConnectorDescription().getResourceCatalog() == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Could not find any resources!\"}");
+        if (contractJson.equals("{}") && ValidateApiInput.notValid(resourceId.toString())) {
+            return ResponseEntity.badRequest().body("All validated parameter have undefined as " +
+                    "value!");
         }
 
         // Create the updated contract offer
@@ -95,60 +95,29 @@ public class ResourceContractUIController implements ResourceContractApi {
             try {
                 contractOffer = serializer.deserialize(contractJson, ContractOffer.class);
             } catch (IOException e) {
-                logger.error(e.getMessage());
+                log.error(e.getMessage(), e);
+                return ResponseEntity.badRequest().body("Problems while deserializing the " +
+                        "contract");
             }
         }
 
-        // Update resource representation in resource catalog
-        for (ResourceCatalog resourceCatalog : configModelService.getConfigModel()
-                .getConnectorDescription().getResourceCatalog()) {
-            if (resourceCatalog.getOfferedResource() != null) {
-                for (Resource resource : resourceCatalog.getOfferedResource()) {
-                    if (resourceId.equals(resource.getId())) {
-                        var resourceImpl = (ResourceImpl) resource;
-                        resourceImpl.setContractOffer(Util.asList(contractOffer));
-                        logger.info("Updated resource representation in the resource catalog");
-                        break;
-                    }
-                }
+        // Update the resource contract
+        if (contractOffer != null) {
+            final var jsonObject = new JSONObject();
+            try {
+                jsonObject.put("resourceID", resourceId.toString());
+                jsonObject.put("contractID", contractOffer.getId().toString());
+                final var response = client.updateResourceContract(resourceId.toString(), contractJson);
+                resourceService.updateResourceContractInAppRoute(resourceId, contractOffer);
+                jsonObject.put("connectorResponse", response);
+                return ResponseEntity.ok(jsonObject.toJSONString());
+            } catch (IOException e) {
+                log.error(e.getMessage(), e);
+                jsonObject.put("message", "Problems while updating the contract at the connector");
+                return ResponseEntity.badRequest().body(jsonObject.toJSONString());
             }
-        }
-
-        // Update resource representation in app route
-        if (configModelService.getConfigModel().getAppRoute() == null) {
-            logger.info("Could not find any app route");
         } else {
-            for (AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
-                if (appRoute.getHasSubRoute() != null) {
-                    for (RouteStep routeStep : appRoute.getHasSubRoute()) {
-                        if (routeStep.getAppRouteOutput() != null) {
-                            for (Resource resource : routeStep.getAppRouteOutput()) {
-                                if (resourceId.equals(resource.getId())) {
-                                    var resourceImpl = (ResourceImpl) resource;
-                                    resourceImpl.setContractOffer(Util.asList(contractOffer));
-                                    logger.info("Updated resource representation in the app route");
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            return ResponseEntity.badRequest().body("Could not update the resource representation");
         }
-
-        var jsonObject = new JSONObject();
-        try {
-            configModelService.saveState();
-            jsonObject.put("resourceID", resourceId.toString());
-            jsonObject.put("contractID", contractOffer.getId().toString());
-            var response = client.updateResourceContract(resourceId.toString(), contractOffer);
-            jsonObject.put("connectorResponse", response);
-            return ResponseEntity.ok(jsonObject.toJSONString());
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-            jsonObject.put("message", "Could not update the representation of the resource");
-            return ResponseEntity.badRequest().body(jsonObject.toJSONString());
-        }
-
     }
 }

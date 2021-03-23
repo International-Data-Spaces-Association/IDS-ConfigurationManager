@@ -4,7 +4,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.net.URI;
 
@@ -30,7 +32,11 @@ public interface ConfigModelApi {
                                              @RequestParam(value = "trustStore", required = false) String trustStore,
                                              @RequestParam(value = "trustStorePassword", required = false) String trustStorePassword,
                                              @RequestParam(value = "keyStore", required = false) String keyStore,
-                                             @RequestParam("keyStorePassword") String keyStorePassword);
+                                             @RequestParam(value = "keyStorePassword", required = false) String keyStorePassword,
+                                             @RequestParam(value = "proxyUri", required = false) String proxyUri,
+                                             @RequestParam(value = "noProxyUri", required = false) ArrayList<URI> noProxyUriList,
+                                             @RequestParam(value = "username", required = false) String username,
+                                             @RequestParam(value = "password", required = false) String password);
 
 
     @GetMapping(value = "/configmodel", produces = "application/ld+json")

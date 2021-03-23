@@ -26,10 +26,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class BrokerUIAPITest {
 
     @Autowired
-    private MockMvc mockMvc;
+    private transient MockMvc mockMvc;
 
     @MockBean
-    private BrokerService brokerService;
+    private transient BrokerService brokerService;
 
     @MockBean
     private DefaultConnectorClient defaultConnectorClient;

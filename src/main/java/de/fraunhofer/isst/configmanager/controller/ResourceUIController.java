@@ -1,18 +1,14 @@
 package de.fraunhofer.isst.configmanager.controller;
 
-import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
-import de.fraunhofer.iais.eis.util.TypedLiteral;
-import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
-import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ResourceService;
-import de.fraunhofer.isst.configmanager.util.CalenderUtil;
+import de.fraunhofer.isst.configmanager.util.ValidateApiInput;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import net.minidev.json.JSONArray;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * The controller class implements the ResourceUIApi and offers the possibilities to manage
@@ -30,21 +25,19 @@ import java.util.Collection;
  */
 @RestController
 @RequestMapping("/api/ui")
-@Tag(name = "Resource Management", description = "Endpoints for managing the resource in the configuration manager")
+@Slf4j
+@Tag(name = "Resource Management", description = "Endpoints for managing the resource in the " +
+        "configuration manager")
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ResourceUIController implements ResourceUIApi {
-
-    private final static Logger logger = LoggerFactory.getLogger(ResourceUIController.class);
-
-    private final ResourceService resourceService;
-    private final ConfigModelService configModelService;
-    private final DefaultConnectorClient client;
-    private final Serializer serializer;
+    transient ResourceService resourceService;
+    transient DefaultConnectorClient client;
+    transient Serializer serializer;
 
     @Autowired
-    public ResourceUIController(ResourceService resourceService, ConfigModelService configModelService,
-                                DefaultConnectorClient client, Serializer serializer) {
+    public ResourceUIController(final ResourceService resourceService,
+                                final DefaultConnectorClient client, final Serializer serializer) {
         this.resourceService = resourceService;
-        this.configModelService = configModelService;
         this.client = client;
         this.serializer = serializer;
     }
@@ -56,15 +49,23 @@ public class ResourceUIController implements ResourceUIApi {
      * @return a suitable http response depending on success
      */
     @Override
-    public ResponseEntity<String> getResource(URI resourceId) {
+    public ResponseEntity<String> getResource(final URI resourceId) {
+        log.info(">> GET /resource resourceId: " + resourceId);
 
-        Resource resource = resourceService.getResource(resourceId);
+        if (ValidateApiInput.notValid(resourceId.toString())) {
+            return ResponseEntity.badRequest().body("All validated parameter have undefined as " +
+                    "value!");
+        }
+
+        final var resource = resourceService.getResource(resourceId);
 
         if (resource != null) {
             try {
                 return ResponseEntity.ok(serializer.serialize(resource));
             } catch (IOException e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not serialize resource!");
+                log.error(e.getMessage(), e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not " +
+                        "serialize resource!");
             }
         } else {
             return ResponseEntity.badRequest().body("Could not determine the resource");
@@ -78,24 +79,14 @@ public class ResourceUIController implements ResourceUIApi {
      */
     @Override
     public ResponseEntity<String> getResources() {
+        log.info(">> GET /resources");
+        return ResponseEntity.ok(resourceService.getOfferedResourcesAsJsonString());
+    }
 
-        if (configModelService.getConfigModel() == null
-                || configModelService.getConfigModel().getConnectorDescription() == null
-                || configModelService.getConfigModel().getConnectorDescription().getResourceCatalog() == null) {
-            return ResponseEntity.ok(new JSONArray().toJSONString());
-        }
-
-        ArrayList<Resource> resources = resourceService.getResources();
-        if (resources != null) {
-            try {
-                return ResponseEntity.ok(serializer.serialize(resources));
-            } catch (IOException e) {
-                logger.error(e.getMessage());
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not serialize resources!");
-            }
-        } else {
-            return ResponseEntity.badRequest().body("Could not determine the resources");
-        }
+    @Override
+    public ResponseEntity<String> getRequestedResources() {
+        log.info(">> GET /resources/requested");
+        return ResponseEntity.ok(resourceService.getRequestedResourcesAsJsonString());
     }
 
     /**
@@ -105,11 +96,17 @@ public class ResourceUIController implements ResourceUIApi {
      * @return a suitable http response depending on success
      */
     @Override
-    public ResponseEntity<String> getResourceInJson(URI resourceId) {
+    public ResponseEntity<String> getResourceInJson(final URI resourceId) {
+        log.info(">> GET /resource/json resourceId: " + resourceId);
 
-        Resource resource = resourceService.getResource(resourceId);
+        if (ValidateApiInput.notValid(resourceId.toString())) {
+            return ResponseEntity.badRequest().body("All validated parameter have undefined as " +
+                    "value!");
+        }
 
-        JSONObject resourceJson = new JSONObject();
+        final var resource = resourceService.getResource(resourceId);
+
+        final var resourceJson = new JSONObject();
         resourceJson.put("title", resource.getTitle().get(0).getValue());
         resourceJson.put("description", resource.getDescription().get(0).getValue());
         resourceJson.put("keyword", resource.getKeyword());
@@ -121,50 +118,38 @@ public class ResourceUIController implements ResourceUIApi {
     }
 
     /**
-     * This method deletes the resource from the connector and the app route with the given parameter.
+     * This method deletes the resource from the connector and the app route with the given
+     * parameter.
      * If both are deleted the dataspace connector is informed about the change.
      *
      * @param resourceId id of the resource
      * @return http response from the target connector
      */
     @Override
-    public ResponseEntity<String> deleteResource(URI resourceId) {
+    public ResponseEntity<String> deleteResource(final URI resourceId) {
+        log.info(">> DELETE /resource resourceId: " + resourceId);
 
-        boolean deleted = configModelService.getConfigModel().getConnectorDescription().getResourceCatalog()
-                .stream()
-                .map(ResourceCatalog::getOfferedResource)
-                .map(resources -> resources.removeIf(resource -> resource.getId().equals(resourceId)))
-                .reduce(false, (a, b) -> a || b);
-
-        if (configModelService.getConfigModel().getAppRoute() == null) {
-            logger.info("Could not find any app route to delete the resource");
-        } else {
-            deleted |= configModelService.getConfigModel().getAppRoute().stream()
-                    .map(AppRoute::getHasSubRoute)
-                    .flatMap(Collection::stream)
-                    .map(RouteStep::getAppRouteOutput)
-                    .map(resources -> resources != null && resources.removeIf(resource -> resource.getId().equals(resourceId)))
-                    .reduce(false, (a, b) -> a || b);
+        if (ValidateApiInput.notValid(resourceId.toString())) {
+            return ResponseEntity.badRequest().body("All validated parameter have undefined as " +
+                    "value!");
         }
 
-        if (deleted) {
-            try {
-                var response = client.deleteResource(resourceId);
-                var jsonObject = new JSONObject();
-                jsonObject.put("connectorResponse", response);
-                jsonObject.put("resourceID", resourceId.toString());
-                return ResponseEntity.ok(jsonObject.toJSONString());
-            } catch (IOException e) {
-                e.printStackTrace();
-                return ResponseEntity.badRequest().body("Could not send delete request to connector");
-            }
-        } else {
-            return ResponseEntity.badRequest().body("Could not delete the resource");
+        try {
+            final var response = client.deleteResource(resourceId);
+            resourceService.deleteResourceFromAppRoute(resourceId);
+            final var jsonObject = new JSONObject();
+            jsonObject.put("connectorResponse", response);
+            jsonObject.put("resourceID", resourceId.toString());
+            return ResponseEntity.ok(jsonObject.toJSONString());
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+            return ResponseEntity.badRequest().body("Could not send delete request to connector");
         }
     }
 
     /**
-     * This method creates a resource with the given parameters. The special feature here is that the created resource
+     * This method creates a resource with the given parameters. The special feature here is that
+     * the created resource
      * is included once in the app route and once in the resource catalog of the connector.
      *
      * @param title           title of the resource
@@ -177,75 +162,44 @@ public class ResourceUIController implements ResourceUIApi {
      * @return response from the target connector
      */
     @Override
-    public ResponseEntity<String> createResource(String title, String description, String language,
-                                                 ArrayList<String> keywords, String version, String standardlicense,
-                                                 String publisher) {
+    public ResponseEntity<String> createResource(final String title, final String description,
+                                                 final String language,
+                                                 final ArrayList<String> keywords,
+                                                 final String version, final String standardlicense,
+                                                 final String publisher) {
+        log.info(">> POST /resource title: " + title + " description: " + description + " " +
+                "language: " + language + " keywords: " + keywords + " version: " + version + " " +
+                "standardlicense: " + standardlicense
+                + " publisher: " + publisher);
 
-
-        ArrayList<TypedLiteral> keys = new ArrayList<>();
-        for (String keyword : keywords) {
-            keys.add(new TypedLiteral(keyword));
+        if (ValidateApiInput.notValid(title, description, language, version, standardlicense,
+                publisher)) {
+            return ResponseEntity.badRequest().body("All validated parameter have undefined as " +
+                    "value!");
         }
 
-        var configModulIMpl = (ConfigurationModelImpl) configModelService.getConfigModel();
 
-        // Create the resource with the given parameters
-        Resource resource = new ResourceBuilder()
-                ._title_(Util.asList(new TypedLiteral(title)))
-                ._description_(Util.asList(new TypedLiteral(description)))
-                ._language_(Util.asList(Language.valueOf(language)))
-                ._keyword_(keys)
-                ._version_(version)
-                ._standardLicense_(URI.create(standardlicense))
-                ._publisher_(URI.create(publisher))
-                ._created_(CalenderUtil.getGregorianNow())
-                ._modified_(CalenderUtil.getGregorianNow())
-                .build();
-        var resourceImpl = (ResourceImpl) resource;
-
-        // Set Resource in Connector
-        var connectorImpl = (BaseConnectorImpl) configModulIMpl.getConnectorDescription();
-
-        if (connectorImpl.getResourceCatalog() == null) {
-            // New resource catalog will be set, if it is not existing
-            connectorImpl.setResourceCatalog(new ArrayList<>());
-        }
-        var oldCatalog = configModulIMpl.getConnectorDescription().getResourceCatalog()
-                .stream().findAny();
-        ArrayList<Resource> resources;
-        if (oldCatalog.isPresent()) {
-            //get the offers as List of Resources instead of Capture of ? extends Resource
-            resources = (ArrayList<Resource>) oldCatalog.get().getOfferedResource();
-            //add the resource to the list
-            resources.add(resourceImpl);
-        } else {
-            // Resource will be added to the list of offered resources and the resource catalog of the connector will be
-            // updated.
-            resources = new ArrayList<>();
-            resources.add(resourceImpl);
-            var catalog = new ResourceCatalogBuilder()
-                    ._offeredResource_(resources)
-                    ._requestedResource_(new ArrayList<>()).build();
-            connectorImpl.setResourceCatalog(Util.asList(catalog));
-        }
+        final var resource = resourceService.createResource(title, description, language,
+                keywords,
+                version, standardlicense, publisher);
 
         // Save and send request to dataspace connector
-        var jsonObject = new JSONObject();
+        final var jsonObject = new JSONObject();
         try {
-            configModelService.saveState();
-            jsonObject.put("resourceID", resourceImpl.getId().toString());
-            var response = client.registerResource(resourceImpl);
+            jsonObject.put("resourceID", resource.getId().toString());
+            final var response = client.registerResource(resource);
             jsonObject.put("connectorResponse", response);
             return ResponseEntity.ok(jsonObject.toJSONString());
         } catch (IOException e) {
             jsonObject.put("message", "Could not register resource at connector");
-            logger.error(e.getMessage());
+            log.error(e.getMessage(), e);
             return ResponseEntity.badRequest().body(jsonObject.toJSONString());
         }
     }
 
     /**
-     * This method updates a resource with the given parameters. The special feature here is that the resource
+     * This method updates a resource with the given parameters. The special feature here is that
+     * the resource
      * is updated once in the app route and once in the resource catalog of the connector.
      *
      * @param resourceId      id of the resource
@@ -259,63 +213,39 @@ public class ResourceUIController implements ResourceUIApi {
      * @return response from the target connector
      */
     @Override
-    public ResponseEntity<String> updateResource(URI resourceId, String title, String description, String language,
-                                                 ArrayList<String> keywords, String version, String standardlicense,
-                                                 String publisher) {
+    public ResponseEntity<String> updateResource(final URI resourceId, final String title,
+                                                 final String description, final String language,
+                                                 final ArrayList<String> keywords,
+                                                 final String version, final String standardlicense,
+                                                 final String publisher) {
+        log.info(">> PUT /resource title: " + title + " description: " + description + " language" +
+                ": " + language + " keywords: " + keywords + " version: " + version + " " +
+                "standardlicense: " + standardlicense
+                + " publisher: " + publisher);
 
-        // Update resource in resource catalog
-        ResourceImpl resourceImpl = null;
-        var configModelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
-        var catalogs = configModelImpl.getConnectorDescription().getResourceCatalog();
-        // Find the correct resource in the resource catalog of the connector
-        for (var catalog : catalogs) {
-            for (var offerdResource : catalog.getOfferedResource()) {
-                if (resourceId.equals(offerdResource.getId())) {
-                    resourceImpl = (ResourceImpl) offerdResource;
-                    break;
-                }
-            }
-        }
-        // Update the resource with the given parameters
-        if (resourceImpl != null) {
-            resourceService.updateResourceContent(title, description, language, keywords, version, standardlicense,
-                    publisher, resourceImpl);
-        }
-
-        // Update the resource in the app route
-        if (configModelService.getConfigModel().getAppRoute() == null) {
-            logger.info("Could not find any app route to update the resource");
-        } else {
-            ResourceImpl resourceImplApp = null;
-            for (AppRoute appRoute : configModelService.getConfigModel().getAppRoute()) {
-                if (appRoute.getHasSubRoute() != null) {
-                    for (RouteStep routeStep : appRoute.getHasSubRoute()) {
-                        if (routeStep.getAppRouteOutput() != null) {
-                            for (Resource resource : routeStep.getAppRouteOutput()) {
-                                if (resourceId.equals(resource.getId())) {
-                                    resourceImplApp = (ResourceImpl) resource;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            if (resourceImplApp != null) {
-                resourceService.updateResourceContent(title, description, language, keywords, version, standardlicense,
-                        publisher, resourceImplApp);
-            }
+        if (ValidateApiInput.notValid(resourceId.toString(), title, description, language, version, standardlicense, publisher)) {
+            return ResponseEntity.badRequest().body("All validated parameter have undefined as " +
+                    "value!");
         }
 
         // Save the updated resource and update the resource in the dataspace connector
         try {
-            configModelService.saveState();
-            var response = client.updateResource(resourceId, resourceImpl);
-            var jsonObject = new JSONObject();
-            jsonObject.put("connectorResponse", response);
-            jsonObject.put("resourceID", resourceId.toString());
-            return ResponseEntity.ok(jsonObject.toJSONString());
+            final var updatedResource = resourceService.updateResource(resourceId, title,
+                    description, language, keywords,
+                    version, standardlicense, publisher);
+            if (updatedResource != null) {
+                final var response = client.updateResource(resourceId, updatedResource);
+                resourceService.updateResourceInAppRoute(updatedResource);
+                final var jsonObject = new JSONObject();
+                jsonObject.put("connectorResponse", response);
+                jsonObject.put("resourceID", resourceId.toString());
+                return ResponseEntity.ok(jsonObject.toJSONString());
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("No " +
+                        "resource with ID %s was found!", resourceId));
+            }
         } catch (IOException e) {
+            log.error(e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }

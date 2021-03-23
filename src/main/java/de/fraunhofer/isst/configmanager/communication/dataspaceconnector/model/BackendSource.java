@@ -2,124 +2,68 @@ package de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
 import java.net.URI;
 
-/**
- * <p>BackendSource class.</p>
- *
- * @author Julia Pampus
- * @version $Id: $Id
- */
+
 @Schema(
         name = "BackendSource",
         description = "Information of the backend system.",
         oneOf = BackendSource.class
 )
+@Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class BackendSource implements Serializable {
+
+    @JsonProperty("type")
+    Type type;
     @JsonProperty("url")
-    private URI url;
-
+    URI url;
     @JsonProperty("username")
-    private String username;
-
+    String username;
     @JsonProperty("password")
-    private String password;
-
-    @JsonProperty("system")
-    private String system;
+    String password;
 
     /**
-     * <p>Constructor for BackendSource.</p>
+     * Constructor for BackendSource.
      */
     public BackendSource() {
     }
 
     /**
-     * <p>Constructor for BackendSource.</p>
-     *
-     * @param url a {@link java.net.URI} object.
-     * @param username a {@link java.lang.String} object.
-     * @param password a {@link java.lang.String} object.
-     * @param system a {@link java.lang.String} object.
+     * This enum is used to describe how the backend is accessed.
      */
-    public BackendSource(URI url, String username, String password, String system) {
-        this.url = url;
-        this.username = username;
-        this.password = password;
-        this.system = system;
-    }
+    @Schema(
+            name = "Type",
+            description = "Information of the backend system.",
+            oneOf = Type.class
+    )
+    public enum Type {
+        @JsonProperty("local")
+        LOCAL("local"),
 
-    /**
-     * <p>Getter for the field <code>url</code>.</p>
-     *
-     * @return a {@link java.net.URI} object.
-     */
-    public URI getUrl() {
-        return url;
-    }
+        @JsonProperty("http-get")
+        HTTP_GET("http-get"),
 
-    /**
-     * <p>Setter for the field <code>url</code>.</p>
-     *
-     * @param url a {@link java.net.URI} object.
-     */
-    public void setUrl(URI url) {
-        this.url = url;
-    }
+        @JsonProperty("https-get")
+        HTTPS_GET("https-get"),
 
-    /**
-     * <p>Getter for the field <code>username</code>.</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getUsername() {
-        return username;
-    }
+        @JsonProperty("https-get-basicauth")
+        HTTPS_GET_BASICAUTH("https-get-basicauth");
 
-    /**
-     * <p>Setter for the field <code>username</code>.</p>
-     *
-     * @param username a {@link java.lang.String} object.
-     */
-    public void setUsername(String username) {
-        this.username = username;
-    }
+        private final String type;
 
-    /**
-     * <p>Getter for the field <code>password</code>.</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getPassword() {
-        return password;
-    }
+        Type(final String string) {
+            type = string;
+        }
 
-    /**
-     * <p>Setter for the field <code>password</code>.</p>
-     *
-     * @param password a {@link java.lang.String} object.
-     */
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    /**
-     * <p>Getter for the field <code>system</code>.</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getSystem() {
-        return system;
-    }
-
-    /**
-     * <p>Setter for the field <code>system</code>.</p>
-     *
-     * @param system a {@link java.lang.String} object.
-     */
-    public void setSystem(String system) {
-        this.system = system;
+        @Override
+        public String toString() {
+            return type;
+        }
     }
 }

@@ -1,6 +1,6 @@
 package de.fraunhofer.isst.configmanager.controller;
 
-import de.fraunhofer.isst.configmanager.configmanagement.entities.routeDeployMethod.DeployMethod;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.routedeploymethod.DeployMethod;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -38,12 +38,6 @@ public interface AppRouteApi {
     @Operation(summary = "Returns all app routes")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully get all app routes")})
     ResponseEntity<String> getAppRoutes();
-
-    @GetMapping(value = "/approute/validate", produces = "application/ld+json")
-    @Operation(summary = "Validates the created routes for completeness and correctness")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "Validated the created routes for completeness" +
-            " and correctness")})
-    ResponseEntity<String> validateAppRoute(@RequestParam(value = "routeId") URI routeId);
 
     // Interfaces for managing route steps
     @GetMapping(value = "/approute/step", produces = "application/ld+json")

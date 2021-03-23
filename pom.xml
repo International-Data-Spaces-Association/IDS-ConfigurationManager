@@ -13,7 +13,7 @@
 
     <groupId>de.fraunhofer.isst</groupId>
     <artifactId>configurationmanager</artifactId>
-    <version>1.0.1</version>
+    <version>6.0.0</version>
     <name>Configuration Manager</name>
     <description>Configuration Manager developed by the Fraunhofer ISST</description>
 
@@ -193,19 +193,29 @@
         <dependency>
             <groupId>de.fraunhofer.iais.eis.ids.infomodel</groupId>
             <artifactId>java</artifactId>
-            <version>4.0.2-SNAPSHOT</version>
+            <version>4.0.2</version>
         </dependency>
 
         <dependency>
             <groupId>de.fraunhofer.iais.eis.ids.infomodel</groupId>
             <artifactId>util</artifactId>
-            <version>4.0.2-SNAPSHOT</version>
+            <version>4.0.2</version>
         </dependency>
+
+
+        <!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt -->
+        <!-- License: The JSON License -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20210307</version>
+        </dependency>
+
 
         <dependency>
             <groupId>de.fraunhofer.iais.eis.ids</groupId>
             <artifactId>infomodel-serializer</artifactId>
-            <version>4.0.2-SNAPSHOT</version>
+            <version>4.0.2</version>
             <exclusions>
                 <exclusion>
                     <groupId>de.fraunhofer.iais.eis.ids.infomodel</groupId>
@@ -242,5 +252,13 @@
             </plugin>
         </plugins>
     </build>
+         
+    <distributionManagement>
+        <repository>
+                <id>github</id>
+                <name>GitHub Packages</name>
+                <url>https://maven.pkg.github.com/International-Data-Spaces-Association/IDS-ConfigurationManager</url>
+        </repository>
+    </distributionManagement>
 
 </project>
