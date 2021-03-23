@@ -4,13 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.config.BrokerStatus;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.config.CustomBroker;
 import de.fraunhofer.isst.configmanager.configmanagement.service.BrokerService;
 import de.fraunhofer.isst.configmanager.util.Utility;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.List;
 
 /**
  * The controller class implements the BrokerAPI and offers the possibilities to manage
@@ -352,8 +351,7 @@ public class BrokerUIController implements BrokerUIApi {
 
         final var jsonObjet = brokerService.getRegisStatusForResource(resourceId);
         if (jsonObjet == null) {
-            return ResponseEntity.badRequest().body("Could not get registration status for " +
-                    "resource");
+            return ResponseEntity.ok(new JSONArray().toJSONString());
         } else {
             return ResponseEntity.ok(jsonObjet.toJSONString());
         }

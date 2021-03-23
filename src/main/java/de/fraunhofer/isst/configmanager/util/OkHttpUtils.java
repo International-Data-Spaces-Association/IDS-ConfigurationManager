@@ -7,6 +7,7 @@ import okhttp3.OkHttpClient;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Utility Class for generating an OkHttpClient which does not validate Certificate Chains.
@@ -51,6 +52,9 @@ public class OkHttpUtils {
             final var builder = new OkHttpClient.Builder();
             builder.sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0]);
             builder.hostnameVerifier((hostname, session) -> true);
+            builder.connectTimeout(30, TimeUnit.SECONDS);
+            builder.writeTimeout(30, TimeUnit.SECONDS);
+            builder.readTimeout(30, TimeUnit.SECONDS);
 
             return builder.build();
         } catch (Exception e) {

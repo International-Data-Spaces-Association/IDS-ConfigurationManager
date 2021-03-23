@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [x.y.z] - UNRELEASED
+## [6.0.0] - UNRELEASED
 
 ### Added
 - Print version number of used ConfigManager in scheduled log
@@ -13,8 +13,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Interception of "undefined" API-parameter contents for most important APIs (e.g. "undefined" resourceId)
 
 ### Changes
+- Major Change: if no broker has been created in CM, API /api/ui/broker/resource/information now returns empty list instead of status-code
 - More detailed error logging with Class-/Methodnames where log is produced
 - Code refactoring
+- increased timeout for a response from connector before readtimeout exception is thrown (30 sec instead of 10 sec before)
 
 ### Fixes
 - POST /api/ui/broker/delete/resource not working
@@ -22,6 +24,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Encode API-Input/Output UTF8 (support german umlauts)
 - Error 404 at PUT /contract 
 - Error 404 at POST /representation. 
+- DSC: Resources can now be edited and the updated information is now stored in the DSC
+- Recursively update all resource changes in approutes
 
 ## [5.0.0] - 2021-03-19
 

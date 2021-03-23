@@ -2,14 +2,10 @@ package de.fraunhofer.isst.configmanager.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.fraunhofer.iais.eis.BaseConnector;
 import de.fraunhofer.iais.eis.BaseConnectorImpl;
 import de.fraunhofer.iais.eis.ConfigurationModelImpl;
-import de.fraunhofer.iais.eis.Connector;
 import de.fraunhofer.iais.eis.ConnectorEndpoint;
 import de.fraunhofer.iais.eis.ConnectorEndpointBuilder;
-import de.fraunhofer.iais.eis.Endpoint;
-import de.fraunhofer.iais.eis.GenericEndpoint;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelService;
@@ -29,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The controller class implements the EndpointUIApi and offers the possibilities to manage
@@ -41,6 +36,7 @@ import java.util.List;
 @Tag(name = "Endpoints Management", description = "Different endpoint types can be managed here")
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class EndpointUIController implements EndpointUIApi {
+
     transient Serializer serializer;
     transient ObjectMapper objectMapper;
     transient ConfigModelService configModelService;
@@ -48,11 +44,11 @@ public class EndpointUIController implements EndpointUIApi {
     transient DefaultConnectorClient client;
 
     @Autowired
-    public EndpointUIController(final Serializer serializer,
-                                final ObjectMapper objectMapper,
-                                final ConfigModelService configModelService,
-                                final EndpointService endpointService,
-                                final DefaultConnectorClient client) {
+    public EndpointUIController(Serializer serializer,
+                                ObjectMapper objectMapper,
+                                ConfigModelService configModelService,
+                                EndpointService endpointService,
+                                DefaultConnectorClient client) {
         this.serializer = serializer;
         this.objectMapper = objectMapper;
         this.configModelService = configModelService;
@@ -161,7 +157,7 @@ public class EndpointUIController implements EndpointUIApi {
     public ResponseEntity<String> updateGenericEndpoint(final URI endpointId,
                                                         final String accessURL,
                                                         final String username, final String
-            password) {
+                                                                password) {
         log.info(">> PUT /generic/endpoint endpointId: " + endpointId + " accessURL: " + accessURL + " username: " + password);
 
         final boolean updated = endpointService.updateGenericEndpoint(endpointId, accessURL, username,

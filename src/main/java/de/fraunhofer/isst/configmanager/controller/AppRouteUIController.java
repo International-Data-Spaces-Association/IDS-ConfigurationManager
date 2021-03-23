@@ -4,11 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fraunhofer.iais.eis.AppRoute;
 import de.fraunhofer.iais.eis.AppRouteImpl;
-import de.fraunhofer.iais.eis.RouteStep;
 import de.fraunhofer.iais.eis.RouteStepImpl;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configlists.RouteDeployMethodRepository;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.endpointinfo.EndpointInformation;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.routedeploymethod.DeployMethod;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.routedeploymethod.RouteDeployMethod;
 import de.fraunhofer.isst.configmanager.configmanagement.service.AppRouteService;
@@ -29,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The controller class implements the AppRouteApi and offers the possibilities to manage
