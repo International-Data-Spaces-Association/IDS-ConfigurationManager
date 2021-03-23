@@ -8,12 +8,14 @@ import de.fraunhofer.iais.eis.Representation;
 import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
+import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.BackendSource;
 import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.ResourceRepresentation;
 import de.fraunhofer.isst.configmanager.util.OkHttpUtils;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Service;
@@ -564,26 +566,50 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
 
     @Override
     public String updateResource(final URI resourceID, final Resource resource) throws IOException {
-        log.info(String.format("---- updating resource at %s", dataSpaceConnectorHost));
+        log.info(String.format("---- [DataspaceConnectorClient updateResource] updating resource at %s", dataSpaceConnectorHost));
         final var mappedResource = dataSpaceConnectorResourceMapper.getMetadata(resource);
         final var path = resourceID.getPath();
         final var idStr = path.substring(path.lastIndexOf('/') + 1);
         final var resourceUUID = UUID.fromString(idStr);
-        final var resourceJsonLD = MAPPER.writeValueAsString(mappedResource);
+
+        BackendSource backendSource = new BackendSource();
+        try {
+            final var requestBackendBuilder = new Request.Builder();
+            requestBackendBuilder.url("https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin" +
+                    "/api/resources/" + resourceUUID);
+            requestBackendBuilder.get();
+            requestBackendBuilder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername,
+                    dataSpaceConnectorApiPassword));
+            final var request = requestBackendBuilder.build();
+            final var response = client.newCall(request).execute();
+
+            final var mapper = new ObjectMapper();
+            final var jsonTree = mapper.readTree(Objects.requireNonNull(response.body()).string());
+            JsonNode source = jsonTree.findValue("source");
+            backendSource.setType(BackendSource.Type.valueOf(source.get("type").asText().toUpperCase()));
+            backendSource.setUrl(URI.create(source.get("url").asText()));
+            backendSource.setUsername(source.get("username").asText());
+            backendSource.setPassword(source.get("password").asText());
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+
+        mappedResource.getRepresentations().get(0).setSource(backendSource);
+        var resourceJsonLD = MAPPER.writeValueAsString(mappedResource);
+
         final var builder = new Request.Builder();
         builder.url("https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin" +
                 "/api/resources/" + resourceUUID);
-        builder.put(RequestBody.create(resourceJsonLD, okhttp3.MediaType.parse("application/ld" +
-                "+json")));
+        builder.put(RequestBody.create(resourceJsonLD, okhttp3.MediaType.parse("application/ld+json")));
         builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername,
                 dataSpaceConnectorApiPassword));
         final var request = builder.build();
         final var response = client.newCall(request).execute();
         if (!response.isSuccessful()) {
-            log.warn(String.format("---- Updating Resource at %s failed!", dataSpaceConnectorHost));
+            log.warn(String.format("---- [DataspaceConnectorClient updateResource] Updating Resource at %s failed!", dataSpaceConnectorHost));
         }
         final var body = Objects.requireNonNull(response.body()).string();
-        log.info("---- Response: " + body);
+        log.info("---- [DataspaceConnectorClient updateResource] Response: " + body);
         return body;
     }
 
