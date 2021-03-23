@@ -172,6 +172,7 @@ public class ResourceService {
                 if (appRoute.getHasSubRoute() != null) {
                     updateResourceContractInSubroutes((List<RouteStep>) appRoute.getHasSubRoute(),
                             new ArrayList<>(), resourceId, contractOffer);
+                    configModelService.saveState();
                 }
             }
         }
@@ -419,6 +420,7 @@ public class ResourceService {
             for (var appRoute : configModelService.getConfigModel().getAppRoute()) {
                 if (appRoute.getHasSubRoute() != null) {
                     updateResourceInSubroutes((List<RouteStep>) appRoute.getHasSubRoute(), new ArrayList<>(), newResource);
+                    configModelService.saveState();
                 }
             }
         }
