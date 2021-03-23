@@ -1,6 +1,9 @@
 package de.fraunhofer.isst.configmanager.communication.clients;
 
-import de.fraunhofer.iais.eis.*;
+import de.fraunhofer.iais.eis.BaseConnector;
+import de.fraunhofer.iais.eis.ConfigurationModel;
+import de.fraunhofer.iais.eis.Representation;
+import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.ResourceRepresentation;
 
 import java.io.IOException;
@@ -9,12 +12,14 @@ import java.net.URI;
 /**
  * The interface DefaultConnectorClient defines methods that are implemented to make
  * configurations for the dataspace connector.
- * The implementations of the ConfigManager are oriented according to the structure of the dataspace connectors.
+ * The implementations of the ConfigManager are oriented according to the structure of the
+ * dataspace connectors.
  */
 public interface DefaultConnectorClient {
 
     /**
-     * The method helps to update connector in the broker. For this only the id of the corresponding broker
+     * The method helps to update connector in the broker. For this only the id of the
+     * corresponding broker
      * is necessary.
      *
      * @param brokerURI URI of the broker to update/register
@@ -24,7 +29,8 @@ public interface DefaultConnectorClient {
     String updateAtBroker(String brokerURI) throws IOException;
 
     /**
-     * The method removes the connector from the corresponding broker. For this only the id of the broker is necessary.
+     * The method removes the connector from the corresponding broker. For this only the id of
+     * the broker is necessary.
      *
      * @param brokerURI URI of the broker to unregister
      * @return Response of the unregister request of the connector
@@ -135,7 +141,8 @@ public interface DefaultConnectorClient {
      * @return Response of the target Connector
      * @throws IOException when an error occurs while sending the request
      */
-    String registerResourceRepresentation(String resourceID, Representation representation, String endpointId) throws IOException;
+    String registerResourceRepresentation(String resourceID, Representation representation,
+                                          String endpointId) throws IOException;
 
     /**
      * Send a resource representation update request to a connector.
@@ -146,7 +153,8 @@ public interface DefaultConnectorClient {
      * @return Response of the target Connector
      * @throws IOException when an error occurs while sending the request
      */
-    String updateResourceRepresentation(String resourceID, String representationID, Representation representation, String endpointId)
+    String updateResourceRepresentation(String resourceID, String representationID,
+                                        Representation representation, String endpointId)
             throws IOException;
 
     /**
@@ -169,7 +177,7 @@ public interface DefaultConnectorClient {
      * @return Response of the target Connector
      * @throws IOException when an error occurs while sending the request
      */
-    String updateResourceContract(String resourceID, Contract contract) throws IOException;
+    String updateResourceContract(String resourceID, String contract) throws IOException;
 
     /**
      * Returns the policy pattern for a given string.
@@ -188,6 +196,22 @@ public interface DefaultConnectorClient {
      * @throws IOException when an error occurs while sending the request
      */
     BaseConnector getSelfDeclaration() throws IOException;
+
+    /**
+     * Returns the offered resources of the self declaration of a connector
+     *
+     * @return json-string with all offered resources
+     * @throws IOException when an error occurs while sending the request
+     */
+    String getOfferedResourcesAsJsonString() throws IOException;
+
+    /**
+     * Returns the requested resources of the self declaration of a connector
+     *
+     * @return json-string with all requested resources
+     * @throws IOException when an error occurs while sending the request
+     */
+    String getRequestedResourcesAsJsonString() throws IOException;
 
     /**
      * Sends a contract request to a connector by building an ContractRequestMessage

@@ -12,14 +12,14 @@ import java.util.Set;
  */
 public class PlaceImpl implements Place {
 
-    private URI id;
+    private transient URI id;
     private int markers;
 
     @JsonIgnore
-    private Set<Arc> sourceArcs;
+    private transient Set<Arc> sourceArcs;
 
     @JsonIgnore
-    private Set<Arc> targetArcs;
+    private transient Set<Arc> targetArcs;
 
     public PlaceImpl(URI id){
         this.id = id;

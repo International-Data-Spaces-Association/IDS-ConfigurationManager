@@ -1,8 +1,10 @@
-package de.fraunhofer.isst.configmanager.configmanagement.entities.configLists;
+package de.fraunhofer.isst.configmanager.configmanagement.entities.configlists;
 
 import de.fraunhofer.iais.eis.Endpoint;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.customGenericEndpoint.CustomGenericEndpointObject;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.customgenericendpoint.CustomGenericEndpointObject;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -14,15 +16,16 @@ import java.util.stream.Collectors;
  */
 @Entity
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class CustomGenericEndpointList {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    long id;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn
-    private List<CustomGenericEndpointObject> customGenericEndpointObjects = new ArrayList<>();
+    List<CustomGenericEndpointObject> customGenericEndpointObjects = new ArrayList<>();
 
     /**
      * @return list of endpoints

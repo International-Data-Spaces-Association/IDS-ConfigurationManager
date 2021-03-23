@@ -22,7 +22,7 @@ public class GraphVizGenerator {
      * @return a DOT String, used for visualizing the PetriNet with GraphViz
      */
     public static String generateGraphViz(PetriNet petriNet){
-        StringBuilder s = new StringBuilder();
+        final var s = new StringBuilder();
         s.append("digraph graphname {");
         for(var node : petriNet.getNodes()){
             if(node instanceof TransitionImpl){

@@ -1,4 +1,4 @@
-package de.fraunhofer.isst.configmanager.configmanagement.entities.routeDeployMethod;
+package de.fraunhofer.isst.configmanager.configmanagement.entities.routedeploymethod;
 
 /**
  * Enums for the route deploy methods

@@ -3,7 +3,7 @@ package de.fraunhofer.isst.configmanager.configmanagement.service;
 import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.isst.configmanager.communication.dataspaceconnector.model.BackendSource;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.config.BrokerStatus;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.routeDeployMethod.DeployMethod;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.routedeploymethod.DeployMethod;
 import net.minidev.json.JSONArray;
 import org.springframework.stereotype.Service;
 
@@ -19,56 +19,54 @@ public class UtilService {
      * @param enumName name of the enum
      * @return enums as string
      */
-    public String getSpecificEnum(String enumName) {
-
-        JSONArray jsonArray = new JSONArray();
-
-        String name = enumName.toLowerCase();
+    public String getSpecificEnum(final String enumName) {
+        final var jsonArray = new JSONArray();
+        final var name = enumName.toLowerCase();
 
         if (name.contains("loglevel")) {
-            LogLevel[] logLevels = de.fraunhofer.iais.eis.LogLevel.values();
+            final var logLevels = LogLevel.values();
             for (int i = 0; i < logLevels.length; i++) {
                 jsonArray.add(i, logLevels[i].name());
             }
         }
         if (name.contains("connectorstatus")) {
-            ConnectorStatus[] connectorStatuses = de.fraunhofer.iais.eis.ConnectorStatus.values();
+            final var connectorStatuses = ConnectorStatus.values();
             for (int i = 0; i < connectorStatuses.length; i++) {
                 jsonArray.add(i, connectorStatuses[i].name());
             }
         }
         if (name.contains("connectordeploymode")) {
-            ConnectorDeployMode[] connectorDeployModes = de.fraunhofer.iais.eis.ConnectorDeployMode.values();
+            final var connectorDeployModes = ConnectorDeployMode.values();
             for (int i = 0; i < connectorDeployModes.length; i++) {
                 jsonArray.add(i, connectorDeployModes[i].name());
             }
         }
         if (name.contains("securityprofile")) {
-            SecurityProfile[] securityProfiles = de.fraunhofer.iais.eis.SecurityProfile.values();
+            final var securityProfiles = SecurityProfile.values();
             for (int i = 0; i < securityProfiles.length; i++) {
                 jsonArray.add(i, securityProfiles[i].name());
             }
         }
         if (name.contains("language")) {
-            Language[] languages = de.fraunhofer.iais.eis.Language.values();
+            final var languages = Language.values();
             for (int i = 0; i < languages.length; i++) {
                 jsonArray.add(i, languages[i].name());
             }
         }
         if (name.contains("sourcetype")) {
-            BackendSource.Type[] sourceTypes = BackendSource.Type.values();
+            final var sourceTypes = BackendSource.Type.values();
             for (int i = 0; i < sourceTypes.length; i++) {
                 jsonArray.add(i, sourceTypes[i].name());
             }
         }
         if (name.contains("deploymethod")) {
-            DeployMethod[] deployMethods = DeployMethod.values();
+            final var deployMethods = DeployMethod.values();
             for (int i = 0; i < deployMethods.length; i++) {
                 jsonArray.add(i, deployMethods[i].name());
             }
         }
         if (name.contains("brokerstatus")) {
-            BrokerStatus[] brokerStatuses = BrokerStatus.values();
+            final var brokerStatuses = BrokerStatus.values();
             for (int i = 0; i < brokerStatuses.length; i++) {
                 jsonArray.add(i, brokerStatuses[i].name());
             }
