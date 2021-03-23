@@ -1,10 +1,6 @@
 package de.fraunhofer.isst.configmanager.communication.dataspaceconnector;
 
-import de.fraunhofer.iais.eis.Artifact;
-import de.fraunhofer.iais.eis.BasicAuthenticationImpl;
-import de.fraunhofer.iais.eis.GenericEndpoint;
-import de.fraunhofer.iais.eis.Representation;
-import de.fraunhofer.iais.eis.Resource;
+import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.iais.eis.util.RdfResource;
 import de.fraunhofer.iais.eis.util.TypedLiteral;

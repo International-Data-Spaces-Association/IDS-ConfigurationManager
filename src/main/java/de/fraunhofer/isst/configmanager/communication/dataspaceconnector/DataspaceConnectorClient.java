@@ -13,11 +13,7 @@ import de.fraunhofer.isst.configmanager.util.OkHttpUtils;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.Credentials;
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
+import okhttp3.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Service;
@@ -156,15 +152,15 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
     @Override
     public String getRequestedResourcesAsJsonString() throws IOException {
         final var baseConnectorNode = getJsonNodeOfBaseConnector();
-        final var offeredResourceNode = baseConnectorNode.findValue("ids:requestedResource");
-        return offeredResourceNode.toString();
+        final var requestedResourceNode = baseConnectorNode.findValue("ids:requestedResource");
+        return requestedResourceNode.toString();
     }
 
     private JsonNode getJsonNodeOfBaseConnector() throws IOException {
         final var builder = new Request.Builder();
         final var connectorUrl =
                 "https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort +
-                "/admin/api/connector";
+                        "/admin/api/connector";
         builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername,
                 dataSpaceConnectorApiPassword));
         builder.url(connectorUrl);
@@ -226,6 +222,65 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         }
         final var body = Objects.requireNonNull(response.body()).string();
         return SERIALIZER.deserialize(body, BaseConnector.class);
+    }
+
+    @Override
+    public Resource getRequestedResource(String accessURL, String resourceId) throws IOException {
+        var builder = new Request.Builder();
+        var urlBuilder = new HttpUrl.Builder()
+                .scheme("https")
+                .host(dataSpaceConnectorHost)
+                .port(dataSpaceConnectorPort)
+                .addPathSegments("admin/api/request/description")
+                .addQueryParameter("recipient", accessURL)
+                .addQueryParameter("requestedResource", resourceId);
+        var url = urlBuilder.build();
+        log.info(url.toString());
+        builder.url(url);
+        builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername, dataSpaceConnectorApiPassword));
+        builder.post(RequestBody.create(null, new byte[0]));
+        var request = builder.build();
+        var response = client.newCall(request).execute();
+        if (!response.isSuccessful()) {
+            log.warn(String.format("Could not get BaseConnector from %s!", dataSpaceConnectorHost));
+        }
+        var body = response.body().string();
+        var splitBody = body.split("\n", 2);
+        String uuid = splitBody[0].substring(12);
+        log.info(uuid);
+        String resource = splitBody[1].substring(10);
+        log.info(resource);
+        return SERIALIZER.deserialize(resource, Resource.class);
+    }
+
+    @Override
+    public String requestContractAgreement(String recipientId, String requestedArtifactId, String contractOffer) throws IOException {
+        log.info("Request contract agreement with recipient: {} and artifact: {}", recipientId, requestedArtifactId);
+        var builder = new Request.Builder();
+        var urlBuilder = new HttpUrl.Builder()
+                .scheme("https")
+                .host(dataSpaceConnectorHost)
+                .port(dataSpaceConnectorPort)
+                .addPathSegments("admin/api/request/contract")
+                .addQueryParameter("recipient", recipientId)
+                .addQueryParameter("requestedArtifact", requestedArtifactId);
+        var url = urlBuilder.build();
+        log.info(url.toString());
+        builder.url(url);
+        builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername, dataSpaceConnectorApiPassword));
+        if (contractOffer != null && !contractOffer.isBlank()) {
+            builder.post(RequestBody.create(contractOffer, okhttp3.MediaType.parse("application/ld+json")));
+        } else {
+            builder.post(RequestBody.create(null, new byte[0]));
+        }
+        var request = builder.build();
+        var response = client.newCall(request).execute();
+        if (!response.isSuccessful()) {
+            log.warn("Could not request contract agreement");
+        }
+        var body = response.body().string();
+        log.info("Response: " + body);
+        return body;
     }
 
     @Override

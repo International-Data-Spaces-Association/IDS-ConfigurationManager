@@ -2,7 +2,6 @@ package de.fraunhofer.isst.configmanager.controller;
 
 import de.fraunhofer.iais.eis.BaseConnector;
 import de.fraunhofer.iais.eis.ConfigurationModelImpl;
-import de.fraunhofer.iais.eis.Connector;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;

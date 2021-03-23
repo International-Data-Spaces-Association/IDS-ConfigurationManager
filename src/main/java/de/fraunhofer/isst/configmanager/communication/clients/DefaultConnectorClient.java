@@ -65,6 +65,15 @@ public interface DefaultConnectorClient {
      */
     BaseConnector getBaseConnector(String accessURL, String resourceId) throws IOException;
 
+    /**
+     * This method returns the uuid of a resource and the resource.
+     *
+     * @param accessURL  url of the connector
+     * @param resourceId id of the resource
+     * @return map from the id of the resource and the resource itself
+     */
+    Resource getRequestedResource(String accessURL, String resourceId) throws IOException;
+
 
     /**
      * Send a Resource update Request to a target Connector
@@ -203,4 +212,14 @@ public interface DefaultConnectorClient {
      * @throws IOException when an error occurs while sending the request
      */
     String getRequestedResourcesAsJsonString() throws IOException;
+
+    /**
+     * Sends a contract request to a connector by building an ContractRequestMessage
+     *
+     * @param recipientId         id of the recipient
+     * @param requestedArtifactId id of the requested artifact
+     * @param contractOffer       contract offer for the requested resource
+     * @return string, contract agreement id
+     */
+    String requestContractAgreement(String recipientId, String requestedArtifactId, String contractOffer) throws IOException;
 }
