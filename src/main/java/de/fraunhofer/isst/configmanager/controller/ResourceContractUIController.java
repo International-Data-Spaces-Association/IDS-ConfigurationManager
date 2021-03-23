@@ -54,7 +54,6 @@ public class ResourceContractUIController implements ResourceContractApi {
      * @return a suitable http response depending on success
      */
     @Override
-    //TODO use resourceService getResources
     public ResponseEntity<String> getResourceContract(final URI resourceId) {
         log.info(">> GET /resource/contract resourceId: " + resourceId);
 

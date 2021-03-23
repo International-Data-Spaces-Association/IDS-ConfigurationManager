@@ -1,16 +1,6 @@
 package de.fraunhofer.isst.configmanager.configmanagement.service;
 
-import de.fraunhofer.iais.eis.AppRoute;
-import de.fraunhofer.iais.eis.AppRouteBuilder;
-import de.fraunhofer.iais.eis.AppRouteImpl;
-import de.fraunhofer.iais.eis.BaseConnectorImpl;
-import de.fraunhofer.iais.eis.ConfigurationModelImpl;
-import de.fraunhofer.iais.eis.ConnectorEndpointBuilder;
-import de.fraunhofer.iais.eis.Endpoint;
-import de.fraunhofer.iais.eis.ResourceImpl;
-import de.fraunhofer.iais.eis.RouteStep;
-import de.fraunhofer.iais.eis.RouteStepBuilder;
-import de.fraunhofer.iais.eis.RouteStepImpl;
+import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configlists.CustomAppRepository;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.configlists.EndpointInformationRepository;

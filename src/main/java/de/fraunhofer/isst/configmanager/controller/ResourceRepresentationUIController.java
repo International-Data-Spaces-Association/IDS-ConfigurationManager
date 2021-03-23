@@ -1,17 +1,7 @@
 package de.fraunhofer.isst.configmanager.controller;
 
 
-import de.fraunhofer.iais.eis.AppRoute;
-import de.fraunhofer.iais.eis.Artifact;
-import de.fraunhofer.iais.eis.ArtifactBuilder;
-import de.fraunhofer.iais.eis.IANAMediaTypeBuilder;
-import de.fraunhofer.iais.eis.Language;
-import de.fraunhofer.iais.eis.Representation;
-import de.fraunhofer.iais.eis.RepresentationBuilder;
-import de.fraunhofer.iais.eis.RepresentationImpl;
-import de.fraunhofer.iais.eis.Resource;
-import de.fraunhofer.iais.eis.ResourceImpl;
-import de.fraunhofer.iais.eis.RouteStep;
+import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
