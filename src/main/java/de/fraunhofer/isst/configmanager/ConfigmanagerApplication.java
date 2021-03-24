@@ -88,6 +88,6 @@ public class ConfigmanagerApplication {
 
     @Scheduled(fixedRate = 60000)
     public void logInfoStillAlive() {
-        log.info("[ConfigManager 6.0.0] Waiting for API call...");
+        log.info("[ConfigManager 6.0.0-SNAPSHOT] Waiting for API call...");
     }
 }
