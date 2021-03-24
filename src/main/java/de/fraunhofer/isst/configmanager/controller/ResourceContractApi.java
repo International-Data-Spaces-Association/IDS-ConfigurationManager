@@ -1,5 +1,6 @@
 package de.fraunhofer.isst.configmanager.controller;
 
+import de.fraunhofer.isst.configmanager.configmanagement.entities.usagecontrol.Pattern;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -23,4 +24,13 @@ public interface ResourceContractApi {
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully updated the contract in the resource")})
     ResponseEntity<String> updateResourceContract(@RequestParam("resourceId") URI resourceId,
                                                   @RequestBody String contractJson);
+
+    @PutMapping(value = "/resource/contract/specific", produces = "application/ld+json")
+    @Operation(summary = "Updates the contract in a resource")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully updated the contract in the resource")})
+    ResponseEntity<String> updateResourceContractSpecific(@RequestParam("resourceId") URI resourceId,
+                                                          @RequestParam("pattern") Pattern pattern,
+                                                          @RequestBody(required = false) String contractJson);
+
+
 }
