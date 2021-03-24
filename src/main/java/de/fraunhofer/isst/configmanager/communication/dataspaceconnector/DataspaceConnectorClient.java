@@ -15,7 +15,6 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Service;
@@ -586,7 +585,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
             final var mapper = new ObjectMapper();
             final var jsonTree = mapper.readTree(Objects.requireNonNull(response.body()).string());
             JsonNode source = jsonTree.findValue("source");
-            backendSource.setType(BackendSource.Type.valueOf(source.get("type").asText().toUpperCase()));
+            backendSource.setType(BackendSource.Type.valueOf(source.get("type").asText().toUpperCase().replace("-","_")));
             backendSource.setUrl(URI.create(source.get("url").asText()));
             backendSource.setUsername(source.get("username").asText());
             backendSource.setPassword(source.get("password").asText());
