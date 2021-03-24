@@ -86,8 +86,13 @@ public class ConnectorRequestUIController implements ConnectorRequestApi {
                 .requestContractAgreement(recipientId.toString(), requestedArtifactId.toString(), contractOffer);
         if (contractAgreementId != null) {
             var jsonObject = new JSONObject();
-            jsonObject.put("agreementId", contractAgreementId);
-            return ResponseEntity.ok(jsonObject.toJSONString());
+            if (contractAgreementId.contains("Failed")) {
+                jsonObject.put("message", contractAgreementId);
+                return ResponseEntity.badRequest().body(jsonObject.toJSONString());
+            } else {
+                jsonObject.put("agreementId", contractAgreementId);
+                return ResponseEntity.ok(jsonObject.toJSONString());
+            }
         } else {
             return ResponseEntity.badRequest().body("Could not get agreement id for the contract");
         }
