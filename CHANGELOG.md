@@ -26,6 +26,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Error 404 at POST /representation. 
 - DSC: Resources can now be edited and the updated information is now stored in the DSC
 - Recursively update all resource changes in approutes
+- Major Change: If requesting a contract fails, CM now returns a fail-message instead of agreementId: Failed
 
 ## [5.0.0] - 2021-03-19
 
