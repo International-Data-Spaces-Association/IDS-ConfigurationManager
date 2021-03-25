@@ -11,12 +11,13 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Print version number of used ConfigManager in scheduled log
 - Log incoming API calls
 - Interception of "undefined" API-parameter contents for most important APIs (e.g. "undefined" resourceId)
+- Print JVM system-default-charset at Jar/Image Start (should be UTF-8 to work with german umlauts)
 
 ### Changes
 - Major Change: if no broker has been created in CM, API /api/ui/broker/resource/information now returns empty list instead of status-code
 - More detailed error logging with Class-/Methodnames where log is produced
 - Code refactoring
-- increased timeout for a response from connector before readtimeout exception is thrown (30 sec instead of 10 sec before)
+- Increased timeout for a response from connector before readtimeout exception is thrown (30 sec instead of 10 sec before)
 
 ### Fixes
 - POST /api/ui/broker/delete/resource not working
@@ -27,6 +28,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - DSC: Resources can now be edited and the updated information is now stored in the DSC
 - Recursively update all resource changes in approutes
 - Major Change: If requesting a contract fails, CM now returns a fail-message instead of agreementId: Failed
+- Force use of UTF-8 for JVM for docker image start (serializer and ulauts need UTF-8 encoding)
 
 ## [5.0.0] - 2021-03-19
 
