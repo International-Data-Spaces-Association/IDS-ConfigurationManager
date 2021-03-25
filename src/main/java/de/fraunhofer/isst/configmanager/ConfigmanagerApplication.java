@@ -29,7 +29,7 @@ import java.util.Properties;
 public class ConfigmanagerApplication {
 
     public static void main(final String[] args) {
-        log.info("---- [ConfigmanagerApplication] Used JVM charset (should be UTF-8): " + Charset.defaultCharset()); ;
+        log.info("---- [ConfigmanagerApplication] Used JVM charset (should be UTF-8): " + Charset.defaultCharset());
 
         SpringApplication.run(ConfigmanagerApplication.class, args);
     }
