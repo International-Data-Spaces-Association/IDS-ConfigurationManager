@@ -17,6 +17,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.Properties;
 
 /**
@@ -28,6 +29,8 @@ import java.util.Properties;
 public class ConfigmanagerApplication {
 
     public static void main(final String[] args) {
+        log.info("---- [ConfigmanagerApplication] Used JVM charset (should be UTF-8): " + Charset.defaultCharset()); ;
+
         SpringApplication.run(ConfigmanagerApplication.class, args);
     }
 
