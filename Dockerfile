@@ -16,4 +16,4 @@ COPY --from=maven /tmp/target/*.jar /app/configurationmanager-6.0.0-SNAPSHOT.jar
 
 WORKDIR /app/
 
-ENTRYPOINT ["java","-jar","configurationmanager-6.0.0-SNAPSHOT.jar"]
+ENTRYPOINT ["java","-Dfile.encoding=UTF-8","-jar","configurationmanager-6.0.0-SNAPSHOT.jar"]
