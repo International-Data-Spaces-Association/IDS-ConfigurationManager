@@ -91,6 +91,14 @@ public class ConfigmanagerApplication {
 
     @Scheduled(fixedRate = 60000)
     public void logInfoStillAlive() {
-        log.info("[ConfigManager 6.0.0-SNAPSHOT] Waiting for API call...");
+        var currentVersion = "6.0.0-SNAPSHOT";
+
+        System.gc();
+        var mb = 1024L * 1024L;
+        var currentHeapSize = Runtime.getRuntime().totalMemory() / mb;
+        var maxHeapSize = Runtime.getRuntime().maxMemory() / mb;
+        var freeHeapSize = Runtime.getRuntime().freeMemory() / mb;
+        log.info("[ConfigManager " + currentVersion + "] Waiting for API call...");
+        log.info("[ConfigManager " + currentVersion + "] Stats: Current Heap Size " + Math.toIntExact(currentHeapSize) + "MB | Max Heap Size " + Math.toIntExact(maxHeapSize) + "MB | Free Heap Size " + Math.toIntExact(freeHeapSize) + "MB");
     }
 }
