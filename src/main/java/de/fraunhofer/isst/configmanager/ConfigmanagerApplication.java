@@ -98,7 +98,7 @@ public class ConfigmanagerApplication {
         var currentHeapSize = Runtime.getRuntime().totalMemory() / mb;
         var maxHeapSize = Runtime.getRuntime().maxMemory() / mb;
         var freeHeapSize = Runtime.getRuntime().freeMemory() / mb;
+        log.info("[ConfigManager " + currentVersion + "] Heap Size Stats: Used " + Math.toIntExact(currentHeapSize) + " MB - Free " + Math.toIntExact(freeHeapSize) + " MB - Max " + Math.toIntExact(maxHeapSize) + " MB");
         log.info("[ConfigManager " + currentVersion + "] Waiting for API call...");
-        log.info("[ConfigManager " + currentVersion + "] Stats: Current Heap Size " + Math.toIntExact(currentHeapSize) + "MB | Max Heap Size " + Math.toIntExact(maxHeapSize) + "MB | Free Heap Size " + Math.toIntExact(freeHeapSize) + "MB");
     }
 }
