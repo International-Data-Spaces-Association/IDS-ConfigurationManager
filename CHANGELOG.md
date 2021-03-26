@@ -5,13 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [6.0.0] - UNRELEASED (Snapshot Available)
+## [6.0.0] - 2021-03-26
 
 ### Added
 - Print version number of used ConfigManager in scheduled log
 - Log incoming API calls
 - Interception of "undefined" API-parameter contents for most important APIs (e.g. "undefined" resourceId)
 - Print JVM system-default-charset at Jar/Image Start (should be UTF-8 to work with german umlauts)
+- Print used, free and max Java Heap Space for CM
 
 ### Changes
 - Major Change: if no broker has been created in CM, API /api/ui/broker/resource/information now returns empty list instead of status-code
