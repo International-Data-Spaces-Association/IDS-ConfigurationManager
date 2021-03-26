@@ -7,8 +7,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,14 +22,11 @@ import java.io.IOException;
 @Tag(name = "Utility", description = "Endpoints for other requirements")
 @Slf4j
 public class UtilUIController {
-
-    private final static Logger LOGGER = LoggerFactory.getLogger(UtilUIController.class);
-
-    private final UtilService utilService;
-    private final DefaultConnectorClient client;
+    private transient final UtilService utilService;
+    private transient final DefaultConnectorClient client;
 
     @Autowired
-    public UtilUIController(UtilService utilService, DefaultConnectorClient client) {
+    public UtilUIController(final UtilService utilService, final DefaultConnectorClient client) {
         this.utilService = utilService;
         this.client = client;
     }
@@ -45,10 +40,10 @@ public class UtilUIController {
     @GetMapping(value = "/enum/{enumName}")
     @Operation(summary = "Get the specific enum")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully get the enums")})
-    public ResponseEntity<String> getSpecificEnum(@PathVariable String enumName) {
+    public ResponseEntity<String> getSpecificEnum(final @PathVariable String enumName) {
         log.info(">> GET /api/ui/enum " + enumName);
 
-        String enums = utilService.getSpecificEnum(enumName);
+        final var enums = utilService.getSpecificEnum(enumName);
         if (enums != null) {
             return ResponseEntity.ok(enums);
         } else {
@@ -64,21 +59,24 @@ public class UtilUIController {
      */
     @PostMapping(value = "/policy-pattern")
     @Operation(summary = "Get pattern of policy")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully get the pattern of policy")})
-    public ResponseEntity<String> getPolicyPattern(@RequestBody String policy) {
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully get the pattern" +
+            " of policy")})
+    public ResponseEntity<String> getPolicyPattern(final @RequestBody String policy) {
         log.info(">> GET /api/ui/policy-pattern " + policy);
 
         String pattern;
         try {
             pattern = client.getPolicyPattern(policy);
         } catch (IOException e) {
-            LOGGER.error(e.getMessage(), e);
-            return ResponseEntity.badRequest().body("Failed to determine policy pattern at the client");
+            log.error(e.getMessage(), e);
+            return ResponseEntity.badRequest().body("Failed to determine policy pattern at the " +
+                    "client");
         }
         if (pattern != null) {
             return ResponseEntity.ok(pattern);
         } else {
-            return ResponseEntity.badRequest().body("Could not find any pattern for the given policy");
+            return ResponseEntity.badRequest().body("Could not find any pattern for the given " +
+                    "policy");
         }
     }
 }

@@ -1,6 +1,6 @@
 package de.fraunhofer.isst.configmanager.controller;
 
-import de.fraunhofer.isst.configmanager.configmanagement.entities.routeDeployMethod.DeployMethod;
+import de.fraunhofer.isst.configmanager.configmanagement.entities.routedeploymethod.DeployMethod;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

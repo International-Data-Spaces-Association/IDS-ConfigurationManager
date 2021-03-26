@@ -5,7 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [5.0.0] - UNRELEASED
+## [6.0.0] - 2021-03-26
+
+### Added
+- Print version number of used ConfigManager in scheduled log
+- Log incoming API calls
+- Interception of "undefined" API-parameter contents for most important APIs (e.g. "undefined" resourceId)
+- Print JVM system-default-charset at Jar/Image Start (should be UTF-8 to work with german umlauts)
+- Print used, free and max Java Heap Space for CM
+
+### Changes
+- Major Change: if no broker has been created in CM, API /api/ui/broker/resource/information now returns empty list instead of status-code
+- More detailed error logging with Class-/Methodnames where log is produced
+- Code refactoring
+- Increased timeout for a response from connector before readtimeout exception is thrown (30 sec instead of 10 sec before)
+
+### Fixes
+- POST /api/ui/broker/delete/resource not working
+- GET /api/ui/broker/resource/information does not return brokers
+- Encode API-Input/Output UTF8 (support german umlauts)
+- Error 404 at PUT /contract 
+- Error 404 at POST /representation. 
+- DSC: Resources can now be edited and the updated information is now stored in the DSC
+- Recursively update all resource changes in approutes
+- Major Change: If requesting a contract fails, CM now returns a fail-message instead of agreementId: Failed
+- Force use of UTF-8 for JVM for docker image start (serializer and ulauts need UTF-8 encoding)
+
+## [5.0.0] - 2021-03-19
 
 ### Added
 - New API for returning the requested resources of a connected connector (/resources/requested)
@@ -14,6 +40,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixes
 - Workaround: Use BrokerUpdateMessage and send complete catalog instead of ResourceUpdateMessage when updating a resource at a Broker
+- Send Proxy Settings to Connector
+- Always load resources at startup of Connector
 
 ### Changes
 - Major Change: ProxySettings are now also set calling the /configmodel instead of having a additional API

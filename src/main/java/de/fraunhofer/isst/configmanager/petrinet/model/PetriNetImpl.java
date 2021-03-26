@@ -14,9 +14,9 @@ import java.util.Set;
 public class PetriNetImpl implements PetriNet, HasId {
     
     private static final ObjectMapper mapper = new ObjectMapper();
-    private URI id;
-    private Set<Node> nodes;
-    private Set<Arc> arcs;
+    private transient URI id;
+    private transient Set<Node> nodes;
+    private transient Set<Arc> arcs;
     
     public PetriNetImpl(URI id, Set<Node> nodes, Set<Arc> arcs) {
         this.id = id;

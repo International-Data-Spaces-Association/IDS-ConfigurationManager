@@ -4,14 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.configmanagement.entities.config.BrokerStatus;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.config.CustomBroker;
 import de.fraunhofer.isst.configmanager.configmanagement.service.BrokerService;
 import de.fraunhofer.isst.configmanager.util.Utility;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.List;
 
 /**
  * The controller class implements the BrokerAPI and offers the possibilities to manage
@@ -28,20 +27,19 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/ui")
-@Tag(name = "Broker Management", description = "Endpoints for managing the brokers in the configuration manager")
+@Tag(name = "Broker Management", description = "Endpoints for managing the brokers in the " +
+        "configuration manager")
 @Slf4j
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class BrokerUIController implements BrokerUIApi {
-
-    private final static Logger logger = LoggerFactory.getLogger(BrokerUIController.class);
-
-    private final BrokerService brokerService;
-    private final DefaultConnectorClient client;
-    private final ObjectMapper objectMapper;
+    transient BrokerService brokerService;
+    transient DefaultConnectorClient client;
+    transient ObjectMapper objectMapper;
 
     @Autowired
-    public BrokerUIController(BrokerService brokerService,
-                              DefaultConnectorClient client,
-                              ObjectMapper objectMapper) {
+    public BrokerUIController(final BrokerService brokerService,
+                              final DefaultConnectorClient client,
+                              final ObjectMapper objectMapper) {
         this.brokerService = brokerService;
         this.client = client;
         this.objectMapper = objectMapper;
@@ -55,13 +53,14 @@ public class BrokerUIController implements BrokerUIApi {
      * @return a suitable http response depending on success
      */
     @Override
-    public ResponseEntity<String> createBroker(URI brokerUri, String title) {
+    public ResponseEntity<String> createBroker(final URI brokerUri, final String title) {
         log.info(">> POST /broker brokerUri: " + brokerUri + " title: " + title);
 
-        CustomBroker brokerObject = brokerService.createCustomBroker(brokerUri, title);
+        final var brokerObject = brokerService.createCustomBroker(brokerUri, title);
 
         if (brokerObject != null) {
-            return ResponseEntity.ok(Utility.jsonMessage("message", "Created a new broker with id: " + brokerUri));
+            return ResponseEntity.ok(Utility.jsonMessage("message", "Created a new broker with " +
+                    "id: " + brokerUri));
         } else {
             return ResponseEntity.badRequest().body("Could not create a broker");
         }
@@ -75,11 +74,11 @@ public class BrokerUIController implements BrokerUIApi {
      * @return a suitable http response depending on success
      */
     @Override
-    public ResponseEntity<String> updateBroker(URI brokerId, String title) {
+    public ResponseEntity<String> updateBroker(final URI brokerId, final String title) {
         log.info(">> PUT /broker brokerId: " + brokerId + " title: " + title);
 
         if (brokerService.updateBroker(brokerId, title)) {
-            var jsonObject = new JSONObject();
+            final var jsonObject = new JSONObject();
             jsonObject.put("message", "Updated the broker");
             jsonObject.put("brokerId", brokerId.toString());
             return ResponseEntity.ok(jsonObject.toJSONString());
@@ -95,11 +94,12 @@ public class BrokerUIController implements BrokerUIApi {
      * @return a suitable http response depending on success
      */
     @Override
-    public ResponseEntity<String> deleteBroker(URI brokerUri) {
+    public ResponseEntity<String> deleteBroker(final URI brokerUri) {
         log.info(">> DELETE /broker brokerUri " + brokerUri);
 
         if (brokerService.deleteBroker(brokerUri)) {
-            return ResponseEntity.ok(Utility.jsonMessage("message", "Broker with ID: " + brokerUri + " is deleted"));
+            return ResponseEntity.ok(Utility.jsonMessage("message",
+                    "Broker with ID: " + brokerUri + " is deleted"));
         } else {
             return ResponseEntity.badRequest().body("Could not delete the broker with the id:" + brokerUri);
         }
@@ -112,16 +112,16 @@ public class BrokerUIController implements BrokerUIApi {
      * @return a suitable http response depending on success
      */
     @Override
-    public ResponseEntity<String> getBroker(URI brokerId) {
+    public ResponseEntity<String> getBroker(final URI brokerId) {
         log.info(">> GET /broker brokerId: " + brokerId);
 
-        CustomBroker broker = brokerService.getById(brokerId);
+        final var broker = brokerService.getById(brokerId);
 
         if (broker != null) {
             try {
                 return ResponseEntity.ok(objectMapper.writeValueAsString(broker));
             } catch (IOException e) {
-                logger.error(e.getMessage());
+                log.error(e.getMessage(), e);
             }
         }
         return ResponseEntity.badRequest().body("Could not get the specific broker");
@@ -136,11 +136,11 @@ public class BrokerUIController implements BrokerUIApi {
     public ResponseEntity<String> getAllBrokers() {
         log.info(">> GET /brokers");
 
-        List<CustomBroker> brokers = brokerService.getCustomBrokers();
+        final var brokers = brokerService.getCustomBrokers();
         try {
             return new ResponseEntity<>(objectMapper.writeValueAsString(brokers), HttpStatus.OK);
         } catch (IOException e) {
-            logger.error(e.getMessage());
+            log.error(e.getMessage(), e);
         }
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -154,7 +154,7 @@ public class BrokerUIController implements BrokerUIApi {
     public ResponseEntity<String> getAllBrokerUris() {
         log.info(">> GET /broker/list");
 
-        List<URI> brokerUris = brokerService.getAllBrokerUris();
+        final var brokerUris = brokerService.getAllBrokerUris();
         if (brokerUris != null) {
             return ResponseEntity.ok(brokerUris.toString());
         } else {
@@ -169,14 +169,14 @@ public class BrokerUIController implements BrokerUIApi {
      * @return a suitable http response depending on success
      */
     @Override
-    public ResponseEntity<String> registerConnector(URI brokerUri) {
+    public ResponseEntity<String> registerConnector(final URI brokerUri) {
         log.info(">> POST /broker/register brokerUri: " + brokerUri);
 
-        var broker = brokerService.getById(brokerUri);
-        var jsonObject = new JSONObject();
+        final var broker = brokerService.getById(brokerUri);
+        final var jsonObject = new JSONObject();
         if (broker != null) {
             try {
-                String response = client.updateAtBroker(brokerUri.toString());
+                final var response = client.updateAtBroker(brokerUri.toString());
                 if (!response.contains("RejectionMessage")) {
                     brokerService.sentSelfDescToBroker(brokerUri);
                     brokerService.setBrokerStatus(brokerUri, BrokerStatus.REGISTERED);
@@ -186,7 +186,7 @@ public class BrokerUIController implements BrokerUIApi {
                 }
                 return ResponseEntity.ok(jsonObject.toJSONString());
             } catch (IOException e) {
-                logger.error(e.getMessage(), e);
+                log.error(e.getMessage(), e);
                 jsonObject.put("success", false);
                 return ResponseEntity.ok(jsonObject.toJSONString());
             }
@@ -202,14 +202,14 @@ public class BrokerUIController implements BrokerUIApi {
      * @return a suitable http response depending on success
      */
     @Override
-    public ResponseEntity<String> unregisterConnector(URI brokerUri) {
+    public ResponseEntity<String> unregisterConnector(final URI brokerUri) {
         log.info(">> POST /broker/unregister brokerUri: " + brokerUri);
 
-        var broker = brokerService.getById(brokerUri);
-        var jsonObject = new JSONObject();
+        final var broker = brokerService.getById(brokerUri);
+        final var jsonObject = new JSONObject();
         if (broker != null) {
             try {
-                String response = client.unregisterAtBroker(brokerUri.toString());
+                final var response = client.unregisterAtBroker(brokerUri.toString());
                 if (!response.contains("RejectionMessage")) {
                     brokerService.unregisteredAtBroker(brokerUri);
                     brokerService.setBrokerStatus(brokerUri, BrokerStatus.UNREGISTERED);
@@ -219,7 +219,7 @@ public class BrokerUIController implements BrokerUIApi {
                 }
                 return ResponseEntity.ok(jsonObject.toJSONString());
             } catch (IOException e) {
-                logger.error(e.getMessage(), e);
+                log.error(e.getMessage(), e);
                 jsonObject.put("success", false);
                 return ResponseEntity.ok(jsonObject.toJSONString());
             }
@@ -235,24 +235,25 @@ public class BrokerUIController implements BrokerUIApi {
      * @return a suitable http response depending on success
      */
     @Override
-    public ResponseEntity<String> updateConnector(URI brokerUri) {
+    public ResponseEntity<String> updateConnector(final URI brokerUri) {
         log.info(">> POST /broker/update brokerUri: " + brokerUri);
 
-        var broker = brokerService.getById(brokerUri);
-        var jsonObject = new JSONObject();
+        final var broker = brokerService.getById(brokerUri);
+        final var jsonObject = new JSONObject();
         if (broker != null) {
             try {
-                String response = client.updateAtBroker(brokerUri.toString());
+                final var response = client.updateAtBroker(brokerUri.toString());
                 jsonObject.put("success", !response.contains("RejectionMessage"));
-                if(!response.contains("RejectionMessage")) brokerService.sentSelfDescToBroker(brokerUri);
+                if (!response.contains("RejectionMessage")) {
+                    brokerService.sentSelfDescToBroker(brokerUri);
+                }
                 return ResponseEntity.ok(jsonObject.toJSONString());
             } catch (IOException e) {
-                logger.error(e.getMessage(), e);
-                jsonObject.put("success", false);
-                return ResponseEntity.ok(jsonObject.toJSONString());
+                log.error(e.getMessage(), e);
+                return ResponseEntity.badRequest().body("Could not connect to the Connector!");
             }
         } else {
-            return ResponseEntity.badRequest().body("Could not find the broker");
+            return ResponseEntity.badRequest().body("Could not find the broker with URI: " + brokerUri);
         }
     }
 
@@ -264,7 +265,8 @@ public class BrokerUIController implements BrokerUIApi {
      * @return HTTP response entity with the response as body string
      */
     @Override
-    public ResponseEntity<String> updateResourceAtBroker(URI brokerUri, URI resourceId) {
+    public ResponseEntity<String> updateResourceAtBroker(final URI brokerUri,
+                                                         final URI resourceId) {
         log.info(">> POST /broker/update/resource brokerUri: " + brokerUri + " resourceId: " + resourceId);
 
         return updateConnector(brokerUri);
@@ -274,7 +276,8 @@ public class BrokerUIController implements BrokerUIApi {
 //        if (broker != null) {
 //            try {
 //                String response = client.updateResourceAtBroker(brokerUri.toString(), resourceId);
-//                if (response.contains("RejectionMessage") || response.equals("Could not load resource.")
+//                if (response.contains("RejectionMessage") || response.equals("Could not load
+//                resource.")
 //                        || response.equals("The communication with the broker failed.")) {
 //                    jsonObject.put("success", false);
 //                } else {
@@ -300,17 +303,25 @@ public class BrokerUIController implements BrokerUIApi {
      * @return HTTP response entity with the response as body string
      */
     @Override
-    public ResponseEntity<String> deleteResourceAtBroker(URI brokerUri, URI resourceId) {
+    public ResponseEntity<String> deleteResourceAtBroker(final URI brokerUri,
+                                                         final URI resourceId) {
         log.info(">> POST /broker/delete/resource brokerUri: " + brokerUri + " resourceId: " + resourceId);
 
-        return updateConnector(brokerUri);
+        final var response = updateConnector(brokerUri);
+
+        if (response.getStatusCode() != HttpStatus.BAD_REQUEST) {
+            brokerService.deleteResourceAtBroker(brokerUri, resourceId);
+        }
+
+        return response;
 
 //        var broker = brokerService.getById(brokerUri);
 //        var jsonObject = new JSONObject();
 //        if (broker != null) {
 //            try {
 //                String response = client.deleteResourceAtBroker(brokerUri.toString(), resourceId);
-//                if (response.contains("RejectionMessage") || response.equals("Could not load resource.")
+//                if (response.contains("RejectionMessage") || response.equals("Could not load
+//                resource.")
 //                        || response.equals("The communication with the broker failed.")) {
 //                    jsonObject.put("success", false);
 //                } else {
@@ -335,12 +346,12 @@ public class BrokerUIController implements BrokerUIApi {
      * @return a suitable http response depending on success
      */
     @Override
-    public ResponseEntity<String> getRegisterStatusForResource(URI resourceId) {
+    public ResponseEntity<String> getRegisterStatusForResource(final URI resourceId) {
         log.info(">> GET /broker/resource/information resourceId: " + resourceId);
 
-        var jsonObjet = brokerService.getRegisStatusForResource(resourceId);
+        final var jsonObjet = brokerService.getRegisStatusForResource(resourceId);
         if (jsonObjet == null) {
-            return ResponseEntity.badRequest().body("Could not get registration status for resource");
+            return ResponseEntity.ok(new JSONArray().toJSONString());
         } else {
             return ResponseEntity.ok(jsonObjet.toJSONString());
         }

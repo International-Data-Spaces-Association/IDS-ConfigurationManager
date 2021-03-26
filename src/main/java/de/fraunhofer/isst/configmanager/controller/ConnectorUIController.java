@@ -2,7 +2,6 @@ package de.fraunhofer.isst.configmanager.controller;
 
 import de.fraunhofer.iais.eis.BaseConnector;
 import de.fraunhofer.iais.eis.ConfigurationModelImpl;
-import de.fraunhofer.iais.eis.Connector;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
@@ -10,10 +9,10 @@ import de.fraunhofer.isst.configmanager.configmanagement.service.ConfigModelServ
 import de.fraunhofer.isst.configmanager.configmanagement.service.ConnectorService;
 import de.fraunhofer.isst.configmanager.util.Utility;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,21 +28,20 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/ui")
 @Slf4j
-@Tag(name = "Connector Management", description = "Endpoints for managing the connectors in the configuration manager")
+@Tag(name = "Connector Management", description = "Endpoints for managing the connectors in the " +
+        "configuration manager")
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ConnectorUIController implements ConnectorUIApi {
-
-    private final static Logger logger = LoggerFactory.getLogger(ConnectorUIController.class);
-
-    private final ConnectorService connectorService;
-    private final ConfigModelService configModelService;
-    private final Serializer serializer;
-    private final DefaultConnectorClient client;
+    transient ConnectorService connectorService;
+    transient ConfigModelService configModelService;
+    transient Serializer serializer;
+    transient DefaultConnectorClient client;
 
     @Autowired
-    public ConnectorUIController(ConnectorService connectorService,
-                                 ConfigModelService configModelService,
-                                 Serializer serializer,
-                                 DefaultConnectorClient client) {
+    public ConnectorUIController(final ConnectorService connectorService,
+                                 final ConfigModelService configModelService,
+                                 final Serializer serializer,
+                                 final DefaultConnectorClient client) {
         this.configModelService = configModelService;
         this.connectorService = connectorService;
         this.serializer = serializer;
@@ -59,12 +57,12 @@ public class ConnectorUIController implements ConnectorUIApi {
     public ResponseEntity<String> getConnector() {
         log.info(">> GET /connector");
 
-        Connector connector = configModelService.getConfigModel().getConnectorDescription();
+        final var connector = configModelService.getConfigModel().getConnectorDescription();
         if (connector != null) {
             try {
                 return new ResponseEntity<>(serializer.serialize(connector), HttpStatus.OK);
             } catch (IOException e) {
-                logger.error(e.getMessage());
+                log.error(e.getMessage(), e);
             }
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -79,12 +77,14 @@ public class ConnectorUIController implements ConnectorUIApi {
     public ResponseEntity<String> getConnectorJson() {
         log.info(">> GET /connector/json");
 
-        BaseConnector baseConnector = (BaseConnector) configModelService.getConfigModel().getConnectorDescription();
+        final var baseConnector =
+                (BaseConnector) configModelService.getConfigModel().getConnectorDescription();
 
-        JSONObject baseConnectorJson = new JSONObject();
+        final var baseConnectorJson = new JSONObject();
         baseConnectorJson.put("title", baseConnector.getTitle().get(0).getValue());
         baseConnectorJson.put("description", baseConnector.getDescription().get(0).getValue());
-        baseConnectorJson.put("endpointAccessURL", baseConnector.getHasDefaultEndpoint().getAccessURL().toString());
+        baseConnectorJson.put("endpointAccessURL",
+                baseConnector.getHasDefaultEndpoint().getAccessURL().toString());
         baseConnectorJson.put("version", baseConnector.getVersion());
         baseConnectorJson.put("curator", baseConnector.getCurator().toString());
         baseConnectorJson.put("maintainer", baseConnector.getMaintainer().toString());
@@ -96,7 +96,8 @@ public class ConnectorUIController implements ConnectorUIApi {
     }
 
     /**
-     * This method creates a connector description for the configuration model with the given parameters.
+     * This method creates a connector description for the configuration model with the given
+     * parameters.
      *
      * @param title                title of the connector
      * @param description          description of the connector
@@ -109,24 +110,30 @@ public class ConnectorUIController implements ConnectorUIApi {
      * @return http response message with the id of the created connector
      */
     @Override
-    public ResponseEntity<String> createConnector(String title, String description, String endpointAccessURL,
-                                                  String version, String curator, String maintainer,
-                                                  String inboundModelVersion, String outboundModelVersion) {
+    public ResponseEntity<String> createConnector(final String title, final String description,
+                                                  final String endpointAccessURL,
+                                                  final String version, final String curator,
+                                                  final String maintainer,
+                                                  final String inboundModelVersion,
+                                                  final String outboundModelVersion) {
         log.info(">> POST /connector");
 
-        BaseConnector baseConnector = connectorService.createConnector(title, description, endpointAccessURL, version,
+        final var baseConnector = connectorService.createConnector(title, description,
+                endpointAccessURL, version,
                 curator, maintainer, inboundModelVersion, outboundModelVersion);
 
-        var configModelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
+        final var configModelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
         configModelImpl.setConnectorDescription(baseConnector);
         configModelService.saveState();
 
-        return ResponseEntity.ok(Utility.jsonMessage("message", "Successfully created a new connector with the id: " +
+        return ResponseEntity.ok(Utility.jsonMessage("message", "Successfully created a new " +
+                "connector with the id: " +
                 baseConnector.getId().toString()));
     }
 
     /**
-     * This method updates the connector description from the configuration model with the given parameters.
+     * This method updates the connector description from the configuration model with the given
+     * parameters.
      *
      * @param title                title of the connector
      * @param description          description of the connector
@@ -139,24 +146,29 @@ public class ConnectorUIController implements ConnectorUIApi {
      * @return http response message with the id of the created connector
      */
     @Override
-    public ResponseEntity<String> updateConnector(String title, String description, String endpointAccessURL,
-                                                  String version, String curator, String maintainer,
-                                                  String inboundModelVersion, String outboundModelVersion) {
+    public ResponseEntity<String> updateConnector(final String title, final String description,
+                                                  final String endpointAccessURL,
+                                                  final String version, final String curator,
+                                                  final String maintainer,
+                                                  final String inboundModelVersion,
+                                                  final String outboundModelVersion) {
         log.info(">> PUT /connector title: " + title + " description: " + " endpointAccessURL: " + endpointAccessURL
                 + " version: " + version + " curator: " + curator + " maintainer: " + maintainer + " inboundModelVersion: "
                 + inboundModelVersion + " outboundModelVersion: " + outboundModelVersion);
 
-        boolean updated = connectorService.updateConnector(title, description, endpointAccessURL, version,
+        final boolean updated = connectorService.updateConnector(title, description, endpointAccessURL,
+                version,
                 curator, maintainer, inboundModelVersion, outboundModelVersion);
-        var jsonObject = new JSONObject();
+        final var jsonObject = new JSONObject();
         if (updated) {
             jsonObject.put("message", "Successfully updated the connector");
-            ConfigurationModelImpl configurationModel = (ConfigurationModelImpl) configModelService.getConfigModel();
+            final var configurationModel =
+                    (ConfigurationModelImpl) configModelService.getConfigModel();
             if (configurationModel.getAppRoute() != null) {
                 configurationModel.setAppRoute(Util.asList());
             }
             try {
-                var valid = client.sendConfiguration(serializer.serialize(configurationModel));
+                final var valid = client.sendConfiguration(serializer.serialize(configurationModel));
                 if (valid) {
                     jsonObject.put("connectorResponse", "Successfully updated the connector " +
                             "description of the configuration model");
@@ -167,8 +179,9 @@ public class ConnectorUIController implements ConnectorUIApi {
                     return ResponseEntity.badRequest().body(jsonObject.toJSONString());
                 }
             } catch (IOException e) {
-                e.printStackTrace();
-                jsonObject.put("connectorResponse", "Failed to send the new configuration to the client");
+                log.error(e.getMessage(), e);
+                jsonObject.put("connectorResponse", "Failed to send the new configuration to the " +
+                        "client");
                 return ResponseEntity.badRequest().body(jsonObject.toJSONString());
             }
         } else {
@@ -186,11 +199,12 @@ public class ConnectorUIController implements ConnectorUIApi {
         log.info(">> DELETE /connector");
 
         if (configModelService.getConfigModel().getConnectorDescription() != null) {
-            var configModelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
+            final var configModelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
             configModelImpl.setConnectorDescription(null);
             configModelService.saveState();
 
-            return ResponseEntity.ok(Utility.jsonMessage("message", "Successfully deleted the connector"));
+            return ResponseEntity.ok(Utility.jsonMessage("message", "Successfully deleted the " +
+                    "connector"));
         } else {
             return ResponseEntity.badRequest().body("Could not delete the connector");
         }

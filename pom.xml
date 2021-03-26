@@ -13,7 +13,7 @@
 
     <groupId>de.fraunhofer.isst</groupId>
     <artifactId>configurationmanager</artifactId>
-    <version>5.0.0</version>
+    <version>6.0.0</version>
     <name>Configuration Manager</name>
     <description>Configuration Manager developed by the Fraunhofer ISST</description>
 
@@ -201,6 +201,16 @@
             <artifactId>util</artifactId>
             <version>4.0.2</version>
         </dependency>
+
+
+        <!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt -->
+        <!-- License: The JSON License -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20210307</version>
+        </dependency>
+
 
         <dependency>
             <groupId>de.fraunhofer.iais.eis.ids</groupId>
