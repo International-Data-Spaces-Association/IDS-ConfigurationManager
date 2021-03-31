@@ -616,7 +616,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
     }
 
     @Autowired
-    public void setProtocol(@Value("${dataspace.connector.ssl}") String https){
+    public void setProtocol(@Value("${dataspace.communication.ssl}") String https){
         protocol = Boolean.parseBoolean(https) ? "https" : "http";
         log.info("Communication Protocol with Dataspace Connector is: " + protocol);
     }
