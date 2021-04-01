@@ -27,14 +27,14 @@
             </post>
         </rest>
 
-        <route id="$connectionId">
+        <route id="$routeId">
             <from uri="direct:rest"/>
 
             <setHeader name="idscp2-header">
                 <simple>ping</simple>
             </setHeader>
             <log message="Client sends: ${body} (Header: #[[${headers[idscp2-header]}]]#)"/>
-            <to uri="idscp2client://$routeStepUrls.get(0)?awaitResponse=true&amp;sslContextParameters=#clientSslContext"/>
+            <to uri="$routeStepUrls.get(0)?awaitResponse=true&amp;sslContextParameters=#clientSslContext"/>
             <log message="Client received: ${body} (Header: #[[${headers[idscp2-header]]]#)"/>
 
             <removeHeader headerName="idscp2-header"/>

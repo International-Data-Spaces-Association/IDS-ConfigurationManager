@@ -1,31 +1,22 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xmlns:camel="http://camel.apache.org/schema/blueprint" xsi:schemaLocation="
- http://www.osgi.org/xmlns/blueprint/v1.0.0 https://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
- http://camel.apache.org/schema/blueprint https://camel.apache.org/schema/blueprint/camel-blueprint-3.3.0.xsd">
+<routes xmlns="http://camel.apache.org/schema/spring">
 
-    <camelContext xmlns="http://camel.apache.org/schema/blueprint">
+    <route id="$routeId">
 
-        <route id="$connectionId">
+        <from uri="timer://foo?fixedRate=true&amp;period=10000"/>
 
-            <from uri="timer://foo?fixedRate=true&amp;period=10000"/>
+        <setHeader name="CamelHttpMethod"><constant>GET</constant></setHeader>
+        #if($genericEndpointAuthHeader)
+            <setHeader name="Authorization"><constant>${genericEndpointAuthHeader}</constant></setHeader>
+        #end
+        <to uri="$startUrl"/>
 
-            <log message="Starting demo route"/>
+        <convertBodyTo type="java.lang.String"/>
+        <log message="Fetched data: ${body}"/>
 
-            <setHeader name="CamelHttpMethod"><constant>GET</constant></setHeader>
-            <to uri="$startUrl"/>
+        <setHeader name="CamelHttpMethod"><constant>PUT</constant></setHeader>
+        <setHeader name="Authorization"><constant>${connectorAuthHeader}</constant></setHeader>
+        <to uri="$endUrl"/>
 
-            <convertBodyTo type="java.lang.String"/>
-            <log message="Fetched data: {body}"/>
+    </route>
 
-            <setHeader name="CamelHttpMethod"><constant>PUT</constant></setHeader>
-            <setHeader name="CamelHttpQuery"><simple>data=${body}</simple></setHeader>
-            <setHeader name="Authorization"><constant>${connectorAuthHeader}</constant></setHeader>
-            <to uri="$endUrl"/>
-
-        </route>
-
-    </camelContext>
-
-</blueprint>
+</routes>

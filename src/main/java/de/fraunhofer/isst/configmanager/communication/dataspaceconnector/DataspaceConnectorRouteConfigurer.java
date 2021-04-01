@@ -1,6 +1,7 @@
 package de.fraunhofer.isst.configmanager.communication.dataspaceconnector;
 
 import de.fraunhofer.iais.eis.AppRoute;
+import de.fraunhofer.iais.eis.ConnectorEndpoint;
 import de.fraunhofer.iais.eis.Endpoint;
 import de.fraunhofer.iais.eis.GenericEndpoint;
 import org.apache.commons.codec.binary.Base64;
@@ -62,6 +63,8 @@ public class DataspaceConnectorRouteConfigurer {
         Resource resource;
         if (routeStart.get(0) instanceof GenericEndpoint) {
             resource = resourceLoader.getResource("classpath:camel-templates/dataspaceconnector/http_to_connector_template.vm");
+        } else if (routeStart.get(0) instanceof ConnectorEndpoint) {
+            resource = resourceLoader.getResource("classpath:camel-templates/dataspaceconnector/connector_to_http_template.vm");
         } else {
             resource = null;
         }

@@ -27,11 +27,11 @@
             </post>
         </rest>
 
-        <route id="$connectionId">
+        <route id="$routeId">
             <from uri="direct:rest"/>
             <convertBodyTo type="java.lang.String"/>
             <log message="Client sends: ${body}"/>
-            <to uri="idscp2client://$endUrl?awaitResponse=true&amp;sslContextParameters=#clientSslContext"/>
+            <to uri="$endUrl?awaitResponse=true&amp;sslContextParameters=#clientSslContext"/>
             <log message="Client received: ${body}"/>
         </route>
 

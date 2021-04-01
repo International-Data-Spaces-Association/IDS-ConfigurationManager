@@ -16,8 +16,8 @@
 
     <camelContext xmlns="http://camel.apache.org/schema/blueprint">
 
-        <route id="$connectionId">
-            <from uri="idscp2server://$startUrl?sslContextParameters=#serverSslContext"/>
+        <route id="$routeId">
+            <from uri="$startUrl?sslContextParameters=#serverSslContext"/>
             <log message="Server received: ${body} (Header: #[[${headers[idscp2-header]}]]#)"/>
             <setBody>
                 <simple>{"data" : "testData"}</simple>

@@ -46,6 +46,11 @@ public class TrustedConnectorClient implements DefaultConnectorClient {
     }
 
     @Override
+    public Resource getRequestedResource(String accessURL, String resourceId) throws IOException {
+        return null;
+    }
+
+    @Override
     public String updateResource(URI resourceID, Resource resource) throws IOException {
         return null;
     }
@@ -76,15 +81,27 @@ public class TrustedConnectorClient implements DefaultConnectorClient {
     }
 
     @Override
-    public String registerResourceRepresentation(String resourceID, Representation representation) throws IOException {
+    public String registerResourceRepresentation(String resourceID, Representation representation
+            , String endpointId) throws IOException {
         return null;
     }
 
     @Override
-    public String updateResourceRepresentation(String resourceID, String representationID, Representation representation)
-            throws IOException {
+    public String updateResourceRepresentation(String resourceID, String representationID,
+                                               Representation representation, String endpointId) throws IOException {
         return null;
     }
+
+//    @Override
+//    public String registerResourceRepresentation(String resourceID, Representation representation) throws IOException {
+//        return null;
+//    }
+//
+//    @Override
+//    public String updateResourceRepresentation(String resourceID, String representationID, Representation representation)
+//            throws IOException {
+//        return null;
+//    }
 
     @Override
     public String updateCustomResourceRepresentation(String resourceID, String representationID,
@@ -93,12 +110,42 @@ public class TrustedConnectorClient implements DefaultConnectorClient {
     }
 
     @Override
-    public String updateResourceContract(String resourceID, Contract contract) throws IOException {
+    public String updateResourceContract(String resourceID, String contract) throws IOException {
         return null;
     }
 
     @Override
-    public void notifyConfig(ConfigurationModel configurationModel) {
-
+    public String getPolicyPattern(String policy) throws IOException {
+        return null;
     }
+
+    @Override
+    public BaseConnector getSelfDeclaration() throws IOException {
+        return null;
+    }
+
+    @Override
+    public String getOfferedResourcesAsJsonString() throws IOException {
+        return null;
+    }
+
+    @Override
+    public String getRequestedResourcesAsJsonString() throws IOException {
+        return null;
+    }
+
+    @Override
+    public String requestContractAgreement(String recipientId, String requestedArtifactId, String contractOffer) throws IOException {
+        return null;
+    }
+
+//    @Override
+//    public String updateResourceContract(String resourceID, Contract contract) throws IOException {
+//        return null;
+//    }
+//
+//    @Override
+//    public void notifyConfig(ConfigurationModel configurationModel) {
+//
+//    }
 }
