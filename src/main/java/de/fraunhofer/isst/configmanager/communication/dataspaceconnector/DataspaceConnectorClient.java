@@ -64,6 +64,16 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
     }
 
     @Override
+    public void getConnectorStatus() throws IOException {
+        final var connectorUrl = "https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/";
+        final var builder = new Request.Builder();
+        builder.url(connectorUrl);
+        builder.get();
+        final var request = builder.build();
+        client.newCall(request).execute();
+    }
+
+    @Override
     public String updateAtBroker(final String brokerURI) throws IOException {
         log.info(String.format("---- [DataspaceConnectorClient updateAtBroker] updating connector %s at broker %s", dataSpaceConnectorHost,
                 brokerURI));

@@ -69,6 +69,32 @@ public class ConnectorUIController implements ConnectorUIApi {
     }
 
     /**
+     * This methods tries to connect to the  public connector endpoint.
+     *
+     * @return accessibility status
+     */
+    @Override
+    public ResponseEntity<String> getConnectorStatus() {
+        log.info(">> GET /connector/status");
+
+        final var json = new JSONObject();
+        try {
+            client.getConnectorStatus();
+
+            log.info("---- [ConnectorUIController getConnectorStatus] Could connect to the Connector!");
+
+            json.put("status","Public connector endpoint reachable.");
+            return new ResponseEntity<>(json.toString(), HttpStatus.OK);
+        } catch (Exception e) {
+            //Error case does not need to be processed further here
+            log.warn("---- [ConnectorUIController getConnectorStatus] Could not connect to the Connector!");
+
+            json.put("status","Public connector endpoint not reachable.");
+            return new ResponseEntity<>(json.toString(), HttpStatus.SERVICE_UNAVAILABLE);
+        }
+    }
+
+    /**
      * This method returns as response the base connector in JSON format.
      *
      * @return as response the connector in JSON format
