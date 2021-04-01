@@ -66,9 +66,15 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         this.dataSpaceConnectorResourceMapper = dataSpaceConnectorResourceMapper;
     }
 
+    @Autowired
+    public void setProtocol(@Value("${dataspace.communication.ssl}") String https){
+        protocol = Boolean.parseBoolean(https) ? "https" : "http";
+        log.info("---- [DataspaceConnectorClient setProtocol] Communication Protocol with DataspaceConnector is: " + protocol);
+    }
+
     @Override
     public void getConnectorStatus() throws IOException {
-        final var connectorUrl = "https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/";
+        final var connectorUrl = protocol + "://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/";
         final var builder = new Request.Builder();
         builder.url(connectorUrl);
         builder.get();
@@ -486,7 +492,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         final var resourceJsonLD = MAPPER.writeValueAsString(mappedRepresentation);
         log.info("---- [DataspaceConnectorClient updateResourceRepresentation] mapped representation: " + resourceJsonLD);
         final var builder = new Request.Builder();
-        log.info("---- [DataspaceConnectorClient updateResourceRepresentation] Calling DSC at: https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin/api/resources/" + mappedResourceID + "/" + mappedRepresentationID);
+        log.info("---- [DataspaceConnectorClient updateResourceRepresentation] Calling DSC at: " + protocol + "://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin/api/resources/" + mappedResourceID + "/" + mappedRepresentationID);
         builder.url(protocol + "://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin" +
                 "/api/resources/" + mappedResourceID + "/" + mappedRepresentationID);
         builder.put(RequestBody.create(resourceJsonLD, okhttp3.MediaType.parse("application/ld" +
@@ -623,11 +629,5 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         final var body = Objects.requireNonNull(response.body()).string();
         log.info("---- [DataspaceConnectorClient updateResource] Response: " + body);
         return body;
-    }
-
-    @Autowired
-    public void setProtocol(@Value("${dataspace.communication.ssl}") String https){
-        protocol = Boolean.parseBoolean(https) ? "https" : "http";
-        log.info("Communication Protocol with Dataspace Connector is: " + protocol);
     }
 }
