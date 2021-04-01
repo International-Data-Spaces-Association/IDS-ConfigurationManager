@@ -18,12 +18,11 @@ import java.net.URI;
 public interface DefaultConnectorClient {
 
     /**
-     * The method returns the current configuration model.
+     * This methods tries to connect to the  public connector endpoint.
      *
-     * @return the current configuration model
-     * @throws IOException if request fails
+     * @throws IOException if connection fails
      */
-    BaseConnector getConnectorStatus() throws IOException;
+    void getConnectorStatus() throws IOException;
 
     /**
      * The method helps to update connector in the broker. For this only the id of the

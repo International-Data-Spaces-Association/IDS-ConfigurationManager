@@ -64,25 +64,13 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
     }
 
     @Override
-    public BaseConnector getConnectorStatus() throws IOException {
+    public void getConnectorStatus() throws IOException {
         final var connectorUrl = "https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/";
-
         final var builder = new Request.Builder();
         builder.url(connectorUrl);
         builder.get();
         final var request = builder.build();
-
-        final var response = client.newCall(request).execute();
-
-        if (!response.isSuccessful()) {
-            log.warn("---- [DataspaceConnectorClient getConnectorStatus] Could not get the public self-description" +
-                        " from {} with user {}. Response: {} - {}",
-                        connectorUrl, dataSpaceConnectorApiUsername, response.code(),
-                        response.message());
-        }
-
-        final var body = Objects.requireNonNull(response.body()).string();
-        return SERIALIZER.deserialize(body, BaseConnector.class);
+        client.newCall(request).execute();
     }
 
     @Override

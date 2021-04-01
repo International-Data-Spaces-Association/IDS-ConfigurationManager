@@ -69,7 +69,7 @@ public class ConnectorUIController implements ConnectorUIApi {
     }
 
     /**
-     * This methods returns the connector public endpoint accessibility status.
+     * This methods tries to connect to the  public connector endpoint.
      *
      * @return accessibility status
      */
