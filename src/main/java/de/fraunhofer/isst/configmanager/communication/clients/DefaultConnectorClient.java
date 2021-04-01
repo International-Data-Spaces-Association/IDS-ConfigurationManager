@@ -18,6 +18,14 @@ import java.net.URI;
 public interface DefaultConnectorClient {
 
     /**
+     * The method returns the current configuration model.
+     *
+     * @return the current configuration model
+     * @throws IOException if request fails
+     */
+    BaseConnector getConnectorStatus() throws IOException;
+
+    /**
      * The method helps to update connector in the broker. For this only the id of the
      * corresponding broker
      * is necessary.
@@ -45,6 +53,7 @@ public interface DefaultConnectorClient {
      * @throws IOException if request fails
      */
     ConfigurationModel getConfiguration() throws IOException;
+
 
     /**
      * The boolean method helps to send the current configuration model to the target connector.

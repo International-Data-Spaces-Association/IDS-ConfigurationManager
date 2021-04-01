@@ -9,9 +9,16 @@ import org.springframework.web.bind.annotation.*;
 public interface ConnectorUIApi {
 
     @GetMapping(value = "/connector", produces = "application/ld+json")
-    @Operation(summary = "Get the connector")
+    @Operation(summary = "Get the Connector-Description")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully retrieved the connector")})
     ResponseEntity<String> getConnector();
+
+    @GetMapping(value = "/connector/status", produces = "application/ld+json")
+    @Operation(summary = "Get the accessibility-status of the Public Connector Endpoint (Connector Self-description)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Public connector endpoint reachable."),
+            @ApiResponse(responseCode = "503", description = "Public connector endpoint not reachable.")})
+    ResponseEntity<String> getConnectorStatus();
 
     @GetMapping(value = "/connector/json", produces = "application/ld+json")
     @Operation(summary = "Get the connector in json")
