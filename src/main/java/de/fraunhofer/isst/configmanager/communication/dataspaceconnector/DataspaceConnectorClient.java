@@ -15,6 +15,7 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Service;
@@ -59,13 +60,21 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
     @Value("${dataspace.connector.port}")
     transient Integer dataSpaceConnectorPort;
 
+    transient String protocol;
+
     public DataspaceConnectorClient(final DataSpaceConnectorResourceMapper dataSpaceConnectorResourceMapper) {
         this.dataSpaceConnectorResourceMapper = dataSpaceConnectorResourceMapper;
     }
 
+    @Autowired
+    public void setProtocol(@Value("${dataspace.communication.ssl}") String https){
+        protocol = Boolean.parseBoolean(https) ? "https" : "http";
+        log.info("---- [DataspaceConnectorClient setProtocol] Communication Protocol with DataspaceConnector is: " + protocol);
+    }
+
     @Override
     public void getConnectorStatus() throws IOException {
-        final var connectorUrl = "https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/";
+        final var connectorUrl = protocol + "://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/";
         final var builder = new Request.Builder();
         builder.url(connectorUrl);
         builder.get();
@@ -79,7 +88,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
                 brokerURI));
         final var builder = new Request.Builder();
         builder.url(new HttpUrl.Builder()
-                .scheme("https")
+                .scheme(protocol)
                 .host(dataSpaceConnectorHost)
                 .port(dataSpaceConnectorPort)
                 .addPathSegments("admin/api/broker/update")
@@ -98,7 +107,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
                 dataSpaceConnectorHost, brokerURI));
         final var builder = new Request.Builder();
         builder.url(new HttpUrl.Builder()
-                .scheme("https")
+                .scheme(protocol)
                 .host(dataSpaceConnectorHost)
                 .port(dataSpaceConnectorPort)
                 .addPathSegments("admin/api/broker/unregister")
@@ -115,7 +124,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
     public ConfigurationModel getConfiguration() throws IOException {
         final var builder = new Request.Builder();
         final var connectorUrl =
-                "https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin/api" +
+                protocol + "://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin/api" +
                         "/configuration";
         builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername,
                 dataSpaceConnectorApiPassword));
@@ -137,7 +146,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
     public BaseConnector getSelfDeclaration() throws IOException {
         final var builder = new Request.Builder();
         final var connectorUrl =
-                "https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin/api" +
+                protocol + "://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin/api" +
                         "/connector";
         builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername,
                 dataSpaceConnectorApiPassword));
@@ -170,7 +179,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
     private JsonNode getJsonNodeOfBaseConnector() throws IOException {
         final var builder = new Request.Builder();
         final var connectorUrl =
-                "https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort +
+                protocol + "://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort +
                         "/admin/api/connector";
         builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername,
                 dataSpaceConnectorApiPassword));
@@ -191,7 +200,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
     public boolean sendConfiguration(final String configurationModel) throws IOException {
         log.info(String.format("---- [DataspaceConnectorClient sendConfiguration] sending new configuration to %s", dataSpaceConnectorHost));
         final var builder = new Request.Builder();
-        builder.url("https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin" +
+        builder.url(protocol + "://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin" +
                 "/api/configuration");
         builder.post(RequestBody.create(configurationModel, okhttp3.MediaType.parse("application" +
                 "/ld+json")));
@@ -211,7 +220,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
     public BaseConnector getBaseConnector(final String accessURL, final String resourceId) throws IOException {
         final var builder = new Request.Builder();
         final var urlBuilder = new HttpUrl.Builder()
-                .scheme("https")
+                .scheme(protocol)
                 .host(dataSpaceConnectorHost)
                 .port(dataSpaceConnectorPort)
                 .addPathSegments("admin/api/request/description")
@@ -239,7 +248,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
     public Resource getRequestedResource(String accessURL, String resourceId) throws IOException {
         var builder = new Request.Builder();
         var urlBuilder = new HttpUrl.Builder()
-                .scheme("https")
+                .scheme(protocol)
                 .host(dataSpaceConnectorHost)
                 .port(dataSpaceConnectorPort)
                 .addPathSegments("admin/api/request/description")
@@ -269,7 +278,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         log.info("Request contract agreement with recipient: {} and artifact: {}", recipientId, requestedArtifactId);
         var builder = new Request.Builder();
         var urlBuilder = new HttpUrl.Builder()
-                .scheme("https")
+                .scheme(protocol)
                 .host(dataSpaceConnectorHost)
                 .port(dataSpaceConnectorPort)
                 .addPathSegments("admin/api/request/contract")
@@ -304,7 +313,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         final var path = resource.getId().getPath();
         final var idStr = path.substring(path.lastIndexOf('/') + 1);
         final var url = new HttpUrl.Builder()
-                .scheme("https")
+                .scheme(protocol)
                 .host(dataSpaceConnectorHost)
                 .port(dataSpaceConnectorPort)
                 .addPathSegments("admin/api/resources/resource")
@@ -332,7 +341,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         final var path = resourceID.getPath();
         final var idStr = path.substring(path.lastIndexOf('/') + 1);
         final var builder = new Request.Builder();
-        builder.url("https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin" +
+        builder.url(protocol + "://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin" +
                 "/api/resources/" + idStr);
         builder.delete();
         builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername,
@@ -353,7 +362,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         final var resourceUUID = UUID.fromString(idStr);
         final var builder = new Request.Builder();
         builder.url(new HttpUrl.Builder()
-                .scheme("https")
+                .scheme(protocol)
                 .host(dataSpaceConnectorHost)
                 .port(dataSpaceConnectorPort)
                 .addPathSegments("admin/api/broker/update/" + resourceUUID)
@@ -377,7 +386,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         final var idStr = path.substring(path.lastIndexOf('/') + 1);
         final var builder = new Request.Builder();
         builder.url(new HttpUrl.Builder()
-                .scheme("https")
+                .scheme(protocol)
                 .host(dataSpaceConnectorHost)
                 .port(dataSpaceConnectorPort)
                 .addPathSegments("admin/api/broker/remove/" + idStr)
@@ -405,7 +414,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         final var mappedRepresentationID =
                 dataSpaceConnectorResourceMapper.getMappedId(URI.create(representationID));
         dataSpaceConnectorResourceMapper.deleteResourceIDPair(URI.create(representationID));
-        builder.url("https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin" +
+        builder.url(protocol + "://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin" +
                 "/api/resources/" + mappedResourceID + "/" + mappedRepresentationID);
         builder.delete();
         builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername,
@@ -437,7 +446,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         log.info("---- [DataspaceConnectorClient registerResourceRepresentation] mapped representation: " + resourceJsonLD);
         final var builder = new Request.Builder();
         builder.url(new HttpUrl.Builder()
-                .scheme("https")
+                .scheme(protocol)
                 .host(dataSpaceConnectorHost)
                 .port(dataSpaceConnectorPort)
                 .addPathSegments("admin/api/resources/" + mappedResourceID + "/representation")
@@ -483,8 +492,8 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         final var resourceJsonLD = MAPPER.writeValueAsString(mappedRepresentation);
         log.info("---- [DataspaceConnectorClient updateResourceRepresentation] mapped representation: " + resourceJsonLD);
         final var builder = new Request.Builder();
-        log.info("---- [DataspaceConnectorClient updateResourceRepresentation] Calling DSC at: https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin/api/resources/" + mappedResourceID + "/" + mappedRepresentationID);
-        builder.url("https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin" +
+        log.info("---- [DataspaceConnectorClient updateResourceRepresentation] Calling DSC at: " + protocol + "://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin/api/resources/" + mappedResourceID + "/" + mappedRepresentationID);
+        builder.url(protocol + "://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin" +
                 "/api/resources/" + mappedResourceID + "/" + mappedRepresentationID);
         builder.put(RequestBody.create(resourceJsonLD, okhttp3.MediaType.parse("application/ld" +
                 "+json")));
@@ -514,7 +523,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         final var resourceJsonLD = MAPPER.writeValueAsString(resourceRepresentation);
         log.info("---- [DataspaceConnectorClient updateCustomResourceRepresentation] mapped representation: " + resourceJsonLD);
         final var builder = new Request.Builder();
-        builder.url("https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin" +
+        builder.url(protocol + "://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin" +
                 "/api/resources/" + mappedResourceID + "/" + mappedRepresentationID);
         builder.put(RequestBody.create(resourceJsonLD, okhttp3.MediaType.parse("application/ld" +
                 "+json")));
@@ -539,7 +548,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
                 dataSpaceConnectorResourceMapper.readUUIDFromURI(URI.create(resourceID));
 //        var resourceJsonLD = SERIALIZER.serialize(contract);
         final var builder = new Request.Builder();
-        builder.url("https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin" +
+        builder.url(protocol + "://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin" +
                 "/api/resources/" + mappedResourceID + "/contract");
         builder.put(RequestBody.create(contract, okhttp3.MediaType.parse("application/ld+json")));
         builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername,
@@ -558,7 +567,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
     public String getPolicyPattern(final String policy) throws IOException {
         log.info(String.format("---- [DataspaceConnectorClient getPolicyPattern] Get pattern for policy"));
         final var builder = new Request.Builder();
-        builder.url("https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin" +
+        builder.url(protocol + "://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin" +
                 "/api/example/policy-validation");
         builder.post(RequestBody.create(policy, okhttp3.MediaType.parse("application/ld+json")));
         builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername,
@@ -584,7 +593,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         BackendSource backendSource = new BackendSource();
         try {
             final var requestBackendBuilder = new Request.Builder();
-            requestBackendBuilder.url("https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin" +
+            requestBackendBuilder.url(protocol + "://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin" +
                     "/api/resources/" + resourceUUID);
             requestBackendBuilder.get();
             requestBackendBuilder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername,
@@ -607,7 +616,7 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         var resourceJsonLD = MAPPER.writeValueAsString(mappedResource);
 
         final var builder = new Request.Builder();
-        builder.url("https://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin" +
+        builder.url(protocol + "://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/admin" +
                 "/api/resources/" + resourceUUID);
         builder.put(RequestBody.create(resourceJsonLD, okhttp3.MediaType.parse("application/ld+json")));
         builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername,
@@ -621,5 +630,4 @@ public class DataspaceConnectorClient implements DefaultConnectorClient {
         log.info("---- [DataspaceConnectorClient updateResource] Response: " + body);
         return body;
     }
-
 }

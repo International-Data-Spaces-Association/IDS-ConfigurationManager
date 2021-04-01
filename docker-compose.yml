@@ -9,3 +9,4 @@ services:
       - 8081:8081
     environment:
       - CUSTOM_APP_NAME=Einfache Wetterwarnungen auf Gemeindeebene
+      - DATASPACE_COMMUNICATION_SSL=true
