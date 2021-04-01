@@ -5,7 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [6.0.1-SNAPSHOT] - UNRELEASED
+## [6.1.0-SNAPSHOT] - UNRELEASED
+### Added
+- Minor Change: New API GET /api/ui/connector/status to return the accessibility-status of the Public-Connector-Endpoint
+
 ### Changes
 - Docker: The Java version to be used is now fixed in the Dockerfile
 

@@ -91,7 +91,7 @@ public class ConfigmanagerApplication {
 
     @Scheduled(fixedRate = 60000)
     public void logInfoStillAlive() {
-        var currentVersion = "6.0.1-SNAPSHOT";
+        var currentVersion = "6.1.0-SNAPSHOT";
 
         System.gc();
         var mb = 1024L * 1024L;
