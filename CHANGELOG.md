@@ -11,7 +11,12 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Minor Change: New setting option to address the DSC via HTTP or HTTPS. dataspace.communication.ssl=true/false in application.properties and DATASPACE_COMMUNICATION_SSL=true/false in docker-compose environment.
 
 ### Changes
+- Code and Architecture refactoring
 - Docker: The Java version to be used is now fixed in the Dockerfile
+- If running infomodel-deserialize throws IOException,  these are now explicitly logged in the DataspaceConnectorClient
+
+### Fixes
+- POST /api​/ui​/broker​/register now return success:false if connector doesn't return 200 and GET /api​/ui​/brokers returns not registered in this case
 
 ## [6.0.0] - 2021-03-26
 

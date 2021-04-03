@@ -1,6 +1,10 @@
 package de.fraunhofer.isst.configmanager.util;
 
-import de.fraunhofer.iais.eis.*;
+import de.fraunhofer.iais.eis.AppEndpoint;
+import de.fraunhofer.iais.eis.AppEndpointBuilder;
+import de.fraunhofer.iais.eis.AppEndpointType;
+import de.fraunhofer.iais.eis.CustomMediaTypeBuilder;
+import de.fraunhofer.iais.eis.Language;
 import de.fraunhofer.iais.eis.util.TypedLiteral;
 import de.fraunhofer.iais.eis.util.Util;
 import lombok.experimental.UtilityClass;
@@ -47,11 +51,14 @@ public class Utility {
      * @throws URISyntaxException if uri can not be created
      */
     public static AppEndpoint createAppEndpoint(final AppEndpointType appEndpointType,
-                                                final BigInteger port, final String documentation,
+                                                final BigInteger port,
+                                                final String documentation,
                                                 final String endpointInformation,
                                                 final String accessURL,
-                                                final String inboundPath, final String outboundPath,
-                                                final Language language, final String mediaType,
+                                                final String inboundPath,
+                                                final String outboundPath,
+                                                final Language language,
+                                                final String mediaType,
                                                 final String path) throws URISyntaxException {
 
         final var mediatype = new CustomMediaTypeBuilder()._filenameExtension_(mediaType).build();

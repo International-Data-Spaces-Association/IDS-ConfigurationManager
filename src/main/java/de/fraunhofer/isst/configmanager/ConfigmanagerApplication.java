@@ -23,14 +23,16 @@ import java.util.Properties;
 /**
  * Main class for starting the configuration manager application.
  */
-@SpringBootApplication
-@EnableScheduling
+
 @Slf4j
+@EnableScheduling
+@SpringBootApplication
 public class ConfigmanagerApplication {
+    public static final String CURRENT_VERSION = "6.1.0-SNAPSHOT";
 
     public static void main(final String[] args) {
+        log.info("---- [ConfigmanagerApplication] Starting ConfigManager " + CURRENT_VERSION);
         log.info("---- [ConfigmanagerApplication] Used JVM charset (should be UTF-8): " + Charset.defaultCharset());
-
         SpringApplication.run(ConfigmanagerApplication.class, args);
     }
 
@@ -42,10 +44,8 @@ public class ConfigmanagerApplication {
      */
     @Bean
     public OpenAPI customOpenAPI() throws IOException {
-
         final var properties = new Properties();
-        try (InputStream inputStream = getClass().getClassLoader()
-                .getResourceAsStream("application.properties")) {
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("application.properties")) {
             // This function may crash (e.g. ill-formatted file). Let it bubble up.
             properties.load(inputStream);
         }
@@ -89,16 +89,16 @@ public class ConfigmanagerApplication {
         return objectMapper;
     }
 
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 60_000)
     public void logInfoStillAlive() {
-        var currentVersion = "6.1.0-SNAPSHOT";
 
         System.gc();
-        var mb = 1024L * 1024L;
-        var currentHeapSize = Runtime.getRuntime().totalMemory() / mb;
-        var maxHeapSize = Runtime.getRuntime().maxMemory() / mb;
-        var freeHeapSize = Runtime.getRuntime().freeMemory() / mb;
-        log.info("[ConfigManager " + currentVersion + "] Heap Size Stats: Used " + Math.toIntExact(currentHeapSize) + " MB - Free " + Math.toIntExact(freeHeapSize) + " MB - Max " + Math.toIntExact(maxHeapSize) + " MB");
-        log.info("[ConfigManager " + currentVersion + "] Waiting for API call...");
+        final var mb = 1024L * 1024L;
+        final var currentHeapSize = Runtime.getRuntime().totalMemory() / mb;
+        final var maxHeapSize = Runtime.getRuntime().maxMemory() / mb;
+        final var freeHeapSize = Runtime.getRuntime().freeMemory() / mb;
+        final var threadCount = Thread.activeCount();
+        log.info("[ConfigManager " + CURRENT_VERSION + "] Heap Size Stats: Used " + Math.toIntExact(currentHeapSize) + " MB - Free " + Math.toIntExact(freeHeapSize) + " MB - Max " + Math.toIntExact(maxHeapSize) + " MB - Running Threads: " + threadCount);
+        log.info("[ConfigManager " + CURRENT_VERSION + "] Waiting for API call...");
     }
 }
