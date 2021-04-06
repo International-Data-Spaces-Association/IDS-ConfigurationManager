@@ -130,8 +130,8 @@ public class BrokerController implements BrokerApi {
             try {
                 response = ResponseEntity.ok(objectMapper.writeValueAsString(broker));
             } catch (IOException e) {
-                response = ResponseEntity.badRequest().body("Could not get the specific broker");
                 log.error(e.getMessage(), e);
+                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
         } else {
             response = ResponseEntity.badRequest().body("Could not get the specific broker");
@@ -281,7 +281,7 @@ public class BrokerController implements BrokerApi {
                 response = ResponseEntity.ok(jsonObject.toJSONString());
             } catch (IOException e) {
                 log.error(e.getMessage(), e);
-                response = ResponseEntity.badRequest().body("Could not connect to the Connector!");
+                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
         } else {
             response = ResponseEntity.badRequest().body("Could not find the broker with URI: " + brokerUri);

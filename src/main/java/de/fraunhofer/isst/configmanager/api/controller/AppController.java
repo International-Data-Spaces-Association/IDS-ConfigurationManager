@@ -47,11 +47,10 @@ public class AppController implements AppApi {
                 response = ResponseEntity.ok(objectMapper.writeValueAsString(customAppList));
             } catch (JsonProcessingException e) {
                 log.error(e.getMessage(), e);
-                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body("Problems while parsing to json");
+                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
         } else {
-            response = ResponseEntity.badRequest().body("Could not find any app");
+            response = ResponseEntity.badRequest().body("Could not find custom apps");
         }
 
         return response;
@@ -75,11 +74,10 @@ public class AppController implements AppApi {
                 response = ResponseEntity.ok(objectMapper.writeValueAsString(customApp));
             } catch (JsonProcessingException e) {
                 log.error(e.getMessage(), e);
-                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body("Problems while parsing to json");
+                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
         } else {
-            response = ResponseEntity.badRequest().body("Could not get app with id: " + id);
+            response = ResponseEntity.badRequest().body("Can not find the custom app");
         }
 
         return response;

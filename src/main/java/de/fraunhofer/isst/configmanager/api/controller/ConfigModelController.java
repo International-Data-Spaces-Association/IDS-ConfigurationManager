@@ -103,8 +103,7 @@ public class ConfigModelController implements ConfigModelApi {
                 }
             } catch (IOException e) {
                 log.error(e.getMessage(), e);
-                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body("Problems while sending configuration to the connector!");
+                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
         } else {
             response = ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to update the configuration model");

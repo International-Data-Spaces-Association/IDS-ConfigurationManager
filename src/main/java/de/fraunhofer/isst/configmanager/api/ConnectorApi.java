@@ -9,7 +9,10 @@ import org.springframework.web.bind.annotation.*;
 public interface ConnectorApi {
     @GetMapping(value = "/connector", produces = "application/ld+json")
     @Operation(summary = "Get the Connector-Description")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully retrieved the connector")})
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved the connector"),
+            @ApiResponse(responseCode = "404", description = "Can not find a connector description"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")})
     ResponseEntity<String> getConnector();
 
     @GetMapping(value = "/connector/status", produces = "application/ld+json")
@@ -38,7 +41,11 @@ public interface ConnectorApi {
 
     @PutMapping(value = "/connector", produces = "application/ld+json")
     @Operation(summary = "Update a connector")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully updated a new connector")})
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successfully updated the connector description of the" +
+                    " configuration model"),
+            @ApiResponse(responseCode = "400", description = "Failed to update the connector. The configuration model" +
+                    " is not valid")})
     ResponseEntity<String> updateConnector(@RequestParam(value = "title", required = false) String title,
                                            @RequestParam(value = "description", required = false) String description,
                                            @RequestParam(value = "endpoint", required = false) String endpoint,
@@ -50,6 +57,8 @@ public interface ConnectorApi {
 
     @DeleteMapping(value = "/connector")
     @Operation(summary = "Deletes the connector")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully deleted the connector")})
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successfully deleted the connector"),
+            @ApiResponse(responseCode = "400", description = "Could not delete the connector")})
     ResponseEntity<String> deleteConnector();
 }

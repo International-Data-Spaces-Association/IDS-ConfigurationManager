@@ -15,21 +15,29 @@ import java.net.URI;
 public interface ResourceContractApi {
     @GetMapping(value = "/resource/contract", produces = "application/ld+json")
     @Operation(summary = "Returns the contract from a resource")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully returned the contract from the resource")})
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successfully returned the contract from the resource"),
+            @ApiResponse(responseCode = "400", description = "Can not find the resource contract"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")})
     ResponseEntity<String> getResourceContract(@RequestParam("resourceId") URI resourceId);
 
     @PutMapping(value = "/resource/contract", produces = "application/ld+json")
     @Operation(summary = "Updates the contract in a resource")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully updated the contract in the resource")})
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successfully updated the contract in the resource"),
+            @ApiResponse(responseCode = "400", description = "Can not update the resource contract"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")})
     ResponseEntity<String> updateResourceContract(@RequestParam("resourceId") URI resourceId,
                                                   @RequestBody String contractJson);
 
     @PutMapping(value = "/resource/contract/update", produces = "application/ld+json")
     @Operation(summary = "Updates the contract in a resource")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully updated the contract in the resource")})
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successfully updated the contract in the resource"),
+            @ApiResponse(responseCode = "400", description = "Can not update the resource contract")})
     ResponseEntity<String> updateContractForResource(@RequestParam("resourceId") URI resourceId,
-                                                    @RequestParam("pattern") Pattern pattern,
-                                                    @RequestBody(required = false) String contractJson);
+                                                     @RequestParam("pattern") Pattern pattern,
+                                                     @RequestBody(required = false) String contractJson);
 
 
 }

@@ -13,14 +13,18 @@ import java.net.URI;
 public interface ConnectorRequestApi {
     @PostMapping(value = "/request/description", produces = "application/ld+json")
     @Operation(summary = "Request metadata from another IDS connector.")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully requested  metadata from IDS connector")})
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successfully requested  metadata from IDS connector"),
+            @ApiResponse(responseCode = "400", description = "Can not request metadata from IDS connector"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")})
     ResponseEntity<String> requestMetadata(@RequestParam("recipientId") URI recipientId,
-                                           @RequestParam(value = "requestedResourceId", required = false)
-                                                   URI requestedResourceId);
+                                           @RequestParam(value = "requestedResourceId", required = false) URI requestedResourceId);
 
     @PostMapping(value = "/request/contract", produces = "application/ld+json")
     @Operation(summary = "Send a contract request to another IDS connector.")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully send a contract request to another IDS connector")})
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successfully send a contract request to another IDS connector"),
+            @ApiResponse(responseCode = "400", description = "Can not return the contract agreement id")})
     ResponseEntity<String> requestContract(@RequestParam("recipientId") URI recipientId,
                                            @RequestParam(value = "requestedArtifactId ") URI requestedArtifactId,
                                            @RequestBody(required = false) String contractOffer);
