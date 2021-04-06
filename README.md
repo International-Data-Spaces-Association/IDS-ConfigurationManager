@@ -73,15 +73,17 @@ To get more information about the Dataspace Connector or the UI for the Configur
 
 This is a list of currently implemented features, which is continuously updated.
 
-* The configuration model can be managed and is stored in an internal H2 database
-* Proxy settings for the ConfigModel can be made
-* Endpoints can be created and edited for the configuration model
-* The configuration model can be provided with a connector description
+* The configuration can be fetched and updated from a connector
+* Proxy settings for the configuration can be made
+* Generic endpoints and connector endpoints can be created and edited for creating app routes
 * The available brokers can be retrieved, which are located in an internal H2 database
     * Connectors can be registered with a broker, removed or updated
-* Resources can be stored in the connector and in the app route of the configuration model
-    * A representation can be created and managed for each resource
-    * Contracts can be retrieved and updated for each resource
+* An external connector can be accessed to fetch their offered resources
+* The configuration of the resources can be done in the configuration manager and is transferred to the Dataspace Connector
+    * The configuration of resources also includes the management of their representations,
+      which are transferred to the Dataspace connector.
+    * The configuration of resources also includes the management of their contracts, 
+      which are transferred to the Dataspace connector
 * The Dataspace Connector is notified about every change in the configuration model, e.g. when changes are made to
   resources, the connector or the configuration model itself
 * App routes can be defined for offering data or resources (under construction)
@@ -122,7 +124,7 @@ You need:
 Clone the project from
 
 ```
-https://github.com/FraunhoferISST/IDS-ConfigurationManager
+https://github.com/International-Data-Spaces-Association/IDS-ConfigurationManager
 ```
 
 open the directory and run
@@ -144,26 +146,51 @@ in terminal to start the configuration manager.
 
 ## Backend API
 
-In the following, the different APIs are described and explained. Most of the interfaces are used to set the
-configuration of configuration model, connector, brokers etc. via the user interface.
+In the following, the different APIs are described and explained. Most apis are mainly 
+used by the user interface to simplify configuration of a connector.
 
-* `Configuration model API: ` The API provides CRUD operations to manage the Configuration Model.
-* `Configuration model Proxy API: ` The API helps to make proxy settings for the configuration model.
-* `Endpoint API: ` With the API app routes can be configured. The CRUD operations are also available here.
-* `Connector API: ` The Connector API helps to manage the connector description in the configuration model.
-* `Broker API: ` The Broker API helps to manage individual brokers. It offers several endpoints to manage the brokers.
-  Beside the CRUD operations there are also endpoints which help to update, register or unregister a connector with the
-  broker.
-* `Resource API: `Connectors and app routes include resources provided by data providers. The Resource API helps to
-  manage the resources in the connector and in the app routes.
-* `Resource contract API: ` The API helps to retrieve or update the contracts of a resource.
-* `Resource representation API: ` A resource can have different representations. With the API the representations can be
-  managed.
-* `App route API: ` The app route API helps to define app routes and subroutes. When creating subroutes, resources can
-  also be published. Furthermore, the app route deploy method can be customized, which are then valid for all routes in
-  the configuration model.
+* `App Route Management: `
+* `Connector Request Management: `
+* `Connector Management: `
+* `Resource Management: `
+* `Resource representation Management: `
+* `Configmodel Management: `
+* `Broker Management: `
+* `Resource contracts Management: `
+* `Endpoints Management: `
+* `Util Management: `
 
 * `Database: `The data resources are persist in an H2 database. Console path: `http://localhost:8081/console`
+  
+[comment]: <> (* `Configuration model API: ` The API provides CRUD operations to manage the Configuration Model.)
+
+[comment]: <> (* `Configuration model Proxy API: ` The API helps to make proxy settings for the configuration model.)
+
+[comment]: <> (* `Endpoint API: ` With the API app routes can be configured. The CRUD operations are also available here.)
+
+[comment]: <> (* `Connector API: ` The Connector API helps to manage the connector description in the configuration model.)
+
+[comment]: <> (* `Broker API: ` The Broker API helps to manage individual brokers. It offers several endpoints to manage the brokers.)
+
+[comment]: <> (  Beside the CRUD operations there are also endpoints which help to update, register or unregister a connector with the)
+
+[comment]: <> (  broker.)
+
+[comment]: <> (* `Resource API: `Connectors and app routes include resources provided by data providers. The Resource API helps to)
+
+[comment]: <> (  manage the resources in the connector and in the app routes.)
+
+[comment]: <> (* `Resource contract API: ` The API helps to retrieve or update the contracts of a resource.)
+
+[comment]: <> (* `Resource representation API: ` A resource can have different representations. With the API the representations can be)
+
+[comment]: <> (  managed.)
+
+[comment]: <> (* `App route API: ` The app route API helps to define app routes and subroutes. When creating subroutes, resources can)
+
+[comment]: <> (  also be published. Furthermore, the app route deploy method can be customized, which are then valid for all routes in)
+
+[comment]: <> (  the configuration model.)
 
 ---
 <a name="hands-on-ids-configurationmanager"></a>
