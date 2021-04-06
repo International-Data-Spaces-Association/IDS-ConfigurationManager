@@ -8,6 +8,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [6.1.0-SNAPSHOT] - UNRELEASED
 ### Added
 - Minor Change: New API GET /api/ui/connector/status to return the accessibility-status of the Public-Connector-Endpoint
+- Minor Change: New API PUT /resource/contract/update to create the contract in the configmanager and update it at the dataspace connector
 - Minor Change: New setting option to address the DSC via HTTP or HTTPS. dataspace.communication.ssl=true/false in application.properties and DATASPACE_COMMUNICATION_SSL=true/false in docker-compose environment.
 
 ### Changes

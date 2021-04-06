@@ -2,7 +2,6 @@ package de.fraunhofer.isst.configmanager.api.controller;
 
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.api.ResourceApi;
-import de.fraunhofer.isst.configmanager.connector.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.api.service.ResourceService;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultResourceClient;
 import de.fraunhofer.isst.configmanager.util.ValidateApiInput;

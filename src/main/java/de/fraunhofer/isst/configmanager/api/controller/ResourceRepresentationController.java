@@ -1,17 +1,10 @@
 package de.fraunhofer.isst.configmanager.api.controller;
 
 
-import de.fraunhofer.iais.eis.Artifact;
-import de.fraunhofer.iais.eis.ArtifactBuilder;
-import de.fraunhofer.iais.eis.IANAMediaTypeBuilder;
-import de.fraunhofer.iais.eis.Language;
-import de.fraunhofer.iais.eis.RepresentationBuilder;
-import de.fraunhofer.iais.eis.RepresentationImpl;
-import de.fraunhofer.iais.eis.ResourceImpl;
+import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.api.ResourceRepresentationApi;
-import de.fraunhofer.isst.configmanager.connector.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.api.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.api.service.ResourceService;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultResourceClient;
