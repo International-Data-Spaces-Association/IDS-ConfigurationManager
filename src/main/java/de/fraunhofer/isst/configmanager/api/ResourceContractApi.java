@@ -34,7 +34,7 @@ public interface ResourceContractApi {
     @Operation(summary = "Updates the contract in a resource")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Successfully updated the contract in the resource"),
-            @ApiResponse(responseCode = "400", description = "Can not upda the resource contract")})
+            @ApiResponse(responseCode = "400", description = "Can not update the resource contract")})
     ResponseEntity<String> updateContractForResource(@RequestParam("resourceId") URI resourceId,
                                                      @RequestParam("pattern") Pattern pattern,
                                                      @RequestBody(required = false) String contractJson);
