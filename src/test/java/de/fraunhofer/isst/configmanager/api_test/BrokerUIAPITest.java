@@ -1,12 +1,15 @@
 package de.fraunhofer.isst.configmanager.api_test;
 
+import de.fraunhofer.isst.configmanager.connector.clients.DefaultBrokerClient;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultConnectorClient;
+import de.fraunhofer.isst.configmanager.connector.clients.DefaultResourceClient;
 import de.fraunhofer.isst.configmanager.model.config.CustomBroker;
 import de.fraunhofer.isst.configmanager.api.service.BrokerService;
 import de.fraunhofer.isst.configmanager.api.service.ResourceService;
 import de.fraunhofer.isst.configmanager.api.controller.BrokerController;
 import de.fraunhofer.isst.configmanager.util.TestUtil;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -33,6 +36,12 @@ public class BrokerUIAPITest {
 
     @MockBean
     private DefaultConnectorClient defaultConnectorClient;
+
+    @MockBean
+    private DefaultBrokerClient defaultBrokerClient;
+
+    @MockBean
+    private DefaultResourceClient defaultResourceClient;
 
     @MockBean
     private ResourceService resourceService;

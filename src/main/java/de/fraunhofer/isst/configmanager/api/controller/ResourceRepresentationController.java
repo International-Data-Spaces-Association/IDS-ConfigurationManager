@@ -14,6 +14,7 @@ import de.fraunhofer.isst.configmanager.api.ResourceRepresentationApi;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.api.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.api.service.ResourceService;
+import de.fraunhofer.isst.configmanager.connector.clients.DefaultResourceClient;
 import de.fraunhofer.isst.configmanager.util.ValidateApiInput;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
@@ -43,13 +44,13 @@ public class ResourceRepresentationController implements ResourceRepresentationA
 
     transient ConfigModelService configModelService;
     transient ResourceService resourceService;
-    transient DefaultConnectorClient client;
+    transient DefaultResourceClient client;
     transient Serializer serializer;
 
     @Autowired
     public ResourceRepresentationController(final ConfigModelService configModelService,
                                             final ResourceService resourceService,
-                                            final DefaultConnectorClient client,
+                                            final DefaultResourceClient client,
                                             final Serializer serializer) {
         this.client = client;
         this.configModelService = configModelService;
