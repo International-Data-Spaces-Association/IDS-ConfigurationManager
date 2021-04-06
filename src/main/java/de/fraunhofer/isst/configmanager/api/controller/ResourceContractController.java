@@ -124,7 +124,7 @@ public class ResourceContractController implements ResourceContractApi {
     /**
      * @param resourceId   id of the resource
      * @param pattern      the pattern of the contract
-     * @param contractJson the created contract for the resourrce
+     * @param contractJson the created contract for the resource
      * @return a suitable http response depending on success
      */
     @Override
