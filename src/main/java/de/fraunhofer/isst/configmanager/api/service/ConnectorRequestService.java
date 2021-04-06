@@ -2,6 +2,7 @@ package de.fraunhofer.isst.configmanager.api.service;
 
 import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultConnectorClient;
+import de.fraunhofer.isst.configmanager.connector.clients.DefaultResourceClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,11 +21,13 @@ import java.util.List;
 @Transactional
 public class ConnectorRequestService {
 
-    private final transient DefaultConnectorClient client;
+    private final transient DefaultResourceClient resourceClient;
+    private final transient DefaultConnectorClient connectorClient;
 
     @Autowired
-    public ConnectorRequestService(final DefaultConnectorClient client) {
-        this.client = client;
+    public ConnectorRequestService(final DefaultResourceClient resourceClient, final DefaultConnectorClient connectorClient) {
+        this.resourceClient = resourceClient;
+        this.connectorClient = connectorClient;
     }
 
     /**
@@ -35,7 +38,7 @@ public class ConnectorRequestService {
      */
     public List<Resource> requestResourcesFromConnector(final URI recipientId) {
         try {
-            final var connector = client.getBaseConnector(recipientId.toString(), "");
+            final var connector = connectorClient.getBaseConnector(recipientId.toString(), "");
             if (connector != null && connector.getResourceCatalog() != null) {
 
                 final List<Resource> resourceList = new ArrayList<>();
@@ -65,7 +68,7 @@ public class ConnectorRequestService {
     public Resource requestResource(final URI recipientId, final URI requestedResourceId) {
 
         try {
-            final var resource = client.getRequestedResource(recipientId.toString(), requestedResourceId.toString());
+            final var resource = resourceClient.getRequestedResource(recipientId.toString(), requestedResourceId.toString());
             if (resource != null) {
                 return resource;
             } else {
@@ -91,7 +94,7 @@ public class ConnectorRequestService {
                                            final String contractOffer) {
 
         try {
-            return client.requestContractAgreement(recipientId, requestedArtifactId, contractOffer);
+            return connectorClient.requestContractAgreement(recipientId, requestedArtifactId, contractOffer);
         } catch (IOException e) {
             log.error(e.getMessage(), e);
         }

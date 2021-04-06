@@ -4,6 +4,7 @@ import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.api.ResourceApi;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.api.service.ResourceService;
+import de.fraunhofer.isst.configmanager.connector.clients.DefaultResourceClient;
 import de.fraunhofer.isst.configmanager.util.ValidateApiInput;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
@@ -32,12 +33,12 @@ import java.util.ArrayList;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ResourceController implements ResourceApi {
     transient ResourceService resourceService;
-    transient DefaultConnectorClient client;
+    transient DefaultResourceClient client;
     transient Serializer serializer;
 
     @Autowired
     public ResourceController(final ResourceService resourceService,
-                              final DefaultConnectorClient client, final Serializer serializer) {
+                              final DefaultResourceClient client, final Serializer serializer) {
         this.resourceService = resourceService;
         this.client = client;
         this.serializer = serializer;

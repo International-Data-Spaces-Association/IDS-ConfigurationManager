@@ -1,19 +1,15 @@
 package de.fraunhofer.isst.configmanager.connector.dataspaceconnector;
 
-import de.fraunhofer.iais.eis.Artifact;
-import de.fraunhofer.iais.eis.BasicAuthenticationImpl;
-import de.fraunhofer.iais.eis.GenericEndpoint;
-import de.fraunhofer.iais.eis.Representation;
-import de.fraunhofer.iais.eis.Resource;
+import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.iais.eis.util.RdfResource;
 import de.fraunhofer.iais.eis.util.TypedLiteral;
+import de.fraunhofer.isst.configmanager.api.service.EndpointService;
 import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.model.BackendSource;
 import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.model.ResourceIDPair;
 import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.model.ResourceMetadata;
 import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.model.ResourceRepresentation;
 import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.model.repos.ResourceIDPairRepository;
-import de.fraunhofer.isst.configmanager.api.service.EndpointService;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;

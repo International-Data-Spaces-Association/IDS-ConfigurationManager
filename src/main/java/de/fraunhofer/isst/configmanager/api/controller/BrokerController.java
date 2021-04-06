@@ -3,6 +3,7 @@ package de.fraunhofer.isst.configmanager.api.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.isst.configmanager.api.BrokerApi;
+import de.fraunhofer.isst.configmanager.connector.clients.DefaultBrokerClient;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.model.config.BrokerStatus;
 import de.fraunhofer.isst.configmanager.api.service.BrokerService;
@@ -34,12 +35,12 @@ import java.net.URI;
 public class BrokerController implements BrokerApi {
 
     transient BrokerService brokerService;
-    transient DefaultConnectorClient client;
+    transient DefaultBrokerClient client;
     transient ObjectMapper objectMapper;
 
     @Autowired
     public BrokerController(final BrokerService brokerService,
-                            final DefaultConnectorClient client,
+                            final DefaultBrokerClient client,
                             final ObjectMapper objectMapper) {
         this.brokerService = brokerService;
         this.client = client;

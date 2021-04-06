@@ -14,6 +14,7 @@ import de.fraunhofer.iais.eis.RouteStepImpl;
 import de.fraunhofer.iais.eis.util.TypedLiteral;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultConnectorClient;
+import de.fraunhofer.isst.configmanager.connector.clients.DefaultResourceClient;
 import de.fraunhofer.isst.configmanager.model.configlists.EndpointInformationRepository;
 import de.fraunhofer.isst.configmanager.model.endpointinfo.EndpointInformation;
 import de.fraunhofer.isst.configmanager.util.CalenderUtil;
@@ -42,17 +43,20 @@ public class ResourceService {
     transient ConfigModelService configModelService;
     transient EndpointService endpointService;
     transient EndpointInformationRepository endpointInformationRepository;
-    transient DefaultConnectorClient client;
+    transient DefaultResourceClient resourceClient;
+    transient DefaultConnectorClient connectorClient;
 
     @Autowired
     public ResourceService(final ConfigModelService configModelService,
                            final EndpointService endpointService,
                            final EndpointInformationRepository endpointInformationRepository,
-                           final DefaultConnectorClient client) {
+                           final DefaultResourceClient resourceClient,
+                           final DefaultConnectorClient connectorClient) {
         this.configModelService = configModelService;
         this.endpointService = endpointService;
         this.endpointInformationRepository = endpointInformationRepository;
-        this.client = client;
+        this.resourceClient = resourceClient;
+        this.connectorClient = connectorClient;
     }
 
     /**
@@ -128,7 +132,7 @@ public class ResourceService {
 
         BaseConnector baseConnector = null;
         try {
-            baseConnector = client.getSelfDeclaration();
+            baseConnector = connectorClient.getSelfDeclaration();
         } catch (IOException e) {
             log.error(e.getMessage(), e);
         }
@@ -149,7 +153,7 @@ public class ResourceService {
      */
     public String getOfferedResourcesAsJsonString() {
         try {
-            return client.getOfferedResourcesAsJsonString();
+            return resourceClient.getOfferedResourcesAsJsonString();
         } catch (IOException e) {
             log.error(e.getMessage(), e);
             return null;
@@ -163,7 +167,7 @@ public class ResourceService {
      */
     public String getRequestedResourcesAsJsonString() {
         try {
-            return client.getRequestedResourcesAsJsonString();
+            return resourceClient.getRequestedResourcesAsJsonString();
         } catch (IOException e) {
             log.error(e.getMessage(), e);
             return null;

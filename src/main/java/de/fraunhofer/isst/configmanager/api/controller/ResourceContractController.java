@@ -5,6 +5,7 @@ import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.api.ResourceContractApi;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.api.service.ResourceService;
+import de.fraunhofer.isst.configmanager.connector.clients.DefaultResourceClient;
 import de.fraunhofer.isst.configmanager.util.ValidateApiInput;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
@@ -33,12 +34,12 @@ public class ResourceContractController implements ResourceContractApi {
 
     transient ResourceService resourceService;
     transient Serializer serializer;
-    transient DefaultConnectorClient client;
+    transient DefaultResourceClient client;
 
     @Autowired
     public ResourceContractController(final ResourceService resourceService,
                                       final Serializer serializer,
-                                      final DefaultConnectorClient client) {
+                                      final DefaultResourceClient client) {
         this.resourceService = resourceService;
         this.serializer = serializer;
         this.client = client;
