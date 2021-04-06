@@ -63,7 +63,7 @@ public class ResourceContractController implements ResourceContractApi {
                 response = ResponseEntity.ok(serializer.serialize(contractOffer));
             } catch (IOException e) {
                 log.error(e.getMessage(), e);
-                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problems while parsing serializing the contract offer");
+                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
         } else {
             response = ResponseEntity.badRequest().body("Could not get the resource contract");
@@ -110,11 +110,11 @@ public class ResourceContractController implements ResourceContractApi {
                         response = ResponseEntity.badRequest().body(jsonObject.toJSONString());
                     }
                 } else {
-                    response = ResponseEntity.badRequest().body("Could not update the resource representation");
+                    response = ResponseEntity.badRequest().body("Could not update the resource contract");
                 }
             } catch (IOException e) {
                 log.error(e.getMessage(), e);
-                response = ResponseEntity.badRequest().body("Problems while deserializing the contract");
+                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
         }
 
@@ -132,36 +132,38 @@ public class ResourceContractController implements ResourceContractApi {
         log.info(">> PUT /resource/contract/update resourceId: " + resourceId + "pattern" + pattern.toString() +
                 " contractJson: " + contractJson);
 
+        ResponseEntity<String> response;
+
         if (ValidateApiInput.notValid(resourceId.toString())) {
-            return ResponseEntity.badRequest().body("All validated parameter have undefined as " +
-                    "value!");
-        }
-
-        ContractOffer contractOffer = null;
-        try {
-            contractOffer = resourceService.getContractOffer(pattern, contractJson);
-        } catch (JsonProcessingException e) {
-            log.error(e.getMessage());
-        }
-
-        // Update the resource contract
-        if (contractOffer != null) {
-            final var jsonObject = new JSONObject();
-            try {
-                String contract = serializer.serialize(contractOffer);
-                jsonObject.put("resourceID", resourceId.toString());
-                jsonObject.put("contractID", contractOffer.getId().toString());
-                final var response = client.updateResourceContract(resourceId.toString(), contract);
-                resourceService.updateResourceContractInAppRoute(resourceId, contractOffer);
-                jsonObject.put("connectorResponse", response);
-                return ResponseEntity.ok(jsonObject.toJSONString());
-            } catch (IOException e) {
-                log.error(e.getMessage(), e);
-                jsonObject.put("message", "Problems while updating the contract at the connector");
-                return ResponseEntity.badRequest().body(jsonObject.toJSONString());
-            }
+            response = ResponseEntity.badRequest().body("All validated parameter have undefined as value!");
         } else {
-            return ResponseEntity.badRequest().body("Could not update the resource representation");
+            ContractOffer contractOffer = null;
+            try {
+                contractOffer = resourceService.getContractOffer(pattern, contractJson);
+            } catch (JsonProcessingException e) {
+                log.error(e.getMessage());
+            }
+
+            // Update the resource contract
+            if (contractOffer != null) {
+                final var jsonObject = new JSONObject();
+                try {
+                    String contract = serializer.serialize(contractOffer);
+                    jsonObject.put("resourceID", resourceId.toString());
+                    jsonObject.put("contractID", contractOffer.getId().toString());
+                    final var connectorResponse = client.updateResourceContract(resourceId.toString(), contract);
+                    resourceService.updateResourceContractInAppRoute(resourceId, contractOffer);
+                    jsonObject.put("connectorResponse", connectorResponse);
+                    response = ResponseEntity.ok(jsonObject.toJSONString());
+                } catch (IOException e) {
+                    log.error(e.getMessage(), e);
+                    jsonObject.put("message", "Problems while updating the contract at the connector");
+                    response = ResponseEntity.badRequest().body(jsonObject.toJSONString());
+                }
+            } else {
+                response = ResponseEntity.badRequest().body("Could not update the resource representation");
+            }
         }
+        return response;
     }
 }

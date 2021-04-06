@@ -64,7 +64,7 @@ public class ResourceController implements ResourceApi {
                     response = ResponseEntity.ok(serializer.serialize(resource));
                 } catch (IOException e) {
                     log.error(e.getMessage(), e);
-                    response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not serialize resource!");
+                    response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
                 }
             } else {
                 response = ResponseEntity.badRequest().body("Could not determine the resource");

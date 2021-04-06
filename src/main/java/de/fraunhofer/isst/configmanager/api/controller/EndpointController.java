@@ -102,7 +102,7 @@ public class EndpointController implements EndpointApi {
             response = ResponseEntity.ok(serializer.serialize(endpoints));
         } catch (IOException e) {
             log.error(e.getMessage(), e);
-            response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problems while serializing");
+            response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
 
         return response;
@@ -126,7 +126,7 @@ public class EndpointController implements EndpointApi {
                 response = ResponseEntity.ok(serializer.serialize(genericEndpoint));
             } catch (IOException e) {
                 log.error(e.getMessage(), e);
-                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problems while serializing");
+                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
         } else {
             response = ResponseEntity.badRequest().body("Could not get the generic endpoint");
@@ -207,7 +207,7 @@ public class EndpointController implements EndpointApi {
                     response = ResponseEntity.ok(serializer.serialize(connector.getHasEndpoint()));
                 } catch (IOException e) {
                     log.error(e.getMessage(), e);
-                    response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problems while serializing");
+                    response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
                 }
             }
         }
@@ -245,7 +245,7 @@ public class EndpointController implements EndpointApi {
                         response = ResponseEntity.ok(serializer.serialize(connectorEndpoint));
                     } catch (IOException e) {
                         log.error(e.getMessage(), e);
-                        response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problems while serializing");
+                        response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
                     }
                 } else {
                     response = ResponseEntity.badRequest().body("Could not find any connector endpoint with id: " + connectorEndpointId);

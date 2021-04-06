@@ -12,7 +12,10 @@ import java.util.ArrayList;
 public interface ResourceApi {
     @GetMapping(value = "/resource", produces = "application/ld+json")
     @Operation(summary = "Returns the specific resource from the connector")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully returned the specifc resource from the connector")})
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successfully returned the specifc resource from the connector"),
+            @ApiResponse(responseCode = "400", description = "Can not find the resource"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")})
     ResponseEntity<String> getResource(@RequestParam(value = "resourceId") URI resourceId);
 
     @GetMapping(value = "/resources", produces = "application/ld+json")
@@ -27,13 +30,17 @@ public interface ResourceApi {
 
     @GetMapping(value = "/resource/json", produces = "application/ld+json")
     @Operation(summary = "Returns the specific resource from the connector in JSON format")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully returned the specific resource "
-            + "from the connector in JSON format")})
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successfully returned the specific resource "
+                    + "from the connector in JSON format"),
+            @ApiResponse(responseCode = "400", description = "Validation failed. Can not find the resource")})
     ResponseEntity<String> getResourceInJson(@RequestParam(value = "resourceId") URI resourceId);
 
     @PostMapping(value = "/resource", produces = "application/ld+json")
     @Operation(summary = "Creates a resource for the connector")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully created a resource for the connector")})
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successfully created a resource for the connector"),
+            @ApiResponse(responseCode = "400", description = "Can not create the resource")})
     ResponseEntity<String> createResource(@RequestParam("title") String title,
                                           @RequestParam("description") String description,
                                           @RequestParam("language") String language,
@@ -44,7 +51,11 @@ public interface ResourceApi {
 
     @PutMapping(value = "/resource", produces = "application/ld+json")
     @Operation(summary = "Updates the specific resource at the connector")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully updated the specific resource at the connector")})
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successfully updated the specific resource at the connector"),
+            @ApiResponse(responseCode = "400", description = "Validation failed. Can not update the resource"),
+            @ApiResponse(responseCode = "404", description = "Can not find the resource"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")})
     ResponseEntity<String> updateResource(@RequestParam("resourceId") URI resourceId,
                                           @RequestParam(value = "title", required = false) String title,
                                           @RequestParam(value = "description", required = false) String description,
@@ -56,6 +67,8 @@ public interface ResourceApi {
 
     @DeleteMapping(value = "/resource")
     @Operation(summary = "Deletes the specific resource from the connector")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully deleted the specific resource from the connector")})
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successfully deleted the specific resource from the connector"),
+            @ApiResponse(responseCode = "400", description = "Can not delete the resource")})
     ResponseEntity<String> deleteResource(@RequestParam(value = "resourceId") URI resourceId);
 }

@@ -232,8 +232,7 @@ public class ResourceRepresentationController implements ResourceRepresentationA
                 response = ResponseEntity.ok(serializer.serialize(representation));
             } catch (IOException e) {
                 log.error(e.getMessage(), e);
-                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body("Problems while serializing the representation");
+                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
         } else {
             response = ResponseEntity.badRequest().body("Could not get resource representation");
@@ -295,21 +294,16 @@ public class ResourceRepresentationController implements ResourceRepresentationA
 
         try {
             final var clientResponse = client.deleteResourceRepresentation(resourceId.toString(), representationId.toString());
-
             resourceService.deleteResourceRepresentationFromAppRoute(resourceId, representationId);
-
             final var jsonObject = new JSONObject();
             jsonObject.put("connectorResponse", clientResponse);
             jsonObject.put("resourceID", resourceId.toString());
             jsonObject.put("representationID", representationId.toString());
-
             response = ResponseEntity.ok(jsonObject.toJSONString());
         } catch (IOException e) {
             log.error(e.getMessage(), e);
-
-            response = ResponseEntity.badRequest().body("Problems while deleting the representation at the connector");
+            response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-
         return response;
     }
 }

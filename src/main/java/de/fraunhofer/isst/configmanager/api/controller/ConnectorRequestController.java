@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -54,7 +55,7 @@ public class ConnectorRequestController implements ConnectorRequestApi {
                     response = ResponseEntity.ok(serializer.serialize(resource));
                 } catch (IOException e) {
                     log.error(e.getMessage());
-                    response = ResponseEntity.badRequest().body("Problems while serializing the resource");
+                    response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
                 }
             } else {
                 response = ResponseEntity.badRequest().body("Could not get resource from the requested connector");
@@ -67,7 +68,7 @@ public class ConnectorRequestController implements ConnectorRequestApi {
                     response = ResponseEntity.ok(serializer.serialize(resources));
                 } catch (IOException e) {
                     log.error(e.getMessage(), e);
-                    response = ResponseEntity.badRequest().body("Problems while serializing the list of resources");
+                    response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
                 }
             } else {
                 response = ResponseEntity.badRequest().body("Could not get resources from the requested connector");

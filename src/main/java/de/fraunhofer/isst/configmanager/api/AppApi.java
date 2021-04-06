@@ -10,11 +10,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface AppApi {
     @GetMapping(value = "/apps", produces = "application/ld+json")
     @Operation(summary = "Returns a list of all apps")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "Returned a list of all apps")})
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Returns a list of custom apps"),
+            @ApiResponse(responseCode = "400", description = "Could not find customs apps"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")})
     ResponseEntity<String> getApps();
 
     @GetMapping(value = "/app", produces = "application/ld+json")
     @Operation(summary = "Return an app")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "Returned an app")})
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Returns a custom app"),
+            @ApiResponse(responseCode = "400", description = "Can not find the custom app"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")})
     ResponseEntity<String> getApp(@RequestParam(value = "id") String id);
 }

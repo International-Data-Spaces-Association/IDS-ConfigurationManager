@@ -84,7 +84,7 @@ public class AppRouteController implements AppRouteApi {
             response = ResponseEntity.ok(jsonObject.toJSONString());
         } else {
             log.info("---- [AppRouteController createAppRoute] Could not create app route");
-            response = ResponseEntity.badRequest().body("Could not create an app route");
+            response = ResponseEntity.badRequest().body("Can not create an app route");
         }
 
         return response;
@@ -193,7 +193,7 @@ public class AppRouteController implements AppRouteApi {
         } catch (IOException e) {
             log.error("---- [AppRouteController getAppRoutes] Problem while serializing app routes list!");
             log.error(e.getMessage(), e);
-            response = ResponseEntity.badRequest().body("Problems while serializing");
+            response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
 
         return response;
@@ -352,7 +352,7 @@ public class AppRouteController implements AppRouteApi {
             } catch (JsonProcessingException e) {
                 log.error("---- [AppRouteController getAllEndpointInfo] Could not parse endpoint informations to JSON!");
                 log.error(e.getMessage(), e);
-                response = ResponseEntity.badRequest().body("Could not parse endpoint information to JSON");
+                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
         } else {
             log.info("---- [AppRouteController getAllEndpointInfo] Endpoint information list is null");
