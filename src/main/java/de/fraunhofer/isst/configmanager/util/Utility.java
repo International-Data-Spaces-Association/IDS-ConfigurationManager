@@ -47,11 +47,14 @@ public class Utility {
      * @throws URISyntaxException if uri can not be created
      */
     public static AppEndpoint createAppEndpoint(final AppEndpointType appEndpointType,
-                                                final BigInteger port, final String documentation,
+                                                final BigInteger port,
+                                                final String documentation,
                                                 final String endpointInformation,
                                                 final String accessURL,
-                                                final String inboundPath, final String outboundPath,
-                                                final Language language, final String mediaType,
+                                                final String inboundPath,
+                                                final String outboundPath,
+                                                final Language language,
+                                                final String mediaType,
                                                 final String path) throws URISyntaxException {
 
         final var mediatype = new CustomMediaTypeBuilder()._filenameExtension_(mediaType).build();

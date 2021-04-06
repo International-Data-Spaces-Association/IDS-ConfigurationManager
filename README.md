@@ -8,6 +8,7 @@
 <a href="https://github.com/International-Data-Spaces-Association/IDS-ConfigurationManager/blob/development/LICENSE"><img src="https://img.shields.io/github/license/International-Data-Spaces-Association/IDS-ConfigurationManager"></a>
 <a href="https://github.com/International-Data-Spaces-Association/IDS-ConfigurationManager/issues"><img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat"></a>
 <img src="https://img.shields.io/github/workflow/status/International-Data-Spaces-Association/IDS-ConfigurationManager/Development-Maven-Build">
+<img src="https://img.shields.io/github/v/release/International-Data-Spaces-Association/IDS-ConfigurationManager">
 <img src="https://img.shields.io/github/languages/code-size/International-Data-Spaces-Association/IDS-ConfigurationManager">
 <img src="https://img.shields.io/github/contributors/International-Data-Spaces-Association/IDS-ConfigurationManager">
 <img src="https://img.shields.io/badge/Dependabot-Active-green">
@@ -28,9 +29,6 @@ This repository has a develop branch in addition to the master branch. The idea 
 the develop branch (as SNAPSHOT version) and to push the changes from there into the master only for releases. This way,
 the develop branch is always up to date, with the risk of small issues, while the master only contains official
 releases.
-
-**The versions 1, 2 and 3 of the configuration manager do not exist for the reason to be compatible with the dataspace
-connector. Therefore, the versioning starts with the 4.0.0 .**
 
 ## Table of Contents
 
@@ -104,7 +102,7 @@ This is a list of currently implemented features, which is continuously updated.
 | ------ | ------ | ------ | ------ | ------ |
 | IDS Information Model Library | 4.0.2 | Apache 2.0 | Fraunhofer IAIS | [Sebastian Bader](mailto:sebastian.bader@iais.fraunhofer.de) |
 | IDS Information Model Serializer Library | 4.0.2 | Apache 2.0 | Fraunhofer IAIS | [Sebastian Bader](mailto:sebastian.bader@iais.fraunhofer.de) |
-| [Dataspace Connector](https://github.com/International-Data-Spaces-Association/DataspaceConnector) | latest | Apache 2.0 | Fraunhofer ISST | [Julia Pampus](mailto:julia.pampus@isst.fraunhofer.de) |
+| [Dataspace Connector](https://github.com/International-Data-Spaces-Association/DataspaceConnector) | Recommended: 4.1.0 - 4.3.0 | Apache 2.0 | Fraunhofer ISST | [Julia Pampus](mailto:julia.pampus@isst.fraunhofer.de) |
 | [Configuration Manager UI](https://github.com/International-Data-Spaces-Association/IDS-ConfigurationManager-UI) | latest | Apache 2.0 | Fraunhofer FKIE | [Bastian Weltjen](mailto:bastian.weltjen@fkie.fraunhofer.de) |
 
 ---

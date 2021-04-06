@@ -1,0 +1,56 @@
+package de.fraunhofer.isst.configmanager.model.converter;
+
+import de.fraunhofer.iais.eis.ConfigurationModel;
+import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+
+import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
+import java.io.IOException;
+
+/**
+ * A converter class for the configuration model objects.
+ */
+@Slf4j
+@Converter
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class ConfigModelConverter implements AttributeConverter<ConfigurationModel, String> {
+    final transient Serializer serializer = new Serializer();
+
+    /**
+     * Converter method converts the value stored in the entity attribute into the data
+     * representation
+     * to be stored in the database.
+     *
+     * @param configurationModel which is serialized
+     * @return serialized configuration model
+     */
+    @Override
+    public String convertToDatabaseColumn(final ConfigurationModel configurationModel) {
+        try {
+            return serializer.serialize(configurationModel);
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+            return null;
+        }
+    }
+
+    /**
+     * Converter converts the data stored in the database column into the value to be stored in
+     * the entity attribute.
+     *
+     * @param s the JSON-LD string
+     * @return configuration model
+     */
+    @Override
+    public ConfigurationModel convertToEntityAttribute(final String s) {
+        try {
+            return serializer.deserialize(s, ConfigurationModel.class);
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+            return null;
+        }
+    }
+}
