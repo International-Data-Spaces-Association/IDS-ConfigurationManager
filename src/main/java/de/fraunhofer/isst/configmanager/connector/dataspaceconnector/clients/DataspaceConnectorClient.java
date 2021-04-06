@@ -1,8 +1,10 @@
-package de.fraunhofer.isst.configmanager.connector.dataspaceconnector;
+package de.fraunhofer.isst.configmanager.connector.dataspaceconnector.clients;
 
 import de.fraunhofer.iais.eis.BaseConnector;
 import de.fraunhofer.iais.eis.ConfigurationModel;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultConnectorClient;
+import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.util.DispatchRequest;
+import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.util.ResourceMapper;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -22,9 +24,9 @@ import java.util.Objects;
 @Service
 @ConditionalOnExpression("${dataspace.connector.enabled:false}")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class DataspaceConnectorClient extends DataspaceClient implements DefaultConnectorClient {
+public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient implements DefaultConnectorClient {
 
-    public DataspaceConnectorClient(ResourceMapper dataSpaceConnectorResourceMapper) {
+    public DataspaceConnectorClient(final ResourceMapper dataSpaceConnectorResourceMapper) {
         super(dataSpaceConnectorResourceMapper);
     }
 

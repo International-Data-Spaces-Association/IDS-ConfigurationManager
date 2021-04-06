@@ -1,6 +1,8 @@
-package de.fraunhofer.isst.configmanager.connector.dataspaceconnector;
+package de.fraunhofer.isst.configmanager.connector.dataspaceconnector.clients;
 
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultBrokerClient;
+import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.util.DispatchRequest;
+import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.util.ResourceMapper;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -20,16 +22,16 @@ import java.util.UUID;
 @Service
 @ConditionalOnExpression("${dataspace.connector.enabled:false}")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class DataspaceBrokerClient extends DataspaceClient implements DefaultBrokerClient {
+public class DataspaceBrokerClient extends AbstractDataspaceConnectorClient implements DefaultBrokerClient {
 
-    public DataspaceBrokerClient(ResourceMapper dataSpaceConnectorResourceMapper) {
+    public DataspaceBrokerClient(final ResourceMapper dataSpaceConnectorResourceMapper) {
         super(dataSpaceConnectorResourceMapper);
     }
 
     @Override
     public Response updateAtBroker(final String brokerURI) throws IOException {
         log.info(String.format(
-                "---- [DataspaceConnectorClient updateAtBroker] updating connector %s at broker %s",
+                "---- [DataspaceBrokerClient updateAtBroker] updating connector %s at broker %s",
                 dataSpaceConnectorHost,
                 brokerURI));
 
@@ -53,7 +55,7 @@ public class DataspaceBrokerClient extends DataspaceClient implements DefaultBro
     @Override
     public String unregisterAtBroker(final String brokerURI) throws IOException {
         log.info(String.format(
-                "---- [DataspaceConnectorClient unregisterAtBroker] unregistering connector %s at broker %s",
+                "---- [DataspaceBrokerClient unregisterAtBroker] unregistering connector %s at broker %s",
                 dataSpaceConnectorHost,
                 brokerURI));
 
@@ -76,7 +78,7 @@ public class DataspaceBrokerClient extends DataspaceClient implements DefaultBro
 
     @Override
     public String updateResourceAtBroker(final String brokerUri, final URI resourceID) throws IOException {
-        log.info(String.format("---- [DataspaceConnectorClient updateResourceAtBroker] updating resource at Broker %s", brokerUri));
+        log.info(String.format("---- [DataspaceBrokerClient updateResourceAtBroker] updating resource at Broker %s", brokerUri));
 
         final var path = resourceID.getPath();
         final var idStr = path.substring(path.lastIndexOf('/') + 1);
@@ -97,7 +99,7 @@ public class DataspaceBrokerClient extends DataspaceClient implements DefaultBro
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
         if (!response.isSuccessful()) {
-            log.warn("---- [DataspaceConnectorClient updateResourceAtBroker] Updating Resource at Broker failed!");
+            log.warn("---- [DataspaceBrokerClient updateResourceAtBroker] Updating Resource at Broker failed!");
         }
 
         return Objects.requireNonNull(response.body()).string();
@@ -105,7 +107,7 @@ public class DataspaceBrokerClient extends DataspaceClient implements DefaultBro
 
     @Override
     public String deleteResourceAtBroker(final String brokerUri, final URI resourceID) throws IOException {
-        log.info(String.format("---- [DataspaceConnectorClient deleteResourceAtBroker] Deleting resource %s at Broker %s", resourceID, brokerUri));
+        log.info(String.format("---- [DataspaceBrokerClient deleteResourceAtBroker] Deleting resource %s at Broker %s", resourceID, brokerUri));
 
         final var path = resourceID.getPath();
         final var idStr = path.substring(path.lastIndexOf('/') + 1);
@@ -125,7 +127,7 @@ public class DataspaceBrokerClient extends DataspaceClient implements DefaultBro
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
         if (!response.isSuccessful()) {
-            log.warn("---- [DataspaceConnectorClient deleteResourceAtBroker] Deleting Resource at Broker failed!");
+            log.warn("---- [DataspaceBrokerClient deleteResourceAtBroker] Deleting Resource at Broker failed!");
         }
 
         return Objects.requireNonNull(response.body()).string();

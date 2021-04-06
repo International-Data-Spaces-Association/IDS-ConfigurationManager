@@ -1,4 +1,4 @@
-package de.fraunhofer.isst.configmanager.connector.dataspaceconnector;
+package de.fraunhofer.isst.configmanager.connector.dataspaceconnector.util;
 
 import de.fraunhofer.isst.configmanager.util.OkHttpUtils;
 import lombok.experimental.UtilityClass;
@@ -11,7 +11,7 @@ import java.io.IOException;
 
 @UtilityClass
 public class DispatchRequest {
-    final static transient OkHttpClient OK_HTTP_CLIENT = OkHttpUtils.getUnsafeOkHttpClient();
+    static final transient OkHttpClient OK_HTTP_CLIENT = OkHttpUtils.getUnsafeOkHttpClient();
 
     @NotNull
     public static Response sendToDataspaceConnector(final Request request) throws IOException {

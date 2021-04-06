@@ -1,7 +1,8 @@
-package de.fraunhofer.isst.configmanager.connector.dataspaceconnector;
+package de.fraunhofer.isst.configmanager.connector.dataspaceconnector.clients;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
+import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.util.ResourceMapper;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -12,9 +13,9 @@ import org.springframework.beans.factory.annotation.Value;
 
 @Slf4j
 @FieldDefaults(level = AccessLevel.PROTECTED)
-public abstract class DataspaceClient {
-    final static Serializer SERIALIZER = new Serializer();
-    final static ObjectMapper MAPPER = new ObjectMapper();
+public abstract class AbstractDataspaceConnectorClient {
+    static final Serializer SERIALIZER = new Serializer();
+    static final ObjectMapper MAPPER = new ObjectMapper();
 
     @Value("${dataspace.connector.host}")
     transient String dataSpaceConnectorHost;
@@ -34,7 +35,7 @@ public abstract class DataspaceClient {
 
     String connectorBaseUrl = "";
 
-    public DataspaceClient(final ResourceMapper dataSpaceConnectorResourceMapper) {
+    public AbstractDataspaceConnectorClient(final ResourceMapper dataSpaceConnectorResourceMapper) {
         this.dataSpaceConnectorResourceMapper = dataSpaceConnectorResourceMapper;
     }
 
@@ -43,7 +44,8 @@ public abstract class DataspaceClient {
         protocol = Boolean.parseBoolean(https) ? "https" : "http";
         connectorBaseUrl = protocol + "://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/";
 
-        log.info("---- [DataspaceConnectorClient setProtocol] Communication Protocol with DataspaceConnector is: " + protocol);
+        log.info("---- [AbstractDataspaceConnectorClient extended by " + this.getClass().getSimpleName() + " setProtocol]"
+                + " Communication Protocol with DataspaceConnector is: " + protocol);
     }
 
     @NotNull

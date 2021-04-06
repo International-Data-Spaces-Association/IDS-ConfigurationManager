@@ -1,6 +1,10 @@
-package de.fraunhofer.isst.configmanager.connector.dataspaceconnector;
+package de.fraunhofer.isst.configmanager.connector.dataspaceconnector.util;
 
-import de.fraunhofer.iais.eis.*;
+import de.fraunhofer.iais.eis.Artifact;
+import de.fraunhofer.iais.eis.BasicAuthenticationImpl;
+import de.fraunhofer.iais.eis.GenericEndpoint;
+import de.fraunhofer.iais.eis.Representation;
+import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.iais.eis.util.RdfResource;
 import de.fraunhofer.iais.eis.util.TypedLiteral;
@@ -51,11 +55,7 @@ public class ResourceMapper {
      */
     public UUID getMappedId(final URI id) {
         final var pairs = resourceIDPairRepository.findByUri(id);
-        if (pairs.isEmpty()) {
-            return null;
-        }
-        //uri is set to unique
-        return pairs.get(0).getUuid();
+        return pairs.isEmpty() ? null : pairs.get(0).getUuid();
     }
 
     /**
@@ -83,14 +83,17 @@ public class ResourceMapper {
      */
     public UUID createFromResponse(final String response, final URI id) {
         final var matcher = uuidRegex.matcher(response);
+        UUID uuid = null;
+
         if (matcher.find()) {
             final var uuidString = matcher.group(0);
-            final var uuid = UUID.fromString(uuidString);
+            uuid = UUID.fromString(uuidString);
+
             final var pair = new ResourceIDPair(uuid, id);
             resourceIDPairRepository.saveAndFlush(pair);
-            return uuid;
         }
-        return null;
+
+        return uuid;
     }
 
     /**
@@ -124,10 +127,9 @@ public class ResourceMapper {
      * @return list of mapped resource representations
      */
     private List<ResourceRepresentation> mapRepresentations(final List<? extends Representation> representations) {
-        if (representations == null) {
-            return List.of();
-        }
-        return representations.stream().map(this::mapRepresentation).collect(Collectors.toList());
+        return representations == null
+                ? List.of()
+                : representations.stream().map(this::mapRepresentation).collect(Collectors.toList());
     }
 
     /**

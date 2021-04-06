@@ -1,10 +1,12 @@
-package de.fraunhofer.isst.configmanager.connector.dataspaceconnector;
+package de.fraunhofer.isst.configmanager.connector.dataspaceconnector.clients;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fraunhofer.iais.eis.Representation;
 import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultResourceClient;
+import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.util.DispatchRequest;
+import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.util.ResourceMapper;
 import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.model.BackendSource;
 import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.model.ResourceRepresentation;
 import lombok.AccessLevel;
@@ -25,9 +27,9 @@ import java.util.UUID;
 @Service
 @ConditionalOnExpression("${dataspace.connector.enabled:false}")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class DataspaceResourceClient extends DataspaceClient implements DefaultResourceClient {
+public class DataspaceResourceClient extends AbstractDataspaceConnectorClient implements DefaultResourceClient {
 
-    public DataspaceResourceClient(ResourceMapper dataSpaceConnectorResourceMapper) {
+    public DataspaceResourceClient(final ResourceMapper dataSpaceConnectorResourceMapper) {
         super(dataSpaceConnectorResourceMapper);
     }
 
@@ -58,7 +60,7 @@ public class DataspaceResourceClient extends DataspaceClient implements DefaultR
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
         if (!response.isSuccessful()) {
-            log.warn("---- [DataspaceConnectorClient getJsonNodeOfBaseConnector] Could not get BaseConnector");
+            log.warn("---- [DataspaceResourceClient getJsonNodeOfBaseConnector] Could not get BaseConnector");
         }
 
         final var body = Objects.requireNonNull(response.body()).string();
@@ -87,7 +89,7 @@ public class DataspaceResourceClient extends DataspaceClient implements DefaultR
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
         if (!response.isSuccessful()) {
-            log.warn(String.format("---- [DataspaceConnectorClient getRequestedResource] Could not get BaseConnector from %s!", dataSpaceConnectorHost));
+            log.warn(String.format("---- [DataspaceResourceClient getRequestedResource] Could not get BaseConnector from %s!", dataSpaceConnectorHost));
         }
 
         final var body = Objects.requireNonNull(response.body()).string();
@@ -98,7 +100,7 @@ public class DataspaceResourceClient extends DataspaceClient implements DefaultR
         try {
             deserializedResource = SERIALIZER.deserialize(resource, Resource.class);
         } catch (IOException e) {
-            log.error("---- [DataspaceConnectorClient getRequestedResource] SERIALIZER.deserialize threw IOException");
+            log.error("---- [DataspaceResourceClient getRequestedResource] SERIALIZER.deserialize threw IOException");
             log.error(e.getMessage(), e);
         }
 
@@ -107,12 +109,12 @@ public class DataspaceResourceClient extends DataspaceClient implements DefaultR
 
     @Override
     public String registerResource(final Resource resource) throws IOException {
-        log.info("---- [DataspaceConnectorClient registerResource] Registering resource...");
+        log.info("---- [DataspaceResourceClient registerResource] Registering resource...");
 
         final var mappedResource = dataSpaceConnectorResourceMapper.getMetadata(resource);
         final var resourceJsonLD = MAPPER.writeValueAsString(mappedResource);
 
-        log.info("---- [DataspaceConnectorClient registerResource] New resource: " + resourceJsonLD);
+        log.info("---- [DataspaceResourceClient registerResource] New resource: " + resourceJsonLD);
 
         final var builder = getRequestBuilder();
         final var path = resource.getId().getPath();
@@ -126,18 +128,17 @@ public class DataspaceResourceClient extends DataspaceClient implements DefaultR
                 .addQueryParameter("id", idStr)
                 .build();
         builder.url(url);
-        builder.post(RequestBody.create(resourceJsonLD, okhttp3.MediaType.parse("application/ld" +
-                "+json")));
+        builder.post(RequestBody.create(resourceJsonLD, okhttp3.MediaType.parse("application/ld+json")));
         builder.header("Authorization",
                 Credentials.basic(dataSpaceConnectorApiUsername, dataSpaceConnectorApiPassword));
 
-        log.info("---- [DataspaceConnectorClient registerResource] " + url.toString());
+        log.info("---- [DataspaceResourceClient registerResource] " + url.toString());
 
         final var request = builder.build();
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
         if (!response.isSuccessful()) {
-            log.warn("---- [DataspaceConnectorClient registerResource] Registering Resource failed!");
+            log.warn("---- [DataspaceResourceClient registerResource] Registering Resource failed!");
         }
 
         return Objects.requireNonNull(response.body()).string();
@@ -145,7 +146,7 @@ public class DataspaceResourceClient extends DataspaceClient implements DefaultR
 
     @Override
     public String deleteResource(final URI resourceID) throws IOException {
-        log.info(String.format("---- [DataspaceConnectorClient deleteResource] deleting resource %s at %s", resourceID,
+        log.info(String.format("---- [DataspaceResourceClient deleteResource] deleting resource %s at %s", resourceID,
                 dataSpaceConnectorHost));
 
         final var path = resourceID.getPath();
@@ -160,7 +161,7 @@ public class DataspaceResourceClient extends DataspaceClient implements DefaultR
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
         if (!response.isSuccessful()) {
-            log.warn("---- [DataspaceConnectorClient deleteResource] Deleting Resource failed!");
+            log.warn("---- [DataspaceResourceClient deleteResource] Deleting Resource failed!");
         }
 
         return Objects.requireNonNull(response.body()).string();
@@ -170,7 +171,7 @@ public class DataspaceResourceClient extends DataspaceClient implements DefaultR
     public String deleteResourceRepresentation(final String resourceID,
                                                final String representationID) throws IOException {
         log.info(String.format(
-                "---- [DataspaceConnectorClient deleteResourceRepresentation] Deleting representation %s from resource %s at %s",
+                "---- [DataspaceResourceClient deleteResourceRepresentation] Deleting representation %s from resource %s at %s",
                 representationID,
                 resourceID,
                 dataSpaceConnectorHost));
@@ -190,7 +191,7 @@ public class DataspaceResourceClient extends DataspaceClient implements DefaultR
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
         if (!response.isSuccessful()) {
-            log.warn("---- [DataspaceConnectorClient deleteResourceRepresentation] Deleting Representation failed!");
+            log.warn("---- [DataspaceResourceClient deleteResourceRepresentation] Deleting Representation failed!");
         }
 
         return Objects.requireNonNull(response.body()).string();
@@ -200,7 +201,7 @@ public class DataspaceResourceClient extends DataspaceClient implements DefaultR
     public String registerResourceRepresentation(final String resourceID,
                                                  final Representation representation,
                                                  final String endpointId) throws IOException {
-        log.info(String.format("---- [DataspaceConnectorClient registerResourceRepresentation] Registering resource at %s", dataSpaceConnectorHost));
+        log.info(String.format("---- [DataspaceResourceClient registerResourceRepresentation] Registering resource at %s", dataSpaceConnectorHost));
 
         final var mappedRepresentation = dataSpaceConnectorResourceMapper.mapRepresentation(representation);
         final var backendSource = dataSpaceConnectorResourceMapper.createBackendSource(endpointId, representation);
@@ -210,7 +211,7 @@ public class DataspaceResourceClient extends DataspaceClient implements DefaultR
         final var mappedRepresentationID = dataSpaceConnectorResourceMapper.readUUIDFromURI(representation.getId());
         final var resourceJsonLD = MAPPER.writeValueAsString(mappedRepresentation);
 
-        log.info("---- [DataspaceConnectorClient registerResourceRepresentation] Mapped representation: " + resourceJsonLD);
+        log.info("---- [DataspaceResourceClient registerResourceRepresentation] Mapped representation: " + resourceJsonLD);
 
         final var builder = getRequestBuilder();
         builder.url(new HttpUrl.Builder()
@@ -228,16 +229,16 @@ public class DataspaceResourceClient extends DataspaceClient implements DefaultR
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
         if (!response.isSuccessful()) {
-            log.warn("---- [DataspaceConnectorClient registerResourceRepresentation] Registering Representation failed!");
+            log.warn("---- [DataspaceResourceClient registerResourceRepresentation] Registering Representation failed!");
         }
 
         final var body = Objects.requireNonNull(response.body()).string();
         final var uuid = dataSpaceConnectorResourceMapper.createFromResponse(body, representation.getId());
 
         if (uuid == null) {
-            log.warn("---- [DataspaceConnectorClient registerResourceRepresentation] Could not parse ID from response!");
+            log.warn("---- [DataspaceResourceClient registerResourceRepresentation] Could not parse ID from response!");
         } else {
-            log.info("---- [DataspaceConnectorClient registerResourceRepresentation] UUID is : " + uuid);
+            log.info("---- [DataspaceResourceClient registerResourceRepresentation] UUID is : " + uuid);
         }
 
         return body;
@@ -249,7 +250,7 @@ public class DataspaceResourceClient extends DataspaceClient implements DefaultR
                                                final Representation representation,
                                                final String endpointId) throws IOException {
         log.info(String.format(
-                "---- [DataspaceConnectorClient updateResourceRepresentation] Updating representation %s for resource %s at %s",
+                "---- [DataspaceResourceClient updateResourceRepresentation] Updating representation %s for resource %s at %s",
                 representationID,
                 resourceID,
                 dataSpaceConnectorHost));
@@ -263,7 +264,7 @@ public class DataspaceResourceClient extends DataspaceClient implements DefaultR
 
         final var resourceJsonLD = MAPPER.writeValueAsString(mappedRepresentation);
 
-        log.info("---- [DataspaceConnectorClient updateResourceRepresentation] Mapped representation: " + resourceJsonLD);
+        log.info("---- [DataspaceResourceClient updateResourceRepresentation] Mapped representation: " + resourceJsonLD);
 
         final var builder = getRequestBuilder();
 
@@ -276,7 +277,7 @@ public class DataspaceResourceClient extends DataspaceClient implements DefaultR
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
         if (!response.isSuccessful()) {
-            log.warn("---- [DataspaceConnectorClient updateResourceRepresentation] Updating Representation failed!");
+            log.warn("---- [DataspaceResourceClient updateResourceRepresentation] Updating Representation failed!");
         }
 
         return Objects.requireNonNull(response.body()).string();
@@ -287,7 +288,7 @@ public class DataspaceResourceClient extends DataspaceClient implements DefaultR
                                                      final String representationID,
                                                      final ResourceRepresentation resourceRepresentation) throws IOException {
         log.info(String.format(
-                "---- [DataspaceConnectorClient updateCustomResourceRepresentation] Updating representation %s for resource %s at %s",
+                "---- [DataspaceResourceClient updateCustomResourceRepresentation] Updating representation %s for resource %s at %s",
                 representationID,
                 resourceID,
                 dataSpaceConnectorHost));
@@ -296,7 +297,7 @@ public class DataspaceResourceClient extends DataspaceClient implements DefaultR
         final var mappedRepresentationID = dataSpaceConnectorResourceMapper.getMappedId(URI.create(representationID));
         final var resourceJsonLD = MAPPER.writeValueAsString(resourceRepresentation);
 
-        log.info("---- [DataspaceConnectorClient updateCustomResourceRepresentation] Mapped representation: " + resourceJsonLD);
+        log.info("---- [DataspaceResourceClient updateCustomResourceRepresentation] Mapped representation: " + resourceJsonLD);
 
         final var builder = getRequestBuilder();
         builder.url(connectorBaseUrl + "admin/api/resources/" + mappedResourceID + "/" + mappedRepresentationID);
@@ -308,7 +309,7 @@ public class DataspaceResourceClient extends DataspaceClient implements DefaultR
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
         if (!response.isSuccessful()) {
-            log.warn("---- [DataspaceConnectorClient updateCustomResourceRepresentation] Updating Resource-Representation failed!");
+            log.warn("---- [DataspaceResourceClient updateCustomResourceRepresentation] Updating Resource-Representation failed!");
         }
 
         return Objects.requireNonNull(response.body()).string();
@@ -317,7 +318,7 @@ public class DataspaceResourceClient extends DataspaceClient implements DefaultR
     @Override
     public String updateResourceContract(final String resourceID, final String contract) throws IOException {
         log.info(String.format(
-                "---- [DataspaceConnectorClient updateResourceContract] updating contract for resource at %s",
+                "---- [DataspaceResourceClient updateResourceContract] updating contract for resource at %s",
                 dataSpaceConnectorHost));
 
         final var mappedResourceID = dataSpaceConnectorResourceMapper.readUUIDFromURI(URI.create(resourceID));
@@ -332,7 +333,7 @@ public class DataspaceResourceClient extends DataspaceClient implements DefaultR
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
         if (!response.isSuccessful()) {
-            log.warn("---- [DataspaceConnectorClient updateResourceContract] Updating contract failed!");
+            log.warn("---- [DataspaceResourceClient updateResourceContract] Updating contract failed!");
         }
 
         return Objects.requireNonNull(response.body()).string();
@@ -340,7 +341,7 @@ public class DataspaceResourceClient extends DataspaceClient implements DefaultR
 
     @Override
     public String updateResource(final URI resourceID, final Resource resource) throws IOException {
-        log.info(String.format("---- [DataspaceConnectorClient updateResource] updating resource at %s", dataSpaceConnectorHost));
+        log.info(String.format("---- [DataspaceResourceClient updateResource] updating resource at %s", dataSpaceConnectorHost));
 
         final var mappedResource = dataSpaceConnectorResourceMapper.getMetadata(resource);
         final var path = resourceID.getPath();
@@ -381,7 +382,7 @@ public class DataspaceResourceClient extends DataspaceClient implements DefaultR
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
         if (!response.isSuccessful()) {
-            log.warn("---- [DataspaceConnectorClient updateResource] Updating Resource failed!");
+            log.warn("---- [DataspaceResourceClient updateResource] Updating Resource failed!");
         }
 
         return Objects.requireNonNull(response.body()).string();
