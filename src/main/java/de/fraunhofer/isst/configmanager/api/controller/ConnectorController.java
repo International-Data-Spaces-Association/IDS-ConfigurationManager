@@ -5,8 +5,10 @@ import de.fraunhofer.iais.eis.ConfigurationModelImpl;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.api.ConnectorApi;
+import de.fraunhofer.isst.configmanager.api.service.BrokerService;
 import de.fraunhofer.isst.configmanager.api.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.api.service.ConnectorService;
+import de.fraunhofer.isst.configmanager.connector.clients.DefaultBrokerClient;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.util.Utility;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * The api class implements the ConnectorApi and offers the possibilities to manage
@@ -35,18 +38,24 @@ public class ConnectorController implements ConnectorApi {
 
     transient ConnectorService connectorService;
     transient ConfigModelService configModelService;
+    transient BrokerService brokerService;
     transient Serializer serializer;
     transient DefaultConnectorClient client;
+    transient DefaultBrokerClient brokerClient;
 
     @Autowired
     public ConnectorController(final ConnectorService connectorService,
                                final ConfigModelService configModelService,
+                               final BrokerService brokerService,
                                final Serializer serializer,
-                               final DefaultConnectorClient client) {
+                               final DefaultConnectorClient client,
+                               final DefaultBrokerClient brokerClient) {
         this.configModelService = configModelService;
         this.connectorService = connectorService;
+        this.brokerService = brokerService;
         this.serializer = serializer;
         this.client = client;
+        this.brokerClient = brokerClient;
     }
 
     /**
@@ -211,6 +220,19 @@ public class ConnectorController implements ConnectorApi {
                 final var valid = client.sendConfiguration(serializer.serialize(configurationModel));
 
                 if (valid) {
+                    var registered = brokerService.getRegisteredBroker();
+                    registered.iterator().forEachRemaining(elem -> {
+                        var asJsonObject = (JSONObject) elem;
+                        var brokerId = asJsonObject.getAsString("brokerId");
+                        CompletableFuture.runAsync(() -> {
+                            try {
+                                brokerClient.updateAtBroker(brokerId);
+                            } catch (IOException e) {
+                                log.warn(String.format("Error while updating at broker: %s", e.getMessage()), e);
+                            }
+                        });
+                    });
+
                     jsonObject.put("connectorResponse", "Successfully updated the connector "
                             + "description of the configuration model");
                     response = ResponseEntity.ok(jsonObject.toJSONString());
