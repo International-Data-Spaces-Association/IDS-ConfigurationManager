@@ -28,7 +28,7 @@ import java.util.ArrayList;
 @Slf4j
 @RestController
 @RequestMapping("/api/ui")
-@Tag(name = "ConfigModel Management", description = "Endpoints for managing the configuration model")
+@Tag(name = "Configmodel Management", description = "Endpoints for managing the configuration model")
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ConfigModelController implements ConfigModelApi {
 

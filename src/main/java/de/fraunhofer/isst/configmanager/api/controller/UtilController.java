@@ -3,6 +3,7 @@ package de.fraunhofer.isst.configmanager.api.controller;
 import de.fraunhofer.isst.configmanager.api.UtilApi;
 import de.fraunhofer.isst.configmanager.api.service.UtilService;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultConnectorClient;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import java.io.IOException;
  */
 @Slf4j
 @RestController
+@Tag(name = "Util Management", description = "Endpoints for managing utility")
 public class UtilController implements UtilApi {
 
     private final transient UtilService utilService;
