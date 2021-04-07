@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * The api class implements the ResourceApi and offers the possibilities to manage
@@ -254,11 +255,13 @@ public class ResourceController implements ResourceApi {
                         registered.iterator().forEachRemaining(elem -> {
                             var asJsonObject = (JSONObject) elem;
                             var brokerId = asJsonObject.getAsString("brokerId");
-                            try {
-                                brokerClient.updateAtBroker(brokerId);
-                            } catch (IOException e) {
-                                log.warn(String.format("Error while updating at broker: %s", e.getMessage()), e);
-                            }
+                            CompletableFuture.runAsync(() -> {
+                                try {
+                                    brokerClient.updateAtBroker(brokerId);
+                                } catch (IOException e) {
+                                    log.warn(String.format("Error while updating at broker: %s", e.getMessage()), e);
+                                }
+                            });
                         });
                         resourceService.updateResourceInAppRoute(updatedResource);
                     }
