@@ -184,41 +184,67 @@ public class ResourceService {
         } else {
             final ArrayList<RouteStep> emptyList = new ArrayList<>();
             for (final var appRoute : configModelService.getConfigModel().getAppRoute()) {
-                if (appRoute.getHasSubRoute() != null) {
-                    updateResourceContractInSubroutes((List<RouteStep>) appRoute.getHasSubRoute(),
-                            emptyList, resourceId, contractOffer);
-                    configModelService.saveState();
+
+                if (appRoute == null) {
+                    continue;
+                }
+
+                if (appRoute.getAppRouteOutput() != null) {
+                    for (final var resource : appRoute.getAppRouteOutput()) {
+                        if (resourceId.equals(resource.getId())) {
+                            final var resourceImpl = (ResourceImpl) resource;
+                            resourceImpl.setContractOffer(Util.asList(contractOffer));
+                            log.info("---- [ResourceService updateResourceContractInSubroutes] Updated resource contract in the app route");
+                            break;
+                        }
+                    }
+                }
+
+                if (appRoute.getHasSubRoute() == null) {
+                    continue;
+                }
+
+                for (final var subRoute : appRoute.getHasSubRoute()) {
+                    updateResourceContractInSubroutes(subRoute, emptyList, resourceId,
+                            contractOffer);
                 }
             }
+            configModelService.saveState();
         }
     }
 
     /**
-     * @param routeSteps    list of route steps
+     * @param routeStep     route step
      * @param visited       list of route steps already managed
      * @param resourceId    id of the resource
      * @param contractOffer the contract offer
      */
-    private void updateResourceContractInSubroutes(final List<RouteStep> routeSteps,
+    private void updateResourceContractInSubroutes(final RouteStep routeStep,
                                                    final List<RouteStep> visited,
                                                    final URI resourceId,
                                                    final ContractOffer contractOffer) {
 
-        for (final var routeStep : routeSteps) {
-            if (routeStep.getAppRouteOutput() != null) {
-                for (final var resource : routeStep.getAppRouteOutput()) {
-                    if (resourceId.equals(resource.getId())) {
-                        final var resourceImpl = (ResourceImpl) resource;
-                        resourceImpl.setContractOffer(Util.asList(contractOffer));
-                        log.info("---- [ResourceService updateResourceContractInSubroutes] Updated resource representation in the app route");
+        if (routeStep == null) {
+            return;
+        }
 
-                        break;
-                    }
+        if (routeStep.getAppRouteOutput() != null) {
+            for (final var resource : routeStep.getAppRouteOutput()) {
+                if (resourceId.equals(resource.getId())) {
+                    final var resourceImpl = (ResourceImpl) resource;
+                    resourceImpl.setContractOffer(Util.asList(contractOffer));
+                    log.info("---- [ResourceService updateResourceContractInSubroutes] Updated resource contract in the subroute");
+                    break;
                 }
             }
-            if (routeStep.getHasSubRoute() != null && !visited.contains(routeStep)) {
+        }
+        if (routeStep.getHasSubRoute() == null) {
+            return;
+        }
+        for (final var subRoute : routeStep.getHasSubRoute()) {
+            if (!visited.contains(subRoute)) {
                 visited.add(routeStep);
-                updateResourceContractInSubroutes((List<RouteStep>) routeStep.getHasSubRoute(), visited, resourceId, contractOffer);
+                updateResourceContractInSubroutes(subRoute, visited, resourceId, contractOffer);
             }
         }
 
@@ -440,42 +466,68 @@ public class ResourceService {
         } else {
             final ArrayList<RouteStep> emptyList = new ArrayList<>();
             for (final var appRoute : configModelService.getConfigModel().getAppRoute()) {
-                if (appRoute.getHasSubRoute() != null) {
-                    updateResourceInSubroutes((List<RouteStep>) appRoute.getHasSubRoute(), emptyList, newResource);
-                    configModelService.saveState();
+
+                if (appRoute == null) {
+                    continue;
+                }
+
+                if (appRoute.getAppRouteOutput() != null) {
+                    for (final var resource : appRoute.getAppRouteOutput()) {
+                        if (newResource.getId().equals(resource.getId())) {
+                            final ArrayList<Resource> output =
+                                    (ArrayList<Resource>) appRoute.getAppRouteOutput();
+                            output.remove(resource);
+                            output.add(newResource);
+                            log.info("---- [ResourceService updateResourceInAppRoute] Updated resource in app route");
+                            break;
+                        }
+                    }
+                }
+
+                if (appRoute.getHasSubRoute() == null) {
+                    continue;
+                }
+
+                for (final var subRoute : appRoute.getHasSubRoute()) {
+                    updateResourceInSubroutes(subRoute, emptyList, newResource);
                 }
             }
+            configModelService.saveState();
         }
     }
 
     /**
-     * @param routeSteps  list of route steps
+     * @param routeStep   routestep
      * @param visited     list of route steps already managed
      * @param newResource new resource old version should be replaced with
      */
-    private void updateResourceInSubroutes(final List<RouteStep> routeSteps,
+    private void updateResourceInSubroutes(final RouteStep routeStep,
                                            final List<RouteStep> visited,
                                            final ResourceImpl newResource) {
-        boolean updated = false;
-        for (final var routeStep : routeSteps) {
-            if (routeStep.getAppRouteOutput() != null) {
-                for (final var resource : routeStep.getAppRouteOutput()) {
-                    if (newResource.getId().equals(resource.getId())) {
-                        final ArrayList<Resource> output =
-                                (ArrayList<Resource>) routeStep.getAppRouteOutput();
-                        output.remove(resource);
-                        output.add(newResource);
-                        updated = true;
-                        break;
-                    }
+
+        if (routeStep == null) {
+            return;
+        }
+        if (routeStep.getAppRouteOutput() != null) {
+            for (final var resource : routeStep.getAppRouteOutput()) {
+                if (newResource.getId().equals(resource.getId())) {
+                    final ArrayList<Resource> output =
+                            (ArrayList<Resource>) routeStep.getAppRouteOutput();
+                    output.remove(resource);
+                    output.add(newResource);
+                    log.info("---- [ResourceService updateResourceInAppRoute] Updated resource in subroute");
+                    break;
                 }
             }
-            if (!updated && !visited.contains(routeStep) && routeStep.getHasSubRoute() != null) {
+        }
+        if (routeStep.getHasSubRoute() == null) {
+            return;
+        }
+        for (final var subRoute : routeStep.getHasSubRoute()) {
+            if (!visited.contains(subRoute)) {
                 visited.add(routeStep);
-                updateResourceInSubroutes((List<RouteStep>) routeStep.getHasSubRoute(), visited, newResource);
+                updateResourceInSubroutes(subRoute, visited, newResource);
             }
-
-
         }
     }
 
@@ -531,50 +583,73 @@ public class ResourceService {
      */
     public Resource getResourceInAppRoute(final URI resourceId) {
 
-        Resource resource = null;
+        Resource foundResource = null;
         final ArrayList<RouteStep> emptyList = new ArrayList<>();
         for (final var appRoute : configModelService.getConfigModel().getAppRoute()) {
-            if (appRoute.getHasSubRoute() != null) {
-                resource = getResourceInSubroutes((List<RouteStep>) appRoute.getHasSubRoute(), emptyList, resourceId);
+
+            if (appRoute == null) {
+                continue;
             }
-        }
-        if (resource == null) {
-            log.info("---- [ResourceService getResourceInAppRoute] Could not find any resource in app routes and subroutes");
-        }
 
-        return resource;
-    }
-
-    /**
-     * @param routeSteps list of route steps
-     * @param visited    list of route steps already visited
-     * @param resourceId id of the resource
-     * @return resource
-     */
-    private Resource getResourceInSubroutes(final List<RouteStep> routeSteps,
-                                            final List<RouteStep> visited,
-                                            final URI resourceId) {
-
-        Resource foundResource = null;
-        boolean found = false;
-
-        for (final var routeStep : routeSteps) {
-            if (routeStep.getAppRouteOutput() != null) {
-                for (final var resource : routeStep.getAppRouteOutput()) {
+            if (appRoute.getAppRouteOutput() != null) {
+                for (final var resource : appRoute.getAppRouteOutput()) {
                     if (resourceId.equals(resource.getId())) {
                         foundResource = resource;
-                        found = true;
-
+                        log.info("---- [ResourceService getResourceInAppRoute] Resource is found in the app route");
                         break;
                     }
                 }
             }
-            if (!found && !visited.contains(routeStep) && routeStep.getHasSubRoute() != null) {
-                visited.add(routeStep);
-                getResourceInSubroutes((List<RouteStep>) routeStep.getHasSubRoute(), visited, resourceId);
+
+            if (appRoute.getHasSubRoute() == null) {
+                continue;
             }
+
+            for (final var subRoute : appRoute.getHasSubRoute()) {
+                foundResource = getResourceInSubroutes(subRoute, emptyList, resourceId);
+            }
+
+        }
+        if (foundResource == null) {
+            log.info("---- [ResourceService getResourceInAppRoute] Could not find any resource in app routes and subroutes");
         }
 
+        return foundResource;
+    }
+
+    /**
+     * @param routeStep  routestep
+     * @param visited    list of route steps already visited
+     * @param resourceId id of the resource
+     * @return resource
+     */
+    private Resource getResourceInSubroutes(final RouteStep routeStep,
+                                            final List<RouteStep> visited,
+                                            final URI resourceId) {
+
+        Resource foundResource = null;
+
+        if (routeStep == null) {
+            return null;
+        }
+        if (routeStep.getAppRouteOutput() != null) {
+            for (final var resource : routeStep.getAppRouteOutput()) {
+                if (resourceId.equals(resource.getId())) {
+                    foundResource = resource;
+                    log.info("---- [ResourceService getResourceInSubroutes] Resource is found in subroute");
+                    break;
+                }
+            }
+        }
+        if (routeStep.getHasSubRoute() == null) {
+            return foundResource;
+        }
+        for (final var subRoute : routeStep.getHasSubRoute()) {
+            if (!visited.contains(subRoute)) {
+                visited.add(routeStep);
+                foundResource = getResourceInSubroutes(subRoute, visited, resourceId);
+            }
+        }
         return foundResource;
     }
 
