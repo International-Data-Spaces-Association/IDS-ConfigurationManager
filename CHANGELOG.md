@@ -21,6 +21,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - POST /api​/ui​/broker​/register now return success:false if connector doesn't return 200 and GET /api​/ui​/brokers returns not registered in this case
 - Resources are updated at broker after they have been edited
 - Internal Database can be reached and viewed again at: http://localhost:8081/console
+- After editing the connector settings the broker will be updated with the new information
 
 ## [6.0.0] - 2021-03-26
 

@@ -237,4 +237,24 @@ public class BrokerService {
         }
         return null;
     }
+
+    /**
+     * @return json array of all registered broker
+     */
+    public JSONArray getRegisteredBroker() {
+        var jsonArray = new JSONArray();
+        final var customBrokers = customBrokerRepository.findAll();
+        if (customBrokers.isEmpty()) {
+            log.info("---- [BrokerService getRegisteredBroker] Could not find any broker");
+        } else {
+            for (CustomBroker broker : customBrokers) {
+                if (BrokerStatus.REGISTERED.equals(broker.getBrokerStatus())) {
+                    var jsonObject = new JSONObject();
+                    jsonObject.put("brokerId", broker.getBrokerUri().toString());
+                    jsonArray.add(jsonObject);
+                }
+            }
+        }
+        return jsonArray;
+    }
 }
