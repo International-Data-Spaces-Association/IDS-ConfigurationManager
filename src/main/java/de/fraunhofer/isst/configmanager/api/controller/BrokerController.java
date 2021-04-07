@@ -237,7 +237,8 @@ public class BrokerController implements BrokerApi {
         if (broker != null) {
             try {
                 final var clientResponse = client.unregisterAtBroker(brokerUri.toString());
-                if (!clientResponse.contains("RejectionMessage")) {
+                var clientResponseString = clientResponse.body().string();
+                if (clientResponse.isSuccessful() && !clientResponseString.contains("RejectionMessage")) {
                     brokerService.unregisteredAtBroker(brokerUri);
                     brokerService.setBrokerStatus(brokerUri, BrokerStatus.UNREGISTERED);
                     jsonObject.put("success", true);
@@ -384,12 +385,12 @@ public class BrokerController implements BrokerApi {
         log.info(">> GET /broker/resource/information resourceId: " + resourceId);
         ResponseEntity<String> response;
 
-        final var jsonObjet = brokerService.getRegisStatusForResource(resourceId);
+        final var jsonObject = brokerService.getRegisStatusForResource(resourceId);
 
-        if (jsonObjet == null) {
+        if (jsonObject == null) {
             response = ResponseEntity.ok(new JSONArray().toJSONString());
         } else {
-            response = ResponseEntity.ok(jsonObjet.toJSONString());
+            response = ResponseEntity.ok(jsonObject.toJSONString());
         }
 
         return response;

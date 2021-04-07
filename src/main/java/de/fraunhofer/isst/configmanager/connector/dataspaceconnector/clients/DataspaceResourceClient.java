@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.Credentials;
 import okhttp3.HttpUrl;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Service;
 
@@ -340,7 +341,7 @@ public class DataspaceResourceClient extends AbstractDataspaceConnectorClient im
     }
 
     @Override
-    public String updateResource(final URI resourceID, final Resource resource) throws IOException {
+    public Response updateResource(final URI resourceID, final Resource resource) throws IOException {
         log.info(String.format("---- [DataspaceResourceClient updateResource] updating resource at %s", dataSpaceConnectorHost));
 
         final var mappedResource = dataSpaceConnectorResourceMapper.getMetadata(resource);
@@ -385,6 +386,6 @@ public class DataspaceResourceClient extends AbstractDataspaceConnectorClient im
             log.warn("---- [DataspaceResourceClient updateResource] Updating Resource failed!");
         }
 
-        return Objects.requireNonNull(response.body()).string();
+        return response;
     }
 }
