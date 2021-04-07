@@ -23,6 +23,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Internal Database can be reached and viewed again at: http://localhost:8081/console
 - After editing the connector settings the broker will be updated with the new information
 - Updated recursion methods in ResourceService that caused problems
+
 ## [6.0.0] - 2021-03-26
 
 ### Added
