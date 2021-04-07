@@ -3,6 +3,7 @@ package de.fraunhofer.isst.configmanager.connector.clients;
 import de.fraunhofer.iais.eis.Representation;
 import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.model.ResourceRepresentation;
+import okhttp3.Response;
 
 import java.io.IOException;
 import java.net.URI;
@@ -27,7 +28,7 @@ public interface DefaultResourceClient {
      * @return Response of the target Connector
      * @throws IOException when serializing of the Resource, or sending of the request fails
      */
-    String updateResource(URI resourceID, Resource resource) throws IOException;
+    Response updateResource(URI resourceID, Resource resource) throws IOException;
 
     /**
      * Send a resource creation request to a target connector.

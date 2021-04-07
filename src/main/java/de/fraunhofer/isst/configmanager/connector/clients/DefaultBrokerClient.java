@@ -25,7 +25,7 @@ public interface DefaultBrokerClient {
      * @return Response of the unregister request of the connector
      * @throws IOException when sending the request fails
      */
-    String unregisterAtBroker(String brokerURI) throws IOException;
+    Response unregisterAtBroker(String brokerURI) throws IOException;
 
     /**
      * Send a Resource update request to a target broker.
@@ -35,7 +35,7 @@ public interface DefaultBrokerClient {
      * @return Response of the target Connector
      * @throws IOException when serializing of the Resource, or sending of the request fails
      */
-    String updateResourceAtBroker(String brokerUri, URI resourceID) throws IOException;
+    Response updateResourceAtBroker(String brokerUri, URI resourceID) throws IOException;
 
     /**
      * Send a resource deletion request to a target broker.
@@ -45,5 +45,5 @@ public interface DefaultBrokerClient {
      * @return Response of the target Connector
      * @throws IOException when an error occurs while sending the request
      */
-    String deleteResourceAtBroker(String brokerUri, URI resourceID) throws IOException;
+    Response deleteResourceAtBroker(String brokerUri, URI resourceID) throws IOException;
 }

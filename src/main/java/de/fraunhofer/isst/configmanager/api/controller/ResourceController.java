@@ -2,7 +2,9 @@ package de.fraunhofer.isst.configmanager.api.controller;
 
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.api.ResourceApi;
+import de.fraunhofer.isst.configmanager.api.service.BrokerService;
 import de.fraunhofer.isst.configmanager.api.service.ResourceService;
+import de.fraunhofer.isst.configmanager.connector.clients.DefaultBrokerClient;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultResourceClient;
 import de.fraunhofer.isst.configmanager.util.ValidateApiInput;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,14 +35,21 @@ import java.util.ArrayList;
 public class ResourceController implements ResourceApi {
     transient ResourceService resourceService;
     transient DefaultResourceClient client;
+    transient DefaultBrokerClient brokerClient;
+    transient BrokerService brokerService;
     transient Serializer serializer;
 
     @Autowired
     public ResourceController(final ResourceService resourceService,
-                              final DefaultResourceClient client, final Serializer serializer) {
+                              final DefaultResourceClient client,
+                              final DefaultBrokerClient brokerClient,
+                              final BrokerService brokerService,
+                              final Serializer serializer) {
         this.resourceService = resourceService;
+        this.brokerClient = brokerClient;
         this.client = client;
         this.serializer = serializer;
+        this.brokerService = brokerService;
     }
 
     /**
@@ -239,10 +248,23 @@ public class ResourceController implements ResourceApi {
 
                 if (updatedResource != null) {
                     final var clientResponse = client.updateResource(resourceId, updatedResource);
-                    resourceService.updateResourceInAppRoute(updatedResource);
-
+                    if(clientResponse.isSuccessful()) {
+                        //TODO move broker registrations to a parallel thread so it won't slow down response times
+                        var registered = brokerService.getRegisStatusForResource(resourceId);
+                        registered.iterator().forEachRemaining(elem -> {
+                            var asJsonObject = (JSONObject) elem;
+                            var brokerId = asJsonObject.getAsString("brokerId");
+                            try {
+                                brokerClient.updateAtBroker(brokerId);
+                            } catch (IOException e) {
+                                log.warn(String.format("Error while updating at broker: %s", e.getMessage()), e);
+                            }
+                        });
+                        resourceService.updateResourceInAppRoute(updatedResource);
+                    }
                     final var jsonObject = new JSONObject();
-                    jsonObject.put("connectorResponse", clientResponse);
+                    var responseBody = clientResponse.body();
+                    jsonObject.put("connectorResponse", responseBody != null ? responseBody.string() : "");
                     jsonObject.put("resourceID", resourceId.toString());
 
                     response = ResponseEntity.ok(jsonObject.toJSONString());

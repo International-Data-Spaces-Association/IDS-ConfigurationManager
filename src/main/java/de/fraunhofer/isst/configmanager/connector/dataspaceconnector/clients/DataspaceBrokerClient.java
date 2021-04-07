@@ -53,7 +53,7 @@ public class DataspaceBrokerClient extends AbstractDataspaceConnectorClient impl
     }
 
     @Override
-    public String unregisterAtBroker(final String brokerURI) throws IOException {
+    public Response unregisterAtBroker(final String brokerURI) throws IOException {
         log.info(String.format(
                 "---- [DataspaceBrokerClient unregisterAtBroker] unregistering connector %s at broker %s",
                 dataSpaceConnectorHost,
@@ -73,11 +73,11 @@ public class DataspaceBrokerClient extends AbstractDataspaceConnectorClient impl
 
         final var request = builder.build();
 
-        return Objects.requireNonNull(DispatchRequest.sendToDataspaceConnector(request).body()).string();
+        return DispatchRequest.sendToDataspaceConnector(request);
     }
 
     @Override
-    public String updateResourceAtBroker(final String brokerUri, final URI resourceID) throws IOException {
+    public Response updateResourceAtBroker(final String brokerUri, final URI resourceID) throws IOException {
         log.info(String.format("---- [DataspaceBrokerClient updateResourceAtBroker] updating resource at Broker %s", brokerUri));
 
         final var path = resourceID.getPath();
@@ -102,11 +102,11 @@ public class DataspaceBrokerClient extends AbstractDataspaceConnectorClient impl
             log.warn("---- [DataspaceBrokerClient updateResourceAtBroker] Updating Resource at Broker failed!");
         }
 
-        return Objects.requireNonNull(response.body()).string();
+        return response;
     }
 
     @Override
-    public String deleteResourceAtBroker(final String brokerUri, final URI resourceID) throws IOException {
+    public Response deleteResourceAtBroker(final String brokerUri, final URI resourceID) throws IOException {
         log.info(String.format("---- [DataspaceBrokerClient deleteResourceAtBroker] Deleting resource %s at Broker %s", resourceID, brokerUri));
 
         final var path = resourceID.getPath();
@@ -130,7 +130,7 @@ public class DataspaceBrokerClient extends AbstractDataspaceConnectorClient impl
             log.warn("---- [DataspaceBrokerClient deleteResourceAtBroker] Deleting Resource at Broker failed!");
         }
 
-        return Objects.requireNonNull(response.body()).string();
+        return response;
     }
 
 }
