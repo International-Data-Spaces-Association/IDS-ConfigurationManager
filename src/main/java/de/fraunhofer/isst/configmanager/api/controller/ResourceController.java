@@ -181,17 +181,19 @@ public class ResourceController implements ResourceApi {
      * @return response from the target connector
      */
     @Override
-    public ResponseEntity<String> createResource(final String title, final String description,
+    public ResponseEntity<String> createResource(final String title,
+                                                 final String description,
                                                  final String language,
                                                  final ArrayList<String> keywords,
-                                                 final String version, final String standardlicense,
-                                                 final String publisher) {
+                                                 final String version,
+                                                 final URI standardlicense,
+                                                 final URI publisher) {
         log.info(">> POST /resource title: " + title + " description: " + description
                 + " language: " + language + " keywords: " + keywords + " version: " + version
                 + " standardlicense: " + standardlicense + " publisher: " + publisher);
         ResponseEntity<String> response;
 
-        if (ValidateApiInput.notValid(title, description, language, version, standardlicense, publisher)) {
+        if (ValidateApiInput.notValid(title, description, language, version, standardlicense.toString(), publisher.toString())) {
             response = ResponseEntity.badRequest().body("All validated parameter have undefined as value!");
         } else {
             final var resource = resourceService.createResource(title, description, language,
@@ -230,17 +232,20 @@ public class ResourceController implements ResourceApi {
      * @return response from the target connector
      */
     @Override
-    public ResponseEntity<String> updateResource(final URI resourceId, final String title,
-                                                 final String description, final String language,
+    public ResponseEntity<String> updateResource(final URI resourceId,
+                                                 final String title,
+                                                 final String description,
+                                                 final String language,
                                                  final ArrayList<String> keywords,
-                                                 final String version, final String standardlicense,
-                                                 final String publisher) {
+                                                 final String version,
+                                                 final URI standardlicense,
+                                                 final URI publisher) {
         log.info(">> PUT /resource title: " + title + " description: " + description + " language: "
                 + language + " keywords: " + keywords + " version: " + version
                 + " standardlicense: " + standardlicense + " publisher: " + publisher);
         ResponseEntity<String> response;
 
-        if (ValidateApiInput.notValid(resourceId.toString(), title, description, language, version, standardlicense, publisher)) {
+        if (ValidateApiInput.notValid(resourceId.toString(), title, description, language, version, standardlicense.toString(), publisher.toString())) {
             response = ResponseEntity.badRequest().body("All validated parameter have undefined as value!");
         } else {
             try {
