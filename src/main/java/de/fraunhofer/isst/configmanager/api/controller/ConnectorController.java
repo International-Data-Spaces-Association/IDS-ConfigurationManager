@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -155,7 +156,7 @@ public class ConnectorController implements ConnectorApi {
      */
     @Override
     public ResponseEntity<String> createConnector(final String title, final String description,
-                                                  final String endpointAccessURL,
+                                                  final URI endpointAccessURL,
                                                   final String version, final String curator,
                                                   final String maintainer,
                                                   final String inboundModelVersion,

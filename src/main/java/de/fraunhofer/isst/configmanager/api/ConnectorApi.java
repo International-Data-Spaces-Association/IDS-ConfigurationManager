@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+
 public interface ConnectorApi {
     @GetMapping(value = "/connector", produces = "application/ld+json")
     @Operation(summary = "Get the Connector-Description")
@@ -32,7 +34,7 @@ public interface ConnectorApi {
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully created a new connector")})
     ResponseEntity<String> createConnector(@RequestParam("title") String title,
                                            @RequestParam("description") String description,
-                                           @RequestParam("endpointAccessURL") String endpointAccessURL,
+                                           @RequestParam("endpointAccessURL") URI endpointAccessURL,
                                            @RequestParam("version") String version,
                                            @RequestParam("curator") String curator,
                                            @RequestParam("maintainer") String maintainer,

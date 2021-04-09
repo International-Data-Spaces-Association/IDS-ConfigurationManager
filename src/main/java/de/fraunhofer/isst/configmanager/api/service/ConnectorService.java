@@ -64,7 +64,7 @@ public class ConnectorService {
      */
     public BaseConnector createConnector(final String title,
                                          final String description,
-                                         final String endpointAccessURL,
+                                         final URI endpointAccessURL,
                                          final String version,
                                          final String curator,
                                          final String maintainer,
@@ -74,7 +74,7 @@ public class ConnectorService {
         return new BaseConnectorBuilder()
                 ._title_(Util.asList(new TypedLiteral(title)))
                 ._description_(Util.asList(new TypedLiteral(description)))
-                ._hasEndpoint_(Util.asList(new ConnectorEndpointBuilder()._accessURL_(URI.create(endpointAccessURL)).build()))
+                ._hasEndpoint_(Util.asList(new ConnectorEndpointBuilder()._accessURL_(endpointAccessURL).build()))
                 ._version_(version)
                 ._curator_(URI.create(curator))
                 ._maintainer_(URI.create(maintainer))
