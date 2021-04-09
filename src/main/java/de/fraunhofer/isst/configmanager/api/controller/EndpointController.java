@@ -264,12 +264,12 @@ public class EndpointController implements EndpointApi {
      * @return a suitable http response depending on success
      */
     @Override
-    public ResponseEntity<String> getConnectorEndpointsFromClient(final String accessUrl, final String resourceId) {
+    public ResponseEntity<String> getConnectorEndpointsFromClient(final URI accessUrl, final String resourceId) {
         log.info(">> GET /connector/endpoints/client accessUrl: " + accessUrl + " resourceId: " + resourceId);
         ResponseEntity<String> response;
 
         try {
-            final var baseConnector = client.getBaseConnector(accessUrl, resourceId);
+            final var baseConnector = client.getBaseConnector(accessUrl.toString(), resourceId);
 
             if (baseConnector == null) {
                 response = ResponseEntity.badRequest().body("Could not determine the connector with the access url: " + accessUrl);
@@ -295,7 +295,7 @@ public class EndpointController implements EndpointApi {
      * @return a suitable http response depending on success
      */
     @Override
-    public ResponseEntity<String> createConnectorEndpoint(final String accessUrl) {
+    public ResponseEntity<String> createConnectorEndpoint(URI accessUrl) {
         log.info(">> POST /connector/endpoint accessUrl: " + accessUrl);
 
         final var configModelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
@@ -306,7 +306,7 @@ public class EndpointController implements EndpointApi {
         }
 
         final var connectorEndpoints = (ArrayList<ConnectorEndpoint>) baseConnector.getHasEndpoint();
-        final var connectorEndpoint = new ConnectorEndpointBuilder()._accessURL_(URI.create(accessUrl)).build();
+        final var connectorEndpoint = new ConnectorEndpointBuilder()._accessURL_(accessUrl).build();
 
         connectorEndpoints.add(connectorEndpoint);
         configModelService.saveState();

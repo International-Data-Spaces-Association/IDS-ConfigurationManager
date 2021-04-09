@@ -63,7 +63,7 @@ public interface EndpointApi {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Successfully returned a list of connector endpoints"),
             @ApiResponse(responseCode = "400", description = "Can not find the connector endpoints from the client")})
-    ResponseEntity<String> getConnectorEndpointsFromClient(@RequestParam("accessUrl") String accessUrl,
+    ResponseEntity<String> getConnectorEndpointsFromClient(@RequestParam("accessUrl") URI accessUrl,
                                                            @RequestParam(value = "resourceId", required = false) String resourceId);
 
     @GetMapping(value = "/connector/endpoint", produces = "application/ld+json")
@@ -77,5 +77,5 @@ public interface EndpointApi {
     @PostMapping(value = "/connector/endpoint", produces = "application/ld+json")
     @Operation(summary = "Creates a new connector endpoint for the connector")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully created the connector endpoint for the connector")})
-    ResponseEntity<String> createConnectorEndpoint(@RequestParam("accessUrl") String accessUrl);
+    ResponseEntity<String> createConnectorEndpoint(@RequestParam("accessUrl") URI accessUrl);
 }
