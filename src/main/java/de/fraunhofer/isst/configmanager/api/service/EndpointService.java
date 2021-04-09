@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URI;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -41,37 +40,32 @@ public class EndpointService {
      * @param password  password for the authentication
      * @return generic endpoint
      */
-    public GenericEndpoint createGenericEndpoint(final String accessURL,
+    public GenericEndpoint createGenericEndpoint(final URI accessURL,
                                                  final String username,
                                                  final String password) {
         GenericEndpoint endpoint = null;
-        try {
-            URI access = URI.create(accessURL);
-            endpoint = new GenericEndpointBuilder()._accessURL_(access).build();
-            final var endpointImpl = (GenericEndpointImpl) endpoint;
+        endpoint = new GenericEndpointBuilder()._accessURL_(accessURL).build();
+        final var endpointImpl = (GenericEndpointImpl) endpoint;
 
-            if (username != null && password != null) {
-                endpointImpl
-                        .setGenericEndpointAuthentication(
-                                new BasicAuthenticationBuilder()._authUsername_(username)._authPassword_(password).build()
-                        );
-            } else {
-                log.info("---- [EndpointService createGenericEndpoint] No authentication was created because username and password were not entered.");
-            }
-
-            final var customGenericEndpointObject = new CustomGenericEndpointObject(endpoint);
-
-            if (customGenericEndpointRepository.count() == 0) {
-                customGenericEndpointList = new CustomGenericEndpointList();
-            } else {
-                customGenericEndpointList = customGenericEndpointRepository.findAll().stream().findAny().get();
-            }
-
-            customGenericEndpointList.getCustomGenericEndpointObjects().add(customGenericEndpointObject);
-            customGenericEndpointList = customGenericEndpointRepository.saveAndFlush(customGenericEndpointList);
-        } catch (IllegalArgumentException e) {
-            log.warn("Given accessURL: " + accessURL + " is not properly encoded.");
+        if (username != null && password != null) {
+            endpointImpl
+                    .setGenericEndpointAuthentication(
+                            new BasicAuthenticationBuilder()._authUsername_(username)._authPassword_(password).build()
+                    );
+        } else {
+            log.info("---- [EndpointService createGenericEndpoint] No authentication was created because username and password were not entered.");
         }
+
+        final var customGenericEndpointObject = new CustomGenericEndpointObject(endpoint);
+
+        if (customGenericEndpointRepository.count() == 0) {
+            customGenericEndpointList = new CustomGenericEndpointList();
+        } else {
+            customGenericEndpointList = customGenericEndpointRepository.findAll().stream().findAny().get();
+        }
+
+        customGenericEndpointList.getCustomGenericEndpointObjects().add(customGenericEndpointObject);
+        customGenericEndpointList = customGenericEndpointRepository.saveAndFlush(customGenericEndpointList);
         return endpoint;
     }
 
