@@ -1,6 +1,16 @@
 package de.fraunhofer.isst.configmanager.api.service;
 
-import de.fraunhofer.iais.eis.*;
+import de.fraunhofer.iais.eis.BaseConnectorBuilder;
+import de.fraunhofer.iais.eis.BasicAuthenticationBuilder;
+import de.fraunhofer.iais.eis.ConfigurationModel;
+import de.fraunhofer.iais.eis.ConfigurationModelBuilder;
+import de.fraunhofer.iais.eis.ConfigurationModelImpl;
+import de.fraunhofer.iais.eis.ConnectorDeployMode;
+import de.fraunhofer.iais.eis.ConnectorStatus;
+import de.fraunhofer.iais.eis.LogLevel;
+import de.fraunhofer.iais.eis.ProxyBuilder;
+import de.fraunhofer.iais.eis.ProxyImpl;
+import de.fraunhofer.iais.eis.SecurityProfile;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.model.config.ConfigModelObject;

@@ -1,6 +1,10 @@
 package de.fraunhofer.isst.configmanager.api.service;
 
-import de.fraunhofer.iais.eis.*;
+import de.fraunhofer.iais.eis.BasicAuthenticationBuilder;
+import de.fraunhofer.iais.eis.Endpoint;
+import de.fraunhofer.iais.eis.GenericEndpoint;
+import de.fraunhofer.iais.eis.GenericEndpointBuilder;
+import de.fraunhofer.iais.eis.GenericEndpointImpl;
 import de.fraunhofer.isst.configmanager.model.configlists.CustomGenericEndpointList;
 import de.fraunhofer.isst.configmanager.model.configlists.CustomGenericEndpointRepository;
 import de.fraunhofer.isst.configmanager.model.customgenericendpoint.CustomGenericEndpointObject;
@@ -73,13 +77,17 @@ public class EndpointService {
      * @return list of generic endpoints
      */
     public List<Endpoint> getGenericEndpoints() {
+        var genericEndpoints = new ArrayList<Endpoint>();
+
         try {
             customGenericEndpointList = customGenericEndpointRepository.findAll().stream().findAny().get();
-
-            return customGenericEndpointList.getEndpoints();
+            genericEndpoints = (ArrayList<Endpoint>) customGenericEndpointList.getEndpoints();
+            log.info("---- [EndpointService getGenericEndpoints] Generic endpoints found: " + genericEndpoints.size());
         } catch (NoSuchElementException e) {
-            return new ArrayList<>();
+            log.info("---- [EndpointService getGenericEndpoints] No generic endpoints found!");
         }
+
+        return genericEndpoints;
     }
 
     /**

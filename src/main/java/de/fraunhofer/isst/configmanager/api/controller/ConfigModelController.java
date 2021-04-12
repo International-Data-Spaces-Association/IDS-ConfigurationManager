@@ -133,7 +133,7 @@ public class ConfigModelController implements ConfigModelApi {
     }
 
     /**
-     * This method returns the current configuration model as JSON string
+     * This method returns the current configuration model as JSON string.
      *
      * @return a suitable http response depending on success
      */

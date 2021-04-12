@@ -34,6 +34,7 @@ import java.util.concurrent.CompletableFuture;
 @Tag(name = "Resource Management", description = "Endpoints for managing the resource in the configuration manager")
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ResourceController implements ResourceApi {
+
     transient ResourceService resourceService;
     transient DefaultResourceClient client;
     transient DefaultBrokerClient brokerClient;
@@ -249,12 +250,12 @@ public class ResourceController implements ResourceApi {
 
                 if (updatedResource != null) {
                     final var clientResponse = client.updateResource(resourceId, updatedResource);
-                    if(clientResponse.isSuccessful()) {
+                    if (clientResponse.isSuccessful()) {
                         //TODO move broker registrations to a parallel thread so it won't slow down response times
-                        var registered = brokerService.getRegisStatusForResource(resourceId);
+                        final var registered = brokerService.getRegisStatusForResource(resourceId);
                         registered.iterator().forEachRemaining(elem -> {
-                            var asJsonObject = (JSONObject) elem;
-                            var brokerId = asJsonObject.getAsString("brokerId");
+                            final var asJsonObject = (JSONObject) elem;
+                            final var brokerId = asJsonObject.getAsString("brokerId");
                             CompletableFuture.runAsync(() -> {
                                 try {
                                     brokerClient.updateAtBroker(brokerId);
@@ -266,7 +267,7 @@ public class ResourceController implements ResourceApi {
                         resourceService.updateResourceInAppRoute(updatedResource);
                     }
                     final var jsonObject = new JSONObject();
-                    var responseBody = clientResponse.body();
+                    final var responseBody = clientResponse.body();
                     jsonObject.put("connectorResponse", responseBody != null ? responseBody.string() : "");
                     jsonObject.put("resourceID", resourceId.toString());
 

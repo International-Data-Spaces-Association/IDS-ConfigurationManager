@@ -1,6 +1,16 @@
 package de.fraunhofer.isst.configmanager.api.service;
 
-import de.fraunhofer.iais.eis.*;
+import de.fraunhofer.iais.eis.AppRoute;
+import de.fraunhofer.iais.eis.AppRouteBuilder;
+import de.fraunhofer.iais.eis.AppRouteImpl;
+import de.fraunhofer.iais.eis.BaseConnectorImpl;
+import de.fraunhofer.iais.eis.ConfigurationModelImpl;
+import de.fraunhofer.iais.eis.ConnectorEndpointBuilder;
+import de.fraunhofer.iais.eis.Endpoint;
+import de.fraunhofer.iais.eis.ResourceImpl;
+import de.fraunhofer.iais.eis.RouteStep;
+import de.fraunhofer.iais.eis.RouteStepBuilder;
+import de.fraunhofer.iais.eis.RouteStepImpl;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.model.configlists.CustomAppRepository;
 import de.fraunhofer.isst.configmanager.model.configlists.EndpointInformationRepository;
@@ -298,6 +308,8 @@ public class AppRouteService {
      * @return endpoint
      */
     private Endpoint getEndpoint(final URI endpointId) {
+        Endpoint endpoint = null;
+
         // Search endpoint in the app repository
         final var customAppList = customAppRepository.findAll();
         if (!customAppList.isEmpty() && endpointId.toString().contains("appEndpoint")) {
@@ -306,25 +318,29 @@ public class AppRouteService {
                     .flatMap(Collection::stream)
                     .filter(customAppEndpoint -> customAppEndpoint.getEndpoint().getId().equals(endpointId))
                     .findAny().orElse(null);
+
             if (customApp != null) {
-                return customApp.getEndpoint();
+                endpoint = customApp.getEndpoint();
             }
         }
         // Search endpoint in the backend repository and in list of connector endpoints
-        if (endpointService.getGenericEndpoints().size() != 0 && endpointId.toString().contains(
-                "genericEndpoint")) {
+        if (endpoint == null && endpointService.getGenericEndpoints().size() != 0 && endpointId.toString().contains("genericEndpoint")) {
             final var genericEndpoint = endpointService.getGenericEndpoint(endpointId);
+
             if (genericEndpoint != null) {
-                return genericEndpoint;
+                endpoint = genericEndpoint;
             }
         }
-        if (configModelService.getConfigModel().getConnectorDescription().getHasEndpoint().size() != 0
+
+        if (endpoint == null && configModelService.getConfigModel().getConnectorDescription().getHasEndpoint().size() != 0
                 && endpointId.toString().contains("connectorEndpoint")) {
-            return configModelService.getConfigModel().getConnectorDescription().getHasEndpoint()
+
+            endpoint = configModelService.getConfigModel().getConnectorDescription().getHasEndpoint()
                     .stream().filter(connectorEndpoint -> connectorEndpoint.getId().equals(endpointId))
                     .findAny().orElse(null);
         }
-        return null;
+
+        return endpoint;
     }
 
     /**
@@ -335,16 +351,19 @@ public class AppRouteService {
      * @return endpoint information
      */
     public EndpointInformation getEndpointInformation(final URI routeId, final URI endpointId) {
+        EndpointInformation returnEndpointInfo = null;
         final var endpointInformations = endpointInformationRepository.findAll();
+
         if (!endpointInformations.isEmpty()) {
             for (final var endpointInformation : endpointInformations) {
                 if (routeId.toString().equals(endpointInformation.getRouteId())
                         && endpointId.toString().equals(endpointInformation.getEndpointId())) {
-                    return endpointInformation;
+                    returnEndpointInfo = endpointInformation;
                 }
             }
         }
-        return null;
+
+        return returnEndpointInfo;
     }
 
     /**
