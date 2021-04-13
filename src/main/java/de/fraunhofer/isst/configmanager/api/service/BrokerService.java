@@ -242,14 +242,16 @@ public class BrokerService {
      * @return json array of all registered broker
      */
     public JSONArray getRegisteredBroker() {
-        var jsonArray = new JSONArray();
+        final var jsonArray = new JSONArray();
         final var customBrokers = customBrokerRepository.findAll();
         if (customBrokers.isEmpty()) {
             log.info("---- [BrokerService getRegisteredBroker] Could not find any broker");
         } else {
-            for (CustomBroker broker : customBrokers) {
+            final var jsonObject = new JSONObject();
+
+            for (final var broker : customBrokers) {
                 if (BrokerStatus.REGISTERED.equals(broker.getBrokerStatus())) {
-                    var jsonObject = new JSONObject();
+                    jsonObject.clear();
                     jsonObject.put("brokerId", broker.getBrokerUri().toString());
                     jsonArray.add(jsonObject);
                 }

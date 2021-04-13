@@ -3,7 +3,26 @@ package de.fraunhofer.isst.configmanager.api.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.fraunhofer.iais.eis.*;
+import de.fraunhofer.iais.eis.Action;
+import de.fraunhofer.iais.eis.AppRouteImpl;
+import de.fraunhofer.iais.eis.BaseConnector;
+import de.fraunhofer.iais.eis.BinaryOperator;
+import de.fraunhofer.iais.eis.ConstraintBuilder;
+import de.fraunhofer.iais.eis.ContractOffer;
+import de.fraunhofer.iais.eis.ContractOfferBuilder;
+import de.fraunhofer.iais.eis.DigitalContent;
+import de.fraunhofer.iais.eis.DutyBuilder;
+import de.fraunhofer.iais.eis.Language;
+import de.fraunhofer.iais.eis.LeftOperand;
+import de.fraunhofer.iais.eis.NotMoreThanNOfferBuilder;
+import de.fraunhofer.iais.eis.PermissionBuilder;
+import de.fraunhofer.iais.eis.ProhibitionBuilder;
+import de.fraunhofer.iais.eis.RepresentationImpl;
+import de.fraunhofer.iais.eis.Resource;
+import de.fraunhofer.iais.eis.ResourceBuilder;
+import de.fraunhofer.iais.eis.ResourceImpl;
+import de.fraunhofer.iais.eis.RouteStep;
+import de.fraunhofer.iais.eis.RouteStepImpl;
 import de.fraunhofer.iais.eis.util.RdfResource;
 import de.fraunhofer.iais.eis.util.TypedLiteral;
 import de.fraunhofer.iais.eis.util.Util;
@@ -16,6 +35,7 @@ import de.fraunhofer.isst.configmanager.util.CalenderUtil;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -641,15 +661,16 @@ public class ResourceService {
                 }
             }
         }
-        if (routeStep.getHasSubRoute() == null) {
-            return foundResource;
-        }
-        for (final var subRoute : routeStep.getHasSubRoute()) {
-            if (!visited.contains(subRoute)) {
-                visited.add(routeStep);
-                foundResource = getResourceInSubroutes(subRoute, visited, resourceId);
+
+        if (!routeStep.getHasSubRoute().isEmpty()) {
+            for (final var subRoute : routeStep.getHasSubRoute()) {
+                if (!visited.contains(subRoute)) {
+                    visited.add(routeStep);
+                    foundResource = getResourceInSubroutes(subRoute, visited, resourceId);
+                }
             }
         }
+
         return foundResource;
     }
 
@@ -658,185 +679,232 @@ public class ResourceService {
      * @param contractJson the request body which holds the necessary information
      * @return contract offer
      */
-    public ContractOffer getContractOffer(Pattern pattern, String contractJson) throws JsonProcessingException {
-
+    public ContractOffer getContractOffer(final Pattern pattern, final String contractJson) throws JsonProcessingException {
         ContractOffer contractOffer = null;
+
         switch (pattern) {
             case PROVIDE_ACCESS:
-                contractOffer = new ContractOfferBuilder()
-                        ._permission_(Util.asList(new PermissionBuilder()
-                                ._title_(Util.asList(new TypedLiteral("Usage Policy")))
-                                ._description_(Util.asList(new TypedLiteral("provide-access")))
-                                ._action_(Util.asList(Action.USE))
-                                .build()))
-                        .build();
+                contractOffer = buildProvideAccess();
                 break;
             case PROHIBIT_ACCESS:
-                contractOffer = new ContractOfferBuilder()
-                        ._prohibition_(Util.asList(new ProhibitionBuilder()
-                                ._title_(Util.asList(new TypedLiteral("Usage Policy")))
-                                ._description_(Util.asList(new TypedLiteral("prohibit-access")))
-                                ._action_(Util.asList(Action.USE))
-                                .build()))
-                        .build();
+                contractOffer = buildProhibitAccess();
                 break;
             case N_TIMES_USAGE:
                 if (contractJson != null && !contractJson.equals("{}")) {
                     final var jsonNode = getJsonNodeFromContract(contractJson);
 
-                    String operator = jsonNode.get("binaryoperator").asText();
-                    BinaryOperator binaryOperator;
-                    if (operator.equals("<")) {
-                        binaryOperator = BinaryOperator.LT;
-                    } else if (operator.equals("<=")) {
-                        binaryOperator = BinaryOperator.LTEQ;
-                    } else binaryOperator = BinaryOperator.EQ;
+                    final var binaryOperator = getBinaryOperator(jsonNode);
+                    final var number = jsonNode.get("number").asText();
+                    final var pipEndpoint = jsonNode.get("pipendpoint").asText();
 
-                    String number = jsonNode.get("number").asText();
-                    String pipEndpoint = jsonNode.get("pipendpoint").asText();
-
-                    contractOffer = new NotMoreThanNOfferBuilder()
-                            ._permission_(Util.asList(new PermissionBuilder()
-                                    ._title_(Util.asList(new TypedLiteral("Usage Policy")))
-                                    ._description_(Util.asList(new TypedLiteral("n-times-usage")))
-                                    ._action_(Util.asList(Action.USE))
-                                    ._constraint_(Util.asList(new ConstraintBuilder()
-                                            ._leftOperand_(LeftOperand.COUNT)
-                                            ._operator_(binaryOperator)
-                                            ._rightOperand_(new RdfResource(number, URI.create("xsd:double")))
-                                            ._pipEndpoint_(
-                                                    URI.create(pipEndpoint))
-                                            .build()))
-                                    .build()))
-                            .build();
+                    contractOffer = buildNTimesUsage(binaryOperator, number, pipEndpoint);
                     break;
                 }
             case DURATION_USAGE:
                 if (contractJson != null && !contractJson.equals("{}")) {
                     final var jsonNode = getJsonNodeFromContract(contractJson);
-                    String number = jsonNode.get("number").asText();
+                    final var number = jsonNode.get("number").asText();
 
-                    contractOffer = new ContractOfferBuilder()
-                            ._permission_(Util.asList(new PermissionBuilder()
-                                    ._title_(Util.asList(new TypedLiteral("Usage Policy")))
-                                    ._description_(Util.asList(new TypedLiteral("duration-usage")))
-                                    ._action_(Util.asList(Action.USE))
-                                    ._constraint_(Util.asList(new ConstraintBuilder()
-                                            ._leftOperand_(LeftOperand.ELAPSED_TIME)
-                                            ._operator_(BinaryOperator.SHORTER_EQ)
-                                            ._rightOperand_(new RdfResource(number, URI.create("xsd:duration")))
-                                            .build()))
-                                    .build()))
-                            .build();
+                    contractOffer = buildDurationUsage(number);
                     break;
                 }
             case USAGE_NOTIFICATION:
                 if (contractJson != null && !contractJson.equals("{}")) {
                     final var jsonNode = getJsonNodeFromContract(contractJson);
-                    String url = jsonNode.get("url").asText();
+                    final var url = jsonNode.get("url").asText();
 
-                    contractOffer = new ContractOfferBuilder()
-                            ._permission_(Util.asList(new PermissionBuilder()
-                                    ._title_(Util.asList(new TypedLiteral("Usage Policy")))
-                                    ._description_(Util.asList(new TypedLiteral("usage-notification")))
-                                    ._action_(Util.asList(Action.USE))
-                                    ._postDuty_(Util.asList(new DutyBuilder()
-                                            ._action_(Util.asList(Action.NOTIFY))
-                                            ._constraint_(Util.asList(new ConstraintBuilder()
-                                                    ._leftOperand_(LeftOperand.ENDPOINT)
-                                                    ._operator_(BinaryOperator.DEFINES_AS)
-                                                    ._rightOperand_(
-                                                            new RdfResource(url, URI.create("xsd:anyURI")))
-                                                    .build()))
-                                            .build()))
-                                    .build()))
-                            .build();
+                    contractOffer = buidUsageNotification(url);
                     break;
                 }
             case USAGE_LOGGING:
-                contractOffer = new ContractOfferBuilder()
-                        ._permission_(Util.asList(new PermissionBuilder()
-                                ._title_(Util.asList(new TypedLiteral("Usage Policy")))
-                                ._description_(Util.asList(new TypedLiteral("usage-logging")))
-                                ._action_(Util.asList(Action.USE))
-                                ._postDuty_(Util.asList(new DutyBuilder()
-                                        ._action_(Util.asList(Action.LOG))
-                                        .build()))
-                                .build()))
-                        .build();
+                contractOffer = buildUsageLogging();
                 break;
 
             case USAGE_DURING_INTERVAL:
                 if (contractJson != null && !contractJson.equals("{}")) {
                     final var jsonNode = getJsonNodeFromContract(contractJson);
-                    String fromDate = jsonNode.get("fromDate").asText();
-                    String toDate = jsonNode.get("toDate").asText();
+                    final var fromDate = jsonNode.get("fromDate").asText();
+                    final var toDate = jsonNode.get("toDate").asText();
 
-                    contractOffer = new ContractOfferBuilder()
-                            ._permission_(Util.asList(new PermissionBuilder()
-                                    ._title_(Util.asList(new TypedLiteral("Usage Policy")))
-                                    ._description_(Util.asList(new TypedLiteral("usage-during-interval")))
-                                    ._action_(Util.asList(Action.USE))
-                                    ._constraint_(Util.asList(new ConstraintBuilder()
-                                            ._leftOperand_(LeftOperand.POLICY_EVALUATION_TIME)
-                                            ._operator_(BinaryOperator.AFTER)
-                                            ._rightOperand_(new RdfResource(fromDate,
-                                                    URI.create("xsd:dateTimeStamp")))
-                                            .build(), new ConstraintBuilder()
-                                            ._leftOperand_(LeftOperand.POLICY_EVALUATION_TIME)
-                                            ._operator_(BinaryOperator.BEFORE)
-                                            ._rightOperand_(new RdfResource(toDate,
-                                                    URI.create("xsd:dateTimeStamp")))
-                                            .build()))
-                                    .build()))
-                            .build();
+                    contractOffer = buildUsageDuringInterval(fromDate, toDate);
                     break;
                 }
             case USAGE_UNTIL_DELETION:
                 if (contractJson != null && !contractJson.equals("{}")) {
                     final var jsonNode = getJsonNodeFromContract(contractJson);
-                    String startDate = jsonNode.get("startDate").asText();
-                    String endDate = jsonNode.get("endDate").asText();
-                    String deletionDate = jsonNode.get("deletionDate").asText();
+                    final var startDate = jsonNode.get("startDate").asText();
+                    final var endDate = jsonNode.get("endDate").asText();
+                    final var deletionDate = jsonNode.get("deletionDate").asText();
 
-                    contractOffer = new ContractOfferBuilder()
-                            ._permission_(Util.asList(new PermissionBuilder()
-                                    ._title_(Util.asList(new TypedLiteral("Usage Policy")))
-                                    ._description_(Util.asList(new TypedLiteral("usage-until-deletion")))
-                                    ._action_(Util.asList(Action.USE))
-                                    ._constraint_(Util.asList(new ConstraintBuilder()
-                                            ._leftOperand_(LeftOperand.POLICY_EVALUATION_TIME)
-                                            ._operator_(BinaryOperator.AFTER)
-                                            ._rightOperand_(new RdfResource(startDate,
-                                                    URI.create("xsd:dateTimeStamp")))
-                                            .build(), new ConstraintBuilder()
-                                            ._leftOperand_(LeftOperand.POLICY_EVALUATION_TIME)
-                                            ._operator_(BinaryOperator.BEFORE)
-                                            ._rightOperand_(new RdfResource(endDate,
-                                                    URI.create("xsd:dateTimeStamp")))
-                                            .build()))
-                                    ._postDuty_(Util.asList(new DutyBuilder()
-                                            ._action_(Util.asList(Action.DELETE))
-                                            ._constraint_(Util.asList(new ConstraintBuilder()
-                                                    ._leftOperand_(LeftOperand.POLICY_EVALUATION_TIME)
-                                                    ._operator_(BinaryOperator.TEMPORAL_EQUALS)
-                                                    ._rightOperand_(new RdfResource(deletionDate,
-                                                            URI.create("xsd:dateTimeStamp")))
-                                                    .build()))
-                                            .build()))
-                                    .build()))
-                            .build();
+                    contractOffer = buildUsageUntilDeletion(startDate, endDate, deletionDate);
                     break;
                 }
+            default:
+                break;
         }
         return contractOffer;
+    }
+
+    private ContractOffer buildUsageUntilDeletion(final String startDate,
+                                                  final String endDate,
+                                                  final String deletionDate) {
+        return new ContractOfferBuilder()
+                ._permission_(Util.asList(new PermissionBuilder()
+                        ._title_(Util.asList(new TypedLiteral("Usage Policy")))
+                        ._description_(Util.asList(new TypedLiteral("usage-until-deletion")))
+                        ._action_(Util.asList(Action.USE))
+                        ._constraint_(Util.asList(new ConstraintBuilder()
+                                ._leftOperand_(LeftOperand.POLICY_EVALUATION_TIME)
+                                ._operator_(BinaryOperator.AFTER)
+                                ._rightOperand_(new RdfResource(startDate,
+                                        URI.create("xsd:dateTimeStamp")))
+                                .build(), new ConstraintBuilder()
+                                ._leftOperand_(LeftOperand.POLICY_EVALUATION_TIME)
+                                ._operator_(BinaryOperator.BEFORE)
+                                ._rightOperand_(new RdfResource(endDate,
+                                        URI.create("xsd:dateTimeStamp")))
+                                .build()))
+                        ._postDuty_(Util.asList(new DutyBuilder()
+                                ._action_(Util.asList(Action.DELETE))
+                                ._constraint_(Util.asList(new ConstraintBuilder()
+                                        ._leftOperand_(LeftOperand.POLICY_EVALUATION_TIME)
+                                        ._operator_(BinaryOperator.TEMPORAL_EQUALS)
+                                        ._rightOperand_(new RdfResource(deletionDate,
+                                                URI.create("xsd:dateTimeStamp")))
+                                        .build()))
+                                .build()))
+                        .build()))
+                .build();
+    }
+
+    private ContractOffer buildUsageDuringInterval(final String fromDate,
+                                                   final String toDate) {
+        return new ContractOfferBuilder()
+                ._permission_(Util.asList(new PermissionBuilder()
+                        ._title_(Util.asList(new TypedLiteral("Usage Policy")))
+                        ._description_(Util.asList(new TypedLiteral("usage-during-interval")))
+                        ._action_(Util.asList(Action.USE))
+                        ._constraint_(Util.asList(new ConstraintBuilder()
+                                ._leftOperand_(LeftOperand.POLICY_EVALUATION_TIME)
+                                ._operator_(BinaryOperator.AFTER)
+                                ._rightOperand_(new RdfResource(fromDate,
+                                        URI.create("xsd:dateTimeStamp")))
+                                .build(), new ConstraintBuilder()
+                                ._leftOperand_(LeftOperand.POLICY_EVALUATION_TIME)
+                                ._operator_(BinaryOperator.BEFORE)
+                                ._rightOperand_(new RdfResource(toDate,
+                                        URI.create("xsd:dateTimeStamp")))
+                                .build()))
+                        .build()))
+                .build();
+    }
+
+    private ContractOffer buildUsageLogging() {
+        return new ContractOfferBuilder()
+                ._permission_(Util.asList(new PermissionBuilder()
+                        ._title_(Util.asList(new TypedLiteral("Usage Policy")))
+                        ._description_(Util.asList(new TypedLiteral("usage-logging")))
+                        ._action_(Util.asList(Action.USE))
+                        ._postDuty_(Util.asList(new DutyBuilder()
+                                ._action_(Util.asList(Action.LOG))
+                                .build()))
+                        .build()))
+                .build();
+    }
+
+    private ContractOffer buidUsageNotification(final String url) {
+        return new ContractOfferBuilder()
+                ._permission_(Util.asList(new PermissionBuilder()
+                        ._title_(Util.asList(new TypedLiteral("Usage Policy")))
+                        ._description_(Util.asList(new TypedLiteral("usage-notification")))
+                        ._action_(Util.asList(Action.USE))
+                        ._postDuty_(Util.asList(new DutyBuilder()
+                                ._action_(Util.asList(Action.NOTIFY))
+                                ._constraint_(Util.asList(new ConstraintBuilder()
+                                        ._leftOperand_(LeftOperand.ENDPOINT)
+                                        ._operator_(BinaryOperator.DEFINES_AS)
+                                        ._rightOperand_(
+                                                new RdfResource(url, URI.create("xsd:anyURI")))
+                                        .build()))
+                                .build()))
+                        .build()))
+                .build();
+    }
+
+    private ContractOffer buildDurationUsage(final String number) {
+        return new ContractOfferBuilder()
+                ._permission_(Util.asList(new PermissionBuilder()
+                        ._title_(Util.asList(new TypedLiteral("Usage Policy")))
+                        ._description_(Util.asList(new TypedLiteral("duration-usage")))
+                        ._action_(Util.asList(Action.USE))
+                        ._constraint_(Util.asList(new ConstraintBuilder()
+                                ._leftOperand_(LeftOperand.ELAPSED_TIME)
+                                ._operator_(BinaryOperator.SHORTER_EQ)
+                                ._rightOperand_(new RdfResource(number, URI.create("xsd:duration")))
+                                .build()))
+                        .build()))
+                .build();
+    }
+
+    @NotNull
+    private BinaryOperator getBinaryOperator(final JsonNode jsonNode) {
+        final var operator = jsonNode.get("binaryoperator").asText();
+
+        BinaryOperator binaryOperator;
+        if ("<".equals(operator)) {
+            binaryOperator = BinaryOperator.LT;
+        } else if ("<=".equals(operator)) {
+            binaryOperator = BinaryOperator.LTEQ;
+        } else {
+            binaryOperator = BinaryOperator.EQ;
+        }
+        return binaryOperator;
+    }
+
+    private ContractOffer buildNTimesUsage(final BinaryOperator binaryOperator,
+                                           final String number,
+                                           final String pipEndpoint) {
+        return new NotMoreThanNOfferBuilder()
+                ._permission_(Util.asList(new PermissionBuilder()
+                        ._title_(Util.asList(new TypedLiteral("Usage Policy")))
+                        ._description_(Util.asList(new TypedLiteral("n-times-usage")))
+                        ._action_(Util.asList(Action.USE))
+                        ._constraint_(Util.asList(new ConstraintBuilder()
+                                ._leftOperand_(LeftOperand.COUNT)
+                                ._operator_(binaryOperator)
+                                ._rightOperand_(new RdfResource(number, URI.create("xsd:double")))
+                                ._pipEndpoint_(
+                                        URI.create(pipEndpoint))
+                                .build()))
+                        .build()))
+                .build();
+    }
+
+    private ContractOffer buildProhibitAccess() {
+        return new ContractOfferBuilder()
+                ._prohibition_(Util.asList(new ProhibitionBuilder()
+                        ._title_(Util.asList(new TypedLiteral("Usage Policy")))
+                        ._description_(Util.asList(new TypedLiteral("prohibit-access")))
+                        ._action_(Util.asList(Action.USE))
+                        .build()))
+                .build();
+    }
+
+    private ContractOffer buildProvideAccess() {
+        return new ContractOfferBuilder()
+                ._permission_(Util.asList(new PermissionBuilder()
+                        ._title_(Util.asList(new TypedLiteral("Usage Policy")))
+                        ._description_(Util.asList(new TypedLiteral("provide-access")))
+                        ._action_(Util.asList(Action.USE))
+                        .build()))
+                .build();
     }
 
     /**
      * @param contractJson the contract offer
      * @return json node
      */
-    private JsonNode getJsonNodeFromContract(String contractJson) throws JsonProcessingException {
+    private JsonNode getJsonNodeFromContract(final String contractJson) throws JsonProcessingException {
         final var mapper = new ObjectMapper();
         return mapper.readTree(Objects.requireNonNull(contractJson));
     }

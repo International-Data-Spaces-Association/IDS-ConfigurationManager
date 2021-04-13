@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Objects;
 
 /**
  * The api class implements the BrokerAPI and offers the possibilities to manage
@@ -196,6 +197,7 @@ public class BrokerController implements BrokerApi {
 
         final var broker = brokerService.getById(brokerUri);
         final var jsonObject = new JSONObject();
+        final var success = "success";
 
         if (broker != null) {
             try {
@@ -203,14 +205,14 @@ public class BrokerController implements BrokerApi {
                 if (clientResponse.isSuccessful()) {
                     brokerService.sentSelfDescToBroker(brokerUri);
                     brokerService.setBrokerStatus(brokerUri, BrokerStatus.REGISTERED);
-                    jsonObject.put("success", true);
+                    jsonObject.put(success, true);
                 } else {
-                    jsonObject.put("success", false);
+                    jsonObject.put(success, false);
                 }
                 response = ResponseEntity.ok(jsonObject.toJSONString());
             } catch (IOException e) {
                 log.error(e.getMessage(), e);
-                jsonObject.put("success", false);
+                jsonObject.put(success, false);
                 response = ResponseEntity.ok(jsonObject.toJSONString());
             }
         } else {
@@ -233,22 +235,23 @@ public class BrokerController implements BrokerApi {
 
         final var broker = brokerService.getById(brokerUri);
         final var jsonObject = new JSONObject();
+        final var success = "success";
 
         if (broker != null) {
             try {
                 final var clientResponse = client.unregisterAtBroker(brokerUri.toString());
-                var clientResponseString = clientResponse.body().string();
+                final var clientResponseString = Objects.requireNonNull(clientResponse.body()).string();
                 if (clientResponse.isSuccessful() && !clientResponseString.contains("RejectionMessage")) {
                     brokerService.unregisteredAtBroker(brokerUri);
                     brokerService.setBrokerStatus(brokerUri, BrokerStatus.UNREGISTERED);
-                    jsonObject.put("success", true);
+                    jsonObject.put(success, true);
                 } else {
-                    jsonObject.put("success", false);
+                    jsonObject.put(success, false);
                 }
                 response = ResponseEntity.ok(jsonObject.toJSONString());
             } catch (IOException e) {
                 log.error(e.getMessage(), e);
-                jsonObject.put("success", false);
+                jsonObject.put(success, false);
                 response = ResponseEntity.ok(jsonObject.toJSONString());
             }
         } else {

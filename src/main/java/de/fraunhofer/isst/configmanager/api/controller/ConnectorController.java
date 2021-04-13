@@ -220,10 +220,11 @@ public class ConnectorController implements ConnectorApi {
                 final var valid = client.sendConfiguration(serializer.serialize(configurationModel));
 
                 if (valid) {
-                    var registered = brokerService.getRegisteredBroker();
+                    final var registered = brokerService.getRegisteredBroker();
                     registered.iterator().forEachRemaining(elem -> {
-                        var asJsonObject = (JSONObject) elem;
-                        var brokerId = asJsonObject.getAsString("brokerId");
+                        final var asJsonObject = (JSONObject) elem;
+                        final var brokerId = asJsonObject.getAsString("brokerId");
+
                         CompletableFuture.runAsync(() -> {
                             try {
                                 brokerClient.updateAtBroker(brokerId);

@@ -102,6 +102,7 @@ public class ResourceContractController implements ResourceContractApi {
                         final var clientResponse = client.updateResourceContract(resourceId.toString(), contractJson);
 
                         resourceService.updateResourceContractInAppRoute(resourceId, contractOffer);
+
                         jsonObject.put("connectorResponse", clientResponse);
                         response = ResponseEntity.ok(jsonObject.toJSONString());
                     } catch (IOException e) {
@@ -128,9 +129,11 @@ public class ResourceContractController implements ResourceContractApi {
      * @return a suitable http response depending on success
      */
     @Override
-    public ResponseEntity<String> updateContractForResource(URI resourceId, Pattern pattern, String contractJson) {
-        log.info(">> PUT /resource/contract/update resourceId: " + resourceId + "pattern" + pattern.toString() +
-                " contractJson: " + contractJson);
+    public ResponseEntity<String> updateContractForResource(final URI resourceId,
+                                                            final Pattern pattern,
+                                                            final String contractJson) {
+        log.info(">> PUT /resource/contract/update resourceId: " + resourceId + "pattern" + pattern.toString()
+                + " contractJson: " + contractJson);
 
         ResponseEntity<String> response;
 
@@ -148,11 +151,15 @@ public class ResourceContractController implements ResourceContractApi {
             if (contractOffer != null) {
                 final var jsonObject = new JSONObject();
                 try {
-                    String contract = serializer.serialize(contractOffer);
+                    final var contract = serializer.serialize(contractOffer);
+
                     jsonObject.put("resourceID", resourceId.toString());
                     jsonObject.put("contractID", contractOffer.getId().toString());
+
                     final var connectorResponse = client.updateResourceContract(resourceId.toString(), contract);
+
                     resourceService.updateResourceContractInAppRoute(resourceId, contractOffer);
+
                     jsonObject.put("connectorResponse", connectorResponse);
                     response = ResponseEntity.ok(jsonObject.toJSONString());
                 } catch (IOException e) {
