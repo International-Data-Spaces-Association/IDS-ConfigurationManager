@@ -58,12 +58,13 @@ public class EndpointController implements EndpointApi {
      */
     @Override
     public ResponseEntity<String> createGenericEndpoint(final URI accessURL,
+                                                        final String sourceType,
                                                         final String username,
                                                         final String password) {
-        log.info(">> POST /generic/endpoint accessURL: " + accessURL + " username: " + username);
+        log.info(">> POST /generic/endpoint accessURL: " + accessURL + "sourceType: " + sourceType + " username: " + username);
         ResponseEntity<String> response;
 
-        final var genericEndpoint = endpointService.createGenericEndpoint(accessURL, username, password);
+        final var genericEndpoint = endpointService.createGenericEndpoint(accessURL, sourceType, username, password);
         if (genericEndpoint != null) {
             final var jsonObject = new JSONObject();
             jsonObject.put("id", genericEndpoint.getId().toString());

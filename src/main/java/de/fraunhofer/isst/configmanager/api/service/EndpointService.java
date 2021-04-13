@@ -45,11 +45,14 @@ public class EndpointService {
      * @return generic endpoint
      */
     public GenericEndpoint createGenericEndpoint(final URI accessURL,
+                                                 final String sourceType,
                                                  final String username,
                                                  final String password) {
         GenericEndpoint endpoint = null;
         endpoint = new GenericEndpointBuilder()._accessURL_(accessURL).build();
         final var endpointImpl = (GenericEndpointImpl) endpoint;
+
+        endpointImpl.setProperty("ids:sourceType", sourceType);
 
         if (username != null && password != null) {
             endpointImpl
