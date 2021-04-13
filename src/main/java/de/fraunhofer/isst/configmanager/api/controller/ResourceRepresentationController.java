@@ -1,14 +1,12 @@
 package de.fraunhofer.isst.configmanager.api.controller;
 
 
-import de.fraunhofer.iais.eis.Artifact;
 import de.fraunhofer.iais.eis.ArtifactBuilder;
 import de.fraunhofer.iais.eis.IANAMediaTypeBuilder;
 import de.fraunhofer.iais.eis.Language;
 import de.fraunhofer.iais.eis.RepresentationBuilder;
 import de.fraunhofer.iais.eis.RepresentationImpl;
 import de.fraunhofer.iais.eis.ResourceImpl;
-import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.api.ResourceRepresentationApi;
 import de.fraunhofer.isst.configmanager.api.service.ConfigModelService;
@@ -44,17 +42,14 @@ public class ResourceRepresentationController implements ResourceRepresentationA
     transient ConfigModelService configModelService;
     transient ResourceService resourceService;
     transient DefaultResourceClient client;
-    transient Serializer serializer;
 
     @Autowired
     public ResourceRepresentationController(final ConfigModelService configModelService,
                                             final ResourceService resourceService,
-                                            final DefaultResourceClient client,
-                                            final Serializer serializer) {
+                                            final DefaultResourceClient client) {
         this.client = client;
         this.configModelService = configModelService;
         this.resourceService = resourceService;
-        this.serializer = serializer;
     }
 
     /**
@@ -217,99 +212,6 @@ public class ResourceRepresentationController implements ResourceRepresentationA
             response = ResponseEntity.badRequest().body("Could not update the representation of the resource");
         }
 
-        return response;
-    }
-
-    /**
-     * This method returns the specific representation from a resource with the given parameters.
-     *
-     * @param representationId id of the representation
-     * @return a suitable http response depending on success
-     */
-    @Override
-    public ResponseEntity<String> getResourceRepresentation(final URI representationId) {
-        log.info(">> GET /resource/representation representationId: " + representationId);
-        ResponseEntity<String> response;
-
-        final var representation = resourceService.getResourceRepresentationInCatalog(representationId);
-
-        if (representation != null) {
-            try {
-                response = ResponseEntity.ok(serializer.serialize(representation));
-            } catch (IOException e) {
-                log.error(e.getMessage(), e);
-                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-            }
-        } else {
-            response = ResponseEntity.badRequest().body("Could not get resource representation");
-        }
-
-        return response;
-    }
-
-    /**
-     * This method returns the specific representation from a resource in JSON format with the
-     * given parameters.
-     *
-     * @param resourceId       id of the resource
-     * @param representationId id of the representation
-     * @return a suitable http response depending on success
-     */
-    @Override
-    public ResponseEntity<String> getResourceRepresentationInJson(final URI resourceId,
-                                                                  final URI representationId) {
-        log.info(">> GET /resource/representation/json resourceId: " + resourceId + " representationId: " + representationId);
-        ResponseEntity<String> response = null;
-
-        final var representationJson = new JSONObject();
-        for (final var resource : resourceService.getResources()) {
-            if (resourceId.equals(resource.getId())) {
-                for (final var representation : resource.getRepresentation()) {
-                    if (representationId.equals(representation.getId())) {
-                        representationJson.clear();
-                        representationJson.put("language", representation.getLanguage());
-                        representationJson.put("filenameExtension", representation.getMediaType()
-                                .getFilenameExtension());
-                        final var artifact = (Artifact) representation.getInstance().get(0);
-                        representationJson.put("byteSize", artifact.getByteSize().toString());
-
-                        response = ResponseEntity.ok(representationJson.toJSONString());
-                    }
-                }
-            }
-        }
-        if (response == null) {
-            response = ResponseEntity.badRequest().body("Could not get resource representation");
-        }
-
-        return response;
-    }
-
-    /**
-     * This method deletes the resource representation with the given parameters.
-     *
-     * @param resourceId       id of the resource
-     * @param representationId id of the representation
-     * @return a suitable http response depending on success
-     */
-    @Override
-    public ResponseEntity<String> deleteResourceRepresentation(final URI resourceId,
-                                                               final URI representationId) {
-        log.info(">> DELETE /resource/representation resourceId: " + resourceId + " representationId: " + representationId);
-        ResponseEntity<String> response;
-
-        try {
-            final var clientResponse = client.deleteResourceRepresentation(resourceId.toString(), representationId.toString());
-            resourceService.deleteResourceRepresentationFromAppRoute(resourceId, representationId);
-            final var jsonObject = new JSONObject();
-            jsonObject.put("connectorResponse", clientResponse);
-            jsonObject.put("resourceID", resourceId.toString());
-            jsonObject.put("representationID", representationId.toString());
-            response = ResponseEntity.ok(jsonObject.toJSONString());
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-            response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
         return response;
     }
 }

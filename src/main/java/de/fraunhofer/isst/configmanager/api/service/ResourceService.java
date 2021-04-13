@@ -10,14 +10,12 @@ import de.fraunhofer.iais.eis.BinaryOperator;
 import de.fraunhofer.iais.eis.ConstraintBuilder;
 import de.fraunhofer.iais.eis.ContractOffer;
 import de.fraunhofer.iais.eis.ContractOfferBuilder;
-import de.fraunhofer.iais.eis.DigitalContent;
 import de.fraunhofer.iais.eis.DutyBuilder;
 import de.fraunhofer.iais.eis.Language;
 import de.fraunhofer.iais.eis.LeftOperand;
 import de.fraunhofer.iais.eis.NotMoreThanNOfferBuilder;
 import de.fraunhofer.iais.eis.PermissionBuilder;
 import de.fraunhofer.iais.eis.ProhibitionBuilder;
-import de.fraunhofer.iais.eis.RepresentationImpl;
 import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.iais.eis.ResourceBuilder;
 import de.fraunhofer.iais.eis.ResourceImpl;
@@ -43,7 +41,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -268,107 +265,6 @@ public class ResourceService {
             }
         }
 
-    }
-
-    /**
-     * This method returns from a resource the contract offer.
-     *
-     * @param resourceId id of the resource
-     * @return contract offer
-     */
-    public ContractOffer getResourceContract(final URI resourceId) {
-        for (final var resource : getResources()) {
-            if (resourceId.equals(resource.getId()) && resource.getContractOffer().get(0) != null) {
-                return resource.getContractOffer().get(0);
-            }
-        }
-        return null;
-    }
-
-    /**
-     * @param representationId id of the representation
-     * @return representation implementation
-     */
-    public RepresentationImpl getResourceRepresentationInCatalog(final URI representationId) {
-        return (RepresentationImpl) getResources()
-                .stream()
-                .map(DigitalContent::getRepresentation)
-                .flatMap(Collection::stream)
-                .filter(representation -> representation.getId().equals(representationId))
-                .findAny()
-                .orElse(null);
-    }
-
-    /**
-     * @param resourceId       id of the resource
-     * @param representationId id of the representation to delete
-     */
-    public void deleteResourceRepresentationFromAppRoute(final URI resourceId,
-                                                         final URI representationId) {
-        if (configModelService.getConfigModel().getAppRoute() == null) {
-            log.info("---- [ResourceService deleteResourceRepresentationFromAppRoute] Could not find any app route to delete the resource");
-        } else {
-            final ArrayList<RouteStep> emptyList = new ArrayList<>();
-            for (final var route : configModelService.getConfigModel().getAppRoute()) {
-                if (route == null) {
-                    continue;
-                }
-                if (route.getAppRouteOutput() != null) {
-                    for (final var resource : route.getAppRouteOutput()) {
-                        if (resource.getRepresentation() != null) {
-                            resource.getRepresentation().removeIf(representation ->
-                                    representation.getId().equals(representationId)
-                            );
-                        }
-                    }
-                }
-                if (route.getHasSubRoute() == null) {
-                    continue;
-                }
-
-                for (final var subRoute : route.getHasSubRoute()) {
-                    deleteRepresentationFromSubRoutes(subRoute, emptyList, resourceId,
-                            representationId);
-                }
-            }
-        }
-        configModelService.saveState();
-    }
-
-    /**
-     * Delete occurrence of a resource representation with resourceID and representationID from.
-     * all SubRoutes
-     *
-     * @param current          current Node in AppRoute
-     * @param visited          already visited AppRoutes
-     * @param resourceId       ID of the Resource for which the representation should be deleted
-     * @param representationId ID of the Representation to delete
-     */
-    private void deleteRepresentationFromSubRoutes(final RouteStep current,
-                                                   final List<RouteStep> visited,
-                                                   final URI resourceId,
-                                                   final URI representationId) {
-        if (current == null) {
-            return;
-        }
-        if (current.getAppRouteOutput() != null) {
-            for (final var resource : current.getAppRouteOutput()) {
-                if (resource.getRepresentation() != null) {
-                    resource.getRepresentation().removeIf(representation ->
-                            representation.getId().equals(representationId)
-                    );
-                }
-            }
-        }
-        if (current.getHasSubRoute() == null) {
-            return;
-        }
-        for (final var subRoute : current.getHasSubRoute()) {
-            if (!visited.contains(subRoute)) {
-                visited.add(current);
-                deleteFromSubRoutes(subRoute, visited, resourceId);
-            }
-        }
     }
 
     /**
