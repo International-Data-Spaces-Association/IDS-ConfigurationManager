@@ -80,4 +80,24 @@ public class ConnectorRequestService {
             return null;
         }
     }
+
+    /**
+     * This method requests the id of the contract agreement
+     *
+     * @param recipientId         id of the recipient
+     * @param requestedArtifactId id of the requested artifact
+     * @param contractOffer       contact offer for the requested resource
+     * @return string, contract acgreement id
+     */
+    public String requestContractAgreement(final String recipientId,
+                                           final String requestedArtifactId,
+                                           final String contractOffer) {
+
+        try {
+            return connectorClient.requestContractAgreement(recipientId, requestedArtifactId, contractOffer);
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
+        return null;
+    }
 }

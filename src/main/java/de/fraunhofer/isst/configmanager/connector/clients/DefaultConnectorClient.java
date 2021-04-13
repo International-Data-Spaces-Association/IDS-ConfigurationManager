@@ -65,4 +65,14 @@ public interface DefaultConnectorClient {
      * @throws IOException when an error occurs while sending the request
      */
     BaseConnector getSelfDeclaration() throws IOException;
+
+    /**
+     * Sends a contract request to a connector by building an ContractRequestMessage.
+     *
+     * @param recipientId         id of the recipient
+     * @param requestedArtifactId id of the requested artifact
+     * @param contractOffer       contract offer for the requested resource
+     * @return string, contract agreement id
+     */
+    String requestContractAgreement(String recipientId, String requestedArtifactId, String contractOffer) throws IOException;
 }

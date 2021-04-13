@@ -186,4 +186,39 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
 
         return Objects.requireNonNull(response.body()).string();
     }
+
+    @Override
+    public String requestContractAgreement(final String recipientId,
+                                           final String requestedArtifactId,
+                                           final String contractOffer) throws IOException {
+        log.info("---- [DataspaceConnectorClient requestContractAgreement] Request contract agreement with recipient: {} and artifact: {}", recipientId, requestedArtifactId);
+
+        final var builder = getRequestBuilder();
+        final var urlBuilder = new HttpUrl.Builder()
+                .scheme(protocol)
+                .host(dataSpaceConnectorHost)
+                .port(dataSpaceConnectorPort)
+                .addPathSegments("admin/api/request/contract")
+                .addQueryParameter("recipient", recipientId)
+                .addQueryParameter("requestedArtifact", requestedArtifactId);
+
+        final var url = urlBuilder.build();
+        builder.url(url);
+        builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername, dataSpaceConnectorApiPassword));
+
+        if (contractOffer != null && !contractOffer.isBlank()) {
+            builder.post(RequestBody.create(contractOffer, okhttp3.MediaType.parse("application/ld+json")));
+        } else {
+            builder.post(RequestBody.create(new byte[0], null));
+        }
+
+        final var request = builder.build();
+        final var response = DispatchRequest.sendToDataspaceConnector(request);
+
+        if (!response.isSuccessful()) {
+            log.warn("---- [DataspaceConnectorClient requestContractAgreement] Could not request contract agreement");
+        }
+
+        return Objects.requireNonNull(response.body()).string();
+    }
 }

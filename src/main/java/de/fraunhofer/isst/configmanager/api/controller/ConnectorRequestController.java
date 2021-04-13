@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import net.minidev.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URI;
@@ -73,6 +74,33 @@ public class ConnectorRequestController implements ConnectorRequestApi {
                 response = ResponseEntity.badRequest().body("Could not get resources from the requested connector");
             }
         }
+        return response;
+    }
+
+    @Override
+    public ResponseEntity<String> requestContract(final URI recipientId,
+                                                  final URI requestedArtifactId,
+                                                  final String contractOffer) {
+        log.info(">> POST /request/contract recipientId: " + recipientId + " requestedArtifactId: " + requestedArtifactId + " contractOffer: " + contractOffer);
+        ResponseEntity<String> response;
+
+        final var contractAgreementId = connectorRequestService
+                .requestContractAgreement(recipientId.toString(), requestedArtifactId.toString(), contractOffer);
+
+        if (contractAgreementId != null) {
+            final var jsonObject = new JSONObject();
+
+            if (contractAgreementId.contains("Failed")) {
+                jsonObject.put("message", contractAgreementId);
+                response = ResponseEntity.badRequest().body(jsonObject.toJSONString());
+            } else {
+                jsonObject.put("agreementId", contractAgreementId);
+                response = ResponseEntity.ok(jsonObject.toJSONString());
+            }
+        } else {
+            response = ResponseEntity.badRequest().body("Could not get agreement id for the contract");
+        }
+
         return response;
     }
 }
