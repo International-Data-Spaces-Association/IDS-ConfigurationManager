@@ -1,6 +1,7 @@
 package de.fraunhofer.isst.configmanager.api.service;
 
 import de.fraunhofer.iais.eis.Resource;
+import de.fraunhofer.isst.configmanager.api.service.resources.ResourceService;
 import de.fraunhofer.isst.configmanager.model.config.BrokerStatus;
 import de.fraunhofer.isst.configmanager.model.config.CustomBroker;
 import de.fraunhofer.isst.configmanager.model.configlists.CustomBrokerRepository;

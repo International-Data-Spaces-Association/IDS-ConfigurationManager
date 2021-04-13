@@ -3,7 +3,7 @@ package de.fraunhofer.isst.configmanager.api.controller;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.api.ResourceApi;
 import de.fraunhofer.isst.configmanager.api.service.BrokerService;
-import de.fraunhofer.isst.configmanager.api.service.ResourceService;
+import de.fraunhofer.isst.configmanager.api.service.resources.ResourceService;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultBrokerClient;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultResourceClient;
 import de.fraunhofer.isst.configmanager.util.ValidateApiInput;
@@ -273,7 +273,8 @@ public class ResourceController implements ResourceApi {
 
                     response = ResponseEntity.ok(jsonObject.toJSONString());
                 } else {
-                    response = ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("No resource with ID %s was found!", resourceId));
+                    response = ResponseEntity.status(HttpStatus.NOT_FOUND)
+                            .body(String.format("No resource with ID %s was found!", resourceId));
                 }
             } catch (IOException e) {
                 log.error(e.getMessage(), e);

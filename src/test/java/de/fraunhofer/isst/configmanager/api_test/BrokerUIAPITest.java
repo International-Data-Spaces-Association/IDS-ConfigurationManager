@@ -2,7 +2,7 @@ package de.fraunhofer.isst.configmanager.api_test;
 
 import de.fraunhofer.isst.configmanager.api.controller.BrokerController;
 import de.fraunhofer.isst.configmanager.api.service.BrokerService;
-import de.fraunhofer.isst.configmanager.api.service.ResourceService;
+import de.fraunhofer.isst.configmanager.api.service.resources.ResourceService;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultBrokerClient;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultResourceClient;
