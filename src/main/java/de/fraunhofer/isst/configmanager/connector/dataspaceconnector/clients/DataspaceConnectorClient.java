@@ -5,6 +5,7 @@ import de.fraunhofer.iais.eis.ConfigurationModel;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.util.DispatchRequest;
 import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.util.ResourceMapper;
+import de.fraunhofer.isst.configmanager.model.config.QueryInput;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -147,7 +148,7 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
                 dataSpaceConnectorApiPassword));
         builder.post(RequestBody.create(new byte[0], null));
 
-        log.info("---- [DataspaceConnectorClient getBaseConnector] " + url.toString());
+        log.info("---- [DataspaceConnectorClient getBaseConnector] " + url);
         final var request = builder.build();
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
@@ -199,6 +200,47 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
             log.warn("---- [DataspaceConnectorClient requestContractAgreement] Could not request contract agreement");
         }
 
+        return Objects.requireNonNull(response.body()).string();
+    }
+
+    @Override
+    public String requestData(String recipientId, String requestedArtifactId, String contractId,
+                              String key, QueryInput queryInput) throws IOException {
+
+        log.info("---- [DataspaceConnectorClient requestData] Request Data with recipient: {}, artifact: {}," +
+                " contract: {}, key: {} and queryInput: {} ", recipientId, requestedArtifactId, contractId, key, queryInput);
+
+        final var builder = getRequestBuilder();
+        final var urlBuilder = new HttpUrl.Builder()
+                .scheme(protocol)
+                .host(dataSpaceConnectorHost)
+                .port(dataSpaceConnectorPort)
+                .addPathSegments("admin/api/request/artifact")
+                .addQueryParameter("recipient", recipientId)
+                .addQueryParameter("requestedArtifact", requestedArtifactId)
+                .addQueryParameter("key", key);
+
+        if (contractId != null && !contractId.isBlank()) {
+            urlBuilder.addQueryParameter("transferContract", contractId);
+        }
+
+        final var url = urlBuilder.build();
+        builder.url(url);
+        builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername, dataSpaceConnectorApiPassword));
+
+        if (queryInput != null) {
+            String query = MAPPER.writeValueAsString(queryInput);
+            builder.post(RequestBody.create(query, okhttp3.MediaType.parse("application/json")));
+        } else {
+            builder.post(RequestBody.create(new byte[0], null));
+        }
+
+        final var request = builder.build();
+        final var response = DispatchRequest.sendToDataspaceConnector(request);
+
+        if (!response.isSuccessful()) {
+            log.warn("---- [DataspaceConnectorClient requestData] Could not request data");
+        }
         return Objects.requireNonNull(response.body()).string();
     }
 

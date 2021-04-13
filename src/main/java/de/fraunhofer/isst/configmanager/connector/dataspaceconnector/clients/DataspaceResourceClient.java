@@ -71,7 +71,7 @@ public class DataspaceResourceClient extends AbstractDataspaceConnectorClient im
     }
 
     @Override
-    public Resource getRequestedResource(final String accessURL, final String resourceId) throws IOException {
+    public String getRequestedResource(final String accessURL, final String resourceId) throws IOException {
         final var builder = getRequestBuilder();
         final var urlBuilder = new HttpUrl.Builder()
                 .scheme(protocol)
@@ -93,19 +93,7 @@ public class DataspaceResourceClient extends AbstractDataspaceConnectorClient im
             log.warn(String.format("---- [DataspaceResourceClient getRequestedResource] Could not get BaseConnector from %s!", dataSpaceConnectorHost));
         }
 
-        final var body = Objects.requireNonNull(response.body()).string();
-        final var splitBody = body.split("\n", 2);
-        final var resource = splitBody[1].substring(10);
-
-        Resource deserializedResource = null;
-        try {
-            deserializedResource = SERIALIZER.deserialize(resource, Resource.class);
-        } catch (IOException e) {
-            log.error("---- [DataspaceResourceClient getRequestedResource] SERIALIZER.deserialize threw IOException");
-            log.error(e.getMessage(), e);
-        }
-
-        return deserializedResource;
+        return Objects.requireNonNull(response.body().string());
     }
 
     @Override

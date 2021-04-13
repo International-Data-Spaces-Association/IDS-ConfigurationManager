@@ -3,6 +3,7 @@ package de.fraunhofer.isst.configmanager.api.controller;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.api.ConnectorRequestApi;
 import de.fraunhofer.isst.configmanager.api.service.ConnectorRequestService;
+import de.fraunhofer.isst.configmanager.model.config.QueryInput;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.UUID;
 
 /**
  * The api class implements the ConnectorRequestApi and offers the possibilities to manage
@@ -48,17 +50,12 @@ public class ConnectorRequestController implements ConnectorRequestApi {
         ResponseEntity<String> response;
 
         if (requestedResourceId != null) {
-            final var resource = connectorRequestService.requestResource(recipientId, requestedResourceId);
-
-            if (resource != null) {
-                try {
-                    response = ResponseEntity.ok(serializer.serialize(resource));
-                } catch (IOException e) {
-                    log.error(e.getMessage());
-                    response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-                }
+            // JSON object contains key and the resource itself
+            final var validKeyAndResource = connectorRequestService.requestResource(recipientId, requestedResourceId);
+            if (validKeyAndResource != null) {
+                return ResponseEntity.ok(validKeyAndResource);
             } else {
-                response = ResponseEntity.badRequest().body("Could not get resource from the requested connector");
+                response = ResponseEntity.badRequest().body("Could not get key and resource from the requested connector");
             }
         } else {
             final var resources = connectorRequestService.requestResourcesFromConnector(recipientId);
@@ -77,11 +74,18 @@ public class ConnectorRequestController implements ConnectorRequestApi {
         return response;
     }
 
+    /**
+     * @param recipientId         id of the recipient
+     * @param requestedArtifactId id of the requested artifact
+     * @param contractOffer       the contract offer
+     * @return contract agreement id
+     */
     @Override
     public ResponseEntity<String> requestContract(final URI recipientId,
                                                   final URI requestedArtifactId,
                                                   final String contractOffer) {
-        log.info(">> POST /request/contract recipientId: " + recipientId + " requestedArtifactId: " + requestedArtifactId + " contractOffer: " + contractOffer);
+        log.info(">> POST /request/contract recipientId: " + recipientId + " requestedArtifactId: "
+                + requestedArtifactId + " contractOffer: " + contractOffer);
         ResponseEntity<String> response;
 
         final var contractAgreementId = connectorRequestService
@@ -101,6 +105,51 @@ public class ConnectorRequestController implements ConnectorRequestApi {
             response = ResponseEntity.badRequest().body("Could not get agreement id for the contract");
         }
 
+        return response;
+    }
+
+    /**
+     * @param recipientId         the target connector uri
+     * @param requestedArtifactId the requested artifact uri
+     * @param contractId          the URI of the contract agreement
+     * @param key                 a {@link java.util.UUID} object
+     * @param queryInput          the query to fetch data from backend systems
+     * @return requested data from an external connector
+     */
+    @Override
+    public ResponseEntity<String> requestData(final URI recipientId,
+                                              final URI requestedArtifactId,
+                                              final URI contractId,
+                                              final UUID key,
+                                              final QueryInput queryInput) {
+
+        log.info(">> POST /request/artifact with recipient: {}, artifact: {}," +
+                " contract: {}, key: {} and queryInput: {} ", recipientId, requestedArtifactId, contractId, key, queryInput);
+
+        ResponseEntity<String> response = null;
+
+        final var requestDataResponse = connectorRequestService.requestData(recipientId, requestedArtifactId,
+                contractId, key, queryInput);
+
+        if (requestDataResponse != null) {
+            final var jsonObject = new JSONObject();
+            jsonObject.put("message", requestDataResponse);
+            if (requestDataResponse.contains("Please check your DAT token.")) {
+                response = ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(jsonObject.toJSONString());
+            } else if (requestDataResponse.contains("Your key is not valid.")) {
+                response = ResponseEntity.status(HttpStatus.FORBIDDEN).body(jsonObject.toJSONString());
+            } else if (requestDataResponse.contains("Invalid input for headers or params.")
+                    || requestDataResponse.contains("Could not parse query input from request body.")) {
+                response = ResponseEntity.badRequest().body(jsonObject.toJSONString());
+            } else if (requestDataResponse.contains("Failed to build the ids message.")
+                    || requestDataResponse.contains("Received invalid ids response message.")
+                    || requestDataResponse.contains("Failed to send the ids message.")
+                    || requestDataResponse.contains("Failed to read the ids response message.")
+                    || requestDataResponse.contains("Could not update metadata.")
+                    || requestDataResponse.contains("Failed to save data to database.")) {
+                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(jsonObject.toJSONString());
+            } else response = ResponseEntity.ok(jsonObject.toJSONString());
+        }
         return response;
     }
 }
