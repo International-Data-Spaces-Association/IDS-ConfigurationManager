@@ -19,6 +19,7 @@ public interface EndpointApi {
             @ApiResponse(responseCode = "200", description = "Created a generic endpoint"),
             @ApiResponse(responseCode = "400", description = "Can not create the generic endpoint")})
     ResponseEntity<String> createGenericEndpoint(@RequestParam(value = "accessURL") URI accessURL,
+                                                 @RequestParam(value = "sourceType") String sourceType,
                                                  @RequestParam(value = "username", required = false) String username,
                                                  @RequestParam(value = "password", required = false) String password);
 
