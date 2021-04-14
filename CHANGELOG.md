@@ -25,7 +25,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Updated recursion methods in ResourceService that caused problems
 
 ### Maintenance
-- Major Change: Remove 20 unused APIs (unused by ConfigManager-UI project)
+- Major Change: Remove 20 unused APIs (= 1.150 lines of code) (unused by ConfigManager-UI project)
 
 ## [6.0.0] - 2021-03-26
 
