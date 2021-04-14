@@ -1,6 +1,10 @@
 package de.fraunhofer.isst.configmanager.api.service.resources;
 
-import de.fraunhofer.iais.eis.*;
+import de.fraunhofer.iais.eis.Language;
+import de.fraunhofer.iais.eis.Resource;
+import de.fraunhofer.iais.eis.ResourceBuilder;
+import de.fraunhofer.iais.eis.ResourceImpl;
+import de.fraunhofer.iais.eis.RouteStep;
 import de.fraunhofer.iais.eis.util.TypedLiteral;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.api.service.ConfigModelService;

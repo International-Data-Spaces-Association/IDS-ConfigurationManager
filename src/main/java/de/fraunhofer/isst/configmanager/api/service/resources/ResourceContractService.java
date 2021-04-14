@@ -64,7 +64,7 @@ public class ResourceContractService extends AbstractResourceService {
                                                  final ContractOffer contractOffer) {
         // Update resource representation in app route
         if (configModelService.getConfigModel().getAppRoute() == null) {
-            log.info("---- [ResourceService updateResourceContractInAppRoute] Could not find any app route");
+            log.info("---- [ResourceContractService updateResourceContractInAppRoute] Could not find any app route");
         } else {
             final ArrayList<RouteStep> emptyList = new ArrayList<>();
             for (final var appRoute : configModelService.getConfigModel().getAppRoute()) {
@@ -77,8 +77,7 @@ public class ResourceContractService extends AbstractResourceService {
                         if (resourceId.equals(resource.getId())) {
                             final var resourceImpl = (ResourceImpl) resource;
                             resourceImpl.setContractOffer(Util.asList(contractOffer));
-                            log.info("---- [ResourceService updateResourceContractInSubroutes] Updated" +
-                                    " resource contract in the app route");
+                            log.info("---- [ResourceContractService updateResourceContractInSubroutes] Updated resource contract in the app route");
                             break;
                         }
                     }
@@ -113,8 +112,7 @@ public class ResourceContractService extends AbstractResourceService {
                 if (resourceId.equals(resource.getId())) {
                     final var resourceImpl = (ResourceImpl) resource;
                     resourceImpl.setContractOffer(Util.asList(contractOffer));
-                    log.info("---- [ResourceService updateResourceContractInSubroutes] Updated resource" +
-                            " contract in the subroute");
+                    log.info("---- [ResourceContractService updateResourceContractInSubroutes] Updated resource contract in the subroute");
                     break;
                 }
             }
@@ -200,5 +198,4 @@ public class ResourceContractService extends AbstractResourceService {
         }
         return contractOffer;
     }
-
 }
