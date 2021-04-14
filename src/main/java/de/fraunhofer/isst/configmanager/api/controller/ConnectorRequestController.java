@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -46,7 +47,7 @@ public class ConnectorRequestController implements ConnectorRequestApi {
      */
     @Override
     public ResponseEntity<String> requestMetadata(final URI recipientId, final URI requestedResourceId) {
-        log.info(">> POST /request/description recipientId: " + recipientId + " requestedResourceId: " + requestedResourceId);
+        log.info(">> POST /request/description recipientId: {} and requestedResource: {}", recipientId, requestedResourceId);
         ResponseEntity<String> response;
 
         if (requestedResourceId != null) {
@@ -84,8 +85,10 @@ public class ConnectorRequestController implements ConnectorRequestApi {
     public ResponseEntity<String> requestContract(final URI recipientId,
                                                   final URI requestedArtifactId,
                                                   final String contractOffer) {
-        log.info(">> POST /request/contract recipientId: " + recipientId + " requestedArtifactId: "
-                + requestedArtifactId + " contractOffer: " + contractOffer);
+        log.info(">> POST /request/contract with recipient: {}, artifact: {}," +
+                " contract: {}", recipientId, requestedArtifactId, contractOffer);
+
+
         ResponseEntity<String> response;
 
         final var contractAgreementId = connectorRequestService
@@ -127,28 +130,23 @@ public class ConnectorRequestController implements ConnectorRequestApi {
                 " contract: {}, key: {} and queryInput: {} ", recipientId, requestedArtifactId, contractId, key, queryInput);
 
         ResponseEntity<String> response = null;
-
-        final var requestDataResponse = connectorRequestService.requestData(recipientId, requestedArtifactId,
-                contractId, key, queryInput);
-
-        if (requestDataResponse != null) {
+        try {
+            final var requestDataResponse = connectorRequestService.requestData(recipientId, requestedArtifactId,
+                    contractId, key, queryInput);
+            final var clientResponseString = Objects.requireNonNull(requestDataResponse.body()).string();
             final var jsonObject = new JSONObject();
-            jsonObject.put("message", requestDataResponse);
-            if (requestDataResponse.contains("Please check your DAT token.")) {
-                response = ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(jsonObject.toJSONString());
-            } else if (requestDataResponse.contains("Your key is not valid.")) {
-                response = ResponseEntity.status(HttpStatus.FORBIDDEN).body(jsonObject.toJSONString());
-            } else if (requestDataResponse.contains("Invalid input for headers or params.")
-                    || requestDataResponse.contains("Could not parse query input from request body.")) {
-                response = ResponseEntity.badRequest().body(jsonObject.toJSONString());
-            } else if (requestDataResponse.contains("Failed to build the ids message.")
-                    || requestDataResponse.contains("Received invalid ids response message.")
-                    || requestDataResponse.contains("Failed to send the ids message.")
-                    || requestDataResponse.contains("Failed to read the ids response message.")
-                    || requestDataResponse.contains("Could not update metadata.")
-                    || requestDataResponse.contains("Failed to save data to database.")) {
-                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(jsonObject.toJSONString());
-            } else response = ResponseEntity.ok(jsonObject.toJSONString());
+
+            if (requestDataResponse.isSuccessful() && !clientResponseString.contains("REJECTION")) {
+                final var splitBody = clientResponseString.split("\n", 2);
+                jsonObject.put("message", "Saved at: " + key);
+                jsonObject.put("data", splitBody[1].substring(10));
+                response = ResponseEntity.ok(jsonObject.toJSONString());
+            } else {
+                jsonObject.put("message", clientResponseString);
+                response = ResponseEntity.badRequest().body(clientResponseString);
+            }
+        } catch (IOException e) {
+            log.error(e.getMessage());
         }
         return response;
     }

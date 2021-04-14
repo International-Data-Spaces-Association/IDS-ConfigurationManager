@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.Credentials;
 import okhttp3.HttpUrl;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Service;
 
@@ -204,8 +205,8 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
     }
 
     @Override
-    public String requestData(String recipientId, String requestedArtifactId, String contractId,
-                              String key, QueryInput queryInput) throws IOException {
+    public Response requestData(String recipientId, String requestedArtifactId, String contractId,
+                                String key, QueryInput queryInput) throws IOException {
 
         log.info("---- [DataspaceConnectorClient requestData] Request Data with recipient: {}, artifact: {}," +
                 " contract: {}, key: {} and queryInput: {} ", recipientId, requestedArtifactId, contractId, key, queryInput);
@@ -241,7 +242,7 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
         if (!response.isSuccessful()) {
             log.warn("---- [DataspaceConnectorClient requestData] Could not request data");
         }
-        return Objects.requireNonNull(response.body()).string();
+        return response;
     }
 
     @Override

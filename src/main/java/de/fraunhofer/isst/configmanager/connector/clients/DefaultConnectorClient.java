@@ -3,6 +3,7 @@ package de.fraunhofer.isst.configmanager.connector.clients;
 import de.fraunhofer.iais.eis.BaseConnector;
 import de.fraunhofer.iais.eis.ConfigurationModel;
 import de.fraunhofer.isst.configmanager.model.config.QueryInput;
+import okhttp3.Response;
 
 import java.io.IOException;
 
@@ -87,6 +88,6 @@ public interface DefaultConnectorClient {
      * @param queryInput          the query input to fetch data from the backend systems
      * @return requested data or error message
      */
-    String requestData(String recipientId, String requestedArtifactId, String contractId,
-                       String key, QueryInput queryInput) throws IOException;
+    Response requestData(String recipientId, String requestedArtifactId, String contractId,
+                         String key, QueryInput queryInput) throws IOException;
 }

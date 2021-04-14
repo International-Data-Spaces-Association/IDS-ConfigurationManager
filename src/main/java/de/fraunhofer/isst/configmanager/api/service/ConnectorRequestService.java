@@ -5,6 +5,7 @@ import de.fraunhofer.isst.configmanager.connector.clients.DefaultConnectorClient
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultResourceClient;
 import de.fraunhofer.isst.configmanager.model.config.QueryInput;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -116,13 +117,13 @@ public class ConnectorRequestService {
      * @param contractId          The URI of the contract agreement
      * @param key                 a {@link java.util.UUID} object
      * @param queryInput          the query to fetch data from backend systems
-     * @return
+     * @return response of data request
      */
-    public String requestData(final URI recipientId,
-                              final URI requestedArtifactId,
-                              final URI contractId,
-                              final UUID key,
-                              final QueryInput queryInput) {
+    public Response requestData(final URI recipientId,
+                                final URI requestedArtifactId,
+                                final URI contractId,
+                                final UUID key,
+                                final QueryInput queryInput) {
 
         try {
             return connectorClient.requestData(recipientId.toString(), requestedArtifactId.toString(), contractId.toString(),
