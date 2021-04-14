@@ -55,31 +55,4 @@ public class AppController implements AppApi {
 
         return response;
     }
-
-    /**
-     * This method returns a specific app.
-     *
-     * @param id id of the app
-     * @return a suitable http response depending on success
-     */
-    @Override
-    public ResponseEntity<String> getApp(final String id) {
-        log.info(">> GET /app id: " + id);
-        ResponseEntity<String> response;
-
-        final var customApp = appService.getApp(id);
-
-        if (customApp != null) {
-            try {
-                response = ResponseEntity.ok(objectMapper.writeValueAsString(customApp));
-            } catch (JsonProcessingException e) {
-                log.error(e.getMessage(), e);
-                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-            }
-        } else {
-            response = ResponseEntity.badRequest().body("Can not find the custom app");
-        }
-
-        return response;
-    }
 }

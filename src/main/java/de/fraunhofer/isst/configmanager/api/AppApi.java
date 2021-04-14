@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 public interface AppApi {
     @GetMapping(value = "/apps", produces = "application/ld+json")
@@ -15,12 +14,4 @@ public interface AppApi {
             @ApiResponse(responseCode = "400", description = "Could not find customs apps"),
             @ApiResponse(responseCode = "500", description = "Internal server error")})
     ResponseEntity<String> getApps();
-
-    @GetMapping(value = "/app", produces = "application/ld+json")
-    @Operation(summary = "Return an app")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Returns a custom app"),
-            @ApiResponse(responseCode = "400", description = "Can not find the custom app"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")})
-    ResponseEntity<String> getApp(@RequestParam(value = "id") String id);
 }

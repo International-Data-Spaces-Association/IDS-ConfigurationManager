@@ -115,33 +115,6 @@ public class BrokerController implements BrokerApi {
     }
 
     /**
-     * This method returns a broker with the given id.
-     *
-     * @param brokerId id of the broker
-     * @return a suitable http response depending on success
-     */
-    @Override
-    public ResponseEntity<String> getBroker(final URI brokerId) {
-        log.info(">> GET /broker brokerId: " + brokerId);
-        ResponseEntity<String> response;
-
-        final var broker = brokerService.getById(brokerId);
-
-        if (broker != null) {
-            try {
-                response = ResponseEntity.ok(objectMapper.writeValueAsString(broker));
-            } catch (IOException e) {
-                log.error(e.getMessage(), e);
-                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-            }
-        } else {
-            response = ResponseEntity.badRequest().body("Could not get the specific broker");
-        }
-
-        return response;
-    }
-
-    /**
      * This method returns a list of all brokers as string.
      *
      * @return a suitable http response depending on success
@@ -158,27 +131,6 @@ public class BrokerController implements BrokerApi {
         } catch (IOException e) {
             log.error(e.getMessage(), e);
             response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        return response;
-    }
-
-    /**
-     * This method returns a list of broker uri's.
-     *
-     * @return a suitable http response depending on success
-     */
-    @Override
-    public ResponseEntity<String> getAllBrokerUris() {
-        log.info(">> GET /broker/list");
-        ResponseEntity<String> response;
-
-        final var brokerUris = brokerService.getAllBrokerUris();
-
-        if (brokerUris != null) {
-            response = ResponseEntity.ok(brokerUris.toString());
-        } else {
-            response = ResponseEntity.badRequest().body("Could not return the uri list of brokers");
         }
 
         return response;
