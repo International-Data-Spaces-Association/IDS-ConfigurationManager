@@ -73,9 +73,4 @@ public class AppService {
     public List<CustomApp> getApps() {
         return customAppRepository.findAll();
     }
-
-    public CustomApp getApp(final String id) {
-        final var appId = Long.valueOf(id);
-        return customAppRepository.findById(appId).orElse(null);
-    }
 }

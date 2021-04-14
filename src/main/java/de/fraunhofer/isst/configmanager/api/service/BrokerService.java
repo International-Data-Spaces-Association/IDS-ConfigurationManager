@@ -88,21 +88,6 @@ public class BrokerService {
     }
 
     /**
-     * The method returns a list of all broker uri's.
-     *
-     * @return list of all broker uri's
-     */
-    public List<URI> getAllBrokerUris() {
-        final List<URI> brokerUris = new ArrayList<>();
-        for (final var customBroker : customBrokerRepository.findAll()) {
-            if (customBroker != null) {
-                brokerUris.add(customBroker.getBrokerUri());
-            }
-        }
-        return brokerUris;
-    }
-
-    /**
      * The method deletes the broker using the broker id.
      *
      * @param id of the broker which is deleted
@@ -148,25 +133,6 @@ public class BrokerService {
         final var customBroker = getById(brokerId);
         if (customBroker != null) {
             customBroker.setBrokerStatus(brokerStatus);
-            customBrokerRepository.save(customBroker);
-        }
-    }
-
-    /**
-     * This method set a resource at a broker.
-     *
-     * @param brokerId   id of the broker
-     * @param resourceId id of the resource
-     */
-    public void setResourceAtBroker(final URI brokerId, final URI resourceId) {
-        final var customBroker = getById(brokerId);
-        if (customBroker != null) {
-            if (customBroker.getRegisteredResources() == null) {
-                customBroker.setRegisteredResources(new ArrayList<>());
-            }
-            final var registeredResources = customBroker.getRegisteredResources();
-            registeredResources.add(resourceId.toString());
-            customBroker.setRegisteredResources(registeredResources);
             customBrokerRepository.save(customBroker);
         }
     }

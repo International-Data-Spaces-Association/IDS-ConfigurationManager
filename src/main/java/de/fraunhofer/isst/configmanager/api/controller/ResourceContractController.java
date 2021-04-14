@@ -47,32 +47,6 @@ public class ResourceContractController implements ResourceContractApi {
     }
 
     /**
-     * This method returns the contract from a specific resource.
-     *
-     * @param resourceId id of the resource
-     * @return a suitable http response depending on success
-     */
-    @Override
-    public ResponseEntity<String> getResourceContract(final URI resourceId) {
-        log.info(">> GET /resource/contract resourceId: " + resourceId);
-        ResponseEntity<String> response;
-
-        final var contractOffer = resourceContractService.getResourceContract(resourceId);
-        if (contractOffer != null) {
-            try {
-                response = ResponseEntity.ok(serializer.serialize(contractOffer));
-            } catch (IOException e) {
-                log.error(e.getMessage(), e);
-                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-            }
-        } else {
-            response = ResponseEntity.badRequest().body("Could not get the resource contract");
-        }
-
-        return response;
-    }
-
-    /**
      * This method updates the contract of a resource.
      *
      * @param resourceId   id of the resource

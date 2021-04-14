@@ -1,8 +1,16 @@
 package de.fraunhofer.isst.configmanager.api.service;
 
-import de.fraunhofer.iais.eis.*;
+import de.fraunhofer.iais.eis.AppRoute;
+import de.fraunhofer.iais.eis.AppRouteBuilder;
+import de.fraunhofer.iais.eis.AppRouteImpl;
+import de.fraunhofer.iais.eis.BaseConnectorImpl;
+import de.fraunhofer.iais.eis.ConfigurationModelImpl;
+import de.fraunhofer.iais.eis.ConnectorEndpointBuilder;
+import de.fraunhofer.iais.eis.Endpoint;
+import de.fraunhofer.iais.eis.ResourceImpl;
+import de.fraunhofer.iais.eis.RouteStep;
+import de.fraunhofer.iais.eis.RouteStepBuilder;
 import de.fraunhofer.iais.eis.util.Util;
-import de.fraunhofer.isst.configmanager.api.service.resources.ResourceService;
 import de.fraunhofer.isst.configmanager.model.configlists.CustomAppRepository;
 import de.fraunhofer.isst.configmanager.model.configlists.EndpointInformationRepository;
 import de.fraunhofer.isst.configmanager.model.configlists.RouteDeployMethodRepository;
@@ -89,45 +97,6 @@ public class AppRouteService {
     }
 
     /**
-     * This method updates the app route.
-     *
-     * @param routeId     if of the app route
-     * @param description desciption of the app route
-     * @return true, if app route is updated
-     */
-    public boolean updateAppRoute(final URI routeId, final String description) {
-        boolean updated = false;
-
-        final var appRouteImpl = getAppRouteImpl(routeId);
-
-        if (appRouteImpl != null) {
-            appRouteImpl.setAppRouteBroker(null);
-            appRouteImpl.setAppRouteStart(null);
-            appRouteImpl.setAppRouteEnd(null);
-            appRouteImpl.setAppRouteOutput(null);
-            appRouteImpl.setHasSubRoute(null);
-            appRouteImpl.setRouteConfiguration(null);
-            appRouteImpl.setRouteDescription(description);
-
-            final var routeDeployMethod = routeDeployMethodRepository.findAll();
-
-            String deployMethod;
-
-            if (routeDeployMethod.isEmpty()) {
-                deployMethod = "custom";
-            } else {
-                deployMethod = routeDeployMethod.get(0).getDeployMethod().toString();
-            }
-
-            appRouteImpl.setRouteDeployMethod(deployMethod);
-            configModelService.saveState();
-            updated = true;
-        }
-
-        return updated;
-    }
-
-    /**
      * This method deletes an app route.
      *
      * @param routeId id of the app route
@@ -168,24 +137,6 @@ public class AppRouteService {
     }
 
     /**
-     * This method returns the specific soubroute.
-     *
-     * @param routeId     id of the app route
-     * @param routeStepId id of the subroute
-     * @return subroute
-     */
-    public RouteStep getSubroute(final URI routeId, final URI routeStepId) {
-        RouteStepImpl routeStep = null;
-        final var appRouteImpl = getAppRouteImpl(routeId);
-
-        if (appRouteImpl != null) {
-            routeStep = getSubrouteImpl(routeStepId, appRouteImpl);
-        }
-
-        return routeStep;
-    }
-
-    /**
      * This method returns a specific app route with the given parameter.
      *
      * @param routeId id of the route
@@ -194,18 +145,6 @@ public class AppRouteService {
     private AppRouteImpl getAppRouteImpl(final URI routeId) {
         return (AppRouteImpl) configModelService.getConfigModel().getAppRoute()
                 .stream().filter(appRoute -> appRoute.getId().equals(routeId)).findAny().orElse(null);
-    }
-
-    /**
-     * This method returns a specific sub route with the given parameters.
-     *
-     * @param routeStepId  id of the subroute
-     * @param appRouteImpl app route implementation
-     * @return sub route implementation
-     */
-    private RouteStepImpl getSubrouteImpl(final URI routeStepId, final AppRouteImpl appRouteImpl) {
-        return (RouteStepImpl) appRouteImpl.getHasSubRoute().stream()
-                .filter(routeStep -> routeStep.getId().equals(routeStepId)).findAny().orElse(null);
     }
 
     public RouteStep createAppRouteStep(final URI routeId, final URI startId,
@@ -355,32 +294,5 @@ public class AppRouteService {
         }
 
         return returnEndpointInfo;
-    }
-
-    /**
-     * @return all endpoint information
-     */
-    public List<EndpointInformation> getAllEndpointInfo() {
-        return endpointInformationRepository.findAll();
-    }
-
-    /**
-     * This method deletes a route step with the given parameters.
-     *
-     * @param routeId     id of the app route
-     * @param routeStepId id of the route step
-     * @return true, if route step is deleted
-     */
-    public boolean deleteAppRouteStep(final URI routeId, final URI routeStepId) {
-        boolean deleted = false;
-        final var appRouteImpl = getAppRouteImpl(routeId);
-        if (appRouteImpl != null) {
-            deleted =
-                    appRouteImpl.getHasSubRoute().removeIf(routeStep -> routeStep.getId().equals(routeStepId));
-            if (deleted) {
-                configModelService.saveState();
-            }
-        }
-        return deleted;
     }
 }

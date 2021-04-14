@@ -1,6 +1,5 @@
 package de.fraunhofer.isst.configmanager.api.controller;
 
-import de.fraunhofer.iais.eis.BaseConnector;
 import de.fraunhofer.iais.eis.ConfigurationModelImpl;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.iais.eis.util.Util;
@@ -10,7 +9,6 @@ import de.fraunhofer.isst.configmanager.api.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.api.service.ConnectorService;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultBrokerClient;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultConnectorClient;
-import de.fraunhofer.isst.configmanager.util.Utility;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -115,67 +113,6 @@ public class ConnectorController implements ConnectorApi {
     }
 
     /**
-     * This method returns as response the base connector in JSON format.
-     *
-     * @return as response the connector in JSON format
-     */
-    @Override
-    public ResponseEntity<String> getConnectorJson() {
-        log.info(">> GET /connector/json");
-
-        final var baseConnector = (BaseConnector) configModelService.getConfigModel().getConnectorDescription();
-
-        final var baseConnectorJson = new JSONObject();
-        baseConnectorJson.put("title", baseConnector.getTitle().get(0).getValue());
-        baseConnectorJson.put("description", baseConnector.getDescription().get(0).getValue());
-        baseConnectorJson.put("endpointAccessURL", baseConnector.getHasDefaultEndpoint().getAccessURL().toString());
-        baseConnectorJson.put("version", baseConnector.getVersion());
-        baseConnectorJson.put("curator", baseConnector.getCurator().toString());
-        baseConnectorJson.put("maintainer", baseConnector.getMaintainer().toString());
-        baseConnectorJson.put("inboundModelVersion", baseConnector.getInboundModelVersion().get(0));
-        baseConnectorJson.put("outboundModelVersion", baseConnector.getOutboundModelVersion());
-        baseConnectorJson.put("securityProfile", baseConnector.getSecurityProfile());
-
-        return ResponseEntity.ok(baseConnectorJson.toJSONString());
-    }
-
-    /**
-     * This method creates a connector description for the configuration model with the given
-     * parameters.
-     *
-     * @param title                title of the connector
-     * @param description          description of the connector
-     * @param endpointAccessURL    access url of the connector endpoint
-     * @param version              version of the connector
-     * @param curator              curator of the connector
-     * @param maintainer           maintainer of the connector
-     * @param inboundModelVersion  the inbound model version of the connector
-     * @param outboundModelVersion the outbound model version of the connector
-     * @return http response message with the id of the created connector
-     */
-    @Override
-    public ResponseEntity<String> createConnector(final String title, final String description,
-                                                  final String endpointAccessURL,
-                                                  final String version, final String curator,
-                                                  final String maintainer,
-                                                  final String inboundModelVersion,
-                                                  final String outboundModelVersion) {
-        log.info(">> POST /connector");
-
-        final var baseConnector = connectorService.createConnector(title, description,
-                endpointAccessURL, version,
-                curator, maintainer, inboundModelVersion,
-                outboundModelVersion);
-
-        final var configModelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
-        configModelImpl.setConnectorDescription(baseConnector);
-        configModelService.saveState();
-
-        return ResponseEntity.ok(Utility
-                .jsonMessage("message", "Successfully created a new connector with the id: " + baseConnector.getId().toString()));
-    }
-
-    /**
      * This method updates the connector description from the configuration model with the given
      * parameters.
      *
@@ -249,29 +186,6 @@ public class ConnectorController implements ConnectorApi {
             }
         } else {
             response = ResponseEntity.badRequest().body("Could not update the connector");
-        }
-
-        return response;
-    }
-
-    /**
-     * This method deletes a connector from the configuration model.
-     *
-     * @return a suitable http response depending on success
-     */
-    @Override
-    public ResponseEntity<String> deleteConnector() {
-        log.info(">> DELETE /connector");
-        ResponseEntity<String> response;
-
-        if (configModelService.getConfigModel().getConnectorDescription() != null) {
-            final var configModelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
-            configModelImpl.setConnectorDescription(null);
-            configModelService.saveState();
-
-            response = ResponseEntity.ok(Utility.jsonMessage("message", "Successfully deleted the connector"));
-        } else {
-            response = ResponseEntity.badRequest().body("Could not delete the connector");
         }
 
         return response;

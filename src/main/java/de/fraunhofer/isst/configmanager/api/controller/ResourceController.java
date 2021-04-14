@@ -103,36 +103,6 @@ public class ResourceController implements ResourceApi {
     }
 
     /**
-     * This method returns a specific resource in JSON format.
-     *
-     * @param resourceId if of the resource
-     * @return a suitable http response depending on success
-     */
-    @Override
-    public ResponseEntity<String> getResourceInJson(final URI resourceId) {
-        log.info(">> GET /resource/json resourceId: " + resourceId);
-        ResponseEntity<String> response;
-
-        if (ValidateApiInput.notValid(resourceId.toString())) {
-            response = ResponseEntity.badRequest().body("All validated parameter have undefined as value!");
-        } else {
-            final var resource = resourceService.getResource(resourceId);
-
-            final var resourceJson = new JSONObject();
-            resourceJson.put("title", resource.getTitle().get(0).getValue());
-            resourceJson.put("description", resource.getDescription().get(0).getValue());
-            resourceJson.put("keyword", resource.getKeyword());
-            resourceJson.put("version", resource.getVersion());
-            resourceJson.put("standardlicense", resource.getStandardLicense().toString());
-            resourceJson.put("publisher", resource.getPublisher().toString());
-
-            response = ResponseEntity.ok(resourceJson.toJSONString());
-        }
-
-        return response;
-    }
-
-    /**
      * This method deletes the resource from the connector and the app route with the given
      * parameter.
      * If both are deleted the dataspace connector is informed about the change.

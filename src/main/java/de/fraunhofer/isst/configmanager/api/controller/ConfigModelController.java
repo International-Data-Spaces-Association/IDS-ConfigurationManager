@@ -131,27 +131,4 @@ public class ConfigModelController implements ConfigModelApi {
 
         return response;
     }
-
-    /**
-     * This method returns the current configuration model as JSON string.
-     *
-     * @return a suitable http response depending on success
-     */
-    @Override
-    public ResponseEntity<String> getConfigModelJson() {
-        log.info(">> GET /configmodel/json");
-
-        final var configurationModel = configModelService.getConfigModel();
-
-        final var configModelJson = new JSONObject();
-        configModelJson.put("loglevel", configurationModel.getConfigurationModelLogLevel());
-        configModelJson.put("connectorStatus", configurationModel.getConnectorStatus());
-        configModelJson.put("connectorDeployMode", configurationModel.getConnectorDeployMode());
-        configModelJson.put("trustStore", configurationModel.getTrustStore().toString());
-        configModelJson.put("trustStorePassword", configurationModel.getTrustStorePassword());
-        configModelJson.put("keyStore", configurationModel.getKeyStore().toString());
-        configModelJson.put("keyStorePassword", configurationModel.getKeyStorePassword());
-
-        return ResponseEntity.ok(configModelJson.toJSONString());
-    }
 }

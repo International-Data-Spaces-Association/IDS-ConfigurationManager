@@ -1,6 +1,10 @@
 package de.fraunhofer.isst.configmanager.api.service;
 
-import de.fraunhofer.iais.eis.*;
+import de.fraunhofer.iais.eis.BaseConnectorBuilder;
+import de.fraunhofer.iais.eis.BaseConnectorImpl;
+import de.fraunhofer.iais.eis.ConfigurationModelImpl;
+import de.fraunhofer.iais.eis.ConnectorEndpointBuilder;
+import de.fraunhofer.iais.eis.SecurityProfile;
 import de.fraunhofer.iais.eis.util.TypedLiteral;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.model.configlists.ConfigModelRepository;
@@ -49,38 +53,6 @@ public class ConnectorService {
 
             configurationModel.setConnectorDescription(connector);
         }
-    }
-
-    /**
-     * @param title                  the title of the connector
-     * @param description            the description of the connector
-     * @param endpointAccessURL      the access url to the connector
-     * @param version                the version of the connector
-     * @param curator                the curator of the connector
-     * @param maintainer             the maintainer of the connector
-     * @param inboundedModelVersion  the inbounded model version of the connector
-     * @param outboundedModelVersion the outbounded model version of the connector
-     * @return base connector
-     */
-    public BaseConnector createConnector(final String title,
-                                         final String description,
-                                         final String endpointAccessURL,
-                                         final String version,
-                                         final String curator,
-                                         final String maintainer,
-                                         final String inboundedModelVersion,
-                                         final String outboundedModelVersion) {
-
-        return new BaseConnectorBuilder()
-                ._title_(Util.asList(new TypedLiteral(title)))
-                ._description_(Util.asList(new TypedLiteral(description)))
-                ._hasEndpoint_(Util.asList(new ConnectorEndpointBuilder()._accessURL_(URI.create(endpointAccessURL)).build()))
-                ._version_(version)
-                ._curator_(URI.create(curator))
-                ._maintainer_(URI.create(maintainer))
-                ._inboundModelVersion_(Util.asList(inboundedModelVersion))
-                ._outboundModelVersion_(outboundedModelVersion)
-                ._securityProfile_(SecurityProfile.BASE_SECURITY_PROFILE).build();
     }
 
     /**

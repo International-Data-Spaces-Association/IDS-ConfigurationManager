@@ -19,14 +19,6 @@ public interface AppRouteApi {
             @ApiResponse(responseCode = "400", description = "Can not create an app route")})
     ResponseEntity<String> createAppRoute(@RequestParam("description") String description);
 
-    @PutMapping(value = "/approute", produces = "application/ld+json")
-    @Operation(summary = "Updates the given app route")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Created a new app route"),
-            @ApiResponse(responseCode = "400", description = "Can not update the app route")})
-    ResponseEntity<String> updateAppRoute(@RequestParam("routeId") URI routeId,
-                                          @RequestParam(value = "description", required = false) String description);
-
     @DeleteMapping(value = "/approute", produces = "application/ld+json")
     @Operation(summary = "Deletes the given app route")
     @ApiResponses({
@@ -42,23 +34,6 @@ public interface AppRouteApi {
             @ApiResponse(responseCode = "500", description = "Internal Server error")})
     ResponseEntity<String> getAppRoute(@RequestParam("routeId") URI routeId);
 
-    @GetMapping(value = "/approutes", produces = "application/ld+json")
-    @Operation(summary = "Returns all app routes")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Returns the list of the app routes"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")})
-    ResponseEntity<String> getAppRoutes();
-
-    // Interfaces for managing route steps
-    @GetMapping(value = "/approute/step", produces = "application/ld+json")
-    @Operation(summary = "Returns the specific route step")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Successfully returned the specific route step"),
-            @ApiResponse(responseCode = "400", description = "Can not find the route step"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")})
-    ResponseEntity<String> getAppRouteStep(@RequestParam(value = "routeId") URI routeId,
-                                           @RequestParam(value = "routeStepId") URI routeStepId);
-
     @PostMapping(value = "/approute/step", produces = "application/ld+json")
     @Operation(summary = "Creates a new subroute for the app route")
     @ApiResponses({
@@ -73,14 +48,6 @@ public interface AppRouteApi {
                                               @RequestParam(value = "endCoordinateY") int endCoordinateY,
                                               @RequestParam(value = "resourceId", required = false) URI resourceId);
 
-    @DeleteMapping(value = "/approute/step", produces = "application/ld+json")
-    @Operation(summary = "Deletes the specific route step")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Successfully deleted the specific route step"),
-            @ApiResponse(responseCode = "400", description = "Can not delete the route step")})
-    ResponseEntity<String> deleteAppRouteStep(@RequestParam(value = "routeId") URI routeId,
-                                              @RequestParam(value = "routeStepId") URI routeStepId);
-
     @GetMapping(value = "/approute/step/endpoint/info", produces = "application/ld+json")
     @Operation(summary = "Returns for a route step the specific endpoint information")
     @ApiResponses({
@@ -89,15 +56,6 @@ public interface AppRouteApi {
             @ApiResponse(responseCode = "500", description = "Internal server error")})
     ResponseEntity<String> getEndpointInformation(@RequestParam(value = "routeId") URI routeId,
                                                   @RequestParam(value = "endpointId") URI endpointId);
-
-    @GetMapping(value = "/approute/step/endpoints/info", produces = "application/ld+json")
-    @Operation(summary = "Returns all endpoints information")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Successfully returned all endpoint information"),
-            @ApiResponse(responseCode = "400", description = "Can not find the endpoint information"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")})
-    ResponseEntity<String> getAllEndpointInfo();
-
 
     // Interfaces for managing deploy methods of the routes
     @PutMapping(value = "/route/deploymethod", produces = "application/ld+json")
@@ -113,4 +71,11 @@ public interface AppRouteApi {
             @ApiResponse(responseCode = "200", description = "Successfully returned the route deploy method"),
             @ApiResponse(responseCode = "400", description = "Can not find the route deploy method")})
     ResponseEntity<String> getRouteDeployMethod();
+
+    @GetMapping(value = "/approutes", produces = "application/ld+json")
+    @Operation(summary = "Returns all app routes")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Returns the list of the app routes"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")})
+    ResponseEntity<String> getAppRoutes();
 }

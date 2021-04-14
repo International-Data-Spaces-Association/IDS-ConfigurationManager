@@ -28,14 +28,6 @@ public interface ResourceApi {
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully returned all requested resources from the connector")})
     ResponseEntity<String> getRequestedResources();
 
-    @GetMapping(value = "/resource/json", produces = "application/ld+json")
-    @Operation(summary = "Returns the specific resource from the connector in JSON format")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Successfully returned the specific resource "
-                    + "from the connector in JSON format"),
-            @ApiResponse(responseCode = "400", description = "Validation failed. Can not find the resource")})
-    ResponseEntity<String> getResourceInJson(@RequestParam(value = "resourceId") URI resourceId);
-
     @PostMapping(value = "/resource", produces = "application/ld+json")
     @Operation(summary = "Creates a resource for the connector")
     @ApiResponses({

@@ -46,19 +46,6 @@ public class BrokerUIAPITest {
     private ResourceService resourceService;
 
     @Test
-    public void should_get_current_broker() throws Exception {
-
-        CustomBroker broker = TestUtil.createCustomBroker();
-        Mockito.when(brokerService.getById(broker.getBrokerUri())).thenReturn(broker);
-
-        MvcResult result = this.mockMvc.perform(get("/api/ui/broker").
-                param("brokerUri", broker.getBrokerUri().toString())).andReturn();
-
-
-        assertEquals(200, result.getResponse().getStatus());
-    }
-
-    @Test
     public void should_add_new_broker() throws Exception {
 
         LinkedMultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
