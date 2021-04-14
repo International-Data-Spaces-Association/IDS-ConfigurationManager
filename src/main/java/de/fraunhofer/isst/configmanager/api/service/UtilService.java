@@ -38,7 +38,7 @@ public class UtilService {
 
         if (name.contains("loglevel")) {
             final var logLevels = LogLevel.values();
-            for (LogLevel logLevel : logLevels) {
+            for (final var logLevel : logLevels) {
                 var jsonObject = new JSONObject();
                 jsonObject.put("originalName", logLevel.name());
                 jsonObject.put("displayName", logLevel.getLabel().get(0).getValue());
@@ -48,7 +48,7 @@ public class UtilService {
         }
         if (name.contains("connectorstatus")) {
             final var connectorStatuses = ConnectorStatus.values();
-            for (ConnectorStatus connectorStatus : connectorStatuses) {
+            for (final var connectorStatus : connectorStatuses) {
                 var jsonObject = new JSONObject();
                 jsonObject.put("originalName", connectorStatus.name());
                 jsonObject.put("displayName", connectorStatus.getLabel().get(0).getValue());
@@ -58,7 +58,7 @@ public class UtilService {
         }
         if (name.contains("connectordeploymode")) {
             final var connectorDeployModes = ConnectorDeployMode.values();
-            for (ConnectorDeployMode connectorDeployMode : connectorDeployModes) {
+            for (final var connectorDeployMode : connectorDeployModes) {
                 var jsonObject = new JSONObject();
                 jsonObject.put("originalName", connectorDeployMode.name());
                 jsonObject.put("displayName", connectorDeployMode.getLabel().get(0).getValue());
@@ -68,19 +68,23 @@ public class UtilService {
         }
         if (name.contains("language")) {
             final var languages = Language.values();
-            for (Language language : languages) {
+            for (final var language : languages) {
                 var jsonObject = new JSONObject();
                 jsonObject.put("originalName", language.name());
+
+                //Workaround for infomodel issue LT = LessThan
                 if ("LT".equals(language.name())) {
                     jsonObject.put("displayName", language.getLabel().get(1).getValue());
-                } else jsonObject.put("displayName", language.getLabel().get(0).getValue());
+                } else {
+                    jsonObject.put("displayName", language.getLabel().get(0).getValue());
+                }
                 jsonArray.add(jsonObject);
             }
             sortedJsonArray = sortJsonArray(jsonArray);
         }
         if (name.contains("sourcetype")) {
             final var sourceTypes = BackendSource.Type.values();
-            for (BackendSource.Type sourceType : sourceTypes) {
+            for (final var sourceType : sourceTypes) {
                 var jsonObject = new JSONObject();
                 jsonObject.put("displayName", sourceType.name());
                 jsonArray.add(jsonObject);
@@ -89,7 +93,7 @@ public class UtilService {
         }
         if (name.contains("deploymethod")) {
             final var deployMethods = DeployMethod.values();
-            for (DeployMethod deployMethod : deployMethods) {
+            for (final var deployMethod : deployMethods) {
                 var jsonObject = new JSONObject();
                 jsonObject.put("displayName", deployMethod.name());
                 jsonArray.add(jsonObject);
@@ -98,13 +102,15 @@ public class UtilService {
         }
         if (name.contains("brokerstatus")) {
             final var brokerStatuses = BrokerStatus.values();
-            for (BrokerStatus brokerStatus : brokerStatuses) {
+            for (final var brokerStatus : brokerStatuses) {
                 var jsonObject = new JSONObject();
                 jsonObject.put("displayName", brokerStatus.name());
                 jsonArray.add(jsonObject);
             }
             sortedJsonArray = sortJsonArray(jsonArray);
         }
+
+        assert sortedJsonArray != null;
         return sortedJsonArray.toJSONString();
     }
 
@@ -112,18 +118,19 @@ public class UtilService {
      * @param jsonArray json array to be sorted
      * @return sorted json array
      */
-    private JSONArray sortJsonArray(JSONArray jsonArray) {
+    private JSONArray sortJsonArray(final JSONArray jsonArray) {
         List<JSONObject> jsonObjects = new ArrayList<>();
-        JSONArray sortedJsonArray = new JSONArray();
+        var sortedJsonArray = new JSONArray();
 
-        for (Object o : jsonArray) {
+        for (final var o : jsonArray) {
             jsonObjects.add((JSONObject) o);
         }
+
         jsonObjects.sort(new Comparator<>() {
             private static final String KEY_NAME = "displayName";
 
             @Override
-            public int compare(JSONObject a, JSONObject b) {
+            public int compare(final JSONObject a, final JSONObject b) {
                 String str1 = "";
                 String str2 = "";
                 try {
