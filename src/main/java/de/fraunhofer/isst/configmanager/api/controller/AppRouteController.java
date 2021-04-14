@@ -2,6 +2,7 @@ package de.fraunhofer.isst.configmanager.api.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.fraunhofer.iais.eis.AppRoute;
 import de.fraunhofer.iais.eis.AppRouteImpl;
 import de.fraunhofer.iais.eis.RouteStepImpl;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
@@ -16,7 +17,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 
 /**
  * The api class implements the AppRouteApi and offers the possibilities to manage
@@ -85,31 +86,6 @@ public class AppRouteController implements AppRouteApi {
         } else {
             log.info("---- [AppRouteController createAppRoute] Could not create app route");
             response = ResponseEntity.badRequest().body("Can not create an app route");
-        }
-
-        return response;
-    }
-
-    /**
-     * This method updates an app route.
-     *
-     * @param routeId     id of the app route
-     * @param description description of the app route
-     * @return a suitable http response depending on success
-     */
-    @Override
-    public ResponseEntity<String> updateAppRoute(final URI routeId, final String description) {
-        log.info(">> PUT /approute routeId: " + routeId + " description: " + description);
-        ResponseEntity<String> response;
-
-        final boolean updated = appRouteService.updateAppRoute(routeId, description);
-
-        if (updated) {
-            log.info("---- [AppRouteController updateAppRoute] App route with id: " + routeId + " is updated.");
-            response = ResponseEntity.ok(Utility.jsonMessage("message", "App route with id: " + routeId + " is updated."));
-        } else {
-            log.info("---- [AppRouteController updateAppRoute] Could not update app route with id: " + routeId);
-            response = ResponseEntity.badRequest().body("Could not update app route with id: " + routeId);
         }
 
         return response;
@@ -185,7 +161,7 @@ public class AppRouteController implements AppRouteApi {
         try {
             if (appRouteList == null) {
                 log.info("---- [AppRouteController getAppRoutes] Returning empty list since no app routes are present");
-                response = ResponseEntity.ok(objectMapper.writeValueAsString(new JSONArray()));
+                response = ResponseEntity.ok(serializer.serialize(new ArrayList<AppRoute>()));
             } else {
                 log.info("---- [AppRouteController getAppRoutes] Returning list of app routes");
                 response = ResponseEntity.ok(serializer.serialize(appRouteList));
@@ -246,63 +222,6 @@ public class AppRouteController implements AppRouteApi {
     }
 
     /**
-     * This method deletes a route step.
-     *
-     * @param routeId     id of the app route
-     * @param routeStepId id of the route step
-     * @return a suitable http response depending on success
-     */
-    @Override
-    public ResponseEntity<String> deleteAppRouteStep(final URI routeId, final URI routeStepId) {
-        log.info(">> DELETE /approute/step routeId: " + routeId + " routeStepId: " + routeStepId);
-        ResponseEntity<String> response;
-
-        final boolean deleted = appRouteService.deleteAppRouteStep(routeId, routeStepId);
-
-        if (deleted) {
-            log.info("---- [AppRouteController deleteAppRouteStep] Successfully deleted the route step with id:" + routeStepId);
-            response = ResponseEntity.ok("Successfully deleted the route step with id: " + routeStepId);
-        } else {
-            log.warn("---- [AppRouteController deleteAppRouteStep] Could not delete the route step");
-            response = ResponseEntity.badRequest().body("---- Could not delete the route step");
-        }
-
-        return response;
-    }
-
-    /**
-     * This method returns a specific route step.
-     *
-     * @param routeId     id of the app route
-     * @param routeStepId id of the route step
-     * @return a suitable http response depending on success
-     */
-    @Override
-    public ResponseEntity<String> getAppRouteStep(final URI routeId, final URI routeStepId) {
-        log.info(">> GET /approute/step routeId: " + routeId + " routeStepId: " + routeStepId);
-        ResponseEntity<String> response;
-
-        final var routeStep = appRouteService.getSubroute(routeId, routeStepId);
-
-        if (routeStep != null) {
-            try {
-                final var routeStepString = serializer.serialize(routeStep);
-                log.info("---- [AppRouteController getAppRouteStep] Route step found");
-                response = ResponseEntity.ok(routeStepString);
-            } catch (IOException e) {
-                log.error("---- [AppRouteController getAppRouteStep] Problem while serializing route step!");
-                log.error(e.getMessage(), e);
-                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not serialize the route step");
-            }
-        } else {
-            log.warn("---- [AppRouteController getAppRouteStep] Route step is null");
-            response = ResponseEntity.badRequest().body("Could not get the route step");
-        }
-
-        return response;
-    }
-
-    /**
      * This method returns information regarding the endpoint.
      *
      * @param routeId    id of the app route
@@ -328,34 +247,6 @@ public class AppRouteController implements AppRouteApi {
             }
         } else {
             log.warn("---- [AppRouteController getEndpointInformation] Endpoint Information is null");
-            response = ResponseEntity.badRequest().body("Could not get endpoint information");
-        }
-
-        return response;
-    }
-
-    /**
-     * @return list of endpoint information
-     */
-    @Override
-    public ResponseEntity<String> getAllEndpointInfo() {
-        log.info(">> GET /approute/step/endpoints/info");
-        ResponseEntity<String> response;
-
-        final var endpointInformations = appRouteService.getAllEndpointInfo();
-
-        if (endpointInformations != null) {
-            try {
-                final var endpointInfos = objectMapper.writeValueAsString(endpointInformations);
-                log.info("---- [AppRouteController getAllEndpointInfo] Returning all endpoint information");
-                response = ResponseEntity.ok(endpointInfos);
-            } catch (JsonProcessingException e) {
-                log.error("---- [AppRouteController getAllEndpointInfo] Could not parse endpoint informations to JSON!");
-                log.error(e.getMessage(), e);
-                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-            }
-        } else {
-            log.info("---- [AppRouteController getAllEndpointInfo] Endpoint information list is null");
             response = ResponseEntity.badRequest().body("Could not get endpoint information");
         }
 

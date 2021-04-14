@@ -2,7 +2,6 @@ package de.fraunhofer.isst.configmanager.connector.clients;
 
 import de.fraunhofer.iais.eis.Representation;
 import de.fraunhofer.iais.eis.Resource;
-import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.model.ResourceRepresentation;
 import okhttp3.Response;
 
 import java.io.IOException;
@@ -49,16 +48,6 @@ public interface DefaultResourceClient {
     String deleteResource(URI resourceID) throws IOException;
 
     /**
-     * Send a resource representation deletion request to a connector.
-     *
-     * @param resourceID       ID of the Resource for which the representation is deleted
-     * @param representationID ID of the Representation to delete
-     * @return Response of the target Connector
-     * @throws IOException when an error occurs while sending the request
-     */
-    String deleteResourceRepresentation(String resourceID, String representationID) throws IOException;
-
-    /**
      * Send a resource representation creation request to the connector.
      *
      * @param resourceID     ID of the Resource for which the representation is registered
@@ -82,18 +71,6 @@ public interface DefaultResourceClient {
      */
     String updateResourceRepresentation(String resourceID, String representationID,
                                         Representation representation, String endpointId) throws IOException;
-
-    /**
-     * Updates a custom {@link ResourceRepresentation} at a connector.
-     *
-     * @param resourceID             ID of the Resource for which the representation is updated
-     * @param representationID       ID of the representation to be updated
-     * @param resourceRepresentation representation to be updated
-     * @return Response of the target Connector
-     * @throws IOException when an error occurs while sending the request
-     */
-    String updateCustomResourceRepresentation(String resourceID, String representationID,
-                                              ResourceRepresentation resourceRepresentation) throws IOException;
 
     /**
      * Updates a resource contract at a connector.

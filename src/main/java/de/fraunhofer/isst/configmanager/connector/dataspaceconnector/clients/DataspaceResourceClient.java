@@ -6,7 +6,6 @@ import de.fraunhofer.iais.eis.Representation;
 import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultResourceClient;
 import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.model.BackendSource;
-import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.model.ResourceRepresentation;
 import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.util.DispatchRequest;
 import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.util.ResourceMapper;
 import lombok.AccessLevel;
@@ -169,36 +168,6 @@ public class DataspaceResourceClient extends AbstractDataspaceConnectorClient im
     }
 
     @Override
-    public String deleteResourceRepresentation(final String resourceID,
-                                               final String representationID) throws IOException {
-        log.info(String.format(
-                "---- [DataspaceResourceClient deleteResourceRepresentation] Deleting representation %s from resource %s at %s",
-                representationID,
-                resourceID,
-                dataSpaceConnectorHost));
-
-
-        final var mappedResourceID = dataSpaceConnectorResourceMapper.readUUIDFromURI(URI.create(resourceID));
-        final var mappedRepresentationID = dataSpaceConnectorResourceMapper.getMappedId(URI.create(representationID));
-        dataSpaceConnectorResourceMapper.deleteResourceIDPair(URI.create(representationID));
-
-        final var builder = getRequestBuilder();
-        builder.url(connectorBaseUrl + "admin/api/resources/" + mappedResourceID + "/" + mappedRepresentationID);
-        builder.delete();
-        builder.header("Authorization",
-                Credentials.basic(dataSpaceConnectorApiUsername, dataSpaceConnectorApiPassword));
-
-        final var request = builder.build();
-        final var response = DispatchRequest.sendToDataspaceConnector(request);
-
-        if (!response.isSuccessful()) {
-            log.warn("---- [DataspaceResourceClient deleteResourceRepresentation] Deleting Representation failed!");
-        }
-
-        return Objects.requireNonNull(response.body()).string();
-    }
-
-    @Override
     public String registerResourceRepresentation(final String resourceID,
                                                  final Representation representation,
                                                  final String endpointId) throws IOException {
@@ -279,38 +248,6 @@ public class DataspaceResourceClient extends AbstractDataspaceConnectorClient im
 
         if (!response.isSuccessful()) {
             log.warn("---- [DataspaceResourceClient updateResourceRepresentation] Updating Representation failed!");
-        }
-
-        return Objects.requireNonNull(response.body()).string();
-    }
-
-    @Override
-    public String updateCustomResourceRepresentation(final String resourceID,
-                                                     final String representationID,
-                                                     final ResourceRepresentation resourceRepresentation) throws IOException {
-        log.info(String.format(
-                "---- [DataspaceResourceClient updateCustomResourceRepresentation] Updating representation %s for resource %s at %s",
-                representationID,
-                resourceID,
-                dataSpaceConnectorHost));
-
-        final var mappedResourceID = dataSpaceConnectorResourceMapper.readUUIDFromURI(URI.create(resourceID));
-        final var mappedRepresentationID = dataSpaceConnectorResourceMapper.getMappedId(URI.create(representationID));
-        final var resourceJsonLD = MAPPER.writeValueAsString(resourceRepresentation);
-
-        log.info("---- [DataspaceResourceClient updateCustomResourceRepresentation] Mapped representation: " + resourceJsonLD);
-
-        final var builder = getRequestBuilder();
-        builder.url(connectorBaseUrl + "admin/api/resources/" + mappedResourceID + "/" + mappedRepresentationID);
-        builder.put(RequestBody.create(resourceJsonLD, okhttp3.MediaType.parse("application/ld+json")));
-        builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername,
-                dataSpaceConnectorApiPassword));
-
-        final var request = builder.build();
-        final var response = DispatchRequest.sendToDataspaceConnector(request);
-
-        if (!response.isSuccessful()) {
-            log.warn("---- [DataspaceResourceClient updateCustomResourceRepresentation] Updating Resource-Representation failed!");
         }
 
         return Objects.requireNonNull(response.body()).string();

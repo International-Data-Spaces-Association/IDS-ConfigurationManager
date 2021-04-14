@@ -2,7 +2,7 @@ package de.fraunhofer.isst.configmanager.api_test;
 
 import de.fraunhofer.isst.configmanager.api.controller.BrokerController;
 import de.fraunhofer.isst.configmanager.api.service.BrokerService;
-import de.fraunhofer.isst.configmanager.api.service.ResourceService;
+import de.fraunhofer.isst.configmanager.api.service.resources.ResourceService;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultBrokerClient;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultResourceClient;
@@ -44,19 +44,6 @@ public class BrokerUIAPITest {
 
     @MockBean
     private ResourceService resourceService;
-
-    @Test
-    public void should_get_current_broker() throws Exception {
-
-        CustomBroker broker = TestUtil.createCustomBroker();
-        Mockito.when(brokerService.getById(broker.getBrokerUri())).thenReturn(broker);
-
-        MvcResult result = this.mockMvc.perform(get("/api/ui/broker").
-                param("brokerUri", broker.getBrokerUri().toString())).andReturn();
-
-
-        assertEquals(200, result.getResponse().getStatus());
-    }
 
     @Test
     public void should_add_new_broker() throws Exception {
