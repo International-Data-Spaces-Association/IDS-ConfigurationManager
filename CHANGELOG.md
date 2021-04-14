@@ -16,6 +16,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Docker: The Java version to be used is now fixed in the Dockerfile
 - If running infomodel-deserialize throws IOException,  these are now explicitly logged in the DataspaceConnectorClient
 - Updated the Readme file
+- Using labels instead of enum-names for better user experience
 
 ### Fixes
 - POST /api​/ui​/broker​/register now return success:false if connector doesn't return 200 and GET /api​/ui​/brokers returns not registered in this case
