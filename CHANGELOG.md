@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [6.1.0-SNAPSHOT] - UNRELEASED
+## [7.0.0] - UNRELEASED
 ### Added
 - Minor Change: New API GET /api/ui/connector/status to return the accessibility-status of the Public-Connector-Endpoint
 - Minor Change: New API PUT /resource/contract/update to create the contract in the configmanager and update it at the dataspace connector
@@ -23,6 +23,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Internal Database can be reached and viewed again at: http://localhost:8081/console
 - After editing the connector settings the broker will be updated with the new information
 - Updated recursion methods in ResourceService that caused problems
+
+### Maintenance
+- Major Change: Remove 20 unused APIs (unused by ConfigManager-UI project)
 
 ## [6.0.0] - 2021-03-26
 
