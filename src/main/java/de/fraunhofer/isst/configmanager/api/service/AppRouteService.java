@@ -11,6 +11,7 @@ import de.fraunhofer.iais.eis.ResourceImpl;
 import de.fraunhofer.iais.eis.RouteStep;
 import de.fraunhofer.iais.eis.RouteStepBuilder;
 import de.fraunhofer.iais.eis.util.Util;
+import de.fraunhofer.isst.configmanager.api.service.resources.ResourceService;
 import de.fraunhofer.isst.configmanager.model.configlists.CustomAppRepository;
 import de.fraunhofer.isst.configmanager.model.configlists.EndpointInformationRepository;
 import de.fraunhofer.isst.configmanager.model.configlists.RouteDeployMethodRepository;

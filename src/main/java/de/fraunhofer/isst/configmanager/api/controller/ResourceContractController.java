@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import de.fraunhofer.iais.eis.ContractOffer;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.api.ResourceContractApi;
-import de.fraunhofer.isst.configmanager.api.service.ResourceService;
+import de.fraunhofer.isst.configmanager.api.service.resources.ResourceContractService;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultResourceClient;
 import de.fraunhofer.isst.configmanager.model.usagecontrol.Pattern;
 import de.fraunhofer.isst.configmanager.util.ValidateApiInput;
@@ -33,15 +33,15 @@ import java.net.URI;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ResourceContractController implements ResourceContractApi {
 
-    transient ResourceService resourceService;
+    transient ResourceContractService resourceContractService;
     transient Serializer serializer;
     transient DefaultResourceClient client;
 
     @Autowired
-    public ResourceContractController(final ResourceService resourceService,
+    public ResourceContractController(final ResourceContractService resourceContractService,
                                       final Serializer serializer,
                                       final DefaultResourceClient client) {
-        this.resourceService = resourceService;
+        this.resourceContractService = resourceContractService;
         this.serializer = serializer;
         this.client = client;
     }
@@ -75,7 +75,7 @@ public class ResourceContractController implements ResourceContractApi {
 
                         final var clientResponse = client.updateResourceContract(resourceId.toString(), contractJson);
 
-                        resourceService.updateResourceContractInAppRoute(resourceId, contractOffer);
+                        resourceContractService.updateResourceContractInAppRoute(resourceId, contractOffer);
 
                         jsonObject.put("connectorResponse", clientResponse);
                         response = ResponseEntity.ok(jsonObject.toJSONString());
@@ -116,7 +116,7 @@ public class ResourceContractController implements ResourceContractApi {
         } else {
             ContractOffer contractOffer = null;
             try {
-                contractOffer = resourceService.getContractOffer(pattern, contractJson);
+                contractOffer = resourceContractService.getContractOffer(pattern, contractJson);
             } catch (JsonProcessingException e) {
                 log.error(e.getMessage());
             }
@@ -132,7 +132,7 @@ public class ResourceContractController implements ResourceContractApi {
 
                     final var connectorResponse = client.updateResourceContract(resourceId.toString(), contract);
 
-                    resourceService.updateResourceContractInAppRoute(resourceId, contractOffer);
+                    resourceContractService.updateResourceContractInAppRoute(resourceId, contractOffer);
 
                     jsonObject.put("connectorResponse", connectorResponse);
                     response = ResponseEntity.ok(jsonObject.toJSONString());
