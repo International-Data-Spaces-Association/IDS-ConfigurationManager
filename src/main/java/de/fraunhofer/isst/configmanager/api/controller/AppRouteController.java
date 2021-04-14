@@ -2,6 +2,7 @@ package de.fraunhofer.isst.configmanager.api.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.fraunhofer.iais.eis.AppRoute;
 import de.fraunhofer.iais.eis.AppRouteImpl;
 import de.fraunhofer.iais.eis.RouteStepImpl;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 
 /**
  * The api class implements the AppRouteApi and offers the possibilities to manage
@@ -160,7 +162,7 @@ public class AppRouteController implements AppRouteApi {
         try {
             if (appRouteList == null) {
                 log.info("---- [AppRouteController getAppRoutes] Returning empty list since no app routes are present");
-                response = ResponseEntity.ok(objectMapper.writeValueAsString(new JSONArray()));
+                response = ResponseEntity.ok(serializer.serialize(new ArrayList<AppRoute>()));
             } else {
                 log.info("---- [AppRouteController getAppRoutes] Returning list of app routes");
                 response = ResponseEntity.ok(serializer.serialize(appRouteList));
