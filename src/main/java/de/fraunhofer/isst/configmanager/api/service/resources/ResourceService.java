@@ -57,8 +57,8 @@ public class ResourceService extends AbstractResourceService {
      */
     public void updateResourceContent(final String title, final String description,
                                       final String language, final List<String> keywords,
-                                      final String version, final String standardlicense,
-                                      final String publisher, final ResourceImpl resourceImpl) {
+                                      final String version, final URI standardlicense,
+                                      final URI publisher, final ResourceImpl resourceImpl) {
         if (title != null) {
             resourceImpl.setTitle(Util.asList(new TypedLiteral(title)));
         }
@@ -81,10 +81,10 @@ public class ResourceService extends AbstractResourceService {
             resourceImpl.setVersion(version);
         }
         if (standardlicense != null) {
-            resourceImpl.setStandardLicense(URI.create(standardlicense));
+            resourceImpl.setStandardLicense(standardlicense);
         }
         if (publisher != null) {
-            resourceImpl.setPublisher(URI.create(publisher));
+            resourceImpl.setPublisher(publisher);
         }
     }
 
@@ -155,8 +155,8 @@ public class ResourceService extends AbstractResourceService {
      */
     public ResourceImpl createResource(final String title, final String description,
                                        final String language, final List<String> keywords,
-                                       final String version, final String standardlicense,
-                                       final String publisher) {
+                                       final String version, final URI standardlicense,
+                                       final URI publisher) {
 
         final ArrayList<TypedLiteral> keys = new ArrayList<>();
         final var literal = new TypedLiteral();
@@ -172,8 +172,8 @@ public class ResourceService extends AbstractResourceService {
                 ._language_(Util.asList(Language.valueOf(language)))
                 ._keyword_(keys)
                 ._version_(version)
-                ._standardLicense_(URI.create(standardlicense))
-                ._publisher_(URI.create(publisher))
+                ._standardLicense_(standardlicense)
+                ._publisher_(publisher)
                 ._created_(CalenderUtil.getGregorianNow())
                 ._modified_(CalenderUtil.getGregorianNow())
                 .build();
@@ -193,7 +193,7 @@ public class ResourceService extends AbstractResourceService {
     public ResourceImpl updateResource(final URI resourceId, final String title,
                                        final String description, final String language,
                                        final List<String> keywords, final String version,
-                                       final String standardlicense, final String publisher) {
+                                       final URI standardlicense, final URI publisher) {
         //Get a Resource and update if it exists
         for (final var resource : getResources()) {
             if (resource.getId().equals(resourceId)) {

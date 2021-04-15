@@ -128,9 +128,11 @@ public class ConnectorController implements ConnectorApi {
      * @return http response message with the id of the created connector
      */
     @Override
-    public ResponseEntity<String> updateConnector(final String title, final String description,
-                                                  final String endpointAccessURL,
-                                                  final String version, final URI curator,
+    public ResponseEntity<String> updateConnector(final String title,
+                                                  final String description,
+                                                  final URI endpointAccessURL,
+                                                  final String version,
+                                                  final URI curator,
                                                   final URI maintainer,
                                                   final String inboundModelVersion,
                                                   final String outboundModelVersion) {

@@ -68,7 +68,7 @@ public class ConnectorService {
      */
     public boolean updateConnector(final String title,
                                    final String description,
-                                   final String endpointAccessURL,
+                                   final URI endpointAccessURL,
                                    final String version,
                                    final URI curator,
                                    final URI maintainer,
@@ -87,7 +87,7 @@ public class ConnectorService {
             }
             if (endpointAccessURL != null) {
                 connector.setHasEndpoint(Util.asList(new ConnectorEndpointBuilder()
-                        ._accessURL_(URI.create(endpointAccessURL)).build()));
+                        ._accessURL_(endpointAccessURL).build()));
             }
             if (version != null) {
                 connector.setVersion(version);
