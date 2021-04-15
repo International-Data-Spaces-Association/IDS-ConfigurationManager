@@ -295,7 +295,7 @@ public class EndpointController implements EndpointApi {
      * @return a suitable http response depending on success
      */
     @Override
-    public ResponseEntity<String> createConnectorEndpoint(URI accessUrl) {
+    public ResponseEntity<String> createConnectorEndpoint(final URI accessUrl) {
         log.info(">> POST /connector/endpoint accessUrl: " + accessUrl);
 
         final var configModelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();

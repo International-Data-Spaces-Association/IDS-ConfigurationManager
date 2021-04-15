@@ -89,7 +89,7 @@ public class ResourceService {
      */
     public void updateResourceContent(final String title, final String description,
                                       final String language, final List<String> keywords,
-                                      final String version, URI standardlicense,
+                                      final String version, final URI standardlicense,
                                       final URI publisher, final ResourceImpl resourceImpl) {
         if (title != null) {
             resourceImpl.setTitle(Util.asList(new TypedLiteral(title)));
