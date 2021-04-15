@@ -24,7 +24,7 @@ public interface ConfigModelApi {
                                              @RequestParam(value = "trustStorePassword", required = false) String trustStorePassword,
                                              @RequestParam(value = "keyStore", required = false) String keyStore,
                                              @RequestParam(value = "keyStorePassword", required = false) String keyStorePassword,
-                                             @RequestParam(value = "proxyUri", required = false) String proxyUri,
+                                             @RequestParam(value = "proxyUri", required = false) URI proxyUri,
                                              @RequestParam(value = "noProxyUri", required = false) ArrayList<URI> noProxyUriList,
                                              @RequestParam(value = "username", required = false) String username,
                                              @RequestParam(value = "password", required = false) String password);

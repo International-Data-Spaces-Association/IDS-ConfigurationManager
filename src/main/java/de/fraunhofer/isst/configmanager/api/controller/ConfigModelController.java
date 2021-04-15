@@ -67,7 +67,7 @@ public class ConfigModelController implements ConfigModelApi {
                                                     final String trustStorePassword,
                                                     final String keyStore,
                                                     final String keyStorePassword,
-                                                    final String proxyUri,
+                                                    final URI proxyUri,
                                                     final ArrayList<URI> noProxyUriList,
                                                     final String username,
                                                     final String password) {
