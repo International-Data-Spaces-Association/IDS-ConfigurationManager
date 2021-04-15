@@ -38,7 +38,7 @@ public enum Pattern {
 
     private final String pattern;
 
-    Pattern(String string) {
+    Pattern(final String string) {
         pattern = string;
     }
 

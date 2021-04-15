@@ -1,12 +1,17 @@
 package de.fraunhofer.isst.configmanager.api.controller;
 
 
-import de.fraunhofer.iais.eis.*;
+import de.fraunhofer.iais.eis.ArtifactBuilder;
+import de.fraunhofer.iais.eis.IANAMediaTypeBuilder;
+import de.fraunhofer.iais.eis.Language;
+import de.fraunhofer.iais.eis.RepresentationBuilder;
+import de.fraunhofer.iais.eis.RepresentationImpl;
+import de.fraunhofer.iais.eis.ResourceImpl;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.api.ResourceRepresentationApi;
 import de.fraunhofer.isst.configmanager.api.service.ConfigModelService;
-import de.fraunhofer.isst.configmanager.api.service.ResourceService;
+import de.fraunhofer.isst.configmanager.api.service.resources.ResourceRepresentationService;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultResourceClient;
 import de.fraunhofer.isst.configmanager.util.ValidateApiInput;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -36,18 +41,18 @@ import java.net.URI;
 public class ResourceRepresentationController implements ResourceRepresentationApi {
 
     transient ConfigModelService configModelService;
-    transient ResourceService resourceService;
+    transient ResourceRepresentationService resourceRepresentationService;
     transient DefaultResourceClient client;
     transient Serializer serializer;
 
     @Autowired
     public ResourceRepresentationController(final ConfigModelService configModelService,
-                                            final ResourceService resourceService,
+                                            final ResourceRepresentationService resourceRepresentationService,
                                             final DefaultResourceClient client,
                                             final Serializer serializer) {
         this.client = client;
         this.configModelService = configModelService;
-        this.resourceService = resourceService;
+        this.resourceRepresentationService = resourceRepresentationService;
         this.serializer = serializer;
     }
 
@@ -77,7 +82,7 @@ public class ResourceRepresentationController implements ResourceRepresentationA
         if (ValidateApiInput.notValid(resourceId.toString(), sourceType)) {
             response = ResponseEntity.badRequest().body("All validated parameter have undefined as value!");
         } else {
-            if (resourceService.getResources() == null || resourceService.getResources().isEmpty()) {
+            if (resourceRepresentationService.getResources() == null || resourceRepresentationService.getResources().isEmpty()) {
                 response = ResponseEntity.status(HttpStatus.NOT_FOUND).body("Could not find any resources!");
             } else {
                 final var representation = new RepresentationBuilder()
@@ -135,7 +140,7 @@ public class ResourceRepresentationController implements ResourceRepresentationA
                 + filenameExtension + " bytesize: " + bytesize + " sourceType: " + sourceType);
         ResponseEntity<String> response = null;
 
-        final var oldResourceCatalog = (ResourceImpl) resourceService.getResource(resourceId);
+        final var oldResourceCatalog = (ResourceImpl) resourceRepresentationService.getResource(resourceId);
 
         if (oldResourceCatalog != null) {
             final var oldRepresentationId = oldResourceCatalog.getRepresentation().get(0).getId();
@@ -144,7 +149,7 @@ public class ResourceRepresentationController implements ResourceRepresentationA
             if (configModelService.getConfigModel().getAppRoute() == null) {
                 log.info("---- [ResourceRepresentationController updateResourceRepresentation] No AppRoute in ConfigModel!");
             } else {
-                final var oldResourceRoute = (ResourceImpl) resourceService.getResourceInAppRoute(resourceId);
+                final var oldResourceRoute = (ResourceImpl) resourceRepresentationService.getResourceInAppRoute(resourceId);
                 if (oldResourceRoute != null) {
                     oldResourceRoute.setRepresentation(null);
                 }
@@ -181,7 +186,7 @@ public class ResourceRepresentationController implements ResourceRepresentationA
                 }
             }
             // Update the backend connection to the new endpoint
-            resourceService.updateBackendConnection(resourceId, endpointId);
+            resourceRepresentationService.updateBackendConnection(resourceId, endpointId);
 
             try {
                 // Update the resource representation in the dataspace connector
@@ -211,99 +216,6 @@ public class ResourceRepresentationController implements ResourceRepresentationA
             response = ResponseEntity.badRequest().body("Could not update the representation of the resource");
         }
 
-        return response;
-    }
-
-    /**
-     * This method returns the specific representation from a resource with the given parameters.
-     *
-     * @param representationId id of the representation
-     * @return a suitable http response depending on success
-     */
-    @Override
-    public ResponseEntity<String> getResourceRepresentation(final URI representationId) {
-        log.info(">> GET /resource/representation representationId: " + representationId);
-        ResponseEntity<String> response;
-
-        final var representation = resourceService.getResourceRepresentationInCatalog(representationId);
-
-        if (representation != null) {
-            try {
-                response = ResponseEntity.ok(serializer.serialize(representation));
-            } catch (IOException e) {
-                log.error(e.getMessage(), e);
-                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-            }
-        } else {
-            response = ResponseEntity.badRequest().body("Could not get resource representation");
-        }
-
-        return response;
-    }
-
-    /**
-     * This method returns the specific representation from a resource in JSON format with the
-     * given parameters.
-     *
-     * @param resourceId       id of the resource
-     * @param representationId id of the representation
-     * @return a suitable http response depending on success
-     */
-    @Override
-    public ResponseEntity<String> getResourceRepresentationInJson(final URI resourceId,
-                                                                  final URI representationId) {
-        log.info(">> GET /resource/representation/json resourceId: " + resourceId + " representationId: " + representationId);
-        ResponseEntity<String> response = null;
-
-        var representationJson = new JSONObject();
-        for (final var resource : resourceService.getResources()) {
-            if (resourceId.equals(resource.getId())) {
-                for (final var representation : resource.getRepresentation()) {
-                    if (representationId.equals(representation.getId())) {
-                        representationJson.clear();
-                        representationJson.put("language", representation.getLanguage());
-                        representationJson.put("filenameExtension", representation.getMediaType()
-                                .getFilenameExtension());
-                        final var artifact = (Artifact) representation.getInstance().get(0);
-                        representationJson.put("byteSize", artifact.getByteSize().toString());
-
-                        response = ResponseEntity.ok(representationJson.toJSONString());
-                    }
-                }
-            }
-        }
-        if (response == null) {
-            response = ResponseEntity.badRequest().body("Could not get resource representation");
-        }
-
-        return response;
-    }
-
-    /**
-     * This method deletes the resource representation with the given parameters.
-     *
-     * @param resourceId       id of the resource
-     * @param representationId id of the representation
-     * @return a suitable http response depending on success
-     */
-    @Override
-    public ResponseEntity<String> deleteResourceRepresentation(final URI resourceId,
-                                                               final URI representationId) {
-        log.info(">> DELETE /resource/representation resourceId: " + resourceId + " representationId: " + representationId);
-        ResponseEntity<String> response;
-
-        try {
-            final var clientResponse = client.deleteResourceRepresentation(resourceId.toString(), representationId.toString());
-            resourceService.deleteResourceRepresentationFromAppRoute(resourceId, representationId);
-            final var jsonObject = new JSONObject();
-            jsonObject.put("connectorResponse", clientResponse);
-            jsonObject.put("resourceID", resourceId.toString());
-            jsonObject.put("representationID", representationId.toString());
-            response = ResponseEntity.ok(jsonObject.toJSONString());
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-            response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
         return response;
     }
 }

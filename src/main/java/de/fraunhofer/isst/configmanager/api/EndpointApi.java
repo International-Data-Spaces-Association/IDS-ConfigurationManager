@@ -4,7 +4,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.net.URI;
 
@@ -25,14 +29,6 @@ public interface EndpointApi {
             @ApiResponse(responseCode = "500", description = "Internal server error")})
     ResponseEntity<String> getGenericEndpoints();
 
-    @GetMapping(value = "/generic/endpoint", produces = "application/ld+json")
-    @Operation(summary = "Returns a specific generic endpoint")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Returned a specific backend connection"),
-            @ApiResponse(responseCode = "400", description = "Can not find the generic endpoint"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")})
-    ResponseEntity<String> getGenericEndpoint(@RequestParam(value = "endpointId") URI endpointId);
-
     @DeleteMapping(value = "/generic/endpoint", produces = "application/ld+json")
     @Operation(summary = "Deletes a generic endpoint")
     @ApiResponses({
@@ -49,30 +45,6 @@ public interface EndpointApi {
                                                  @RequestParam(value = "accessURL", required = false) URI accessURL,
                                                  @RequestParam(value = "username", required = false) String username,
                                                  @RequestParam(value = "password", required = false) String password);
-
-    @GetMapping(value = "/connector/endpoints", produces = "application/ld+json")
-    @Operation(summary = "Returns the connector endpoints")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Successfully returned the connector endpoints"),
-            @ApiResponse(responseCode = "400", description = "Can not find the connector endpoints"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")})
-    ResponseEntity<String> getConnectorEndpoints();
-
-    @GetMapping(value = "/connector/endpoints/client", produces = "application/ld+json")
-    @Operation(summary = "Returns a list of connector endpoints")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Successfully returned a list of connector endpoints"),
-            @ApiResponse(responseCode = "400", description = "Can not find the connector endpoints from the client")})
-    ResponseEntity<String> getConnectorEndpointsFromClient(@RequestParam("accessUrl") URI accessUrl,
-                                                           @RequestParam(value = "resourceId", required = false) String resourceId);
-
-    @GetMapping(value = "/connector/endpoint", produces = "application/ld+json")
-    @Operation(summary = "Returns the connector endpoint")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Successfully returned the connector endpoint"),
-            @ApiResponse(responseCode = "400", description = "Can not find the connector endpoint"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")})
-    ResponseEntity<String> getConnectorEndpoint(@RequestParam("connectorEndpointId") URI connectorEndpointId);
 
     @PostMapping(value = "/connector/endpoint", produces = "application/ld+json")
     @Operation(summary = "Creates a new connector endpoint for the connector")

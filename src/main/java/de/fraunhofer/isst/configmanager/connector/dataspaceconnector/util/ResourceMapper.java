@@ -1,6 +1,10 @@
 package de.fraunhofer.isst.configmanager.connector.dataspaceconnector.util;
 
-import de.fraunhofer.iais.eis.*;
+import de.fraunhofer.iais.eis.Artifact;
+import de.fraunhofer.iais.eis.BasicAuthenticationImpl;
+import de.fraunhofer.iais.eis.GenericEndpoint;
+import de.fraunhofer.iais.eis.Representation;
+import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.iais.eis.util.RdfResource;
 import de.fraunhofer.iais.eis.util.TypedLiteral;
@@ -41,17 +45,6 @@ public class ResourceMapper {
                           final EndpointService endpointService) {
         this.resourceIDPairRepository = resourceIDPairRepository;
         this.endpointService = endpointService;
-    }
-
-    /**
-     * The method return with the help of the uri from a resource the uuid.
-     *
-     * @param id of the resource
-     * @return uuid of the resource
-     */
-    public UUID getMappedId(final URI id) {
-        final var pairs = resourceIDPairRepository.findByUri(id);
-        return pairs.isEmpty() ? null : pairs.get(0).getUuid();
     }
 
     /**
@@ -165,20 +158,6 @@ public class ResourceMapper {
             sourceType = BackendSource.Type.valueOf(propName);
         }
         return sourceType;
-    }
-
-    /**
-     * The method deletes the ResourceIDPair object from the database.
-     *
-     * @param id of the resource
-     */
-    public void deleteResourceIDPair(final URI id) {
-        final var pairs = resourceIDPairRepository.findByUri(id);
-        if (pairs.isEmpty()) {
-            return;
-        }
-        pairs.forEach(resourceIDPairRepository::delete);
-        resourceIDPairRepository.flush();
     }
 
     /**

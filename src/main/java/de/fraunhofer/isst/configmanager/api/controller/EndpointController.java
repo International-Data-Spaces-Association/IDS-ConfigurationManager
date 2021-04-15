@@ -1,7 +1,6 @@
 package de.fraunhofer.isst.configmanager.api.controller;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fraunhofer.iais.eis.BaseConnectorImpl;
 import de.fraunhofer.iais.eis.ConfigurationModelImpl;
 import de.fraunhofer.iais.eis.ConnectorEndpoint;
@@ -10,12 +9,10 @@ import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.api.EndpointApi;
 import de.fraunhofer.isst.configmanager.api.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.api.service.EndpointService;
-import de.fraunhofer.isst.configmanager.connector.clients.DefaultConnectorClient;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,22 +36,16 @@ import java.util.ArrayList;
 public class EndpointController implements EndpointApi {
 
     transient Serializer serializer;
-    transient ObjectMapper objectMapper;
     transient ConfigModelService configModelService;
     transient EndpointService endpointService;
-    transient DefaultConnectorClient client;
 
     @Autowired
     public EndpointController(final Serializer serializer,
-                              final ObjectMapper objectMapper,
                               final ConfigModelService configModelService,
-                              final EndpointService endpointService,
-                              final DefaultConnectorClient client) {
+                              final EndpointService endpointService) {
         this.serializer = serializer;
-        this.objectMapper = objectMapper;
         this.configModelService = configModelService;
         this.endpointService = endpointService;
-        this.client = client;
     }
 
     /**
@@ -71,6 +62,7 @@ public class EndpointController implements EndpointApi {
                                                         final String password) {
         log.info(">> POST /generic/endpoint accessURL: " + accessURL + " username: " + username);
         ResponseEntity<String> response;
+
         final var genericEndpoint = endpointService.createGenericEndpoint(accessURL, username, password);
         if (genericEndpoint != null) {
             final var jsonObject = new JSONObject();
@@ -102,33 +94,6 @@ public class EndpointController implements EndpointApi {
         } catch (IOException e) {
             log.error(e.getMessage(), e);
             response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-
-        return response;
-    }
-
-    /**
-     * This method returns a generic endpoint.
-     *
-     * @param endpointId id of the generic endpoint
-     * @return a suitable http response depending on success
-     */
-    @Override
-    public ResponseEntity<String> getGenericEndpoint(final URI endpointId) {
-        log.info(">> GET /generic/endpoint endpointId: " + endpointId);
-        ResponseEntity<String> response;
-
-        final var genericEndpoint = endpointService.getGenericEndpoint(endpointId);
-
-        if (genericEndpoint != null) {
-            try {
-                response = ResponseEntity.ok(serializer.serialize(genericEndpoint));
-            } catch (IOException e) {
-                log.error(e.getMessage(), e);
-                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-            }
-        } else {
-            response = ResponseEntity.badRequest().body("Could not get the generic endpoint");
         }
 
         return response;
@@ -179,110 +144,6 @@ public class EndpointController implements EndpointApi {
             response = ResponseEntity.ok("Updated the generic endpoint with id: " + endpointId);
         } else {
             response = ResponseEntity.badRequest().body("Could not update the generic endpoint with id: " + endpointId);
-        }
-
-        return response;
-    }
-
-    /**
-     * This method returns all connector endpoints.
-     *
-     * @return a suitable http response depending on success
-     */
-    @Override
-    public ResponseEntity<String> getConnectorEndpoints() {
-        log.info(">> GET /connector/endpoints");
-        ResponseEntity<String> response;
-
-        if (configModelService.getConfigModel().getConnectorDescription() == null) {
-            response = ResponseEntity.badRequest().body("Could not get the connector");
-        } else {
-            final var connector = configModelService.getConfigModel().getConnectorDescription();
-
-            if (connector.getHasEndpoint() == null) {
-                response = ResponseEntity.badRequest().body("Could not find any connector endpoints");
-            } else {
-                try {
-                    response = ResponseEntity.ok(serializer.serialize(connector.getHasEndpoint()));
-                } catch (IOException e) {
-                    log.error(e.getMessage(), e);
-                    response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-                }
-            }
-        }
-
-        return response;
-    }
-
-    /**
-     * This method returns a specific connector endpoint.
-     *
-     * @param connectorEndpointId id of the connector endpoint
-     * @return a suitable http response depending on success
-     */
-    @Override
-    public ResponseEntity<String> getConnectorEndpoint(final URI connectorEndpointId) {
-        log.info(">> GET /connector/endpoint connectorEndpointId: " + connectorEndpointId);
-        ResponseEntity<String> response;
-
-        if (configModelService.getConfigModel().getConnectorDescription() == null) {
-            response = ResponseEntity.badRequest().body("Could not get the connector");
-        } else {
-            final var connector = configModelService.getConfigModel().getConnectorDescription();
-
-            if (connector.getHasEndpoint() == null) {
-                response = ResponseEntity.badRequest().body("Could not find any connector endpoints");
-            } else {
-                final var connectorEndpoint = connector.getHasEndpoint()
-                        .stream()
-                        .filter(connectorEndpoint1 -> connectorEndpoint1.getId().equals(connectorEndpointId))
-                        .findAny()
-                        .orElse(null);
-
-                if (connectorEndpoint != null) {
-                    try {
-                        response = ResponseEntity.ok(serializer.serialize(connectorEndpoint));
-                    } catch (IOException e) {
-                        log.error(e.getMessage(), e);
-                        response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-                    }
-                } else {
-                    response = ResponseEntity.badRequest().body("Could not find any connector endpoint with id: " + connectorEndpointId);
-                }
-            }
-        }
-
-        return response;
-    }
-
-    /**
-     * This method identifies the connector by access url and resource id and then returns a list
-     * of connector endpoints.
-     *
-     * @param accessUrl  access url of the connector
-     * @param resourceId id of the resource
-     * @return a suitable http response depending on success
-     */
-    @Override
-    public ResponseEntity<String> getConnectorEndpointsFromClient(final URI accessUrl, final String resourceId) {
-        log.info(">> GET /connector/endpoints/client accessUrl: " + accessUrl + " resourceId: " + resourceId);
-        ResponseEntity<String> response;
-
-        try {
-            final var baseConnector = client.getBaseConnector(accessUrl.toString(), resourceId);
-
-            if (baseConnector == null) {
-                response = ResponseEntity.badRequest().body("Could not determine the connector with the access url: " + accessUrl);
-            } else {
-                if (baseConnector.getHasEndpoint() == null) {
-                    response = ResponseEntity.ok(objectMapper.writeValueAsString(new JSONArray()));
-                } else {
-                    response = ResponseEntity.ok(serializer.serialize(baseConnector.getHasEndpoint()));
-                }
-            }
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-            response = ResponseEntity.badRequest().body("Could not determine connector endpoints from client");
         }
 
         return response;

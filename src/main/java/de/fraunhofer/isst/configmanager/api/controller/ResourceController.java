@@ -3,7 +3,7 @@ package de.fraunhofer.isst.configmanager.api.controller;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.api.ResourceApi;
 import de.fraunhofer.isst.configmanager.api.service.BrokerService;
-import de.fraunhofer.isst.configmanager.api.service.ResourceService;
+import de.fraunhofer.isst.configmanager.api.service.resources.ResourceService;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultBrokerClient;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultResourceClient;
 import de.fraunhofer.isst.configmanager.util.ValidateApiInput;
@@ -34,6 +34,7 @@ import java.util.concurrent.CompletableFuture;
 @Tag(name = "Resource Management", description = "Endpoints for managing the resource in the configuration manager")
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ResourceController implements ResourceApi {
+
     transient ResourceService resourceService;
     transient DefaultResourceClient client;
     transient DefaultBrokerClient brokerClient;
@@ -99,36 +100,6 @@ public class ResourceController implements ResourceApi {
     public ResponseEntity<String> getRequestedResources() {
         log.info(">> GET /resources/requested");
         return ResponseEntity.ok(resourceService.getRequestedResourcesAsJsonString());
-    }
-
-    /**
-     * This method returns a specific resource in JSON format.
-     *
-     * @param resourceId if of the resource
-     * @return a suitable http response depending on success
-     */
-    @Override
-    public ResponseEntity<String> getResourceInJson(final URI resourceId) {
-        log.info(">> GET /resource/json resourceId: " + resourceId);
-        ResponseEntity<String> response;
-
-        if (ValidateApiInput.notValid(resourceId.toString())) {
-            response = ResponseEntity.badRequest().body("All validated parameter have undefined as value!");
-        } else {
-            final var resource = resourceService.getResource(resourceId);
-
-            final var resourceJson = new JSONObject();
-            resourceJson.put("title", resource.getTitle().get(0).getValue());
-            resourceJson.put("description", resource.getDescription().get(0).getValue());
-            resourceJson.put("keyword", resource.getKeyword());
-            resourceJson.put("version", resource.getVersion());
-            resourceJson.put("standardlicense", resource.getStandardLicense().toString());
-            resourceJson.put("publisher", resource.getPublisher().toString());
-
-            response = ResponseEntity.ok(resourceJson.toJSONString());
-        }
-
-        return response;
     }
 
     /**
@@ -254,12 +225,12 @@ public class ResourceController implements ResourceApi {
 
                 if (updatedResource != null) {
                     final var clientResponse = client.updateResource(resourceId, updatedResource);
-                    if(clientResponse.isSuccessful()) {
+                    if (clientResponse.isSuccessful()) {
                         //TODO move broker registrations to a parallel thread so it won't slow down response times
-                        var registered = brokerService.getRegisStatusForResource(resourceId);
+                        final var registered = brokerService.getRegisStatusForResource(resourceId);
                         registered.iterator().forEachRemaining(elem -> {
-                            var asJsonObject = (JSONObject) elem;
-                            var brokerId = asJsonObject.getAsString("brokerId");
+                            final var asJsonObject = (JSONObject) elem;
+                            final var brokerId = asJsonObject.getAsString("brokerId");
                             CompletableFuture.runAsync(() -> {
                                 try {
                                     brokerClient.updateAtBroker(brokerId);
@@ -271,13 +242,14 @@ public class ResourceController implements ResourceApi {
                         resourceService.updateResourceInAppRoute(updatedResource);
                     }
                     final var jsonObject = new JSONObject();
-                    var responseBody = clientResponse.body();
+                    final var responseBody = clientResponse.body();
                     jsonObject.put("connectorResponse", responseBody != null ? responseBody.string() : "");
                     jsonObject.put("resourceID", resourceId.toString());
 
                     response = ResponseEntity.ok(jsonObject.toJSONString());
                 } else {
-                    response = ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("No resource with ID %s was found!", resourceId));
+                    response = ResponseEntity.status(HttpStatus.NOT_FOUND)
+                            .body(String.format("No resource with ID %s was found!", resourceId));
                 }
             } catch (IOException e) {
                 log.error(e.getMessage(), e);

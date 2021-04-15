@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Objects;
 
 /**
  * The api class implements the BrokerAPI and offers the possibilities to manage
@@ -114,33 +115,6 @@ public class BrokerController implements BrokerApi {
     }
 
     /**
-     * This method returns a broker with the given id.
-     *
-     * @param brokerId id of the broker
-     * @return a suitable http response depending on success
-     */
-    @Override
-    public ResponseEntity<String> getBroker(final URI brokerId) {
-        log.info(">> GET /broker brokerId: " + brokerId);
-        ResponseEntity<String> response;
-
-        final var broker = brokerService.getById(brokerId);
-
-        if (broker != null) {
-            try {
-                response = ResponseEntity.ok(objectMapper.writeValueAsString(broker));
-            } catch (IOException e) {
-                log.error(e.getMessage(), e);
-                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-            }
-        } else {
-            response = ResponseEntity.badRequest().body("Could not get the specific broker");
-        }
-
-        return response;
-    }
-
-    /**
      * This method returns a list of all brokers as string.
      *
      * @return a suitable http response depending on success
@@ -163,27 +137,6 @@ public class BrokerController implements BrokerApi {
     }
 
     /**
-     * This method returns a list of broker uri's.
-     *
-     * @return a suitable http response depending on success
-     */
-    @Override
-    public ResponseEntity<String> getAllBrokerUris() {
-        log.info(">> GET /broker/list");
-        ResponseEntity<String> response;
-
-        final var brokerUris = brokerService.getAllBrokerUris();
-
-        if (brokerUris != null) {
-            response = ResponseEntity.ok(brokerUris.toString());
-        } else {
-            response = ResponseEntity.badRequest().body("Could not return the uri list of brokers");
-        }
-
-        return response;
-    }
-
-    /**
      * This method registers a connector with a specific broker.
      *
      * @param brokerUri uri of the broker
@@ -196,6 +149,7 @@ public class BrokerController implements BrokerApi {
 
         final var broker = brokerService.getById(brokerUri);
         final var jsonObject = new JSONObject();
+        final var success = "success";
 
         if (broker != null) {
             try {
@@ -203,14 +157,14 @@ public class BrokerController implements BrokerApi {
                 if (clientResponse.isSuccessful()) {
                     brokerService.sentSelfDescToBroker(brokerUri);
                     brokerService.setBrokerStatus(brokerUri, BrokerStatus.REGISTERED);
-                    jsonObject.put("success", true);
+                    jsonObject.put(success, true);
                 } else {
-                    jsonObject.put("success", false);
+                    jsonObject.put(success, false);
                 }
                 response = ResponseEntity.ok(jsonObject.toJSONString());
             } catch (IOException e) {
                 log.error(e.getMessage(), e);
-                jsonObject.put("success", false);
+                jsonObject.put(success, false);
                 response = ResponseEntity.ok(jsonObject.toJSONString());
             }
         } else {
@@ -233,22 +187,23 @@ public class BrokerController implements BrokerApi {
 
         final var broker = brokerService.getById(brokerUri);
         final var jsonObject = new JSONObject();
+        final var success = "success";
 
         if (broker != null) {
             try {
                 final var clientResponse = client.unregisterAtBroker(brokerUri.toString());
-                var clientResponseString = clientResponse.body().string();
+                final var clientResponseString = Objects.requireNonNull(clientResponse.body()).string();
                 if (clientResponse.isSuccessful() && !clientResponseString.contains("RejectionMessage")) {
                     brokerService.unregisteredAtBroker(brokerUri);
                     brokerService.setBrokerStatus(brokerUri, BrokerStatus.UNREGISTERED);
-                    jsonObject.put("success", true);
+                    jsonObject.put(success, true);
                 } else {
-                    jsonObject.put("success", false);
+                    jsonObject.put(success, false);
                 }
                 response = ResponseEntity.ok(jsonObject.toJSONString());
             } catch (IOException e) {
                 log.error(e.getMessage(), e);
-                jsonObject.put("success", false);
+                jsonObject.put(success, false);
                 response = ResponseEntity.ok(jsonObject.toJSONString());
             }
         } else {

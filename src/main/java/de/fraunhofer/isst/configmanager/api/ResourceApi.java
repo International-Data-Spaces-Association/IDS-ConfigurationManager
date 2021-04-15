@@ -4,7 +4,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -27,14 +31,6 @@ public interface ResourceApi {
     @Operation(summary = "Returns all requested resources from the connector")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully returned all requested resources from the connector")})
     ResponseEntity<String> getRequestedResources();
-
-    @GetMapping(value = "/resource/json", produces = "application/ld+json")
-    @Operation(summary = "Returns the specific resource from the connector in JSON format")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Successfully returned the specific resource "
-                    + "from the connector in JSON format"),
-            @ApiResponse(responseCode = "400", description = "Validation failed. Can not find the resource")})
-    ResponseEntity<String> getResourceInJson(@RequestParam(value = "resourceId") URI resourceId);
 
     @PostMapping(value = "/resource", produces = "application/ld+json")
     @Operation(summary = "Creates a resource for the connector")

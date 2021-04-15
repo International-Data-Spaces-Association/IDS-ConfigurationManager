@@ -168,6 +168,26 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
     }
 
     @Override
+    public String getPolicyPattern(final String policy) throws IOException {
+        log.info("---- [DataspaceConnectorClient getPolicyPattern] Get pattern for policy");
+
+        final var builder = getRequestBuilder();
+        builder.url(connectorBaseUrl + "/admin/api/example/policy-validation");
+        builder.post(RequestBody.create(policy, okhttp3.MediaType.parse("application/ld+json")));
+        builder.header("Authorization",
+                Credentials.basic(dataSpaceConnectorApiUsername, dataSpaceConnectorApiPassword));
+
+        final var request = builder.build();
+        final var response = DispatchRequest.sendToDataspaceConnector(request);
+
+        if (!response.isSuccessful()) {
+            log.warn("---- [DataspaceConnectorClient getPolicyPattern] Pattern for policy could not be determined");
+        }
+
+        return Objects.requireNonNull(response.body()).string();
+    }
+
+    @Override
     public String requestContractAgreement(final String recipientId,
                                            final String requestedArtifactId,
                                            final String contractOffer) throws IOException {
@@ -197,26 +217,6 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
 
         if (!response.isSuccessful()) {
             log.warn("---- [DataspaceConnectorClient requestContractAgreement] Could not request contract agreement");
-        }
-
-        return Objects.requireNonNull(response.body()).string();
-    }
-
-    @Override
-    public String getPolicyPattern(final String policy) throws IOException {
-        log.info("---- [DataspaceConnectorClient getPolicyPattern] Get pattern for policy");
-
-        final var builder = getRequestBuilder();
-        builder.url(connectorBaseUrl + "/admin/api/example/policy-validation");
-        builder.post(RequestBody.create(policy, okhttp3.MediaType.parse("application/ld+json")));
-        builder.header("Authorization",
-                Credentials.basic(dataSpaceConnectorApiUsername, dataSpaceConnectorApiPassword));
-
-        final var request = builder.build();
-        final var response = DispatchRequest.sendToDataspaceConnector(request);
-
-        if (!response.isSuccessful()) {
-            log.warn("---- [DataspaceConnectorClient getPolicyPattern] Pattern for policy could not be determined");
         }
 
         return Objects.requireNonNull(response.body()).string();
