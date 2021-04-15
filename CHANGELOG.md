@@ -19,7 +19,6 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Patch Change: Code and Architecture refactoring
 - Patch Change: Docker, the Java version to be used is now fixed in the Dockerfile
 - Patch Change: If running infomodel-deserialize throws IOException,  these are now explicitly logged in the DataspaceConnectorClient
-- Patch Change: Updated the Readme file
 
 ### Fixes
 - Patch Change: POST /api/ui/broker/register now return success:false if connector doesn't return 200 and GET /api/ui/brokers returns not registered in this case
@@ -30,6 +29,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Miscellaneous
 - Added custom banner at application startup instead of default banner
+- Updated Readme
+- Disabled Swagger Petstore default playground
 
 ## [6.0.0] - 2021-03-26
 
