@@ -40,10 +40,11 @@ public class EndpointService {
      * @param password  password for the authentication
      * @return generic endpoint
      */
-    public GenericEndpoint createGenericEndpoint(final String accessURL,
+    public GenericEndpoint createGenericEndpoint(final URI accessURL,
                                                  final String username,
                                                  final String password) {
-        final var endpoint = new GenericEndpointBuilder()._accessURL_(URI.create(accessURL)).build();
+        GenericEndpoint endpoint = null;
+        endpoint = new GenericEndpointBuilder()._accessURL_(accessURL).build();
         final var endpointImpl = (GenericEndpointImpl) endpoint;
 
         if (username != null && password != null) {
@@ -65,7 +66,6 @@ public class EndpointService {
 
         customGenericEndpointList.getCustomGenericEndpointObjects().add(customGenericEndpointObject);
         customGenericEndpointList = customGenericEndpointRepository.saveAndFlush(customGenericEndpointList);
-
         return endpoint;
     }
 
@@ -123,7 +123,7 @@ public class EndpointService {
      * @return true, if generic endpoint is updated
      */
     public boolean updateGenericEndpoint(final URI id,
-                                         final String accessURL,
+                                         final URI accessURL,
                                          final String username,
                                          final String password) {
 
@@ -135,7 +135,7 @@ public class EndpointService {
             final var genericEndpointNewImpl = (GenericEndpointImpl) genericEndpointNew;
 
             if (accessURL != null) {
-                genericEndpointNewImpl.setAccessURL(URI.create(accessURL));
+                genericEndpointNewImpl.setAccessURL(accessURL);
             }
 
             final var basicAuthentication = genericEndpointNew.getGenericEndpointAuthentication();

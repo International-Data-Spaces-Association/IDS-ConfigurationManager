@@ -57,7 +57,7 @@ public class EndpointController implements EndpointApi {
      * @return a suitable http response depending on success
      */
     @Override
-    public ResponseEntity<String> createGenericEndpoint(final String accessURL,
+    public ResponseEntity<String> createGenericEndpoint(final URI accessURL,
                                                         final String username,
                                                         final String password) {
         log.info(">> POST /generic/endpoint accessURL: " + accessURL + " username: " + username);
@@ -132,7 +132,7 @@ public class EndpointController implements EndpointApi {
      */
     @Override
     public ResponseEntity<String> updateGenericEndpoint(final URI endpointId,
-                                                        final String accessURL,
+                                                        final URI accessURL,
                                                         final String username,
                                                         final String password) {
         log.info(">> PUT /generic/endpoint endpointId: " + endpointId + " accessURL: " + accessURL);
@@ -156,7 +156,7 @@ public class EndpointController implements EndpointApi {
      * @return a suitable http response depending on success
      */
     @Override
-    public ResponseEntity<String> createConnectorEndpoint(final String accessUrl) {
+    public ResponseEntity<String> createConnectorEndpoint(final URI accessUrl) {
         log.info(">> POST /connector/endpoint accessUrl: " + accessUrl);
 
         final var configModelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
@@ -167,7 +167,7 @@ public class EndpointController implements EndpointApi {
         }
 
         final var connectorEndpoints = (ArrayList<ConnectorEndpoint>) baseConnector.getHasEndpoint();
-        final var connectorEndpoint = new ConnectorEndpointBuilder()._accessURL_(URI.create(accessUrl)).build();
+        final var connectorEndpoint = new ConnectorEndpointBuilder()._accessURL_(accessUrl).build();
 
         connectorEndpoints.add(connectorEndpoint);
         configModelService.saveState();

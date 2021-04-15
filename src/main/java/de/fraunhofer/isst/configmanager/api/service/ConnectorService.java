@@ -68,10 +68,10 @@ public class ConnectorService {
      */
     public boolean updateConnector(final String title,
                                    final String description,
-                                   final String endpointAccessURL,
+                                   final URI endpointAccessURL,
                                    final String version,
-                                   final String curator,
-                                   final String maintainer,
+                                   final URI curator,
+                                   final URI maintainer,
                                    final String inboundModelVersion,
                                    final String outboundModelVersion) {
 
@@ -87,16 +87,16 @@ public class ConnectorService {
             }
             if (endpointAccessURL != null) {
                 connector.setHasEndpoint(Util.asList(new ConnectorEndpointBuilder()
-                        ._accessURL_(URI.create(endpointAccessURL)).build()));
+                        ._accessURL_(endpointAccessURL).build()));
             }
             if (version != null) {
                 connector.setVersion(version);
             }
             if (curator != null) {
-                connector.setCurator(URI.create(curator));
+                connector.setCurator(curator);
             }
             if (maintainer != null) {
-                connector.setMaintainer(URI.create(maintainer));
+                connector.setMaintainer(maintainer);
             }
             if (inboundModelVersion != null) {
                 connector.setInboundModelVersion(Util.asList(inboundModelVersion));

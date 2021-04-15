@@ -1,3 +1,11 @@
+```
+   ____                __  _         __  __
+  / ___| ___   _ __   / _|(_)  __ _ |  \/  |  __ _  _ __    __ _   __ _   ___  _ __
+ | |    / _ \ | '_ \ | |_ | | / _` || |\/| | / _` || '_ \  / _` | / _` | / _ \| '__|
+ | |___| (_) || | | ||  _|| || (_| || |  | || (_| || | | || (_| || (_| ||  __/| |
+  \____|\___/ |_| |_||_|  |_| \__, ||_|  |_| \__,_||_| |_| \__,_| \__, | \___||_|
+                              |___/                               |___/
+```
 # Changelog
 
 All notable changes to this project will be documented in this file.
@@ -26,6 +34,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Patch Change: Internal Database can be reached and viewed again at: http://localhost:8081/console
 - Patch Change: After editing the connector settings the broker will be updated with the new information
 - Patch Change: Updated recursion methods in ResourceService that caused problems
+- Patch Change: A percent sign within URLs in the UI no longer results in an error in the CM-Backend.
 
 ### Miscellaneous
 - Added custom banner at application startup instead of default banner
