@@ -66,8 +66,8 @@ public class ConnectorService {
                                          final String description,
                                          final URI endpointAccessURL,
                                          final String version,
-                                         final String curator,
-                                         final String maintainer,
+                                         final URI curator,
+                                         final URI maintainer,
                                          final String inboundedModelVersion,
                                          final String outboundedModelVersion) {
 
@@ -76,8 +76,8 @@ public class ConnectorService {
                 ._description_(Util.asList(new TypedLiteral(description)))
                 ._hasEndpoint_(Util.asList(new ConnectorEndpointBuilder()._accessURL_(endpointAccessURL).build()))
                 ._version_(version)
-                ._curator_(URI.create(curator))
-                ._maintainer_(URI.create(maintainer))
+                ._curator_(curator)
+                ._maintainer_(maintainer)
                 ._inboundModelVersion_(Util.asList(inboundedModelVersion))
                 ._outboundModelVersion_(outboundedModelVersion)
                 ._securityProfile_(SecurityProfile.BASE_SECURITY_PROFILE).build();
@@ -98,8 +98,8 @@ public class ConnectorService {
                                    final String description,
                                    final String endpointAccessURL,
                                    final String version,
-                                   final String curator,
-                                   final String maintainer,
+                                   final URI curator,
+                                   final URI maintainer,
                                    final String inboundModelVersion,
                                    final String outboundModelVersion) {
 
@@ -121,10 +121,10 @@ public class ConnectorService {
                 connector.setVersion(version);
             }
             if (curator != null) {
-                connector.setCurator(URI.create(curator));
+                connector.setCurator(curator);
             }
             if (maintainer != null) {
-                connector.setMaintainer(URI.create(maintainer));
+                connector.setMaintainer(maintainer);
             }
             if (inboundModelVersion != null) {
                 connector.setInboundModelVersion(Util.asList(inboundModelVersion));

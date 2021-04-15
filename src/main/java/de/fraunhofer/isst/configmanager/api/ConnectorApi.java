@@ -36,8 +36,8 @@ public interface ConnectorApi {
                                            @RequestParam("description") String description,
                                            @RequestParam("endpointAccessURL") URI endpointAccessURL,
                                            @RequestParam("version") String version,
-                                           @RequestParam("curator") String curator,
-                                           @RequestParam("maintainer") String maintainer,
+                                           @RequestParam("curator") URI curator,
+                                           @RequestParam("maintainer") URI maintainer,
                                            @RequestParam("inboundModelVersion") String inboundModelVersion,
                                            @RequestParam("outboundModelVersion") String outboundModelVersion);
 
@@ -52,8 +52,8 @@ public interface ConnectorApi {
                                            @RequestParam(value = "description", required = false) String description,
                                            @RequestParam(value = "endpoint", required = false) String endpoint,
                                            @RequestParam(value = "version", required = false) String version,
-                                           @RequestParam(value = "curator", required = false) String curator,
-                                           @RequestParam(value = "maintainer", required = false) String maintainer,
+                                           @RequestParam(value = "curator", required = false) URI curator,
+                                           @RequestParam(value = "maintainer", required = false) URI maintainer,
                                            @RequestParam(value = "inboundModelVersion", required = false) String inboundModelVersion,
                                            @RequestParam(value = "outboundModelVersion", required = false) String outboundModelVersion);
 

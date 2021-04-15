@@ -157,8 +157,8 @@ public class ConnectorController implements ConnectorApi {
     @Override
     public ResponseEntity<String> createConnector(final String title, final String description,
                                                   final URI endpointAccessURL,
-                                                  final String version, final String curator,
-                                                  final String maintainer,
+                                                  final String version, final URI curator,
+                                                  final URI maintainer,
                                                   final String inboundModelVersion,
                                                   final String outboundModelVersion) {
         log.info(">> POST /connector");
@@ -193,8 +193,8 @@ public class ConnectorController implements ConnectorApi {
     @Override
     public ResponseEntity<String> updateConnector(final String title, final String description,
                                                   final String endpointAccessURL,
-                                                  final String version, final String curator,
-                                                  final String maintainer,
+                                                  final String version, final URI curator,
+                                                  final URI maintainer,
                                                   final String inboundModelVersion,
                                                   final String outboundModelVersion) {
         log.info(">> PUT /connector title: " + title + " description: " + " endpointAccessURL: " + endpointAccessURL
