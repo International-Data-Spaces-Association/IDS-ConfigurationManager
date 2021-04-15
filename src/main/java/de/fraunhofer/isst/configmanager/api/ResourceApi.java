@@ -42,8 +42,8 @@ public interface ResourceApi {
                                           @RequestParam("language") String language,
                                           @RequestParam("keyword") ArrayList<String> keywords,
                                           @RequestParam("version") String version,
-                                          @RequestParam("standardlicense") String standardlicense,
-                                          @RequestParam("publisher") String publisher);
+                                          @RequestParam("standardlicense") URI standardlicense,
+                                          @RequestParam("publisher") URI publisher);
 
     @PutMapping(value = "/resource", produces = "application/ld+json")
     @Operation(summary = "Updates the specific resource at the connector")
@@ -58,8 +58,8 @@ public interface ResourceApi {
                                           @RequestParam(value = "language", required = false) String language,
                                           @RequestParam(value = "keyword", required = false) ArrayList<String> keywords,
                                           @RequestParam(value = "version", required = false) String version,
-                                          @RequestParam(value = "standardlicense", required = false) String standardlicense,
-                                          @RequestParam(value = "publisher", required = false) String publisher);
+                                          @RequestParam(value = "standardlicense", required = false) URI standardlicense,
+                                          @RequestParam(value = "publisher", required = false) URI publisher);
 
     @DeleteMapping(value = "/resource")
     @Operation(summary = "Deletes the specific resource from the connector")

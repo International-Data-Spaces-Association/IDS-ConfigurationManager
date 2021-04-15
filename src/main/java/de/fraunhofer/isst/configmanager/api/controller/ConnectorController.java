@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -127,10 +128,12 @@ public class ConnectorController implements ConnectorApi {
      * @return http response message with the id of the created connector
      */
     @Override
-    public ResponseEntity<String> updateConnector(final String title, final String description,
-                                                  final String endpointAccessURL,
-                                                  final String version, final String curator,
-                                                  final String maintainer,
+    public ResponseEntity<String> updateConnector(final String title,
+                                                  final String description,
+                                                  final URI endpointAccessURL,
+                                                  final String version,
+                                                  final URI curator,
+                                                  final URI maintainer,
                                                   final String inboundModelVersion,
                                                   final String outboundModelVersion) {
         log.info(">> PUT /connector title: " + title + " description: " + " endpointAccessURL: " + endpointAccessURL

@@ -167,7 +167,7 @@ public class ConfigModelService {
                                             final String trustStorePassword,
                                             final String keyStore,
                                             final String keyStorePassword,
-                                            final String proxyUri,
+                                            final URI proxyUri,
                                             final ArrayList<URI> noProxyUriList,
                                             final String username,
                                             final String password) {
@@ -211,7 +211,7 @@ public class ConfigModelService {
      * @param password        password for the authentication
      * @param configmodelImpl configuration model implementation
      */
-    public void updateProxySettings(final String proxyUri, final ArrayList<URI> noProxyUriList,
+    public void updateProxySettings(final URI proxyUri, final ArrayList<URI> noProxyUriList,
                                     final String username, final String password,
                                     final ConfigurationModelImpl configmodelImpl) {
         if ("null".equals(proxyUri)) {
@@ -219,7 +219,7 @@ public class ConfigModelService {
         } else {
             if (getConfigModelObject().getConfigurationModel().getConnectorProxy() == null) {
                 final var proxy = new ProxyBuilder()
-                        ._proxyURI_(URI.create(proxyUri))
+                        ._proxyURI_(proxyUri)
                         ._noProxy_(noProxyUriList)
                         ._proxyAuthentication_(new BasicAuthenticationBuilder()
                                 ._authUsername_(username)._authPassword_(password).build())
@@ -229,7 +229,7 @@ public class ConfigModelService {
                 final var proxyImpl =
                         (ProxyImpl) getConfigModelObject().getConfigurationModel().getConnectorProxy().get(0);
 
-                proxyImpl.setProxyURI(URI.create(proxyUri));
+                proxyImpl.setProxyURI(proxyUri);
                 if (noProxyUriList != null) {
                     proxyImpl.setNoProxy(noProxyUriList);
                 }
