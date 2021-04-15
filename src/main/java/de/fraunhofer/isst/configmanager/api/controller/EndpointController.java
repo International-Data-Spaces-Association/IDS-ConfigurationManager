@@ -167,7 +167,7 @@ public class EndpointController implements EndpointApi {
      */
     @Override
     public ResponseEntity<String> updateGenericEndpoint(final URI endpointId,
-                                                        final String accessURL,
+                                                        final URI accessURL,
                                                         final String username,
                                                         final String password) {
         log.info(">> PUT /generic/endpoint endpointId: " + endpointId + " accessURL: " + accessURL);

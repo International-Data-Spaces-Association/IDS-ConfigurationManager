@@ -119,7 +119,7 @@ public class EndpointService {
      * @return true, if generic endpoint is updated
      */
     public boolean updateGenericEndpoint(final URI id,
-                                         final String accessURL,
+                                         final URI accessURL,
                                          final String username,
                                          final String password) {
 
@@ -131,7 +131,7 @@ public class EndpointService {
             final var genericEndpointNewImpl = (GenericEndpointImpl) genericEndpointNew;
 
             if (accessURL != null) {
-                genericEndpointNewImpl.setAccessURL(URI.create(accessURL));
+                genericEndpointNewImpl.setAccessURL(accessURL);
             }
 
             final var basicAuthentication = genericEndpointNew.getGenericEndpointAuthentication();
