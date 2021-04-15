@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 /**
- * An implementation of the interface DefaultConnectorClient for the DataspaceConnector.
+ * An implementation of the interface DefaultConnectorClient for the Dataspace Connector.
  */
 @Slf4j
 @Service
@@ -225,11 +225,14 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
     }
 
     @Override
-    public Response requestData(String recipientId, String requestedArtifactId, String contractId,
-                                String key, QueryInput queryInput) throws IOException {
+    public Response requestData(final String recipientId,
+                                final String requestedArtifactId,
+                                final String contractId,
+                                final String key,
+                                final QueryInput queryInput) throws IOException {
 
-        log.info("---- [DataspaceConnectorClient requestData] Request Data with recipient: {}, artifact: {}," +
-                " contract: {}, key: {} and queryInput: {} ", recipientId, requestedArtifactId, contractId, key, queryInput);
+        log.info("---- [DataspaceConnectorClient requestData] Request Data with recipient: {}, artifact: {},"
+                + " contract: {}, key: {} and queryInput: {} ", recipientId, requestedArtifactId, contractId, key, queryInput);
 
         final var builder = getRequestBuilder();
         final var urlBuilder = new HttpUrl.Builder()
@@ -250,7 +253,7 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
         builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername, dataSpaceConnectorApiPassword));
 
         if (queryInput != null) {
-            String query = MAPPER.writeValueAsString(queryInput);
+            final var query = MAPPER.writeValueAsString(queryInput);
             builder.post(RequestBody.create(query, okhttp3.MediaType.parse("application/json")));
         } else {
             builder.post(RequestBody.create(new byte[0], null));
@@ -263,25 +266,5 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
             log.warn("---- [DataspaceConnectorClient requestData] Could not request data");
         }
         return response;
-    }
-
-    @Override
-    public String getPolicyPattern(final String policy) throws IOException {
-        log.info("---- [DataspaceConnectorClient getPolicyPattern] Get pattern for policy");
-
-        final var builder = getRequestBuilder();
-        builder.url(connectorBaseUrl + "/admin/api/example/policy-validation");
-        builder.post(RequestBody.create(policy, okhttp3.MediaType.parse("application/ld+json")));
-        builder.header("Authorization",
-                Credentials.basic(dataSpaceConnectorApiUsername, dataSpaceConnectorApiPassword));
-
-        final var request = builder.build();
-        final var response = DispatchRequest.sendToDataspaceConnector(request);
-
-        if (!response.isSuccessful()) {
-            log.warn("---- [DataspaceConnectorClient getPolicyPattern] Pattern for policy could not be determined");
-        }
-
-        return Objects.requireNonNull(response.body()).string();
     }
 }
