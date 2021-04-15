@@ -28,6 +28,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Patch Change: After editing the connector settings the broker will be updated with the new information
 - Patch Change: Updated recursion methods in ResourceService that caused problems
 
+### Miscellaneous
+- Added custom banner at application startup instead of default banner
+
 ## [6.0.0] - 2021-03-26
 
 ### Added
