@@ -28,7 +28,7 @@ import java.util.Properties;
 @EnableScheduling
 @SpringBootApplication
 public class ConfigmanagerApplication {
-    public static final String CURRENT_VERSION = "6.1.0-SNAPSHOT";
+    public static final String CURRENT_VERSION = "7.0.0";
 
     public static void main(final String[] args) {
         log.info("---- [ConfigmanagerApplication] Starting ConfigManager " + CURRENT_VERSION);

@@ -149,7 +149,7 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
                 dataSpaceConnectorApiPassword));
         builder.post(RequestBody.create(new byte[0], null));
 
-        log.info("---- [DataspaceConnectorClient getBaseConnector] " + url);
+        log.info("---- [DataspaceConnectorClient getBaseConnector] " + url.toString());
         final var request = builder.build();
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
@@ -167,6 +167,26 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
         }
 
         return baseConnector;
+    }
+
+    @Override
+    public String getPolicyPattern(final String policy) throws IOException {
+        log.info("---- [DataspaceConnectorClient getPolicyPattern] Get pattern for policy");
+
+        final var builder = getRequestBuilder();
+        builder.url(connectorBaseUrl + "/admin/api/example/policy-validation");
+        builder.post(RequestBody.create(policy, okhttp3.MediaType.parse("application/ld+json")));
+        builder.header("Authorization",
+                Credentials.basic(dataSpaceConnectorApiUsername, dataSpaceConnectorApiPassword));
+
+        final var request = builder.build();
+        final var response = DispatchRequest.sendToDataspaceConnector(request);
+
+        if (!response.isSuccessful()) {
+            log.warn("---- [DataspaceConnectorClient getPolicyPattern] Pattern for policy could not be determined");
+        }
+
+        return Objects.requireNonNull(response.body()).string();
     }
 
     @Override

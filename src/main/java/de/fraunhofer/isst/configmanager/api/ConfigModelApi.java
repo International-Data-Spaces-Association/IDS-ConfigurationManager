@@ -36,9 +36,4 @@ public interface ConfigModelApi {
             @ApiResponse(responseCode = "200", description = "Succesfully get the configuration model"),
             @ApiResponse(responseCode = "400", description = "Can not find the configuration model")})
     ResponseEntity<String> getConfigModel();
-
-    @GetMapping(value = "/configmodel/json", produces = "application/ld+json")
-    @Operation(summary = "Get the configuration model in json")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "Succesfully get the configuration model in json")})
-    ResponseEntity<String> getConfigModelJson();
 }

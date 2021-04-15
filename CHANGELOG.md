@@ -5,24 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [6.1.0-SNAPSHOT] - UNRELEASED
+## [7.0.0] - UNRELEASED
+### Major Changes
+- Remove 20 unused APIs (= 1.150 lines of code) (unused by ConfigManager-UI project)
+- For the APIs of the enums, in addition to the technical name, such as DE for the language-dropdown, the written labels are now also supplied, e.g. German <-> DE. The structure of the API returns has changed accordingly
+
 ### Added
 - Minor Change: New API GET /api/ui/connector/status to return the accessibility-status of the Public-Connector-Endpoint
 - Minor Change: New API PUT /resource/contract/update to create the contract in the configmanager and update it at the dataspace connector
 - Minor Change: New setting option to address the DSC via HTTP or HTTPS. dataspace.communication.ssl=true/false in application.properties and DATASPACE_COMMUNICATION_SSL=true/false in docker-compose environment.
 
 ### Changes
-- Code and Architecture refactoring
-- Docker: The Java version to be used is now fixed in the Dockerfile
-- If running infomodel-deserialize throws IOException,  these are now explicitly logged in the DataspaceConnectorClient
-- Updated the Readme file
+- Patch Change: Code and Architecture refactoring
+- Patch Change: Docker, the Java version to be used is now fixed in the Dockerfile
+- Patch Change: If running infomodel-deserialize throws IOException,  these are now explicitly logged in the DataspaceConnectorClient
 
 ### Fixes
-- POST /api​/ui​/broker​/register now return success:false if connector doesn't return 200 and GET /api​/ui​/brokers returns not registered in this case
-- Resources are updated at broker after they have been edited
-- Internal Database can be reached and viewed again at: http://localhost:8081/console
-- After editing the connector settings the broker will be updated with the new information
-- Updated recursion methods in ResourceService that caused problems
+- Patch Change: POST /api/ui/broker/register now return success:false if connector doesn't return 200 and GET /api/ui/brokers returns not registered in this case
+- Patch Change: Resources are updated at broker after they have been edited
+- Patch Change: Internal Database can be reached and viewed again at: http://localhost:8081/console
+- Patch Change: After editing the connector settings the broker will be updated with the new information
+- Patch Change: Updated recursion methods in ResourceService that caused problems
+
+### Miscellaneous
+- Added custom banner at application startup instead of default banner
+- Updated Readme
+- Disabled Swagger Petstore default playground
 
 ## [6.0.0] - 2021-03-26
 

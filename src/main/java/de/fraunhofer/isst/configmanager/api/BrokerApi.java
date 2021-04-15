@@ -40,22 +40,6 @@ public interface BrokerApi {
             @ApiResponse(responseCode = "500", description = "Internal server error")})
     ResponseEntity<String> getAllBrokers();
 
-    @GetMapping(value = "/broker/list", produces = "application/ld+json")
-    @Operation(summary = "Returns a list of all broker uri's")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Successfully returned a list of all broker uris"),
-            @ApiResponse(responseCode = "400", description = "Can not find the broker uris")})
-    ResponseEntity<String> getAllBrokerUris();
-
-    @GetMapping(value = "/broker", produces = "application/ld+json")
-    @Operation(summary = "Returns the specific broker")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Successfully returned the specific broker"),
-            @ApiResponse(responseCode = "400", description = "Can not find the broker"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")})
-    ResponseEntity<String> getBroker(@RequestParam(value = "brokerUri") URI brokerUri);
-
-    // APIs to be able to manage connector at broker
     @PostMapping(value = "/broker/register", produces = "application/ld+json")
     @Operation(summary = "Registers the connector with the broker")
     @ApiResponses({

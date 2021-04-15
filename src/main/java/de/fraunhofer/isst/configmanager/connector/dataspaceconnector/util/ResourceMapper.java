@@ -44,17 +44,6 @@ public class ResourceMapper {
     }
 
     /**
-     * The method return with the help of the uri from a resource the uuid.
-     *
-     * @param id of the resource
-     * @return uuid of the resource
-     */
-    public UUID getMappedId(final URI id) {
-        final var pairs = resourceIDPairRepository.findByUri(id);
-        return pairs.isEmpty() ? null : pairs.get(0).getUuid();
-    }
-
-    /**
      * The method cuts the last part of an uri. For example:
      * URI: https://w3id.org/idsa/autogen/configurationModel/9abd295d-b96f-49fa-8c10-a64179c24049 ->
      * UUID_REGEX: 9abd295d-b96f-49fa-8c10-a64179c24049
@@ -165,20 +154,6 @@ public class ResourceMapper {
             sourceType = BackendSource.Type.valueOf(propName);
         }
         return sourceType;
-    }
-
-    /**
-     * The method deletes the ResourceIDPair object from the database.
-     *
-     * @param id of the resource
-     */
-    public void deleteResourceIDPair(final URI id) {
-        final var pairs = resourceIDPairRepository.findByUri(id);
-        if (pairs.isEmpty()) {
-            return;
-        }
-        pairs.forEach(resourceIDPairRepository::delete);
-        resourceIDPairRepository.flush();
     }
 
     /**

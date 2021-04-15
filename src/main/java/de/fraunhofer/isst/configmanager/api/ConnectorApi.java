@@ -4,7 +4,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 public interface ConnectorApi {
     @GetMapping(value = "/connector", produces = "application/ld+json")
@@ -22,23 +24,6 @@ public interface ConnectorApi {
             @ApiResponse(responseCode = "503", description = "Public connector endpoint not reachable.")})
     ResponseEntity<String> getConnectorStatus();
 
-    @GetMapping(value = "/connector/json", produces = "application/ld+json")
-    @Operation(summary = "Get the connector in json")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully retrieved the connector in json")})
-    ResponseEntity<String> getConnectorJson();
-
-    @PostMapping(value = "/connector", produces = "application/ld+json")
-    @Operation(summary = "Create a new connector")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully created a new connector")})
-    ResponseEntity<String> createConnector(@RequestParam("title") String title,
-                                           @RequestParam("description") String description,
-                                           @RequestParam("endpointAccessURL") String endpointAccessURL,
-                                           @RequestParam("version") String version,
-                                           @RequestParam("curator") String curator,
-                                           @RequestParam("maintainer") String maintainer,
-                                           @RequestParam("inboundModelVersion") String inboundModelVersion,
-                                           @RequestParam("outboundModelVersion") String outboundModelVersion);
-
     @PutMapping(value = "/connector", produces = "application/ld+json")
     @Operation(summary = "Update a connector")
     @ApiResponses({
@@ -52,11 +37,4 @@ public interface ConnectorApi {
                                            @RequestParam(value = "maintainer", required = false) String maintainer,
                                            @RequestParam(value = "inboundModelVersion", required = false) String inboundModelVersion,
                                            @RequestParam(value = "outboundModelVersion", required = false) String outboundModelVersion);
-
-    @DeleteMapping(value = "/connector")
-    @Operation(summary = "Deletes the connector")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Successfully deleted the connector"),
-            @ApiResponse(responseCode = "400", description = "Could not delete the connector")})
-    ResponseEntity<String> deleteConnector();
 }
