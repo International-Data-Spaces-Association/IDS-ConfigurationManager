@@ -38,8 +38,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Miscellaneous
 - Added custom banner at application startup instead of default banner
-- Updated Readme
 - Disabled Swagger Petstore default playground
+- Docs: Updated Readme
+- Docs: Add package-info files where appropriate
 
 ## [6.0.0] - 2021-03-26
 
