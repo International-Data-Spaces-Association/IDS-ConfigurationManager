@@ -95,7 +95,7 @@ public class ConnectorRequestService {
      * @param recipientId         id of the recipient
      * @param requestedArtifactId id of the requested artifact
      * @param contractOffer       contact offer for the requested resource
-     * @return string, contract acgreement id
+     * @return string, contract agreement id
      */
     public String requestContractAgreement(final String recipientId,
                                            final String requestedArtifactId,
