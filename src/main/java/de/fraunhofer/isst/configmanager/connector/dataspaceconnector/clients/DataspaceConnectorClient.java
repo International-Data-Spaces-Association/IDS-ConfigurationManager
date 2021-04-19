@@ -5,12 +5,14 @@ import de.fraunhofer.iais.eis.ConfigurationModel;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.util.DispatchRequest;
 import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.util.ResourceMapper;
+import de.fraunhofer.isst.configmanager.model.config.QueryInput;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Credentials;
 import okhttp3.HttpUrl;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +20,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 /**
- * An implementation of the interface DefaultConnectorClient for the DataspaceConnector.
+ * An implementation of the interface DefaultConnectorClient for the Dataspace Connector.
  */
 @Slf4j
 @Service
@@ -220,5 +222,49 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
         }
 
         return Objects.requireNonNull(response.body()).string();
+    }
+
+    @Override
+    public Response requestData(final String recipientId,
+                                final String requestedArtifactId,
+                                final String contractId,
+                                final String key,
+                                final QueryInput queryInput) throws IOException {
+
+        log.info("---- [DataspaceConnectorClient requestData] Request Data with recipient: {}, artifact: {},"
+                + " contract: {}, key: {} and queryInput: {} ", recipientId, requestedArtifactId, contractId, key, queryInput);
+
+        final var builder = getRequestBuilder();
+        final var urlBuilder = new HttpUrl.Builder()
+                .scheme(protocol)
+                .host(dataSpaceConnectorHost)
+                .port(dataSpaceConnectorPort)
+                .addPathSegments("admin/api/request/artifact")
+                .addQueryParameter("recipient", recipientId)
+                .addQueryParameter("requestedArtifact", requestedArtifactId)
+                .addQueryParameter("key", key);
+
+        if (contractId != null && !contractId.isBlank()) {
+            urlBuilder.addQueryParameter("transferContract", contractId);
+        }
+
+        final var url = urlBuilder.build();
+        builder.url(url);
+        builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername, dataSpaceConnectorApiPassword));
+
+        if (queryInput != null) {
+            final var query = MAPPER.writeValueAsString(queryInput);
+            builder.post(RequestBody.create(query, okhttp3.MediaType.parse("application/json")));
+        } else {
+            builder.post(RequestBody.create(new byte[0], null));
+        }
+
+        final var request = builder.build();
+        final var response = DispatchRequest.sendToDataspaceConnector(request);
+
+        if (!response.isSuccessful()) {
+            log.warn("---- [DataspaceConnectorClient requestData] Could not request data");
+        }
+        return response;
     }
 }
