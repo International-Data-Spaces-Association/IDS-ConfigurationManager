@@ -13,6 +13,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -297,36 +298,40 @@ public class BrokerController implements BrokerApi {
     public ResponseEntity<String> deleteResourceAtBroker(final URI brokerUri, final URI resourceId) {
         log.info(">> POST /broker/delete/resource brokerUri: " + brokerUri + " resourceId: " + resourceId);
 
-        final var response = updateConnector(brokerUri);
-
-        if (response.getStatusCode() != HttpStatus.BAD_REQUEST) {
-            brokerService.deleteResourceAtBroker(brokerUri, resourceId);
-        }
-
-        return response;
-
-//        var broker = brokerService.getById(brokerUri);
-//        var jsonObject = new JSONObject();
-//        if (broker != null) {
-//            try {
-//                String response = client.deleteResourceAtBroker(brokerUri.toString(), resourceId);
-//                if (response.contains("RejectionMessage") || response.equals("Could not load
-//                resource.")
-//                        || response.equals("The connector with the broker failed.")) {
-//                    jsonObject.put("success", false);
-//                } else {
-//                    brokerService.deleteResourceAtBroker(brokerUri, resourceId);
-//                    jsonObject.put("success", true);
-//                }
-//                return ResponseEntity.ok(jsonObject.toJSONString());
-//            } catch (IOException e) {
-//                logger.error(e.getMessage(), e);
-//                jsonObject.put("success", false);
-//                return ResponseEntity.ok(jsonObject.toJSONString());
-//            }
-//        } else {
-//            return ResponseEntity.badRequest().body("Could not find the broker");
+//        final var response = updateConnector(brokerUri);
+//
+//        if (response.getStatusCode() != HttpStatus.BAD_REQUEST) {
+//            brokerService.deleteResourceAtBroker(brokerUri, resourceId);
 //        }
+//
+//        return response;
+
+        ResponseEntity<String> response;
+        final var broker = brokerService.getById(brokerUri);
+        final var jsonObject = new JSONObject();
+        if (broker != null) {
+            try {
+                Response clientResponse = client.deleteResourceAtBroker(brokerUri.toString(), resourceId);
+                final var clientResponseString = Objects.requireNonNull(clientResponse.body()).string();
+                jsonObject.put("response", clientResponseString);
+                if (clientResponse.isSuccessful()) {
+                    brokerService.deleteResourceAtBroker(brokerUri, resourceId);
+                    jsonObject.put("success", true);
+                    response = ResponseEntity.ok(jsonObject.toJSONString());
+                } else {
+                    log.info("Deleting resource: {} at broker: {} failed", resourceId, brokerUri);
+                    jsonObject.put("success", false);
+                    response = ResponseEntity.badRequest().body(jsonObject.toJSONString());
+                }
+            } catch (IOException e) {
+                log.error(e.getMessage(), e);
+                jsonObject.put("success", false);
+                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(jsonObject.toJSONString());
+            }
+        } else {
+            response = ResponseEntity.status(HttpStatus.NOT_FOUND).body("Could not find the broker");
+        }
+        return response;
     }
 
     /**
