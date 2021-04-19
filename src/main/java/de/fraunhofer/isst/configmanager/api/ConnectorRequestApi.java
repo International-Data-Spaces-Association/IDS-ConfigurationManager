@@ -13,7 +13,7 @@ import java.net.URI;
 import java.util.UUID;
 
 public interface ConnectorRequestApi {
-    @PostMapping(value = "/request/description", produces = "application/ld+json")
+    @PostMapping(value = "/request/description")
     @Operation(summary = "Request metadata from another IDS connector.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Successfully requested  metadata from IDS connector"),
