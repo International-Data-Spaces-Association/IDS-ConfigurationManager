@@ -1,4 +1,4 @@
-FROM maven:latest AS maven
+FROM maven:3-jdk-11 AS maven
 
 COPY pom.xml /tmp/
 
@@ -12,8 +12,8 @@ RUN mvn clean package
 FROM adoptopenjdk/openjdk11:jre-11.0.8_10-alpine
 RUN mkdir /app
 
-COPY --from=maven /tmp/target/*.jar /app/configurationmanager-6.0.0.jar
+COPY --from=maven /tmp/target/*.jar /app/configurationmanager-7.0.0.jar
 
 WORKDIR /app/
 
-ENTRYPOINT ["java","-jar","configurationmanager-6.0.0.jar"]
+ENTRYPOINT ["java","-Dfile.encoding=UTF-8","-jar","configurationmanager-7.0.0.jar"]

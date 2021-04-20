@@ -8,6 +8,7 @@
 <a href="https://github.com/International-Data-Spaces-Association/IDS-ConfigurationManager/blob/development/LICENSE"><img src="https://img.shields.io/github/license/International-Data-Spaces-Association/IDS-ConfigurationManager"></a>
 <a href="https://github.com/International-Data-Spaces-Association/IDS-ConfigurationManager/issues"><img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat"></a>
 <img src="https://img.shields.io/github/workflow/status/International-Data-Spaces-Association/IDS-ConfigurationManager/Development-Maven-Build">
+<img src="https://img.shields.io/github/v/release/International-Data-Spaces-Association/IDS-ConfigurationManager">
 <img src="https://img.shields.io/github/languages/code-size/International-Data-Spaces-Association/IDS-ConfigurationManager">
 <img src="https://img.shields.io/github/contributors/International-Data-Spaces-Association/IDS-ConfigurationManager">
 <img src="https://img.shields.io/badge/Dependabot-Active-green">
@@ -28,9 +29,6 @@ This repository has a develop branch in addition to the master branch. The idea 
 the develop branch (as SNAPSHOT version) and to push the changes from there into the master only for releases. This way,
 the develop branch is always up to date, with the risk of small issues, while the master only contains official
 releases.
-
-**The versions 1, 2 and 3 of the configuration manager do not exist for the reason to be compatible with the dataspace
-connector. Therefore, the versioning starts with the 4.0.0 .**
 
 ## Table of Contents
 
@@ -75,15 +73,18 @@ To get more information about the Dataspace Connector or the UI for the Configur
 
 This is a list of currently implemented features, which is continuously updated.
 
-* The configuration model can be managed and is stored in an internal H2 database
-* Proxy settings for the ConfigModel can be made
-* Endpoints can be created and edited for the configuration model
-* The configuration model can be provided with a connector description
+* The configuration can be fetched and updated from a connector
+* Proxy settings for the configuration can be made
+* Generic endpoints and connector endpoints can be created and edited for creating app routes
 * The available brokers can be retrieved, which are located in an internal H2 database
     * Connectors can be registered with a broker, removed or updated
-* Resources can be stored in the connector and in the app route of the configuration model
-    * A representation can be created and managed for each resource
-    * Contracts can be retrieved and updated for each resource
+* An external connector can be accessed to fetch their offered resources
+* The configuration of the resources can be done in the configuration manager and is transferred to the Dataspace
+  Connector
+    * The configuration of resources also includes the management of their representations, which are transferred to the
+      Dataspace connector.
+    * The configuration of resources also includes the management of their contracts, which are transferred to the
+      Dataspace connector
 * The Dataspace Connector is notified about every change in the configuration model, e.g. when changes are made to
   resources, the connector or the configuration model itself
 * App routes can be defined for offering data or resources (under construction)
@@ -104,7 +105,7 @@ This is a list of currently implemented features, which is continuously updated.
 | ------ | ------ | ------ | ------ | ------ |
 | IDS Information Model Library | 4.0.2 | Apache 2.0 | Fraunhofer IAIS | [Sebastian Bader](mailto:sebastian.bader@iais.fraunhofer.de) |
 | IDS Information Model Serializer Library | 4.0.2 | Apache 2.0 | Fraunhofer IAIS | [Sebastian Bader](mailto:sebastian.bader@iais.fraunhofer.de) |
-| [Dataspace Connector](https://github.com/International-Data-Spaces-Association/DataspaceConnector) | latest | Apache 2.0 | Fraunhofer ISST | [Julia Pampus](mailto:julia.pampus@isst.fraunhofer.de) |
+| [Dataspace Connector](https://github.com/International-Data-Spaces-Association/DataspaceConnector) | Recommended: 4.1.0 - 4.3.1 | Apache 2.0 | Fraunhofer ISST | [Julia Pampus](mailto:julia.pampus@isst.fraunhofer.de) |
 | [Configuration Manager UI](https://github.com/International-Data-Spaces-Association/IDS-ConfigurationManager-UI) | latest | Apache 2.0 | Fraunhofer FKIE | [Bastian Weltjen](mailto:bastian.weltjen@fkie.fraunhofer.de) |
 
 ---
@@ -124,7 +125,7 @@ You need:
 Clone the project from
 
 ```
-https://github.com/FraunhoferISST/IDS-ConfigurationManager
+https://github.com/International-Data-Spaces-Association/IDS-ConfigurationManager
 ```
 
 open the directory and run
@@ -146,26 +147,29 @@ in terminal to start the configuration manager.
 
 ## Backend API
 
-In the following, the different APIs are described and explained. Most of the interfaces are used to set the
-configuration of configuration model, connector, brokers etc. via the user interface.
+In the following, the different APIs are described and explained. Most apis are mainly used by the user interface to
+simplify configuration of a connector.
 
-* `Configuration model API: ` The API provides CRUD operations to manage the Configuration Model.
-* `Configuration model Proxy API: ` The API helps to make proxy settings for the configuration model.
-* `Endpoint API: ` With the API app routes can be configured. The CRUD operations are also available here.
-* `Connector API: ` The Connector API helps to manage the connector description in the configuration model.
-* `Broker API: ` The Broker API helps to manage individual brokers. It offers several endpoints to manage the brokers.
-  Beside the CRUD operations there are also endpoints which help to update, register or unregister a connector with the
-  broker.
-* `Resource API: `Connectors and app routes include resources provided by data providers. The Resource API helps to
-  manage the resources in the connector and in the app routes.
-* `Resource contract API: ` The API helps to retrieve or update the contracts of a resource.
-* `Resource representation API: ` A resource can have different representations. With the API the representations can be
-  managed.
-* `App route API: ` The app route API helps to define app routes and subroutes. When creating subroutes, resources can
-  also be published. Furthermore, the app route deploy method can be customized, which are then valid for all routes in
-  the configuration model.
-
-* `Database: `The data resources are persist in an H2 database. Console path: `http://localhost:8081/console`
+* `App Route Management: ` The app route apis help to define app routes and subroutes. When creating subroutes,
+  resources can also be published. Furthermore, the app route deploy method can be customized, which are then valid for
+  all routes in the configuration model.
+* `Connector Request Management: ` The connector request apis help to request offered resources from external
+  connectors.
+* `Connector Management: ` The connector apis help to manage the connector description in the configuration model. It is
+  also possible to check if a connector is reachable.
+* `Resource Management: ` The resource apis help to manage the resources. All configurations on the resources are
+  transferred to the Dataspace connector and persisted there.
+* `Resource representation Management: ` A resource can have different representations. The representations apis helps
+  to manage the different representations of a resource.
+* `Resource contracts Management: ` The resource contracts apis help to retrieve or update the contracts of a resource.
+* `Configmodel Management: ` The configuration model apis help to query or update the configuration.
+* `Broker Management: ` The broker apis help to manage individual brokers. It offers several endpoints to manage the
+  brokers. This includes, for example, registering a connector or resource with a broker.
+* `Endpoints Management: ` The endpoints apis help to manage endpoints like GenericEndpoint oder ConnectorEndpoint.
+* `Util Management: ` The utility apis help to make or query other configurations.
+* `Database: ` The internal database persists all the necessary data that is not transferred to the Dataspace Connector,
+  such as the storage of endpoint information like the coordinates. Console path of the
+  database: `http://localhost:8081/console`
 
 ---
 <a name="hands-on-ids-configurationmanager"></a>
@@ -175,60 +179,93 @@ configuration of configuration model, connector, brokers etc. via the user inter
 To interact with the running application, the provided endpoints at the Swagger UI can be used. The Swagger UI is
 available at: `http://localhost:8081/swagger-ui/index.html?url=/v3/api-docs/` .
 
-The following is an example of how the configuration model can be extended step by step in the Configuration Manager.
-The following points are discussed:
+The following is an example of how an app route can be defined in configuration manager to provide resources. The
+following points are discussed:
 
-* Creating an endpoint
-* Create connector description
-* Create resource and view the result
+* Creating a resource
+* Creating a generic endpoint and a connector endpoint
+* Creating a resource representation
+* Creating an app route and a subroute
 
-`Step 1) Creating an endpoint`
+`Step 1) Creating a resource`
 
-To create an endpoint for the configuration model, the API POST `/api/ui/approute/endpoint` can be used.
+To create an offered resource, the API: POST - `/api/ui/resource` can be used.
 
-![AppRoute-Endpoint](images/approute-endpoint-api.PNG)
+![Create-Resource-Endpoint](images/resource-api.PNG)
 
-Here information like the accessURL, username and password must be given. After an endpoint has been successfully
-created, a similar respsonse should be displayed:
-
-```
-{
-  "msg": "Successfully created endpoint!",
-  "routeID": "https://w3id.org/idsa/autogen/appRoute/08e324a5-9045-4678-8995-5444a4899363",
-  "endpointId": "de.fraunhofer.iais.eis.GenericEndpointImpl@66a37ac0"
-}
-```
-
-`Step 2) Create connector description`
-
-Next, you can add a connector description to the configuration model. You can use the API POST `/api/ui/connector` for
-this.
-
-![Connector-Create](images/connector-api.PNG)
-
-Here the individual fields such as title, description, access url etc. must be filled out to create a connector. After
-successful completion of the process the response message `Successfully created a new connector` should appear.
-
-`Step 3) Create resource and view the result`
-
-Like the other steps you can use the API POST `/api/ui/resource` to create a resource.
-
-![Resource API](images/resource-api.PNG)
-
-All required fields must also be filled out here. A special field in this context is "brokerList", where you can specify
-under which broker the resource is available.
-
-After a successful creation of a resource a similar response message should appear:
+After the necessary fields have been filled in, the request can be sent, and the following response should be provided.
 
 ```
 {
-  "connectorResponse": "Resource registered with uuid: 61360ba4-b50d-4259-8bd5-a054c731b004",
-  "resourceID": "https://w3id.org/idsa/autogen/resource/61360ba4-b50d-4259-8bd5-a054c731b004"
+  "resourceID": "https://w3id.org/idsa/autogen/resource/fc1613eb-f36e-4889-bdb3-a31e66e341a3",
+  "connectorResponse": "fc1613eb-f36e-4889-bdb3-a31e66e341a3"
 }
 ```
 
-The special feature of this response message is that besides the resource id the connector response is also displayed.
-This means that the creation of the resource was successful and the dataspace connector was notified about the change.
+It displays the id of the created resource and the response from the Dataspace Connector.
+
+`Step 2) Creating a generic endpoint and a connector endpoint`
+
+Next, a generic endpoint is defined, which will be the start of the route from which the resource will be published. The
+following API can be used for this purpose: POST - `/api/ui/generic/endpoint`.
+
+![Create-Generic-Endpoint](images/generic-endpoint.PNG)
+
+Here the access url of the endpoint can be defined and optionally an authentication can be added. After successfully
+creating an endpoint, the following response should be delivered:
+
+```
+{
+  "id": "https://w3id.org/idsa/autogen/genericEndpoint/c01d4e34-2517-458b-bdef-61a5ba5b94b7",
+  "message": "Created a new generic endpoint"
+}
+```
+
+In the same way, create a Connector Endpoint through which the resource will be published. The following API can be used
+for this purpose: POST - `/api/ui/connector/endpoint`.
+
+`Step 3) Creating a resource reprsentation`
+
+Like the other steps you can use the API POST `/api/ui/resource/representation` to create a resource representation.
+Here you can use the id of the resource and the created endpoint.
+
+If no errors occurred while creating a representation, the following response should be returned:
+
+```
+{
+  "resourceID": "https://w3id.org/idsa/autogen/resource/fc1613eb-f36e-4889-bdb3-a31e66e341a3",
+  "connectorResponse": "946529d8-7109-4a04-b57b-32f28b68b871",
+  "representationID": "https://w3id.org/idsa/autogen/representation/946529d8-7109-4a04-b57b-32f28b68b871"
+}
+```
+
+Here you can see the id of the resource and the representation. Also, the response of the Dataspace Connector.
+
+`Step 4) Creating an app route and a subroute`
+
+Now an app route can be defined via the API: POST `/api/ui/approute`. To complete the route definition, the subroute
+must be defined at the end. This is done via the API: POST `/api/ui/approute/step`.
+
+![Create-Routestep](images/route-step.PNG)
+
+All necessary fields must be filled in here. That means, the id of the created app route must be set, the generic
+endpoint id is necessary as startId, the x and y coordinates of the first endpoint must be specified, the id of the
+connector endpoint must be set as well as the corresponding x and y coordinates. In addition, to publish the resource,
+the id of the resource can be passed here.
+
+When successful, the following response should be provided:
+
+```
+{
+  "routeStepId": "https://w3id.org/idsa/autogen/routeStep/34870533-acc5-4fbf-8c29-136ea275bd2e",
+  "message": "Successfully created the route step"
+}
+```
+
+The result of the work can be optionally viewed in the configuration manager user interface. There, the created route is
+visualized under the Data Offering tab under Routes.
+
+![Route-Overview](images/route-overview.PNG)
 
 ---
 

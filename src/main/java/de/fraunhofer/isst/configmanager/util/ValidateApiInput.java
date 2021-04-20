@@ -11,7 +11,7 @@ public class ValidateApiInput {
     public static boolean notValid(final String... parameter) {
         log.info("---- [ValidateApiInput] Validating API Input ...");
 
-        final var validationResult = Arrays.stream(parameter).dropWhile(param -> param.equals("undefined")).count() == 0;
+        final var validationResult = Arrays.stream(parameter).dropWhile("undefined"::equals).count() == 0;
 
         if (validationResult) {
             log.error("---- [ValidateApiInput] Validating API Input ... Input is NOT valid!");

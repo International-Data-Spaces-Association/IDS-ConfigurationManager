@@ -15,7 +15,6 @@ import java.util.GregorianCalendar;
 @Slf4j
 @UtilityClass
 public class CalenderUtil {
-
     /**
      * This method creates an XMLGreorgianCalender for for time specifications as created or
      * modified.
@@ -32,5 +31,4 @@ public class CalenderUtil {
         }
         return null;
     }
-
 }
