@@ -144,7 +144,9 @@ public class EndpointService {
         if (genericEndpointNew != null) {
             final var genericEndpointNewImpl = (GenericEndpointImpl) genericEndpointNew;
 
-            genericEndpointNewImpl.setProperty("ids:sourceType", sourceType);
+            if(sourceType != null){
+                genericEndpointNewImpl.setProperty("ids:sourceType", sourceType);
+            }
 
             if (accessURL != null) {
                 genericEndpointNewImpl.setAccessURL(accessURL);
