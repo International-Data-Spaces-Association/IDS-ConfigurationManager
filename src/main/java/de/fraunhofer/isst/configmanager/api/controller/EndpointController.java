@@ -52,6 +52,7 @@ public class EndpointController implements EndpointApi {
      * This method creates a generic endpoint with the given parameters.
      *
      * @param accessURL access url of the parameter
+     * @param sourceType source type of the endpoint
      * @param username  username for the authentication
      * @param password  password for the authentication
      * @return a suitable http response depending on success
@@ -127,6 +128,7 @@ public class EndpointController implements EndpointApi {
      *
      * @param endpointId id of the generic endpoint
      * @param accessURL  access url of the endpoint
+     * @param sourceType source type of the endpoint
      * @param username   username for authentication
      * @param password   password for authentication
      * @return a suitable http response depending on success
