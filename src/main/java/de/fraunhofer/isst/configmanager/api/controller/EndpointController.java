@@ -155,11 +155,12 @@ public class EndpointController implements EndpointApi {
      * This method creates a connector endpoint with given parameters.
      *
      * @param accessUrl access url of the endpoint
+     * @param sourceType source type of the endpoint
      * @return a suitable http response depending on success
      */
     @Override
-    public ResponseEntity<String> createConnectorEndpoint(final URI accessUrl) {
-        log.info(">> POST /connector/endpoint accessUrl: " + accessUrl);
+    public ResponseEntity<String> createConnectorEndpoint(final URI accessUrl, final String sourceType) {
+        log.info(">> POST /connector/endpoint accessUrl: " + accessUrl + " sourceType: " + sourceType);
 
         final var configModelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
         final var baseConnector = (BaseConnectorImpl) configModelImpl.getConnectorDescription();
@@ -170,6 +171,8 @@ public class EndpointController implements EndpointApi {
 
         final var connectorEndpoints = (ArrayList<ConnectorEndpoint>) baseConnector.getHasEndpoint();
         final var connectorEndpoint = new ConnectorEndpointBuilder()._accessURL_(accessUrl).build();
+
+        connectorEndpoint.setProperty("ids:sourceType", sourceType);
 
         connectorEndpoints.add(connectorEndpoint);
         configModelService.saveState();
