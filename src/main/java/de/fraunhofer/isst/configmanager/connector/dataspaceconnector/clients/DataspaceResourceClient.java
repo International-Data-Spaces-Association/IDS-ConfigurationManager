@@ -174,7 +174,7 @@ public class DataspaceResourceClient extends AbstractDataspaceConnectorClient im
         log.info(String.format("---- [DataspaceResourceClient registerResourceRepresentation] Registering resource at %s", dataSpaceConnectorHost));
 
         final var mappedRepresentation = dataSpaceConnectorResourceMapper.mapRepresentation(representation);
-        final var backendSource = dataSpaceConnectorResourceMapper.createBackendSource(endpointId, representation);
+        final var backendSource = dataSpaceConnectorResourceMapper.createBackendSource(endpointId);
         mappedRepresentation.setSource(backendSource);
 
         final var mappedResourceID = dataSpaceConnectorResourceMapper.readUUIDFromURI(URI.create(resourceID));
@@ -228,7 +228,7 @@ public class DataspaceResourceClient extends AbstractDataspaceConnectorClient im
         final var mappedResourceID = dataSpaceConnectorResourceMapper.readUUIDFromURI(URI.create(resourceID));
         final var mappedRepresentationID = dataSpaceConnectorResourceMapper.readUUIDFromURI(URI.create(representationID));
         final var mappedRepresentation = dataSpaceConnectorResourceMapper.mapRepresentation(representation);
-        final var backendSource = dataSpaceConnectorResourceMapper.createBackendSource(endpointId, representation);
+        final var backendSource = dataSpaceConnectorResourceMapper.createBackendSource(endpointId);
 
         mappedRepresentation.setSource(backendSource);
 

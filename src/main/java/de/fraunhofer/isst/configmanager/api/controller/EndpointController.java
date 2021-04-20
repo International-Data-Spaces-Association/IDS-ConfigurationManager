@@ -62,7 +62,7 @@ public class EndpointController implements EndpointApi {
                                                         final String sourceType,
                                                         final String username,
                                                         final String password) {
-        log.info(">> POST /generic/endpoint accessURL: " + accessURL + "sourceType: " + sourceType + " username: " + username);
+        log.info(">> POST /generic/endpoint accessURL: " + accessURL + " sourceType: " + sourceType + " username: " + username);
         ResponseEntity<String> response;
 
         final var genericEndpoint = endpointService.createGenericEndpoint(accessURL, sourceType, username, password);
