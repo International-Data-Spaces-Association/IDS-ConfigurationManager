@@ -33,7 +33,9 @@ public interface ConnectorRequestApi {
 
     @PostMapping(value = "/request/artifact")
     @Operation(summary = "Request data from another IDS connector.")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully requested data from another IDS connector.")})
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successfully requested data from another IDS connector"),
+            @ApiResponse(responseCode = "400", description = "Can not request data from IDS connector")})
     ResponseEntity<String> requestData(@RequestParam("recipientId") URI recipientId,
                                        @RequestParam(value = "requestedArtifactId ") URI requestedArtifactId,
                                        @RequestParam(value = "contractId", required = false) URI contractId,

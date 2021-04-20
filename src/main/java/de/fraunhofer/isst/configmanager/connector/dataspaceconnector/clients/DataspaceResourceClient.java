@@ -92,7 +92,7 @@ public class DataspaceResourceClient extends AbstractDataspaceConnectorClient im
             log.warn(String.format("---- [DataspaceResourceClient getRequestedResource] Could not get BaseConnector from %s!", dataSpaceConnectorHost));
         }
 
-        return Objects.requireNonNull(response.body().string());
+        return Objects.requireNonNull(response.body()).string();
     }
 
     @Override

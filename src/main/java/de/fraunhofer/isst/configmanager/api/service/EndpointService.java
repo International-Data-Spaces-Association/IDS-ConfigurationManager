@@ -1,6 +1,10 @@
 package de.fraunhofer.isst.configmanager.api.service;
 
-import de.fraunhofer.iais.eis.*;
+import de.fraunhofer.iais.eis.BasicAuthenticationBuilder;
+import de.fraunhofer.iais.eis.Endpoint;
+import de.fraunhofer.iais.eis.GenericEndpoint;
+import de.fraunhofer.iais.eis.GenericEndpointBuilder;
+import de.fraunhofer.iais.eis.GenericEndpointImpl;
 import de.fraunhofer.isst.configmanager.model.configlists.CustomGenericEndpointList;
 import de.fraunhofer.isst.configmanager.model.configlists.CustomGenericEndpointRepository;
 import de.fraunhofer.isst.configmanager.model.customgenericendpoint.CustomGenericEndpointObject;
@@ -43,8 +47,7 @@ public class EndpointService {
     public GenericEndpoint createGenericEndpoint(final URI accessURL,
                                                  final String username,
                                                  final String password) {
-        GenericEndpoint endpoint = null;
-        endpoint = new GenericEndpointBuilder()._accessURL_(accessURL).build();
+        final var endpoint = new GenericEndpointBuilder()._accessURL_(accessURL).build();
         final var endpointImpl = (GenericEndpointImpl) endpoint;
 
         if (username != null && password != null) {

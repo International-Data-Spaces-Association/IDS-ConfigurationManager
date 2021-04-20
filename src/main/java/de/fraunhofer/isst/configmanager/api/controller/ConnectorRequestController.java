@@ -6,12 +6,12 @@ import de.fraunhofer.isst.configmanager.api.service.ConnectorRequestService;
 import de.fraunhofer.isst.configmanager.model.config.QueryInput;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import net.minidev.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URI;
@@ -54,7 +54,7 @@ public class ConnectorRequestController implements ConnectorRequestApi {
             // JSON object contains key and the resource itself
             final var validKeyAndResource = connectorRequestService.requestResource(recipientId, requestedResourceId);
             if (validKeyAndResource != null) {
-                return ResponseEntity.ok(validKeyAndResource);
+                response = ResponseEntity.ok(validKeyAndResource);
             } else {
                 response = ResponseEntity.badRequest().body("Could not get key and resource from the requested connector");
             }
@@ -85,8 +85,8 @@ public class ConnectorRequestController implements ConnectorRequestApi {
     public ResponseEntity<String> requestContract(final URI recipientId,
                                                   final URI requestedArtifactId,
                                                   final String contractOffer) {
-        log.info(">> POST /request/contract with recipient: {}, artifact: {}," +
-                " contract: {}", recipientId, requestedArtifactId, contractOffer);
+        log.info(">> POST /request/contract with recipient: {}, artifact: {}, contract: {}",
+                recipientId, requestedArtifactId, contractOffer);
 
 
         ResponseEntity<String> response;
@@ -126,8 +126,8 @@ public class ConnectorRequestController implements ConnectorRequestApi {
                                               final UUID key,
                                               final QueryInput queryInput) {
 
-        log.info(">> POST /request/artifact with recipient: {}, artifact: {}," +
-                " contract: {}, key: {} and queryInput: {} ", recipientId, requestedArtifactId, contractId, key, queryInput);
+        log.info(">> POST /request/artifact with recipient: {}, artifact: {}, contract: {}, key: {} and queryInput: {} ",
+                recipientId, requestedArtifactId, contractId, key, queryInput);
 
         ResponseEntity<String> response = null;
         try {

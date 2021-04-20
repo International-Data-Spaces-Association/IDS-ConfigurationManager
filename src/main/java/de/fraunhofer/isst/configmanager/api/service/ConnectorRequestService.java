@@ -53,7 +53,7 @@ public class ConnectorRequestService {
                 }
                 return resourceList;
             } else {
-                log.info("Could not determine the resources of the connector");
+                log.info("---- [ConnectorRequestService requestResourcesFromConnector] Could not determine the resources of the connector");
                 return null;
             }
         } catch (IOException e) {
@@ -70,7 +70,8 @@ public class ConnectorRequestService {
      * @return resource
      */
     public String requestResource(final URI recipientId, final URI requestedResourceId) {
-        String customResponse = "";
+        String customResponse;
+
         try {
             final var response = resourceClient.getRequestedResource(recipientId.toString(), requestedResourceId.toString());
             if (response != null) {
@@ -79,7 +80,7 @@ public class ConnectorRequestService {
                 final var resource = splitBody[1].substring(10);
                 customResponse = "Validation Key: " + validationKey + "\nResource: " + resource;
             } else {
-                log.info("Could not determine resource");
+                log.info("---- [ConnectorRequestService requestResource] Could not determine resource");
                 return null;
             }
         } catch (IOException e) {
@@ -90,7 +91,7 @@ public class ConnectorRequestService {
     }
 
     /**
-     * This method requests the id of the contract agreement
+     * This method requests the id of the contract agreement.
      *
      * @param recipientId         id of the recipient
      * @param requestedArtifactId id of the requested artifact
