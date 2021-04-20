@@ -67,7 +67,8 @@ public interface BrokerApi {
     @Operation(summary = "Updates a resource at the broker")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Successfully updated the resource at the broker"),
-            @ApiResponse(responseCode = "400", description = "Can not find the broker to update the connector"),
+            @ApiResponse(responseCode = "400", description = "Can not update the resource at the broker"),
+            @ApiResponse(responseCode = "404", description = "Can not find the broker to update the resource"),
             @ApiResponse(responseCode = "500", description = "Internal server error")})
     ResponseEntity<String> updateResourceAtBroker(@RequestParam(value = "brokerUri") URI brokerUri,
                                                   @RequestParam("resourceId") URI resourceId);
@@ -76,7 +77,8 @@ public interface BrokerApi {
     @Operation(summary = "Deletes a resource at the broker")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Successfully deleted the resource at the broker"),
-            @ApiResponse(responseCode = "400", description = "Can not find the broker to update the connector"),
+            @ApiResponse(responseCode = "400", description = "Can not delete the resource at the broker"),
+            @ApiResponse(responseCode = "404", description = "Can not find the broker to update the connector"),
             @ApiResponse(responseCode = "500", description = "Internal server error")})
     ResponseEntity<String> deleteResourceAtBroker(@RequestParam(value = "brokerUri") URI brokerUri,
                                                   @RequestParam("resourceId") URI resourceId);
