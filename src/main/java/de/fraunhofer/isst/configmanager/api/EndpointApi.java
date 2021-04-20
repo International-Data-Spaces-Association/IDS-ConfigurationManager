@@ -44,6 +44,7 @@ public interface EndpointApi {
             @ApiResponse(responseCode = "400", description = "Can not update the generic endpoint")})
     ResponseEntity<String> updateGenericEndpoint(@RequestParam(value = "id") URI id,
                                                  @RequestParam(value = "accessURL", required = false) URI accessURL,
+                                                 @RequestParam(value = "sourceType") String sourceType,
                                                  @RequestParam(value = "username", required = false) String username,
                                                  @RequestParam(value = "password", required = false) String password);
 

@@ -131,6 +131,7 @@ public class EndpointService {
      */
     public boolean updateGenericEndpoint(final URI id,
                                          final URI accessURL,
+                                         final String sourceType,
                                          final String username,
                                          final String password) {
 
@@ -138,8 +139,12 @@ public class EndpointService {
         final var genericEndpointold = getGenericEndpoint(id);
         final var genericEndpointNew = getGenericEndpoint(id);
 
+
+
         if (genericEndpointNew != null) {
             final var genericEndpointNewImpl = (GenericEndpointImpl) genericEndpointNew;
+
+            genericEndpointNewImpl.setProperty("ids:sourceType", sourceType);
 
             if (accessURL != null) {
                 genericEndpointNewImpl.setAccessURL(accessURL);

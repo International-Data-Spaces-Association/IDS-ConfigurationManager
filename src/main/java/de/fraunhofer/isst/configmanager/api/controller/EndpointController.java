@@ -134,12 +134,13 @@ public class EndpointController implements EndpointApi {
     @Override
     public ResponseEntity<String> updateGenericEndpoint(final URI endpointId,
                                                         final URI accessURL,
+                                                        final String sourceType,
                                                         final String username,
                                                         final String password) {
         log.info(">> PUT /generic/endpoint endpointId: " + endpointId + " accessURL: " + accessURL);
         ResponseEntity<String> response;
 
-        final var updated = endpointService.updateGenericEndpoint(endpointId, accessURL, username, password);
+        final var updated = endpointService.updateGenericEndpoint(endpointId, accessURL, sourceType, username, password);
 
         if (updated) {
             response = ResponseEntity.ok("Updated the generic endpoint with id: " + endpointId);
