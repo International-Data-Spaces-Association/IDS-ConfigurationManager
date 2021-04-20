@@ -30,6 +30,10 @@ public class BrokerService {
     transient CustomBrokerRepository customBrokerRepository;
     transient ResourceService resourceService;
 
+    /**
+     * @param customBrokerRepository custom broker repository
+     * @param resourceService        service for resources
+     */
     @Autowired
     public BrokerService(final CustomBrokerRepository customBrokerRepository,
                          final ResourceService resourceService) {
@@ -137,6 +141,9 @@ public class BrokerService {
         }
     }
 
+    /**
+     * @param brokerId id of the broker
+     */
     public void sentSelfDescToBroker(final URI brokerId) {
         final var customBroker = getById(brokerId);
         customBroker.setRegisteredResources(
@@ -146,6 +153,9 @@ public class BrokerService {
         customBrokerRepository.save(customBroker);
     }
 
+    /**
+     * @param brokerId id of the broker
+     */
     public void unregisteredAtBroker(final URI brokerId) {
         final var customBroker = getById(brokerId);
         customBroker.setRegisteredResources(new ArrayList<>());

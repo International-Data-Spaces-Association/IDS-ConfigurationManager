@@ -13,7 +13,6 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +38,11 @@ public class BrokerController implements BrokerApi {
     transient DefaultBrokerClient client;
     transient ObjectMapper objectMapper;
 
+    /**
+     * @param brokerService service for custom broker
+     * @param client        the broker client
+     * @param objectMapper object mapper for serialization
+     */
     @Autowired
     public BrokerController(final BrokerService brokerService,
                             final DefaultBrokerClient client,
@@ -268,7 +272,7 @@ public class BrokerController implements BrokerApi {
         final var jsonObject = new JSONObject();
         if (broker != null) {
             try {
-                Response clientResponse = client.updateResourceAtBroker(brokerUri.toString(), resourceId);
+                final var clientResponse = client.updateResourceAtBroker(brokerUri.toString(), resourceId);
                 final var clientResponseString = Objects.requireNonNull(clientResponse.body()).string();
                 jsonObject.put("response", clientResponseString);
                 if (clientResponse.isSuccessful()) {
@@ -314,7 +318,7 @@ public class BrokerController implements BrokerApi {
         final var jsonObject = new JSONObject();
         if (broker != null) {
             try {
-                Response clientResponse = client.deleteResourceAtBroker(brokerUri.toString(), resourceId);
+                final var clientResponse = client.deleteResourceAtBroker(brokerUri.toString(), resourceId);
                 final var clientResponseString = Objects.requireNonNull(clientResponse.body()).string();
                 jsonObject.put("response", clientResponseString);
                 if (clientResponse.isSuccessful()) {
