@@ -198,22 +198,11 @@ public class DataspaceResourceClient extends AbstractDataspaceConnectorClient im
         final var request = builder.build();
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
-        if (!response.isSuccessful()) {
-            if (log.isWarnEnabled()) {
-                log.warn("---- [DataspaceResourceClient registerResourceRepresentation] Registering Representation failed!");
-            }
+        if (!response.isSuccessful() && log.isWarnEnabled()) {
+            log.warn("---- [DataspaceResourceClient registerResourceRepresentation] Registering Representation failed!");
         }
 
-        final var body = Objects.requireNonNull(response.body()).string();
-        final var uuid = dataSpaceConnectorResourceMapper.createFromResponse(body, representation.getId());
-
-        if (uuid == null && log.isWarnEnabled()) {
-            log.warn("---- [DataspaceResourceClient registerResourceRepresentation] Could not parse ID from response!");
-        } else if (log.isInfoEnabled()) {
-            log.info("---- [DataspaceResourceClient registerResourceRepresentation] UUID is : " + uuid);
-        }
-
-        return body;
+        return Objects.requireNonNull(response.body()).string();
     }
 
     @Override
