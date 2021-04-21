@@ -6,7 +6,14 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Utility class for testing
+ */
 public class TestUtil {
+
+    /**
+     * @return custom broker
+     */
     public static CustomBroker createCustomBroker() {
         CustomBroker customBroker = new CustomBroker();
         customBroker.setBrokerUri(URI.create("https://example.com"));

@@ -52,17 +52,14 @@ public class BrokerService {
      *
      * @param brokerUri uri of the broker
      * @param title     title of the broker
-     * @return custom broker
      */
-    public CustomBroker createCustomBroker(final URI brokerUri, final String title) {
+    public void createCustomBroker(final URI brokerUri, final String title) {
         final var customBroker = new CustomBroker(brokerUri);
         if (title != null) {
             customBroker.setTitle(title);
-            customBroker.setBrokerStatus(BrokerStatus.UNREGISTERED);
         }
+        customBroker.setBrokerStatus(BrokerStatus.UNREGISTERED);
         customBrokerRepository.save(customBroker);
-
-        return customBroker;
     }
 
     /**
