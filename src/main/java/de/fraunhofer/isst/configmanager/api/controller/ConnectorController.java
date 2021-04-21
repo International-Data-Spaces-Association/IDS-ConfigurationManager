@@ -64,7 +64,9 @@ public class ConnectorController implements ConnectorApi {
      */
     @Override
     public ResponseEntity<String> getConnector() {
-        log.info(">> GET /connector");
+        if (log.isInfoEnabled()) {
+            log.info(">> GET /connector");
+        }
         ResponseEntity<String> response;
 
         final var connector = configModelService.getConfigModel().getConnectorDescription();
@@ -90,7 +92,9 @@ public class ConnectorController implements ConnectorApi {
      */
     @Override
     public ResponseEntity<String> getConnectorStatus() {
-        log.info(">> GET /connector/status");
+        if (log.isInfoEnabled()) {
+            log.info(">> GET /connector/status");
+        }
         ResponseEntity<String> response;
 
         final var json = new JSONObject();
@@ -98,13 +102,17 @@ public class ConnectorController implements ConnectorApi {
         try {
             client.getConnectorStatus();
 
-            log.info("---- [ConnectorController getConnectorStatus] Could connect to the Connector!");
+            if (log.isInfoEnabled()) {
+                log.info("---- [ConnectorController getConnectorStatus] Could connect to the Connector!");
+            }
 
             json.put("status", "Public connector endpoint reachable.");
             response = new ResponseEntity<>(json.toString(), HttpStatus.OK);
         } catch (Exception e) {
             //Error case does not need to be processed further here
-            log.warn("---- [ConnectorController getConnectorStatus] Could not connect to the Connector!");
+            if (log.isWarnEnabled()) {
+                log.warn("---- [ConnectorController getConnectorStatus] Could not connect to the Connector!");
+            }
 
             json.put("status", "Public connector endpoint not reachable.");
             response = new ResponseEntity<>(json.toString(), HttpStatus.SERVICE_UNAVAILABLE);
@@ -136,9 +144,11 @@ public class ConnectorController implements ConnectorApi {
                                                   final URI maintainer,
                                                   final String inboundModelVersion,
                                                   final String outboundModelVersion) {
-        log.info(">> PUT /connector title: " + title + " description: " + " endpointAccessURL: " + endpointAccessURL
-                + " version: " + version + " curator: " + curator + " maintainer: " + maintainer + " inboundModelVersion: "
-                + inboundModelVersion + " outboundModelVersion: " + outboundModelVersion);
+        if (log.isInfoEnabled()) {
+            log.info(">> PUT /connector title: " + title + " description: " + " endpointAccessURL: " + endpointAccessURL
+                    + " version: " + version + " curator: " + curator + " maintainer: " + maintainer + " inboundModelVersion: "
+                    + inboundModelVersion + " outboundModelVersion: " + outboundModelVersion);
+        }
 
         ResponseEntity<String> response;
 
@@ -183,7 +193,9 @@ public class ConnectorController implements ConnectorApi {
                     response = ResponseEntity.badRequest().body(jsonObject.toJSONString());
                 }
             } catch (IOException e) {
-                log.error(e.getMessage(), e);
+                if (log.isErrorEnabled()) {
+                    log.error(e.getMessage(), e);
+                }
                 jsonObject.put("connectorResponse", "Failed to send the new configuration to the client");
                 response = ResponseEntity.badRequest().body(jsonObject.toJSONString());
             }

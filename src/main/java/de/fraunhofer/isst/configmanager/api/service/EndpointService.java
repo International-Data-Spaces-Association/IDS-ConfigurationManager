@@ -56,7 +56,9 @@ public class EndpointService {
                             new BasicAuthenticationBuilder()._authUsername_(username)._authPassword_(password).build()
                     );
         } else {
-            log.info("---- [EndpointService createGenericEndpoint] No authentication was created because username and password were not entered.");
+            if (log.isInfoEnabled()) {
+                log.info("---- [EndpointService createGenericEndpoint] No authentication was created because username and password were not entered.");
+            }
         }
 
         final var customGenericEndpointObject = new CustomGenericEndpointObject(endpoint);
@@ -81,9 +83,13 @@ public class EndpointService {
         try {
             customGenericEndpointList = customGenericEndpointRepository.findAll().stream().findAny().get();
             genericEndpoints = (ArrayList<Endpoint>) customGenericEndpointList.getEndpoints();
-            log.info("---- [EndpointService getGenericEndpoints] Generic endpoints found: " + genericEndpoints.size());
+            if (log.isInfoEnabled()) {
+                log.info("---- [EndpointService getGenericEndpoints] Generic endpoints found: " + genericEndpoints.size());
+            }
         } catch (NoSuchElementException e) {
-            log.info("---- [EndpointService getGenericEndpoints] No generic endpoints found!");
+            if (log.isInfoEnabled()) {
+                log.info("---- [EndpointService getGenericEndpoints] No generic endpoints found!");
+            }
         }
 
         return genericEndpoints;

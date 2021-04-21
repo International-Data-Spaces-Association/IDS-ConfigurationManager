@@ -56,7 +56,9 @@ public class BrokerController implements BrokerApi {
      */
     @Override
     public ResponseEntity<String> createBroker(final URI brokerUri, final String title) {
-        log.info(">> POST /broker brokerUri: " + brokerUri + " title: " + title);
+        if (log.isInfoEnabled()) {
+            log.info(">> POST /broker brokerUri: " + brokerUri + " title: " + title);
+        }
 
         brokerService.createCustomBroker(brokerUri, title);
         return ResponseEntity.ok(Utility.jsonMessage("message", "Created a new broker with id: " + brokerUri));
@@ -71,7 +73,9 @@ public class BrokerController implements BrokerApi {
      */
     @Override
     public ResponseEntity<String> updateBroker(final URI brokerId, final String title) {
-        log.info(">> PUT /broker brokerId: " + brokerId + " title: " + title);
+        if (log.isInfoEnabled()) {
+            log.info(">> PUT /broker brokerId: " + brokerId + " title: " + title);
+        }
         ResponseEntity<String> response;
 
         if (brokerService.updateBroker(brokerId, title)) {
@@ -94,7 +98,9 @@ public class BrokerController implements BrokerApi {
      */
     @Override
     public ResponseEntity<String> deleteBroker(final URI brokerUri) {
-        log.info(">> DELETE /broker brokerUri " + brokerUri);
+        if (log.isInfoEnabled()) {
+            log.info(">> DELETE /broker brokerUri " + brokerUri);
+        }
         ResponseEntity<String> response;
 
         if (brokerService.deleteBroker(brokerUri)) {
@@ -113,7 +119,9 @@ public class BrokerController implements BrokerApi {
      */
     @Override
     public ResponseEntity<String> getAllBrokers() {
-        log.info(">> GET /brokers");
+        if (log.isInfoEnabled()) {
+            log.info(">> GET /brokers");
+        }
         ResponseEntity<String> response;
 
         final var brokers = brokerService.getCustomBrokers();
@@ -136,7 +144,9 @@ public class BrokerController implements BrokerApi {
      */
     @Override
     public ResponseEntity<String> registerConnector(final URI brokerUri) {
-        log.info(">> POST /broker/register brokerUri: " + brokerUri);
+        if (log.isInfoEnabled()) {
+            log.info(">> POST /broker/register brokerUri: " + brokerUri);
+        }
         ResponseEntity<String> response;
 
         final var broker = brokerService.getById(brokerUri);
@@ -155,7 +165,9 @@ public class BrokerController implements BrokerApi {
                 }
                 response = ResponseEntity.ok(jsonObject.toJSONString());
             } catch (IOException e) {
-                log.error(e.getMessage(), e);
+                if (log.isErrorEnabled()) {
+                    log.error(e.getMessage(), e);
+                }
                 jsonObject.put(success, false);
                 response = ResponseEntity.ok(jsonObject.toJSONString());
             }
@@ -174,7 +186,9 @@ public class BrokerController implements BrokerApi {
      */
     @Override
     public ResponseEntity<String> unregisterConnector(final URI brokerUri) {
-        log.info(">> POST /broker/unregister brokerUri: " + brokerUri);
+        if (log.isInfoEnabled()) {
+            log.info(">> POST /broker/unregister brokerUri: " + brokerUri);
+        }
         ResponseEntity<String> response;
 
         final var broker = brokerService.getById(brokerUri);
@@ -194,7 +208,9 @@ public class BrokerController implements BrokerApi {
                 }
                 response = ResponseEntity.ok(jsonObject.toJSONString());
             } catch (IOException e) {
-                log.error(e.getMessage(), e);
+                if (log.isErrorEnabled()) {
+                    log.error(e.getMessage(), e);
+                }
                 jsonObject.put(success, false);
                 response = ResponseEntity.ok(jsonObject.toJSONString());
             }
@@ -213,7 +229,9 @@ public class BrokerController implements BrokerApi {
      */
     @Override
     public ResponseEntity<String> updateConnector(final URI brokerUri) {
-        log.info(">> POST /broker/update brokerUri: " + brokerUri);
+        if (log.isInfoEnabled()) {
+            log.info(">> POST /broker/update brokerUri: " + brokerUri);
+        }
         ResponseEntity<String> response;
 
         final var broker = brokerService.getById(brokerUri);
@@ -247,7 +265,9 @@ public class BrokerController implements BrokerApi {
      */
     @Override
     public ResponseEntity<String> updateResourceAtBroker(final URI brokerUri, final URI resourceId) {
-        log.info(">> POST /broker/update/resource brokerUri: " + brokerUri + " resourceId: " + resourceId);
+        if (log.isInfoEnabled()) {
+            log.info(">> POST /broker/update/resource brokerUri: " + brokerUri + " resourceId: " + resourceId);
+        }
 
         ResponseEntity<String> response;
         response = updateConnector(brokerUri);
@@ -287,7 +307,9 @@ public class BrokerController implements BrokerApi {
      */
     @Override
     public ResponseEntity<String> deleteResourceAtBroker(final URI brokerUri, final URI resourceId) {
-        log.info(">> POST /broker/delete/resource brokerUri: " + brokerUri + " resourceId: " + resourceId);
+        if (log.isInfoEnabled()) {
+            log.info(">> POST /broker/delete/resource brokerUri: " + brokerUri + " resourceId: " + resourceId);
+        }
 
         final var response = updateConnector(brokerUri);
 
@@ -329,7 +351,9 @@ public class BrokerController implements BrokerApi {
      */
     @Override
     public ResponseEntity<String> getRegisterStatusForResource(final URI resourceId) {
-        log.info(">> GET /broker/resource/information resourceId: " + resourceId);
+        if (log.isInfoEnabled()) {
+            log.info(">> GET /broker/resource/information resourceId: " + resourceId);
+        }
         ResponseEntity<String> response;
 
         final var jsonObject = brokerService.getRegisStatusForResource(resourceId);

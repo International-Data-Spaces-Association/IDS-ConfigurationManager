@@ -38,7 +38,9 @@ public class BrokerService {
 
         // If no broker is found in the database, a default broker is created at this point.
         if (customBrokerRepository.count() == 0) {
-            log.info("---- [BrokerService] Db is empty! Creating custom broker");
+            if (log.isInfoEnabled()) {
+                log.info("---- [BrokerService] Db is empty! Creating custom broker");
+            }
             final var customBroker = new CustomBroker();
             customBroker.setBrokerUri(URI.create("https://broker.ids.isst.fraunhofer.de/infrastructure"));
             customBroker.setTitle("IDS Broker");
@@ -97,7 +99,9 @@ public class BrokerService {
             customBrokerRepository.delete(customBroker);
             deleted = true;
         } else {
-            log.warn(String.format("---- [BrokerService deleteBroker] Tried to delete a Broker, but no config with id %s exists!", id.toString()));
+            if (log.isWarnEnabled()) {
+                log.warn(String.format("---- [BrokerService deleteBroker] Tried to delete a Broker, but no config with id %s exists!", id.toString()));
+            }
         }
         return deleted;
     }
@@ -159,7 +163,9 @@ public class BrokerService {
         final var customBroker = getById(brokerUri);
         if (customBroker != null) {
             if (customBroker.getRegisteredResources() == null) {
-                log.info("---- [BrokerService deleteResourceAtBroker] Could not found any resource to delete");
+                if (log.isInfoEnabled()) {
+                    log.info("---- [BrokerService deleteResourceAtBroker] Could not found any resource to delete");
+                }
             } else {
                 final var registeredResources = customBroker.getRegisteredResources();
                 registeredResources.removeIf(s -> s.equals(resourceId.toString()));
@@ -179,7 +185,9 @@ public class BrokerService {
 
         final var customBrokers = customBrokerRepository.findAll();
         if (customBrokers.isEmpty()) {
-            log.info("---- [BrokerService getRegisStatusForResource] Could not find any broker");
+            if (log.isInfoEnabled()) {
+                log.info("---- [BrokerService getRegisStatusForResource] Could not find any broker");
+            }
         } else {
             final var jsonArray = new JSONArray();
             final var jsonObject = new JSONObject();
@@ -209,7 +217,9 @@ public class BrokerService {
         final var jsonArray = new JSONArray();
         final var customBrokers = customBrokerRepository.findAll();
         if (customBrokers.isEmpty()) {
-            log.info("---- [BrokerService getRegisteredBroker] Could not find any broker");
+            if (log.isInfoEnabled()) {
+                log.info("---- [BrokerService getRegisteredBroker] Could not find any broker");
+            }
         } else {
             final var jsonObject = new JSONObject();
 

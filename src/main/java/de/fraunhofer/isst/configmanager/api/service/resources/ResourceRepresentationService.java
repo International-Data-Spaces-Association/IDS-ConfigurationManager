@@ -68,8 +68,10 @@ public class ResourceRepresentationService extends AbstractResourceService {
     public void deleteResourceRepresentationFromAppRoute(final URI resourceId,
                                                          final URI representationId) {
         if (configModelService.getConfigModel().getAppRoute() == null) {
-            log.info("---- [ResourceRepresentationService deleteResourceRepresentationFromAppRoute] Could not find"
-                    + " any app route to delete the resource");
+            if (log.isInfoEnabled()) {
+                log.info("---- [ResourceRepresentationService deleteResourceRepresentationFromAppRoute] Could not find"
+                        + " any app route to delete the resource");
+            }
         } else {
             final ArrayList<RouteStep> emptyList = new ArrayList<>();
             for (final var route : configModelService.getConfigModel().getAppRoute()) {
@@ -196,7 +198,9 @@ public class ResourceRepresentationService extends AbstractResourceService {
                 for (final var resource : appRoute.getAppRouteOutput()) {
                     if (resourceId.equals(resource.getId())) {
                         foundResource = resource;
-                        log.info("---- [ResourceRepresentationService getResourceInAppRoute] Resource is found in the app route");
+                        if (log.isInfoEnabled()) {
+                            log.info("---- [ResourceRepresentationService getResourceInAppRoute] Resource is found in the app route");
+                        }
                         break;
                     }
                 }
@@ -209,8 +213,10 @@ public class ResourceRepresentationService extends AbstractResourceService {
             }
         }
         if (foundResource == null) {
-            log.info("---- [ResourceRepresentationService getResourceInAppRoute] Could not find any resource"
-                    + " in app routes and subroutes");
+            if (log.isInfoEnabled()) {
+                log.info("---- [ResourceRepresentationService getResourceInAppRoute] Could not find any resource"
+                        + " in app routes and subroutes");
+            }
         }
         return foundResource;
     }
@@ -232,7 +238,9 @@ public class ResourceRepresentationService extends AbstractResourceService {
             for (final var resource : routeStep.getAppRouteOutput()) {
                 if (resourceId.equals(resource.getId())) {
                     foundResource = resource;
-                    log.info("---- [ResourceRepresentationService getResourceInSubroutes] Resource is found in subroute");
+                    if (log.isInfoEnabled()) {
+                        log.info("---- [ResourceRepresentationService getResourceInSubroutes] Resource is found in subroute");
+                    }
                     break;
                 }
             }

@@ -121,7 +121,9 @@ public class ResourceService extends AbstractResourceService {
      */
     public void deleteResourceFromAppRoute(final URI resourceId) {
         if (configModelService.getConfigModel().getAppRoute() == null) {
-            log.info("---- [ResourceService deleteResourceFromAppRoute] Could not find any app route to delete the resource");
+            if (log.isInfoEnabled()) {
+                log.info("---- [ResourceService deleteResourceFromAppRoute] Could not find any app route to delete the resource");
+            }
         } else {
             final ArrayList<RouteStep> emptyList = new ArrayList<>();
             for (final var route : configModelService.getConfigModel().getAppRoute()) {
@@ -212,7 +214,9 @@ public class ResourceService extends AbstractResourceService {
     public void updateResourceInAppRoute(final ResourceImpl newResource) {
         // Update the resource in the app route
         if (configModelService.getConfigModel().getAppRoute() == null) {
-            log.info("---- [ResourceService updateResourceInAppRoute] Could not find any app route to update the resource");
+            if (log.isInfoEnabled()) {
+                log.info("---- [ResourceService updateResourceInAppRoute] Could not find any app route to update the resource");
+            }
         } else {
             final ArrayList<RouteStep> emptyList = new ArrayList<>();
             for (final var appRoute : configModelService.getConfigModel().getAppRoute()) {
@@ -226,7 +230,9 @@ public class ResourceService extends AbstractResourceService {
                                     (ArrayList<Resource>) appRoute.getAppRouteOutput();
                             output.remove(resource);
                             output.add(newResource);
-                            log.info("---- [ResourceService updateResourceInAppRoute] Updated resource in app route");
+                            if (log.isInfoEnabled()) {
+                                log.info("---- [ResourceService updateResourceInAppRoute] Updated resource in app route");
+                            }
                             break;
                         }
                     }
@@ -260,7 +266,9 @@ public class ResourceService extends AbstractResourceService {
                             (ArrayList<Resource>) routeStep.getAppRouteOutput();
                     output.remove(resource);
                     output.add(newResource);
-                    log.info("---- [ResourceService updateResourceInAppRoute] Updated resource in subroute");
+                    if (log.isInfoEnabled()) {
+                        log.info("---- [ResourceService updateResourceInAppRoute] Updated resource in subroute");
+                    }
                     break;
                 }
             }

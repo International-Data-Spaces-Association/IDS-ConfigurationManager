@@ -43,9 +43,10 @@ public abstract class AbstractDataspaceConnectorClient {
     public void setProtocol(final @Value("${dataspace.communication.ssl}") String https) {
         protocol = Boolean.parseBoolean(https) ? "https" : "http";
         connectorBaseUrl = protocol + "://" + dataSpaceConnectorHost + ":" + dataSpaceConnectorPort + "/";
-
-        log.info("---- [AbstractDataspaceConnectorClient extended by " + this.getClass().getSimpleName() + " setProtocol]"
-                + " Communication Protocol with DataspaceConnector is: " + protocol);
+        if (log.isInfoEnabled()) {
+            log.info("---- [AbstractDataspaceConnectorClient extended by " + this.getClass().getSimpleName() + " setProtocol]"
+                    + " Communication Protocol with DataspaceConnector is: " + protocol);
+        }
     }
 
     @NotNull

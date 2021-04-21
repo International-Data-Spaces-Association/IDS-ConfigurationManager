@@ -55,11 +55,13 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
         if (!response.isSuccessful()) {
-            log.warn("---- [DataspaceConnectorClient getConfiguration] Could not get ConfigurationModel from {} with user {}. Response: {} - {}",
-                    connectorUrl,
-                    dataSpaceConnectorApiUsername,
-                    response.code(),
-                    response.message());
+            if (log.isWarnEnabled()) {
+                log.warn("---- [DataspaceConnectorClient getConfiguration] Could not get ConfigurationModel from {} with user {}. Response: {} - {}",
+                        connectorUrl,
+                        dataSpaceConnectorApiUsername,
+                        response.code(),
+                        response.message());
+            }
         }
 
         final var body = Objects.requireNonNull(response.body()).string();
@@ -68,8 +70,10 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
         try {
             configurationModel = SERIALIZER.deserialize(body, ConfigurationModel.class);
         } catch (IOException e) {
-            log.error("---- [DataspaceConnectorClient getConfiguration] SERIALIZER.deserialize threw IOException");
-            log.error(e.getMessage(), e);
+            if (log.isErrorEnabled()) {
+                log.error("---- [DataspaceConnectorClient getConfiguration] SERIALIZER.deserialize threw IOException");
+                log.error(e.getMessage(), e);
+            }
         }
 
         return configurationModel;
@@ -89,7 +93,9 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
         if (!response.isSuccessful()) {
-            log.warn("---- [DataspaceConnectorClient getSelfDeclaration] Could not get BaseConnector");
+            if (log.isWarnEnabled()) {
+                log.warn("---- [DataspaceConnectorClient getSelfDeclaration] Could not get BaseConnector");
+            }
         }
 
         final var body = Objects.requireNonNull(response.body()).string();
@@ -98,8 +104,10 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
         try {
             baseConnector = SERIALIZER.deserialize(body, BaseConnector.class);
         } catch (IOException e) {
-            log.error("---- [DataspaceConnectorClient getSelfDeclaration] SERIALIZER.deserialize threw IOException");
-            log.error(e.getMessage(), e);
+            if (log.isErrorEnabled()) {
+                log.error("---- [DataspaceConnectorClient getSelfDeclaration] SERIALIZER.deserialize threw IOException");
+                log.error(e.getMessage(), e);
+            }
         }
 
         return baseConnector;
@@ -107,7 +115,9 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
 
     @Override
     public boolean sendConfiguration(final String configurationModel) throws IOException {
-        log.info(String.format("---- [DataspaceConnectorClient sendConfiguration] sending new configuration to %s", dataSpaceConnectorHost));
+        if (log.isInfoEnabled()) {
+            log.info(String.format("---- [DataspaceConnectorClient sendConfiguration] sending new configuration to %s", dataSpaceConnectorHost));
+        }
 
         final var builder = getRequestBuilder();
         builder.url(connectorBaseUrl + "admin/api/configuration");
@@ -122,7 +132,9 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
         var success = true;
 
         if (!response.isSuccessful()) {
-            log.warn("---- [DataspaceConnectorClient sendConfiguration] Updating ConfigurationModel failed!");
+            if (log.isWarnEnabled()) {
+                log.warn("---- [DataspaceConnectorClient sendConfiguration] Updating ConfigurationModel failed!");
+            }
             success = false;
         }
 
@@ -149,12 +161,16 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
                 dataSpaceConnectorApiPassword));
         builder.post(RequestBody.create(new byte[0], null));
 
-        log.info("---- [DataspaceConnectorClient getBaseConnector] " + url.toString());
+        if (log.isInfoEnabled()) {
+            log.info("---- [DataspaceConnectorClient getBaseConnector] " + url.toString());
+        }
         final var request = builder.build();
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
         if (!response.isSuccessful()) {
-            log.warn("---- [DataspaceConnectorClient getBaseConnector] Could not get BaseConnector Info!");
+            if (log.isWarnEnabled()) {
+                log.warn("---- [DataspaceConnectorClient getBaseConnector] Could not get BaseConnector Info!");
+            }
         }
         final var body = Objects.requireNonNull(response.body()).string();
 
@@ -162,8 +178,10 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
         try {
             baseConnector = SERIALIZER.deserialize(body, BaseConnector.class);
         } catch (IOException e) {
-            log.error("---- [DataspaceConnectorClient getBaseConnector] SERIALIZER.deserialize threw IOException");
-            log.error(e.getMessage(), e);
+            if (log.isErrorEnabled()) {
+                log.error("---- [DataspaceConnectorClient getBaseConnector] SERIALIZER.deserialize threw IOException");
+                log.error(e.getMessage(), e);
+            }
         }
 
         return baseConnector;
@@ -171,7 +189,9 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
 
     @Override
     public String getPolicyPattern(final String policy) throws IOException {
-        log.info("---- [DataspaceConnectorClient getPolicyPattern] Get pattern for policy");
+        if (log.isInfoEnabled()) {
+            log.info("---- [DataspaceConnectorClient getPolicyPattern] Get pattern for policy");
+        }
 
         final var builder = getRequestBuilder();
         builder.url(connectorBaseUrl + "/admin/api/example/policy-validation");
@@ -183,7 +203,9 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
         if (!response.isSuccessful()) {
-            log.warn("---- [DataspaceConnectorClient getPolicyPattern] Pattern for policy could not be determined");
+            if (log.isWarnEnabled()) {
+                log.warn("---- [DataspaceConnectorClient getPolicyPattern] Pattern for policy could not be determined");
+            }
         }
 
         return Objects.requireNonNull(response.body()).string();
@@ -193,7 +215,9 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
     public String requestContractAgreement(final String recipientId,
                                            final String requestedArtifactId,
                                            final String contractOffer) throws IOException {
-        log.info("---- [DataspaceConnectorClient requestContractAgreement] Request contract agreement with recipient: {} and artifact: {}", recipientId, requestedArtifactId);
+        if (log.isInfoEnabled()) {
+            log.info("---- [DataspaceConnectorClient requestContractAgreement] Request contract agreement with recipient: {} and artifact: {}", recipientId, requestedArtifactId);
+        }
 
         final var builder = getRequestBuilder();
         final var urlBuilder = new HttpUrl.Builder()
@@ -218,7 +242,9 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
         if (!response.isSuccessful()) {
-            log.warn("---- [DataspaceConnectorClient requestContractAgreement] Could not request contract agreement");
+            if (log.isWarnEnabled()) {
+                log.warn("---- [DataspaceConnectorClient requestContractAgreement] Could not request contract agreement");
+            }
         }
 
         return Objects.requireNonNull(response.body()).string();
@@ -230,9 +256,10 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
                                 final String contractId,
                                 final String key,
                                 final QueryInput queryInput) throws IOException {
-
-        log.info("---- [DataspaceConnectorClient requestData] Request Data with recipient: {}, artifact: {},"
-                + " contract: {}, key: {} and queryInput: {} ", recipientId, requestedArtifactId, contractId, key, queryInput);
+        if (log.isInfoEnabled()) {
+            log.info("---- [DataspaceConnectorClient requestData] Request Data with recipient: {}, artifact: {},"
+                    + " contract: {}, key: {} and queryInput: {} ", recipientId, requestedArtifactId, contractId, key, queryInput);
+        }
 
         final var builder = getRequestBuilder();
         final var urlBuilder = new HttpUrl.Builder()
@@ -263,7 +290,9 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
         if (!response.isSuccessful()) {
-            log.warn("---- [DataspaceConnectorClient requestData] Could not request data");
+            if (log.isWarnEnabled()) {
+                log.warn("---- [DataspaceConnectorClient requestData] Could not request data");
+            }
         }
         return response;
     }

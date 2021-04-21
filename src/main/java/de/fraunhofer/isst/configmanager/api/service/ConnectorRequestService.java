@@ -53,11 +53,15 @@ public class ConnectorRequestService {
                 }
                 return resourceList;
             } else {
-                log.info("---- [ConnectorRequestService requestResourcesFromConnector] Could not determine the resources of the connector");
+                if (log.isInfoEnabled()) {
+                    log.info("---- [ConnectorRequestService requestResourcesFromConnector] Could not determine the resources of the connector");
+                }
                 return null;
             }
         } catch (IOException e) {
-            log.error(e.getMessage(), e);
+            if (log.isErrorEnabled()) {
+                log.error(e.getMessage(), e);
+            }
             return null;
         }
     }
@@ -80,7 +84,9 @@ public class ConnectorRequestService {
                 final var resource = splitBody[1].substring(10);
                 customResponse = "Validation Key: " + validationKey + "\nResource: " + resource;
             } else {
-                log.info("---- [ConnectorRequestService requestResource] Could not determine resource");
+                if (log.isInfoEnabled()) {
+                    log.info("---- [ConnectorRequestService requestResource] Could not determine resource");
+                }
                 return null;
             }
         } catch (IOException e) {
@@ -105,7 +111,9 @@ public class ConnectorRequestService {
         try {
             return connectorClient.requestContractAgreement(recipientId, requestedArtifactId, contractOffer);
         } catch (IOException e) {
-            log.error(e.getMessage(), e);
+            if (log.isErrorEnabled()) {
+                log.error(e.getMessage(), e);
+            }
         }
         return null;
     }
