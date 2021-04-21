@@ -57,17 +57,9 @@ public class BrokerController implements BrokerApi {
     @Override
     public ResponseEntity<String> createBroker(final URI brokerUri, final String title) {
         log.info(">> POST /broker brokerUri: " + brokerUri + " title: " + title);
-        ResponseEntity<String> response;
 
-        final var brokerObject = brokerService.createCustomBroker(brokerUri, title);
-
-        if (brokerObject != null) {
-            response = ResponseEntity.ok(Utility.jsonMessage("message", "Created a new broker with id: " + brokerUri));
-        } else {
-            response = ResponseEntity.badRequest().body("Could not create a broker");
-        }
-
-        return response;
+        brokerService.createCustomBroker(brokerUri, title);
+        return ResponseEntity.ok(Utility.jsonMessage("message", "Created a new broker with id: " + brokerUri));
     }
 
     /**

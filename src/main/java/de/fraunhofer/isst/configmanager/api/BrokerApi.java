@@ -16,9 +16,7 @@ public interface BrokerApi {
     // APIs to manage custom broker
     @PostMapping(value = "/broker", produces = "application/ld+json")
     @Operation(summary = "Creates a new broker")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Created a new broker"),
-            @ApiResponse(responseCode = "400", description = "Can not create the broker")})
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Created a new broker")})
     ResponseEntity<String> createBroker(@RequestParam(value = "brokerUri") URI brokerUri,
                                         @RequestParam(value = "title", required = false) String title);
 
