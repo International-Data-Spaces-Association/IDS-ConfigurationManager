@@ -28,8 +28,8 @@ import java.util.ArrayList;
 @Slf4j
 @RestController
 @RequestMapping("/api/ui")
-@Tag(name = "Configmodel Management", description = "Endpoints for managing the configuration model")
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@Tag(name = "Configmodel Management", description = "Endpoints for managing the configuration model")
 public class ConfigModelController implements ConfigModelApi {
 
     transient Serializer serializer;

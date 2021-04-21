@@ -31,8 +31,8 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 @RestController
 @RequestMapping("/api/ui")
-@Tag(name = "Resource Management", description = "Endpoints for managing the resource in the configuration manager")
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@Tag(name = "Resource Management", description = "Endpoints for managing the resource in the configuration manager")
 public class ResourceController implements ResourceApi {
 
     transient ResourceService resourceService;

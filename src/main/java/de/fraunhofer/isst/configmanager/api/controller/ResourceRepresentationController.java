@@ -7,7 +7,6 @@ import de.fraunhofer.iais.eis.Language;
 import de.fraunhofer.iais.eis.RepresentationBuilder;
 import de.fraunhofer.iais.eis.RepresentationImpl;
 import de.fraunhofer.iais.eis.ResourceImpl;
-import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.api.ResourceRepresentationApi;
 import de.fraunhofer.isst.configmanager.api.service.ConfigModelService;
@@ -36,8 +35,8 @@ import java.net.URI;
 @Slf4j
 @RestController
 @RequestMapping("/api/ui")
-@Tag(name = "Resource representation Management", description = "Endpoints for managing the representation of a resource")
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@Tag(name = "Resource representation Management", description = "Endpoints for managing the representation of a resource")
 public class ResourceRepresentationController implements ResourceRepresentationApi {
 
     transient ConfigModelService configModelService;

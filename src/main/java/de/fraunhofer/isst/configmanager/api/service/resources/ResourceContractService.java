@@ -40,21 +40,6 @@ public class ResourceContractService extends AbstractResourceService {
     }
 
     /**
-     * This method returns from a resource the contract offer.
-     *
-     * @param resourceId id of the resource
-     * @return contract offer
-     */
-    public ContractOffer getResourceContract(final URI resourceId) {
-        for (final var resource : getResources()) {
-            if (resourceId.equals(resource.getId()) && resource.getContractOffer().get(0) != null) {
-                return resource.getContractOffer().get(0);
-            }
-        }
-        return null;
-    }
-
-    /**
      * This method updates the resource contract with the given parameters.
      *
      * @param resourceId    id of the resource

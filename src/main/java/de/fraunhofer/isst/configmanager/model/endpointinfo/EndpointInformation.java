@@ -12,8 +12,8 @@ import javax.persistence.Id;
 /**
  * Entity class for persisting the endpoint with the coordinates.
  */
-@Entity
 @Data
+@Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class EndpointInformation {
     @Id

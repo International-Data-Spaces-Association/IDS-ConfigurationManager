@@ -35,8 +35,8 @@ import java.util.ArrayList;
 @Slf4j
 @RestController
 @RequestMapping("/api/ui")
-@Tag(name = "App Route Management", description = "Endpoints for managing the app routes in the configuration manager")
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@Tag(name = "App Route Management", description = "Endpoints for managing the app routes in the configuration manager")
 public class AppRouteController implements AppRouteApi {
 
     transient ConfigModelService configModelService;

@@ -31,8 +31,8 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 @RestController
 @RequestMapping("/api/ui")
-@Tag(name = "Connector Management", description = "Endpoints for managing the connectors in the configuration manager")
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@Tag(name = "Connector Management", description = "Endpoints for managing the connectors in the configuration manager")
 public class ConnectorController implements ConnectorApi {
 
     transient ConnectorService connectorService;

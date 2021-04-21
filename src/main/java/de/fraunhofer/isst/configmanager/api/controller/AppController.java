@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequestMapping("/api/ui")
-@Tag(name = "App Management", description = "Endpoints for managing the app in the configuration manager")
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@Tag(name = "App Management", description = "Endpoints for managing the app in the configuration manager")
 public class AppController implements AppApi {
 
     transient AppService appService;

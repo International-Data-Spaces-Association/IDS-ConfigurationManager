@@ -19,8 +19,8 @@ import java.util.UUID;
 
 @Slf4j
 @Service
-@ConditionalOnExpression("${dataspace.connector.enabled:false}")
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@ConditionalOnExpression("${dataspace.connector.enabled:false}")
 public class DataspaceBrokerClient extends AbstractDataspaceConnectorClient implements DefaultBrokerClient {
 
     public DataspaceBrokerClient(final ResourceMapper dataSpaceConnectorResourceMapper) {
@@ -101,10 +101,8 @@ public class DataspaceBrokerClient extends AbstractDataspaceConnectorClient impl
         final var request = builder.build();
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
-        if (!response.isSuccessful()) {
-            if (log.isWarnEnabled()) {
-                log.warn("---- [DataspaceBrokerClient updateResourceAtBroker] Updating Resource at Broker failed!");
-            }
+        if (!response.isSuccessful() && log.isWarnEnabled()) {
+           log.warn("---- [DataspaceBrokerClient updateResourceAtBroker] Updating Resource at Broker failed!");
         }
 
         return response;
@@ -133,10 +131,8 @@ public class DataspaceBrokerClient extends AbstractDataspaceConnectorClient impl
         final var request = builder.build();
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
-        if (!response.isSuccessful()) {
-            if (log.isWarnEnabled()) {
-                log.warn("---- [DataspaceBrokerClient deleteResourceAtBroker] Deleting Resource at Broker failed!");
-            }
+        if (!response.isSuccessful() && log.isWarnEnabled()) {
+            log.warn("---- [DataspaceBrokerClient deleteResourceAtBroker] Deleting Resource at Broker failed!");
         }
 
         return response;

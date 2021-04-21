@@ -29,8 +29,8 @@ import java.net.URI;
 @Slf4j
 @RestController
 @RequestMapping("/api/ui")
-@Tag(name = "Resource contracts Management", description = "Endpoints for managing the contracts of a resource")
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@Tag(name = "Resource contracts Management", description = "Endpoints for managing the contracts of a resource")
 public class ResourceContractController implements ResourceContractApi {
 
     transient ResourceContractService resourceContractService;

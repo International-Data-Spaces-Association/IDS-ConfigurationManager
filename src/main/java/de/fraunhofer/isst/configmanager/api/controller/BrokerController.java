@@ -30,8 +30,8 @@ import java.util.Objects;
 @Slf4j
 @RestController
 @RequestMapping("/api/ui")
-@Tag(name = "Broker Management", description = "Endpoints for managing the brokers in the configuration manager")
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@Tag(name = "Broker Management", description = "Endpoints for managing the brokers in the configuration manager")
 public class BrokerController implements BrokerApi {
 
     transient BrokerService brokerService;

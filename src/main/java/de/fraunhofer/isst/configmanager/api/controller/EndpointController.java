@@ -31,8 +31,8 @@ import java.util.ArrayList;
 @Slf4j
 @RestController
 @RequestMapping("/api/ui")
-@Tag(name = "Endpoints Management", description = "Different endpoint types can be managed here")
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@Tag(name = "Endpoints Management", description = "Different endpoint types can be managed here")
 public class EndpointController implements EndpointApi {
 
     transient Serializer serializer;

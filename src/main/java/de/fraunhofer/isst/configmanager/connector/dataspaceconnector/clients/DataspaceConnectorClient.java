@@ -24,8 +24,8 @@ import java.util.Objects;
  */
 @Slf4j
 @Service
-@ConditionalOnExpression("${dataspace.connector.enabled:false}")
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@ConditionalOnExpression("${dataspace.connector.enabled:false}")
 public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient implements DefaultConnectorClient {
 
     public DataspaceConnectorClient(final ResourceMapper dataSpaceConnectorResourceMapper) {
@@ -54,14 +54,12 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
         final var request = builder.build();
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
-        if (!response.isSuccessful()) {
-            if (log.isWarnEnabled()) {
-                log.warn("---- [DataspaceConnectorClient getConfiguration] Could not get ConfigurationModel from {} with user {}. Response: {} - {}",
-                        connectorUrl,
-                        dataSpaceConnectorApiUsername,
-                        response.code(),
-                        response.message());
-            }
+        if (!response.isSuccessful() && log.isWarnEnabled()) {
+            log.warn("---- [DataspaceConnectorClient getConfiguration] Could not get ConfigurationModel from {} with user {}. Response: {} - {}",
+                    connectorUrl,
+                    dataSpaceConnectorApiUsername,
+                    response.code(),
+                    response.message());
         }
 
         final var body = Objects.requireNonNull(response.body()).string();
@@ -92,10 +90,8 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
         final var request = builder.build();
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
-        if (!response.isSuccessful()) {
-            if (log.isWarnEnabled()) {
-                log.warn("---- [DataspaceConnectorClient getSelfDeclaration] Could not get BaseConnector");
-            }
+        if (!response.isSuccessful() && log.isWarnEnabled()) {
+            log.warn("---- [DataspaceConnectorClient getSelfDeclaration] Could not get BaseConnector");
         }
 
         final var body = Objects.requireNonNull(response.body()).string();
@@ -167,10 +163,8 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
         final var request = builder.build();
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
-        if (!response.isSuccessful()) {
-            if (log.isWarnEnabled()) {
-                log.warn("---- [DataspaceConnectorClient getBaseConnector] Could not get BaseConnector Info!");
-            }
+        if (!response.isSuccessful() && log.isWarnEnabled()) {
+            log.warn("---- [DataspaceConnectorClient getBaseConnector] Could not get BaseConnector Info!");
         }
         final var body = Objects.requireNonNull(response.body()).string();
 
@@ -202,10 +196,8 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
         final var request = builder.build();
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
-        if (!response.isSuccessful()) {
-            if (log.isWarnEnabled()) {
-                log.warn("---- [DataspaceConnectorClient getPolicyPattern] Pattern for policy could not be determined");
-            }
+        if (!response.isSuccessful() && log.isWarnEnabled()) {
+            log.warn("---- [DataspaceConnectorClient getPolicyPattern] Pattern for policy could not be determined");
         }
 
         return Objects.requireNonNull(response.body()).string();
@@ -241,10 +233,8 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
         final var request = builder.build();
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
-        if (!response.isSuccessful()) {
-            if (log.isWarnEnabled()) {
-                log.warn("---- [DataspaceConnectorClient requestContractAgreement] Could not request contract agreement");
-            }
+        if (!response.isSuccessful() && log.isWarnEnabled()) {
+            log.warn("---- [DataspaceConnectorClient requestContractAgreement] Could not request contract agreement");
         }
 
         return Objects.requireNonNull(response.body()).string();
@@ -289,10 +279,8 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
         final var request = builder.build();
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
-        if (!response.isSuccessful()) {
-            if (log.isWarnEnabled()) {
-                log.warn("---- [DataspaceConnectorClient requestData] Could not request data");
-            }
+        if (!response.isSuccessful() && log.isWarnEnabled()) {
+            log.warn("---- [DataspaceConnectorClient requestData] Could not request data");
         }
         return response;
     }

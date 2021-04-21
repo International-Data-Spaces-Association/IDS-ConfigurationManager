@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-@FieldDefaults(level = AccessLevel.PROTECTED)
 @Service
+@FieldDefaults(level = AccessLevel.PROTECTED)
 public abstract class AbstractResourceService {
 
     transient ConfigModelService configModelService;

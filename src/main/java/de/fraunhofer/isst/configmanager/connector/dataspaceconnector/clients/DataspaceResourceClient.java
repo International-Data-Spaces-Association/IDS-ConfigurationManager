@@ -25,8 +25,8 @@ import java.util.UUID;
 
 @Slf4j
 @Service
-@ConditionalOnExpression("${dataspace.connector.enabled:false}")
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@ConditionalOnExpression("${dataspace.connector.enabled:false}")
 public class DataspaceResourceClient extends AbstractDataspaceConnectorClient implements DefaultResourceClient {
 
     public DataspaceResourceClient(final ResourceMapper dataSpaceConnectorResourceMapper) {
@@ -59,10 +59,8 @@ public class DataspaceResourceClient extends AbstractDataspaceConnectorClient im
         final var request = builder.build();
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
-        if (!response.isSuccessful()) {
-            if (log.isWarnEnabled()) {
-                log.warn("---- [DataspaceResourceClient getJsonNodeOfBaseConnector] Could not get BaseConnector");
-            }
+        if (!response.isSuccessful() && log.isWarnEnabled()) {
+            log.warn("---- [DataspaceResourceClient getJsonNodeOfBaseConnector] Could not get BaseConnector");
         }
 
         final var body = Objects.requireNonNull(response.body()).string();
@@ -90,10 +88,8 @@ public class DataspaceResourceClient extends AbstractDataspaceConnectorClient im
         final var request = builder.build();
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
-        if (!response.isSuccessful()) {
-            if (log.isWarnEnabled()) {
-                log.warn(String.format("---- [DataspaceResourceClient getRequestedResource] Could not get BaseConnector from %s!", dataSpaceConnectorHost));
-            }
+        if (!response.isSuccessful() && log.isWarnEnabled()) {
+            log.warn(String.format("---- [DataspaceResourceClient getRequestedResource] Could not get BaseConnector from %s!", dataSpaceConnectorHost));
         }
 
         return Objects.requireNonNull(response.body()).string();
@@ -135,10 +131,8 @@ public class DataspaceResourceClient extends AbstractDataspaceConnectorClient im
         final var request = builder.build();
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
-        if (!response.isSuccessful()) {
-            if (log.isWarnEnabled()) {
-                log.warn("---- [DataspaceResourceClient registerResource] Registering Resource failed!");
-            }
+        if (!response.isSuccessful() && log.isWarnEnabled()) {
+            log.warn("---- [DataspaceResourceClient registerResource] Registering Resource failed!");
         }
 
         return Objects.requireNonNull(response.body()).string();
@@ -162,10 +156,8 @@ public class DataspaceResourceClient extends AbstractDataspaceConnectorClient im
         final var request = builder.build();
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
-        if (!response.isSuccessful()) {
-            if (log.isWarnEnabled()) {
-                log.warn("---- [DataspaceResourceClient deleteResource] Deleting Resource failed!");
-            }
+        if (!response.isSuccessful() && log.isWarnEnabled()) {
+            log.warn("---- [DataspaceResourceClient deleteResource] Deleting Resource failed!");
         }
 
         return Objects.requireNonNull(response.body()).string();
@@ -215,14 +207,10 @@ public class DataspaceResourceClient extends AbstractDataspaceConnectorClient im
         final var body = Objects.requireNonNull(response.body()).string();
         final var uuid = dataSpaceConnectorResourceMapper.createFromResponse(body, representation.getId());
 
-        if (uuid == null) {
-            if (log.isWarnEnabled()) {
-                log.warn("---- [DataspaceResourceClient registerResourceRepresentation] Could not parse ID from response!");
-            }
-        } else {
-            if (log.isInfoEnabled()) {
-                log.info("---- [DataspaceResourceClient registerResourceRepresentation] UUID is : " + uuid);
-            }
+        if (uuid == null && log.isWarnEnabled()) {
+            log.warn("---- [DataspaceResourceClient registerResourceRepresentation] Could not parse ID from response!");
+        } else if (log.isInfoEnabled()) {
+            log.info("---- [DataspaceResourceClient registerResourceRepresentation] UUID is : " + uuid);
         }
 
         return body;
@@ -264,10 +252,8 @@ public class DataspaceResourceClient extends AbstractDataspaceConnectorClient im
         final var request = builder.build();
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
-        if (!response.isSuccessful()) {
-            if (log.isWarnEnabled()) {
-                log.warn("---- [DataspaceResourceClient updateResourceRepresentation] Updating Representation failed!");
-            }
+        if (!response.isSuccessful() && log.isWarnEnabled()) {
+            log.warn("---- [DataspaceResourceClient updateResourceRepresentation] Updating Representation failed!");
         }
 
         return Objects.requireNonNull(response.body()).string();
@@ -292,10 +278,8 @@ public class DataspaceResourceClient extends AbstractDataspaceConnectorClient im
         final var request = builder.build();
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
-        if (!response.isSuccessful()) {
-            if (log.isWarnEnabled()) {
-                log.warn("---- [DataspaceResourceClient updateResourceContract] Updating contract failed!");
-            }
+        if (!response.isSuccessful() && log.isWarnEnabled()) {
+            log.warn("---- [DataspaceResourceClient updateResourceContract] Updating contract failed!");
         }
 
         return Objects.requireNonNull(response.body()).string();
@@ -347,10 +331,8 @@ public class DataspaceResourceClient extends AbstractDataspaceConnectorClient im
         final var request = builder.build();
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
-        if (!response.isSuccessful()) {
-            if (log.isWarnEnabled()) {
-                log.warn("---- [DataspaceResourceClient updateResource] Updating Resource failed!");
-            }
+        if (!response.isSuccessful() && log.isWarnEnabled()) {
+            log.warn("---- [DataspaceResourceClient updateResource] Updating Resource failed!");
         }
 
         return response;
