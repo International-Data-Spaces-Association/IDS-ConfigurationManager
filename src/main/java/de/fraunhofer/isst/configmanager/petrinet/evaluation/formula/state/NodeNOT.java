@@ -13,7 +13,7 @@ public class NodeNOT implements StateFormula {
 
     @Override
     public boolean evaluate() {
-        return false;
+        return !parameter.evaluate();
     }
 
     @Override

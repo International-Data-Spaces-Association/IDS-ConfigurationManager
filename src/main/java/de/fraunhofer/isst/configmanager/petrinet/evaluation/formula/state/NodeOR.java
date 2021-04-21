@@ -13,7 +13,7 @@ public class NodeOR implements StateFormula {
 
     @Override
     public boolean evaluate() {
-        return false;
+        return parameter1.evaluate() || parameter2.evaluate();
     }
 
     @Override

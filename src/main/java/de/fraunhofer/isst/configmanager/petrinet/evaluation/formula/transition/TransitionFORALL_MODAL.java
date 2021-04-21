@@ -13,6 +13,9 @@ public class TransitionFORALL_MODAL implements TransitionFormula {
     private TransitionFormula parameter1;
     private StateFormula parameter2;
 
+    //TODO
+    // parameter1, must be true for all successor transitions, parameter2 must
+    // be true for the states between the current transition and its successors.
     @Override
     public boolean evaluate() {
         return false;

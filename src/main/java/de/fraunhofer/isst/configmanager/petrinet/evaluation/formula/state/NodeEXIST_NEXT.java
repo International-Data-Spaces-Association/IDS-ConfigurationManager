@@ -2,6 +2,9 @@ package de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state;
 
 import lombok.AllArgsConstructor;
 
+import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeMODAL.nodeMODAL;
+import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionMODAL.transitionMODAL;
+
 @AllArgsConstructor
 public class NodeEXIST_NEXT implements StateFormula {
 
@@ -12,7 +15,7 @@ public class NodeEXIST_NEXT implements StateFormula {
 
     @Override
     public boolean evaluate() {
-        return false;
+        return nodeMODAL(transitionMODAL(parameter)).evaluate();
     }
 
     @Override

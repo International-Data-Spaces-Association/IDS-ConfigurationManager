@@ -12,6 +12,8 @@ public class TransitionMODAL implements TransitionFormula {
 
     private StateFormula parameter;
 
+    //TODO
+    // MODAL, is true if parameter evaluates to true for a state following the current transition
     @Override
     public boolean evaluate() {
         return false;

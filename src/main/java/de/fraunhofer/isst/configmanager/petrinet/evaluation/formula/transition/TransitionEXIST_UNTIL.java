@@ -11,6 +11,9 @@ public class TransitionEXIST_UNTIL implements TransitionFormula {
 
     private TransitionFormula parameter1, parameter2;
 
+    //TODO
+    // True if a path exists, where parameter1 is true on each transition of the path,
+    // and parameter2 is true on the final transition of the path
     @Override
     public boolean evaluate() {
         return false;

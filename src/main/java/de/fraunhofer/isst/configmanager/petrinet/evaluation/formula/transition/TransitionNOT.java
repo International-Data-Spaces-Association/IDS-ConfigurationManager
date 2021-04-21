@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class TransitionNOT implements TransitionFormula {
 
-    public static TransitionNOT nodeNOT(TransitionFormula parameter){
+    public static TransitionNOT transitionNOT(TransitionFormula parameter){
         return new TransitionNOT(parameter);
     }
 
@@ -13,7 +13,7 @@ public class TransitionNOT implements TransitionFormula {
 
     @Override
     public boolean evaluate() {
-        return false;
+        return !parameter.evaluate();
     }
 
     @Override

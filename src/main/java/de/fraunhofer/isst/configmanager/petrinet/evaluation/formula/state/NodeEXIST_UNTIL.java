@@ -12,6 +12,9 @@ public class NodeEXIST_UNTIL implements StateFormula {
     private StateFormula parameter1, parameter2;
 
     @Override
+    //TODO
+    // True if a path exists, where parameter1 is true on each node of the path,
+    // and parameter2 is true on the final node of the path
     public boolean evaluate() {
         return false;
     }

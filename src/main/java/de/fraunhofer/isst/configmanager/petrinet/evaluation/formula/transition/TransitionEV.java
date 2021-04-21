@@ -2,6 +2,9 @@ package de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition;
 
 import lombok.AllArgsConstructor;
 
+import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.TT.TT;
+import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionFORALL_UNTIL.transitionFORALL_UNTIL;
+
 @AllArgsConstructor
 public class TransitionEV implements TransitionFormula {
 
@@ -13,7 +16,7 @@ public class TransitionEV implements TransitionFormula {
 
     @Override
     public boolean evaluate() {
-        return false;
+        return transitionFORALL_UNTIL(TT(), parameter).evaluate();
     }
 
     @Override

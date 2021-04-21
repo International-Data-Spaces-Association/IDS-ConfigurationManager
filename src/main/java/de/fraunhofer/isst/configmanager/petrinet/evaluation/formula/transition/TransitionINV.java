@@ -2,6 +2,9 @@ package de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition;
 
 import lombok.AllArgsConstructor;
 
+import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionNOT.transitionNOT;
+import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionPOS.transitionPOS;
+
 @AllArgsConstructor
 public class TransitionINV implements TransitionFormula {
 
@@ -13,7 +16,7 @@ public class TransitionINV implements TransitionFormula {
 
     @Override
     public boolean evaluate() {
-        return false;
+        return transitionNOT(transitionPOS(transitionNOT(parameter))).evaluate();
     }
 
     @Override

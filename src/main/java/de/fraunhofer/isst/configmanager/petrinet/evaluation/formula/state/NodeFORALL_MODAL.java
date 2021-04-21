@@ -14,6 +14,9 @@ public class NodeFORALL_MODAL implements StateFormula {
 
     private TransitionFormula parameter2;
 
+    //TODO
+    // parameter1, must be true for all successor states, parameter2 must
+    // be true for the transitions between the current state and its successors.
     @Override
     public boolean evaluate() {
         return false;

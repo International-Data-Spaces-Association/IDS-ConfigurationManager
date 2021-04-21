@@ -13,7 +13,7 @@ public class TransitionAND implements TransitionFormula {
 
     @Override
     public boolean evaluate() {
-        return false;
+        return parameter1.evaluate() && parameter2.evaluate();
     }
 
     @Override

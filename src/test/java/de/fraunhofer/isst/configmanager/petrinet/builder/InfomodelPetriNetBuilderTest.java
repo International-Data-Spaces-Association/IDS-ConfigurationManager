@@ -2,6 +2,7 @@ package de.fraunhofer.isst.configmanager.petrinet.builder;
 
 import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
+import de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionPOS;
 import de.fraunhofer.isst.configmanager.petrinet.simulator.PetriNetSimulator;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Disabled;
@@ -13,6 +14,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+
+import de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.*;
+
+import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionNOT.transitionNOT;
+import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.FF.FF;
 
 /**
  * Test building a PetriNet from a randomly generated AppRoute
@@ -59,6 +65,7 @@ class InfomodelPetriNetBuilderTest {
         var graph = PetriNetSimulator.buildStepGraph(petriNet);
         log.info(String.valueOf(graph.getArcs().size()));
         log.info(GraphVizGenerator.generateGraphViz(graph));
+        var formula = transitionNOT(FF());
     }
 
     /**

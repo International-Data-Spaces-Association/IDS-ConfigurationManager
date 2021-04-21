@@ -5,12 +5,13 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class NodeFORALL_UNTIL implements StateFormula {
 
-    public NodeFORALL_UNTIL nodeFORALL_UNTIL(StateFormula parameter1, StateFormula parameter2){
+    public static NodeFORALL_UNTIL nodeFORALL_UNTIL(StateFormula parameter1, StateFormula parameter2){
         return new NodeFORALL_UNTIL(parameter1, parameter2);
     }
 
     private StateFormula parameter1, parameter2;
 
+    //TODO like EXIST_UNTIL for all paths
     @Override
     public boolean evaluate() {
         return false;

@@ -2,6 +2,9 @@ package de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition;
 
 import lombok.AllArgsConstructor;
 
+import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionEXIST_NEXT.transitionEXIST_NEXT;
+import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionNOT.transitionNOT;
+
 @AllArgsConstructor
 public class TransitionFORALL_NEXT implements TransitionFormula {
 
@@ -13,7 +16,7 @@ public class TransitionFORALL_NEXT implements TransitionFormula {
 
     @Override
     public boolean evaluate() {
-        return false;
+        return transitionNOT(transitionEXIST_NEXT(transitionNOT(parameter))).evaluate();
     }
 
     @Override

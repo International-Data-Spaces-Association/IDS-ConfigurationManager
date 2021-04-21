@@ -3,10 +3,10 @@ package de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public class TransitionNF implements TransitionFormula {
+public class TransitionAF implements TransitionFormula {
 
-    public static TransitionNF transitionNF(ArcExpression parameter){
-        return new TransitionNF(parameter);
+    public static TransitionAF transitionAF(ArcExpression parameter){
+        return new TransitionAF(parameter);
     }
 
     private ArcExpression parameter;
@@ -18,6 +18,6 @@ public class TransitionNF implements TransitionFormula {
 
     @Override
     public String symbol() {
-        return "NF";
+        return "AF";
     }
 }

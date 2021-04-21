@@ -2,6 +2,9 @@ package de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state;
 
 import lombok.AllArgsConstructor;
 
+import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.TT.TT;
+import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeEXIST_UNTIL.nodeEXIST_UNTIL;
+
 @AllArgsConstructor
 public class NodePOS implements StateFormula {
 
@@ -13,7 +16,7 @@ public class NodePOS implements StateFormula {
 
     @Override
     public boolean evaluate() {
-        return false;
+        return nodeEXIST_UNTIL(TT(), parameter).evaluate();
     }
 
     @Override
