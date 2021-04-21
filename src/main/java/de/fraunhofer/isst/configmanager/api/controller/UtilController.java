@@ -37,7 +37,9 @@ public class UtilController implements UtilApi {
      */
     @Override
     public ResponseEntity<String> getSpecificEnum(final String enumName) {
-        log.info(">> GET /api/ui/enum " + enumName);
+        if (log.isInfoEnabled()) {
+            log.info(">> GET /api/ui/enum " + enumName);
+        }
         ResponseEntity<String> response;
 
         final var enums = utilService.getSpecificEnum(enumName);
@@ -59,7 +61,9 @@ public class UtilController implements UtilApi {
      */
     @Override
     public ResponseEntity<String> getPolicyPattern(final String policy) {
-        log.info(">> GET /api/ui/policy-pattern " + policy);
+        if (log.isInfoEnabled()) {
+            log.info(">> GET /api/ui/policy-pattern " + policy);
+        }
         ResponseEntity<String> response;
 
         String pattern;
@@ -72,7 +76,9 @@ public class UtilController implements UtilApi {
                 response = ResponseEntity.badRequest().body("Could not find any pattern for the given policy");
             }
         } catch (IOException e) {
-            log.error(e.getMessage(), e);
+            if (log.isErrorEnabled()) {
+                log.error(e.getMessage(), e);
+            }
             response = ResponseEntity.badRequest().body("Failed to determine policy pattern at the client");
         }
 

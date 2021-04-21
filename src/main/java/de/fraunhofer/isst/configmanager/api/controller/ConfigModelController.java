@@ -71,9 +71,10 @@ public class ConfigModelController implements ConfigModelApi {
                                                     final ArrayList<URI> noProxyUriList,
                                                     final String username,
                                                     final String password) {
-
-        log.info(">> PUT /configmodel loglevel: " + loglevel + " connectorDeployMode: " + connectorDeployMode + " trustStore: " + trustStore
-                + " keyStore: " + keyStore + " proxyUri: " + proxyUri + " username: " + username);
+        if (log.isInfoEnabled()) {
+            log.info(">> PUT /configmodel loglevel: " + loglevel + " connectorDeployMode: " + connectorDeployMode + " trustStore: " + trustStore
+                    + " keyStore: " + keyStore + " proxyUri: " + proxyUri + " username: " + username);
+        }
 
         ResponseEntity<String> response;
 
@@ -102,7 +103,9 @@ public class ConfigModelController implements ConfigModelApi {
                     response = ResponseEntity.badRequest().body(jsonObject.toJSONString());
                 }
             } catch (IOException e) {
-                log.error(e.getMessage(), e);
+                if (log.isErrorEnabled()) {
+                    log.error(e.getMessage(), e);
+                }
                 response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
         } else {
@@ -119,7 +122,9 @@ public class ConfigModelController implements ConfigModelApi {
      */
     @Override
     public ResponseEntity<String> getConfigModel() {
-        log.info(">> GET /configmodel");
+        if (log.isInfoEnabled()) {
+            log.info(">> GET /configmodel");
+        }
         ResponseEntity<String> response;
 
         try {

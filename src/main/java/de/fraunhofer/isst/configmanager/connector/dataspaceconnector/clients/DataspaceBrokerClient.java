@@ -53,10 +53,12 @@ public class DataspaceBrokerClient extends AbstractDataspaceConnectorClient impl
 
     @Override
     public Response unregisterAtBroker(final String brokerURI) throws IOException {
-        log.info(String.format(
-                "---- [DataspaceBrokerClient unregisterAtBroker] unregistering connector %s at broker %s",
-                dataSpaceConnectorHost,
-                brokerURI));
+        if (log.isInfoEnabled()) {
+            log.info(String.format(
+                    "---- [DataspaceBrokerClient unregisterAtBroker] unregistering connector %s at broker %s",
+                    dataSpaceConnectorHost,
+                    brokerURI));
+        }
 
         final var builder = getRequestBuilder();
         builder.url(new HttpUrl.Builder()
@@ -77,7 +79,9 @@ public class DataspaceBrokerClient extends AbstractDataspaceConnectorClient impl
 
     @Override
     public Response updateResourceAtBroker(final String brokerUri, final URI resourceID) throws IOException {
-        log.info(String.format("---- [DataspaceBrokerClient updateResourceAtBroker] updating resource at Broker %s", brokerUri));
+        if (log.isInfoEnabled()) {
+            log.info(String.format("---- [DataspaceBrokerClient updateResourceAtBroker] updating resource at Broker %s", brokerUri));
+        }
 
         final var path = resourceID.getPath();
         final var idStr = path.substring(path.lastIndexOf('/') + 1);
@@ -98,7 +102,9 @@ public class DataspaceBrokerClient extends AbstractDataspaceConnectorClient impl
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
         if (!response.isSuccessful()) {
-            log.warn("---- [DataspaceBrokerClient updateResourceAtBroker] Updating Resource at Broker failed!");
+            if (log.isWarnEnabled()) {
+                log.warn("---- [DataspaceBrokerClient updateResourceAtBroker] Updating Resource at Broker failed!");
+            }
         }
 
         return response;
@@ -106,7 +112,9 @@ public class DataspaceBrokerClient extends AbstractDataspaceConnectorClient impl
 
     @Override
     public Response deleteResourceAtBroker(final String brokerUri, final URI resourceID) throws IOException {
-        log.info(String.format("---- [DataspaceBrokerClient deleteResourceAtBroker] Deleting resource %s at Broker %s", resourceID, brokerUri));
+        if (log.isInfoEnabled()) {
+            log.info(String.format("---- [DataspaceBrokerClient deleteResourceAtBroker] Deleting resource %s at Broker %s", resourceID, brokerUri));
+        }
 
         final var path = resourceID.getPath();
         final var idStr = path.substring(path.lastIndexOf('/') + 1);
@@ -126,7 +134,9 @@ public class DataspaceBrokerClient extends AbstractDataspaceConnectorClient impl
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
         if (!response.isSuccessful()) {
-            log.warn("---- [DataspaceBrokerClient deleteResourceAtBroker] Deleting Resource at Broker failed!");
+            if (log.isWarnEnabled()) {
+                log.warn("---- [DataspaceBrokerClient deleteResourceAtBroker] Deleting Resource at Broker failed!");
+            }
         }
 
         return response;

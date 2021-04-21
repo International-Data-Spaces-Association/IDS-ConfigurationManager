@@ -61,7 +61,9 @@ public abstract class AbstractResourceService {
         try {
             baseConnector = connectorClient.getSelfDeclaration();
         } catch (IOException e) {
-            log.error(e.getMessage(), e);
+            if (log.isErrorEnabled()) {
+                log.error(e.getMessage(), e);
+            }
         }
         if (baseConnector != null && baseConnector.getResourceCatalog() != null) {
             for (final var resourceCatalog : baseConnector.getResourceCatalog()) {

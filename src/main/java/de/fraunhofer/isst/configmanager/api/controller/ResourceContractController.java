@@ -55,7 +55,9 @@ public class ResourceContractController implements ResourceContractApi {
      */
     @Override
     public ResponseEntity<String> updateResourceContract(final URI resourceId, final String contractJson) {
-        log.info(">> PUT /resource/contract resourceId: " + resourceId + " contractJson: " + contractJson);
+        if (log.isInfoEnabled()) {
+            log.info(">> PUT /resource/contract resourceId: " + resourceId + " contractJson: " + contractJson);
+        }
         ResponseEntity<String> response;
 
         if ("{}".equals(contractJson) && ValidateApiInput.notValid(resourceId.toString())) {
@@ -80,7 +82,9 @@ public class ResourceContractController implements ResourceContractApi {
                         jsonObject.put("connectorResponse", clientResponse);
                         response = ResponseEntity.ok(jsonObject.toJSONString());
                     } catch (IOException e) {
-                        log.error(e.getMessage(), e);
+                        if (log.isErrorEnabled()) {
+                            log.error(e.getMessage(), e);
+                        }
                         jsonObject.put("message", "Problems while updating the contract at the connector");
                         response = ResponseEntity.badRequest().body(jsonObject.toJSONString());
                     }
@@ -88,7 +92,9 @@ public class ResourceContractController implements ResourceContractApi {
                     response = ResponseEntity.badRequest().body("Could not update the resource contract");
                 }
             } catch (IOException e) {
-                log.error(e.getMessage(), e);
+                if (log.isErrorEnabled()) {
+                    log.error(e.getMessage(), e);
+                }
                 response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
         }
@@ -106,8 +112,10 @@ public class ResourceContractController implements ResourceContractApi {
     public ResponseEntity<String> updateContractForResource(final URI resourceId,
                                                             final Pattern pattern,
                                                             final String contractJson) {
-        log.info(">> PUT /resource/contract/update resourceId: " + resourceId + "pattern" + pattern.toString()
-                + " contractJson: " + contractJson);
+        if (log.isInfoEnabled()) {
+            log.info(">> PUT /resource/contract/update resourceId: " + resourceId + "pattern" + pattern.toString()
+                    + " contractJson: " + contractJson);
+        }
 
         ResponseEntity<String> response;
 
@@ -118,7 +126,9 @@ public class ResourceContractController implements ResourceContractApi {
             try {
                 contractOffer = resourceContractService.getContractOffer(pattern, contractJson);
             } catch (JsonProcessingException e) {
-                log.error(e.getMessage());
+                if (log.isErrorEnabled()) {
+                    log.error(e.getMessage());
+                }
             }
 
             // Update the resource contract
@@ -137,7 +147,9 @@ public class ResourceContractController implements ResourceContractApi {
                     jsonObject.put("connectorResponse", connectorResponse);
                     response = ResponseEntity.ok(jsonObject.toJSONString());
                 } catch (IOException e) {
-                    log.error(e.getMessage(), e);
+                    if (log.isErrorEnabled()) {
+                        log.error(e.getMessage(), e);
+                    }
                     jsonObject.put("message", "Problems while updating the contract at the connector");
                     response = ResponseEntity.badRequest().body(jsonObject.toJSONString());
                 }
