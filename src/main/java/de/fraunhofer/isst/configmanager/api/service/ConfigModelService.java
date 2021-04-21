@@ -214,7 +214,7 @@ public class ConfigModelService {
     public void updateProxySettings(final URI proxyUri, final ArrayList<URI> noProxyUriList,
                                     final String username, final String password,
                                     final ConfigurationModelImpl configmodelImpl) {
-        if ("null".equals(proxyUri)) {
+        if ("null".equals(proxyUri.toString())) {
             configmodelImpl.setConnectorProxy(null);
         } else {
             if (getConfigModelObject().getConfigurationModel().getConnectorProxy() == null) {
