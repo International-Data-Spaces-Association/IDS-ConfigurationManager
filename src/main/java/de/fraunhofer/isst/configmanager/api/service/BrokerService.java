@@ -52,7 +52,6 @@ public class BrokerService {
      *
      * @param brokerUri uri of the broker
      * @param title     title of the broker
-     * @return custom broker
      */
     public void createCustomBroker(final URI brokerUri, final String title) {
         final var customBroker = new CustomBroker(brokerUri);
