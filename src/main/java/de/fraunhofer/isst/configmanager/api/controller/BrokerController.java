@@ -262,11 +262,6 @@ public class BrokerController implements BrokerApi {
     public ResponseEntity<String> updateResourceAtBroker(final URI brokerUri, final URI resourceId) {
         log.info(">> POST /broker/update/resource brokerUri: " + brokerUri + " resourceId: " + resourceId);
 
-//        ResponseEntity<String> response;
-//        response = updateConnector(brokerUri);
-//
-//        return response;
-
         ResponseEntity<String> response;
         final var broker = brokerService.getById(brokerUri);
         final var jsonObject = new JSONObject();
@@ -276,6 +271,7 @@ public class BrokerController implements BrokerApi {
                 final var clientResponseString = Objects.requireNonNull(clientResponse.body()).string();
                 jsonObject.put("response", clientResponseString);
                 if (clientResponse.isSuccessful()) {
+                    brokerService.sentSelfDescToBroker(brokerUri);
                     jsonObject.put("success", true);
                     response = ResponseEntity.ok(jsonObject.toJSONString());
                 } else {
@@ -304,14 +300,6 @@ public class BrokerController implements BrokerApi {
     @Override
     public ResponseEntity<String> deleteResourceAtBroker(final URI brokerUri, final URI resourceId) {
         log.info(">> POST /broker/delete/resource brokerUri: " + brokerUri + " resourceId: " + resourceId);
-
-//        final var response = updateConnector(brokerUri);
-//
-//        if (response.getStatusCode() != HttpStatus.BAD_REQUEST) {
-//            brokerService.deleteResourceAtBroker(brokerUri, resourceId);
-//        }
-//
-//        return response;
 
         ResponseEntity<String> response;
         final var broker = brokerService.getById(brokerUri);
