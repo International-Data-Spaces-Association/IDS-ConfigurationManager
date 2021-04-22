@@ -38,6 +38,15 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Patch Change: A percent sign within URLs in the UI no longer results in an error in the CM-Backend.
 - Patch Change: Refactored Swagger-UI API Documentation, added all actually possible return-status-codes for API calls
 
+### Dependency Maintenance
+- Add: org.apache.logging.log4j:log4j-web 2.14.1 (Apache 2.0)
+- Upgrade: org.springframework.boot:spring-boot-starter-parent 2.4.2 -> 2.4.5
+- Upgrade: org.springframework.security:spring-security-test 5.4.2 -> 5.4.6
+- Upgrade: org.projectlombok:lombok 1.18.18 -> 1.18.20
+- Upgrade: junit:junit 4.13.1 -> 4.13.2
+- Exclude: com.vaadin.external.google:android-json from org.springframework.boot:spring-boot-starter-test
+- Remove: io.jsonwebtoken:jjwt 0.9.1
+
 ### Miscellaneous
 - Added custom banner at application startup instead of default banner
 - Disabled Swagger Petstore default playground
