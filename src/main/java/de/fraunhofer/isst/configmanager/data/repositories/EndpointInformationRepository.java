@@ -1,6 +1,6 @@
-package de.fraunhofer.isst.configmanager.model.repositories;
+package de.fraunhofer.isst.configmanager.data.repositories;
 
-import de.fraunhofer.isst.configmanager.model.endpointinfo.EndpointInformation;
+import de.fraunhofer.isst.configmanager.data.entities.EndpointInformation;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

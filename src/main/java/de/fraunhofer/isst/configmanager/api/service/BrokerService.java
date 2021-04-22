@@ -2,9 +2,9 @@ package de.fraunhofer.isst.configmanager.api.service;
 
 import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.isst.configmanager.api.service.resources.ResourceService;
-import de.fraunhofer.isst.configmanager.model.config.BrokerStatus;
-import de.fraunhofer.isst.configmanager.model.config.CustomBroker;
-import de.fraunhofer.isst.configmanager.model.repositories.CustomBrokerRepository;
+import de.fraunhofer.isst.configmanager.data.enums.BrokerRegistrationStatus;
+import de.fraunhofer.isst.configmanager.data.entities.CustomBroker;
+import de.fraunhofer.isst.configmanager.data.repositories.CustomBrokerRepository;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +44,7 @@ public class BrokerService {
             final var customBroker = new CustomBroker();
             customBroker.setBrokerUri(URI.create("https://broker.ids.isst.fraunhofer.de/infrastructure"));
             customBroker.setTitle("IDS Broker");
-            customBroker.setBrokerStatus(BrokerStatus.UNREGISTERED);
+            customBroker.setBrokerRegistrationStatus(BrokerRegistrationStatus.UNREGISTERED);
             customBrokerRepository.save(customBroker);
         }
     }
@@ -60,7 +60,7 @@ public class BrokerService {
         if (title != null) {
             customBroker.setTitle(title);
         }
-        customBroker.setBrokerStatus(BrokerStatus.UNREGISTERED);
+        customBroker.setBrokerRegistrationStatus(BrokerRegistrationStatus.UNREGISTERED);
         customBrokerRepository.save(customBroker);
     }
 
@@ -128,12 +128,12 @@ public class BrokerService {
      * This method is responsible for setting the broker status.
      *
      * @param brokerId     id of the broker
-     * @param brokerStatus broker status
+     * @param brokerRegistrationStatus broker status
      */
-    public void setBrokerStatus(final URI brokerId, final BrokerStatus brokerStatus) {
+    public void setBrokerStatus(final URI brokerId, final BrokerRegistrationStatus brokerRegistrationStatus) {
         final var customBroker = getById(brokerId);
         if (customBroker != null) {
-            customBroker.setBrokerStatus(brokerStatus);
+            customBroker.setBrokerRegistrationStatus(brokerRegistrationStatus);
             customBrokerRepository.save(customBroker);
         }
     }
@@ -198,7 +198,7 @@ public class BrokerService {
                             jsonObject.clear();
                             jsonObject.put("brokerId", customBroker.getBrokerUri().toString());
                             jsonObject.put("brokerStatus",
-                                    customBroker.getBrokerStatus().toString());
+                                    customBroker.getBrokerRegistrationStatus().toString());
                             jsonObject.put("resourceId", resourceId.toString());
                             jsonArray.add(jsonObject);
                         }
@@ -224,7 +224,7 @@ public class BrokerService {
             final var jsonObject = new JSONObject();
 
             for (final var broker : customBrokers) {
-                if (BrokerStatus.REGISTERED.equals(broker.getBrokerStatus())) {
+                if (BrokerRegistrationStatus.REGISTERED.equals(broker.getBrokerRegistrationStatus())) {
                     jsonObject.clear();
                     jsonObject.put("brokerId", broker.getBrokerUri().toString());
                     jsonArray.add(jsonObject);

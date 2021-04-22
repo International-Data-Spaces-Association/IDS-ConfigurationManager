@@ -3,7 +3,7 @@ package de.fraunhofer.isst.configmanager.api_test;
 import de.fraunhofer.isst.configmanager.api.controller.BrokerController;
 import de.fraunhofer.isst.configmanager.api.service.BrokerService;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultBrokerClient;
-import de.fraunhofer.isst.configmanager.model.config.CustomBroker;
+import de.fraunhofer.isst.configmanager.data.entities.CustomBroker;
 import de.fraunhofer.isst.configmanager.util.TestUtil;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

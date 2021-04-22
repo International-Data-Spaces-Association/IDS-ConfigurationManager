@@ -1,7 +1,6 @@
-package de.fraunhofer.isst.configmanager.model.customgenericendpoint;
+package de.fraunhofer.isst.configmanager.data.util;
 
 import de.fraunhofer.iais.eis.Endpoint;
-import de.fraunhofer.isst.configmanager.model.converter.EndpointConverter;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;

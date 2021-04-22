@@ -5,7 +5,7 @@ import de.fraunhofer.iais.eis.ConfigurationModel;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.util.DispatchRequest;
 import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.util.ResourceMapper;
-import de.fraunhofer.isst.configmanager.model.config.QueryInput;
+import de.fraunhofer.isst.configmanager.data.util.QueryInput;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;

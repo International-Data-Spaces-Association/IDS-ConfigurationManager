@@ -9,9 +9,8 @@ import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.api.AppRouteApi;
 import de.fraunhofer.isst.configmanager.api.service.AppRouteService;
 import de.fraunhofer.isst.configmanager.api.service.ConfigModelService;
-import de.fraunhofer.isst.configmanager.model.repositories.RouteDeployMethodRepository;
-import de.fraunhofer.isst.configmanager.model.routedeploymethod.DeployMethod;
-import de.fraunhofer.isst.configmanager.model.routedeploymethod.RouteDeployMethod;
+import de.fraunhofer.isst.configmanager.data.repositories.RouteDeployMethodRepository;
+import de.fraunhofer.isst.configmanager.data.enums.RouteDeployMethod;
 import de.fraunhofer.isst.configmanager.util.Utility;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
@@ -58,8 +57,8 @@ public class AppRouteController implements AppRouteApi {
         this.objectMapper = objectMapper;
 
         if (routeDeployMethodRepository.count() == 0) {
-            final var routeDeployMethod = new RouteDeployMethod();
-            routeDeployMethod.setDeployMethod(DeployMethod.NONE);
+            final var routeDeployMethod = new de.fraunhofer.isst.configmanager.data.entities.RouteDeployMethod();
+            routeDeployMethod.setRouteDeployMethod(RouteDeployMethod.NONE);
             routeDeployMethodRepository.save(routeDeployMethod);
         }
     }
@@ -304,24 +303,24 @@ public class AppRouteController implements AppRouteApi {
     /**
      * This method updates the route deploy method of all app route and route steps.
      *
-     * @param deployMethod route deploy method
+     * @param routeDeployMethod route deploy method
      * @return a suitable http response depending on success
      */
     @Override
-    public ResponseEntity<String> updateRouteDeployMethod(final DeployMethod deployMethod) {
+    public ResponseEntity<String> updateRouteDeployMethod(final RouteDeployMethod routeDeployMethod) {
         if (log.isInfoEnabled()) {
-            log.info(">> PUT /route/deploymethod deployMethod: " + deployMethod);
+            log.info(">> PUT /route/deploymethod deployMethod: " + routeDeployMethod);
         }
         ResponseEntity<String> response;
 
         if (routeDeployMethodRepository.count() != 0) {
             final var existingDeployMethod = routeDeployMethodRepository.findAll().get(0);
-            existingDeployMethod.setDeployMethod(deployMethod);
+            existingDeployMethod.setRouteDeployMethod(routeDeployMethod);
 
             routeDeployMethodRepository.save(existingDeployMethod);
 
             // Updates the deploy method from the app routes and route steps
-            updateDeployMethodFromRoutes(deployMethod);
+            updateDeployMethodFromRoutes(routeDeployMethod);
 
             if (log.isInfoEnabled()) {
                 log.info("---- [AppRouteController updateRouteDeployMethod] Updated successfully the route deploy method");
@@ -371,9 +370,9 @@ public class AppRouteController implements AppRouteApi {
     /**
      * This method updates the deploy method from every app route and route step.
      *
-     * @param deployMethod deploy method of the route
+     * @param routeDeployMethod deploy method of the route
      */
-    private void updateDeployMethodFromRoutes(final DeployMethod deployMethod) {
+    private void updateDeployMethodFromRoutes(final RouteDeployMethod routeDeployMethod) {
         if (log.isInfoEnabled()) {
             log.info("---- [AppRouteController updateDeployMethodFromRoutes] Updating deploymethod for every app route and route step...");
         }
@@ -384,14 +383,14 @@ public class AppRouteController implements AppRouteApi {
             for (final var appRoute : appRouteList) {
                 if (appRoute != null) {
                     final var appRouteImpl = (AppRouteImpl) appRoute;
-                    appRouteImpl.setRouteDeployMethod(deployMethod.toString());
+                    appRouteImpl.setRouteDeployMethod(routeDeployMethod.toString());
 
                     // Update deploy method from route steps
                     if (appRoute.getHasSubRoute() != null) {
                         for (final var routeStep : appRoute.getHasSubRoute()) {
                             if (routeStep != null) {
                                 final var routeStepImpl = (RouteStepImpl) routeStep;
-                                routeStepImpl.setRouteDeployMethod(deployMethod.toString());
+                                routeStepImpl.setRouteDeployMethod(routeDeployMethod.toString());
                             }
                         }
                     }

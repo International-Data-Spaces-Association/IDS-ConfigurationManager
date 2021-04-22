@@ -3,7 +3,7 @@ package de.fraunhofer.isst.configmanager.api.service;
 import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultResourceClient;
-import de.fraunhofer.isst.configmanager.model.config.QueryInput;
+import de.fraunhofer.isst.configmanager.data.util.QueryInput;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Autowired;

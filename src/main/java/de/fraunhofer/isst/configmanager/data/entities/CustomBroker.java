@@ -1,5 +1,6 @@
-package de.fraunhofer.isst.configmanager.model.config;
+package de.fraunhofer.isst.configmanager.data.entities;
 
+import de.fraunhofer.isst.configmanager.data.enums.BrokerRegistrationStatus;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -27,7 +28,7 @@ public class CustomBroker {
 
     String title;
 
-    BrokerStatus brokerStatus;
+    BrokerRegistrationStatus brokerRegistrationStatus;
 
     @ElementCollection
     List<String> registeredResources;

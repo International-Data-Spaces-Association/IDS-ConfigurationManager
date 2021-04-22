@@ -1,6 +1,6 @@
 package de.fraunhofer.isst.configmanager.api;
 
-import de.fraunhofer.isst.configmanager.model.usagecontrol.Pattern;
+import de.fraunhofer.isst.configmanager.data.enums.UsagePolicyName;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -27,7 +27,7 @@ public interface ResourceContractApi {
             @ApiResponse(responseCode = "200", description = "Successfully updated the contract in the resource"),
             @ApiResponse(responseCode = "400", description = "Can not update the resource contract")})
     ResponseEntity<String> updateContractForResource(@RequestParam("resourceId") URI resourceId,
-                                                     @RequestParam("pattern") Pattern pattern,
+                                                     @RequestParam("pattern") UsagePolicyName usagePolicyName,
                                                      @RequestBody(required = false) String contractJson);
 
 

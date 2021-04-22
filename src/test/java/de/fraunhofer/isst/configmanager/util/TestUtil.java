@@ -1,6 +1,6 @@
 package de.fraunhofer.isst.configmanager.util;
 
-import de.fraunhofer.isst.configmanager.model.config.CustomBroker;
+import de.fraunhofer.isst.configmanager.data.entities.CustomBroker;
 
 import java.net.URI;
 import java.util.ArrayList;

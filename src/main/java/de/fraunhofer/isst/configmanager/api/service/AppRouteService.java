@@ -12,11 +12,11 @@ import de.fraunhofer.iais.eis.RouteStep;
 import de.fraunhofer.iais.eis.RouteStepBuilder;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.api.service.resources.ResourceService;
-import de.fraunhofer.isst.configmanager.model.repositories.CustomAppRepository;
-import de.fraunhofer.isst.configmanager.model.repositories.EndpointInformationRepository;
-import de.fraunhofer.isst.configmanager.model.repositories.RouteDeployMethodRepository;
-import de.fraunhofer.isst.configmanager.model.customapp.CustomApp;
-import de.fraunhofer.isst.configmanager.model.endpointinfo.EndpointInformation;
+import de.fraunhofer.isst.configmanager.data.repositories.CustomAppRepository;
+import de.fraunhofer.isst.configmanager.data.repositories.EndpointInformationRepository;
+import de.fraunhofer.isst.configmanager.data.repositories.RouteDeployMethodRepository;
+import de.fraunhofer.isst.configmanager.data.entities.CustomApp;
+import de.fraunhofer.isst.configmanager.data.entities.EndpointInformation;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -81,7 +81,7 @@ public class AppRouteService {
         if (routeDeployMethod.isEmpty()) {
             deployMethod = "custom";
         } else {
-            deployMethod = routeDeployMethod.get(0).getDeployMethod().toString();
+            deployMethod = routeDeployMethod.get(0).getRouteDeployMethod().toString();
         }
 
         final var appRoute = new AppRouteBuilder()
@@ -191,7 +191,7 @@ public class AppRouteService {
             if (routeDeployMethod.isEmpty()) {
                 deployMethod = "custom";
             } else {
-                deployMethod = routeDeployMethod.get(0).getDeployMethod().toString();
+                deployMethod = routeDeployMethod.get(0).getRouteDeployMethod().toString();
             }
 
             // Create route step

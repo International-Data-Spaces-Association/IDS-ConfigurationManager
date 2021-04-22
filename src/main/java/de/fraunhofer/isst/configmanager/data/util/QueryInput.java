@@ -1,4 +1,4 @@
-package de.fraunhofer.isst.configmanager.model.config;
+package de.fraunhofer.isst.configmanager.data.util;
 
 import lombok.Data;
 

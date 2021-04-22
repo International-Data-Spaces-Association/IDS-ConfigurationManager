@@ -5,7 +5,7 @@ import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.isst.configmanager.api.BrokerApi;
 import de.fraunhofer.isst.configmanager.api.service.BrokerService;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultBrokerClient;
-import de.fraunhofer.isst.configmanager.model.config.BrokerStatus;
+import de.fraunhofer.isst.configmanager.data.enums.BrokerRegistrationStatus;
 import de.fraunhofer.isst.configmanager.util.Utility;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
@@ -158,7 +158,7 @@ public class BrokerController implements BrokerApi {
                 final var clientResponse = client.updateAtBroker(brokerUri.toString());
                 if (clientResponse.isSuccessful()) {
                     brokerService.sentSelfDescToBroker(brokerUri);
-                    brokerService.setBrokerStatus(brokerUri, BrokerStatus.REGISTERED);
+                    brokerService.setBrokerStatus(brokerUri, BrokerRegistrationStatus.REGISTERED);
                     jsonObject.put(success, true);
                 } else {
                     jsonObject.put(success, false);
@@ -201,7 +201,7 @@ public class BrokerController implements BrokerApi {
                 final var clientResponseString = Objects.requireNonNull(clientResponse.body()).string();
                 if (clientResponse.isSuccessful() && !clientResponseString.contains("RejectionMessage")) {
                     brokerService.unregisteredAtBroker(brokerUri);
-                    brokerService.setBrokerStatus(brokerUri, BrokerStatus.UNREGISTERED);
+                    brokerService.setBrokerStatus(brokerUri, BrokerRegistrationStatus.UNREGISTERED);
                     jsonObject.put(success, true);
                 } else {
                     jsonObject.put(success, false);

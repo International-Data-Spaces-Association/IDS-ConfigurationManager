@@ -7,7 +7,7 @@ import de.fraunhofer.iais.eis.RouteStep;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.api.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultConnectorClient;
-import de.fraunhofer.isst.configmanager.model.usagecontrol.Pattern;
+import de.fraunhofer.isst.configmanager.data.enums.UsagePolicyName;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -120,14 +120,14 @@ public class ResourceContractService extends AbstractResourceService {
     }
 
     /**
-     * @param pattern      pattern to create appropriate contract offer
+     * @param usagePolicyName      pattern to create appropriate contract offer
      * @param contractJson the request body which holds the necessary information
      * @return contract offer
      */
-    public ContractOffer getContractOffer(final Pattern pattern, final String contractJson) throws JsonProcessingException {
+    public ContractOffer getContractOffer(final UsagePolicyName usagePolicyName, final String contractJson) throws JsonProcessingException {
         ContractOffer contractOffer = null;
 
-        switch (pattern) {
+        switch (usagePolicyName) {
             case PROVIDE_ACCESS:
                 contractOffer = resourceContractBuilder.buildProvideAccess();
                 break;

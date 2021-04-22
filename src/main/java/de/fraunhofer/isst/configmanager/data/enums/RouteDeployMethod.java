@@ -1,9 +1,9 @@
-package de.fraunhofer.isst.configmanager.model.routedeploymethod;
+package de.fraunhofer.isst.configmanager.data.enums;
 
 /**
  * Enums for the route deploy methods.
  */
-public enum DeployMethod {
+public enum RouteDeployMethod {
     NONE,
     CAMEL,
     KAFKA,

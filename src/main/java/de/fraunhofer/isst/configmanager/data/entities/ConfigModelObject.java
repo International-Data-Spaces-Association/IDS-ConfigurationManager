@@ -1,7 +1,7 @@
-package de.fraunhofer.isst.configmanager.model.config;
+package de.fraunhofer.isst.configmanager.data.entities;
 
 import de.fraunhofer.iais.eis.ConfigurationModel;
-import de.fraunhofer.isst.configmanager.model.converter.ConfigModelConverter;
+import de.fraunhofer.isst.configmanager.data.util.ConfigModelConverter;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;

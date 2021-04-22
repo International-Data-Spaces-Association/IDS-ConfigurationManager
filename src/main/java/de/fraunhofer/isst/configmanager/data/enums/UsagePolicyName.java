@@ -1,6 +1,6 @@
-package de.fraunhofer.isst.configmanager.model.usagecontrol;
+package de.fraunhofer.isst.configmanager.data.enums;
 
-public enum Pattern {
+public enum UsagePolicyName {
 
     /**
      * Standard pattern to allow unrestricted access.
@@ -38,7 +38,7 @@ public enum Pattern {
 
     private final String pattern;
 
-    Pattern(final String string) {
+    UsagePolicyName(final String string) {
         pattern = string;
     }
 

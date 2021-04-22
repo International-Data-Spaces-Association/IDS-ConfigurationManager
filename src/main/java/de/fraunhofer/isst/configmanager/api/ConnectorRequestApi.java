@@ -1,6 +1,6 @@
 package de.fraunhofer.isst.configmanager.api;
 
-import de.fraunhofer.isst.configmanager.model.config.QueryInput;
+import de.fraunhofer.isst.configmanager.data.util.QueryInput;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

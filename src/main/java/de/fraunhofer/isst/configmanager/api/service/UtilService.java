@@ -5,8 +5,8 @@ import de.fraunhofer.iais.eis.ConnectorStatus;
 import de.fraunhofer.iais.eis.Language;
 import de.fraunhofer.iais.eis.LogLevel;
 import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.model.BackendSource;
-import de.fraunhofer.isst.configmanager.model.config.BrokerStatus;
-import de.fraunhofer.isst.configmanager.model.routedeploymethod.DeployMethod;
+import de.fraunhofer.isst.configmanager.data.enums.BrokerRegistrationStatus;
+import de.fraunhofer.isst.configmanager.data.enums.RouteDeployMethod;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -55,7 +55,7 @@ public class UtilService {
         JSONArray sortedJsonArray;
 
         final var jsonArray = new JSONArray();
-        final var brokerStatuses = BrokerStatus.values();
+        final var brokerStatuses = BrokerRegistrationStatus.values();
 
         for (final var brokerStatus : brokerStatuses) {
             var jsonObject = new JSONObject();
@@ -71,7 +71,7 @@ public class UtilService {
         JSONArray sortedJsonArray;
 
         final var jsonArray = new JSONArray();
-        final var deployMethods = DeployMethod.values();
+        final var deployMethods = RouteDeployMethod.values();
 
         for (final var deployMethod : deployMethods) {
             var jsonObject = new JSONObject();

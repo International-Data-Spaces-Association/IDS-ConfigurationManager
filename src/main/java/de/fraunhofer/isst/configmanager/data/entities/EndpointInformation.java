@@ -1,4 +1,4 @@
-package de.fraunhofer.isst.configmanager.model.endpointinfo;
+package de.fraunhofer.isst.configmanager.data.entities;
 
 import lombok.AccessLevel;
 import lombok.Data;

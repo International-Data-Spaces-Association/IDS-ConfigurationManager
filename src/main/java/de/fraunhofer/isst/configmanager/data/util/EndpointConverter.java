@@ -1,4 +1,4 @@
-package de.fraunhofer.isst.configmanager.model.converter;
+package de.fraunhofer.isst.configmanager.data.util;
 
 import de.fraunhofer.iais.eis.Endpoint;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;

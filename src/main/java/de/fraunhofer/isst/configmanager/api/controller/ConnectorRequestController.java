@@ -3,7 +3,7 @@ package de.fraunhofer.isst.configmanager.api.controller;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.api.ConnectorRequestApi;
 import de.fraunhofer.isst.configmanager.api.service.ConnectorRequestService;
-import de.fraunhofer.isst.configmanager.model.config.QueryInput;
+import de.fraunhofer.isst.configmanager.data.util.QueryInput;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;

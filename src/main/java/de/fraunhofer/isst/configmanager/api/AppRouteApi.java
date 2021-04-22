@@ -1,6 +1,6 @@
 package de.fraunhofer.isst.configmanager.api;
 
-import de.fraunhofer.isst.configmanager.model.routedeploymethod.DeployMethod;
+import de.fraunhofer.isst.configmanager.data.enums.RouteDeployMethod;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -67,7 +67,7 @@ public interface AppRouteApi {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Successfully updated the route deploy method"),
             @ApiResponse(responseCode = "400", description = "Can not update the route deploy method")})
-    ResponseEntity<String> updateRouteDeployMethod(@RequestParam("deployMethod") DeployMethod deployMethod);
+    ResponseEntity<String> updateRouteDeployMethod(@RequestParam("deployMethod") RouteDeployMethod routeDeployMethod);
 
     @GetMapping(value = "/route/deploymethod", produces = "application/ld+json")
     @Operation(summary = "Returns the route deploy method for all routes")

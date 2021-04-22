@@ -6,7 +6,7 @@ import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.api.ResourceContractApi;
 import de.fraunhofer.isst.configmanager.api.service.resources.ResourceContractService;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultResourceClient;
-import de.fraunhofer.isst.configmanager.model.usagecontrol.Pattern;
+import de.fraunhofer.isst.configmanager.data.enums.UsagePolicyName;
 import de.fraunhofer.isst.configmanager.util.ValidateApiInput;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
@@ -104,16 +104,16 @@ public class ResourceContractController implements ResourceContractApi {
 
     /**
      * @param resourceId   id of the resource
-     * @param pattern      the pattern of the contract
+     * @param usagePolicyName      the pattern of the contract
      * @param contractJson the created contract for the resource
      * @return a suitable http response depending on success
      */
     @Override
     public ResponseEntity<String> updateContractForResource(final URI resourceId,
-                                                            final Pattern pattern,
+                                                            final UsagePolicyName usagePolicyName,
                                                             final String contractJson) {
         if (log.isInfoEnabled()) {
-            log.info(">> PUT /resource/contract/update resourceId: " + resourceId + "pattern" + pattern.toString()
+            log.info(">> PUT /resource/contract/update resourceId: " + resourceId + "pattern" + usagePolicyName.toString()
                     + " contractJson: " + contractJson);
         }
 
@@ -124,7 +124,7 @@ public class ResourceContractController implements ResourceContractApi {
         } else {
             ContractOffer contractOffer = null;
             try {
-                contractOffer = resourceContractService.getContractOffer(pattern, contractJson);
+                contractOffer = resourceContractService.getContractOffer(usagePolicyName, contractJson);
             } catch (JsonProcessingException e) {
                 if (log.isErrorEnabled()) {
                     log.error(e.getMessage());
