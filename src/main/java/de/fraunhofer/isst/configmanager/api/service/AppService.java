@@ -2,7 +2,7 @@ package de.fraunhofer.isst.configmanager.api.service;
 
 import de.fraunhofer.iais.eis.AppEndpointType;
 import de.fraunhofer.iais.eis.Language;
-import de.fraunhofer.isst.configmanager.model.configlists.CustomAppRepository;
+import de.fraunhofer.isst.configmanager.model.repositories.CustomAppRepository;
 import de.fraunhofer.isst.configmanager.model.customapp.CustomApp;
 import de.fraunhofer.isst.configmanager.model.customapp.CustomAppEndpoint;
 import de.fraunhofer.isst.configmanager.util.Utility;

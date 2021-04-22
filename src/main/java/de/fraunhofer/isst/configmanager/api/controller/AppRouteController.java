@@ -9,7 +9,7 @@ import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.api.AppRouteApi;
 import de.fraunhofer.isst.configmanager.api.service.AppRouteService;
 import de.fraunhofer.isst.configmanager.api.service.ConfigModelService;
-import de.fraunhofer.isst.configmanager.model.configlists.RouteDeployMethodRepository;
+import de.fraunhofer.isst.configmanager.model.repositories.RouteDeployMethodRepository;
 import de.fraunhofer.isst.configmanager.model.routedeploymethod.DeployMethod;
 import de.fraunhofer.isst.configmanager.model.routedeploymethod.RouteDeployMethod;
 import de.fraunhofer.isst.configmanager.util.Utility;

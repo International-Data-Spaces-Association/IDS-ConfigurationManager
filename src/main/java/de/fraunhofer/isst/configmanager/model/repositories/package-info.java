@@ -8,4 +8,4 @@
  * @since 7.0.0 (documented since)
  * @author IDS-ConfigurationManager Contributors
  */
-package de.fraunhofer.isst.configmanager.model.configlists;
+package de.fraunhofer.isst.configmanager.model.repositories;

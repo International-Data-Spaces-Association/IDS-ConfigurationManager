@@ -1,4 +1,4 @@
-package de.fraunhofer.isst.configmanager.model.configlists;
+package de.fraunhofer.isst.configmanager.model.customgenericendpoint;
 
 import de.fraunhofer.iais.eis.Endpoint;
 import de.fraunhofer.isst.configmanager.model.customgenericendpoint.CustomGenericEndpointObject;

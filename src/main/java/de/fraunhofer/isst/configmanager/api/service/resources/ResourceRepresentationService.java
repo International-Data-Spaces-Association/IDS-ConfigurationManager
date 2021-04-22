@@ -8,7 +8,7 @@ import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.api.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.api.service.EndpointService;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultConnectorClient;
-import de.fraunhofer.isst.configmanager.model.configlists.EndpointInformationRepository;
+import de.fraunhofer.isst.configmanager.model.repositories.EndpointInformationRepository;
 import de.fraunhofer.isst.configmanager.model.endpointinfo.EndpointInformation;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;

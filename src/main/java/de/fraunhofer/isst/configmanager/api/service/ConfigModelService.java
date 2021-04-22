@@ -14,7 +14,7 @@ import de.fraunhofer.iais.eis.SecurityProfile;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.model.config.ConfigModelObject;
-import de.fraunhofer.isst.configmanager.model.configlists.ConfigModelRepository;
+import de.fraunhofer.isst.configmanager.model.repositories.ConfigModelRepository;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;

@@ -4,7 +4,7 @@ import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.isst.configmanager.api.service.resources.ResourceService;
 import de.fraunhofer.isst.configmanager.model.config.BrokerStatus;
 import de.fraunhofer.isst.configmanager.model.config.CustomBroker;
-import de.fraunhofer.isst.configmanager.model.configlists.CustomBrokerRepository;
+import de.fraunhofer.isst.configmanager.model.repositories.CustomBrokerRepository;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
