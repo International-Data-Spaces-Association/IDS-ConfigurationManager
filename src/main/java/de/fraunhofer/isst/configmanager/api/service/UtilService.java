@@ -10,7 +10,6 @@ import de.fraunhofer.isst.configmanager.model.routedeploymethod.DeployMethod;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,7 +51,6 @@ public class UtilService {
         return sortedJsonArray.toJSONString();
     }
 
-    @NotNull
     private JSONArray getBrokerStatus() {
         JSONArray sortedJsonArray;
 
@@ -69,7 +67,6 @@ public class UtilService {
         return sortedJsonArray;
     }
 
-    @NotNull
     private JSONArray getDeployMethod() {
         JSONArray sortedJsonArray;
 
@@ -86,7 +83,6 @@ public class UtilService {
         return sortedJsonArray;
     }
 
-    @NotNull
     private JSONArray getSourceType() {
         JSONArray sortedJsonArray;
 
@@ -103,7 +99,6 @@ public class UtilService {
         return sortedJsonArray;
     }
 
-    @NotNull
     private JSONArray getLanguage() {
         JSONArray sortedJsonArray;
 
@@ -127,7 +122,6 @@ public class UtilService {
         return sortedJsonArray;
     }
 
-    @NotNull
     private JSONArray getConnectorDeployMode() {
         JSONArray sortedJsonArray;
 
@@ -145,7 +139,6 @@ public class UtilService {
         return sortedJsonArray;
     }
 
-    @NotNull
     private JSONArray getConnectorStatus() {
         JSONArray sortedJsonArray;
 
@@ -163,7 +156,6 @@ public class UtilService {
         return sortedJsonArray;
     }
 
-    @NotNull
     private JSONArray getLogLevel() {
         JSONArray sortedJsonArray;
 
