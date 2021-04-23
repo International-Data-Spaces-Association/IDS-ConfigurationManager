@@ -10,12 +10,12 @@ public class CTLEvaluator {
 
     public static boolean evaluateNode(StateFormula ctlExpression, Place place){
         //TODO base evaluation on place
-        return ctlExpression.evaluate();
+        return ctlExpression.evaluate(place);
     }
 
     public static boolean evaluateTransition(TransitionFormula ctlExpression, Transition transition){
         //TODO base evaluation on transition
-        return ctlExpression.evaluate();
+        return ctlExpression.evaluate(transition);
     }
 
     public static boolean evaluate(Formula ctlExpression, Node node){

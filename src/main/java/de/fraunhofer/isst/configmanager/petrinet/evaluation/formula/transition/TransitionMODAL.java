@@ -1,6 +1,7 @@
 package de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition;
 
 import de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.StateFormula;
+import de.fraunhofer.isst.configmanager.petrinet.model.Node;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -15,7 +16,7 @@ public class TransitionMODAL implements TransitionFormula {
     //TODO
     // MODAL, is true if parameter evaluates to true for a state following the current transition
     @Override
-    public boolean evaluate() {
+    public boolean evaluate(Node node) {
         return false;
     }
 

@@ -1,5 +1,6 @@
 package de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state;
 
+import de.fraunhofer.isst.configmanager.petrinet.model.Node;
 import lombok.AllArgsConstructor;
 
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeNOT.nodeNOT;
@@ -14,8 +15,8 @@ public class NodeFORALL_NEXT implements StateFormula {
     private StateFormula parameter;
 
     @Override
-    public boolean evaluate() {
-        return nodeNOT(nodeFORALL_NEXT(nodeNOT(parameter))).evaluate();
+    public boolean evaluate(Node node) {
+        return nodeNOT(nodeFORALL_NEXT(nodeNOT(parameter))).evaluate(node);
     }
 
     @Override

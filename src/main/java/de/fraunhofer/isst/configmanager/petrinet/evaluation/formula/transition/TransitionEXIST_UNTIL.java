@@ -1,5 +1,6 @@
 package de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition;
 
+import de.fraunhofer.isst.configmanager.petrinet.model.Node;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -15,7 +16,7 @@ public class TransitionEXIST_UNTIL implements TransitionFormula {
     // True if a path exists, where parameter1 is true on each transition of the path,
     // and parameter2 is true on the final transition of the path
     @Override
-    public boolean evaluate() {
+    public boolean evaluate(Node node) {
         return false;
     }
 

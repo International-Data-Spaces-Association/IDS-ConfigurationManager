@@ -1,5 +1,6 @@
 package de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state;
 
+import de.fraunhofer.isst.configmanager.petrinet.model.Node;
 import lombok.AllArgsConstructor;
 
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeEV.nodeEV;
@@ -15,8 +16,8 @@ public class NodeALONG implements StateFormula {
     private StateFormula parameter;
 
     @Override
-    public boolean evaluate() {
-        return nodeNOT(nodeEV(nodeNOT(parameter))).evaluate();
+    public boolean evaluate(Node node) {
+        return nodeNOT(nodeEV(nodeNOT(parameter))).evaluate(node);
     }
 
     @Override

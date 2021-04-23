@@ -1,5 +1,6 @@
 package de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition;
 
+import de.fraunhofer.isst.configmanager.petrinet.model.Node;
 import lombok.AllArgsConstructor;
 
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.TT.TT;
@@ -15,8 +16,8 @@ public class TransitionEV implements TransitionFormula {
     private TransitionFormula parameter;
 
     @Override
-    public boolean evaluate() {
-        return transitionFORALL_UNTIL(TT(), parameter).evaluate();
+    public boolean evaluate(Node node) {
+        return transitionFORALL_UNTIL(TT(), parameter).evaluate(node);
     }
 
     @Override

@@ -1,8 +1,10 @@
 package de.fraunhofer.isst.configmanager.petrinet.evaluation.formula;
 
+import de.fraunhofer.isst.configmanager.petrinet.model.Node;
+
 public interface Formula {
 
-    boolean evaluate();
+    boolean evaluate(Node node);
 
     String symbol();
 

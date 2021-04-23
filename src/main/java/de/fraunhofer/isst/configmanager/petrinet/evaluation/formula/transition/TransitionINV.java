@@ -1,5 +1,6 @@
 package de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition;
 
+import de.fraunhofer.isst.configmanager.petrinet.model.Node;
 import lombok.AllArgsConstructor;
 
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionNOT.transitionNOT;
@@ -15,8 +16,8 @@ public class TransitionINV implements TransitionFormula {
     private TransitionFormula parameter;
 
     @Override
-    public boolean evaluate() {
-        return transitionNOT(transitionPOS(transitionNOT(parameter))).evaluate();
+    public boolean evaluate(Node node) {
+        return transitionNOT(transitionPOS(transitionNOT(parameter))).evaluate(node);
     }
 
     @Override

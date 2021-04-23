@@ -1,5 +1,6 @@
 package de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state;
 
+import de.fraunhofer.isst.configmanager.petrinet.model.Node;
 import lombok.AllArgsConstructor;
 
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.TT.TT;
@@ -15,8 +16,8 @@ public class NodeEV implements StateFormula {
     private StateFormula parameter;
 
     @Override
-    public boolean evaluate() {
-        return nodeFORALL_UNTIL(TT(), parameter).evaluate();
+    public boolean evaluate(Node node) {
+        return nodeFORALL_UNTIL(TT(), parameter).evaluate(node);
     }
 
     @Override

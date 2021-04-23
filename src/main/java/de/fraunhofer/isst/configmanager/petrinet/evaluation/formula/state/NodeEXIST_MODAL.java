@@ -1,6 +1,7 @@
 package de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state;
 
 import de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionFormula;
+import de.fraunhofer.isst.configmanager.petrinet.model.Node;
 import lombok.AllArgsConstructor;
 
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeAND.nodeAND;
@@ -18,8 +19,8 @@ public class NodeEXIST_MODAL implements StateFormula {
     private TransitionFormula parameter2;
 
     @Override
-    public boolean evaluate() {
-        return transitionMODAL(nodeAND(parameter1, nodeMODAL(parameter2))).evaluate();
+    public boolean evaluate(Node node) {
+        return transitionMODAL(nodeAND(parameter1, nodeMODAL(parameter2))).evaluate(node);
     }
 
     @Override

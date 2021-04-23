@@ -1,5 +1,6 @@
 package de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition;
 
+import de.fraunhofer.isst.configmanager.petrinet.model.Node;
 import lombok.AllArgsConstructor;
 
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeMODAL.nodeMODAL;
@@ -14,8 +15,8 @@ public class TransitionEXIST_NEXT implements TransitionFormula {
     private TransitionFormula parameter;
 
     @Override
-    public boolean evaluate() {
-        return transitionMODAL(nodeMODAL(parameter)).evaluate();
+    public boolean evaluate(Node node) {
+        return transitionMODAL(nodeMODAL(parameter)).evaluate(node);
     }
 
     @Override
