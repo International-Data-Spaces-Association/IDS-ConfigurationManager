@@ -23,4 +23,9 @@ public class NodeFORALL_NEXT implements StateFormula {
         return "FORALL_NEXT";
     }
 
+    @Override
+    public String writeFormula() {
+        return String.format("%s(%s)", symbol(), parameter.writeFormula());
+    }
+
 }

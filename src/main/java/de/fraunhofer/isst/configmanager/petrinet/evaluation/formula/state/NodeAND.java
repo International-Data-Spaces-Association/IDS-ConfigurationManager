@@ -20,4 +20,9 @@ public class NodeAND implements StateFormula {
     public String symbol() {
         return "AND";
     }
+
+    @Override
+    public String writeFormula() {
+        return String.format("%s(%s, %s)", symbol(), parameter1.writeFormula(), parameter2.writeFormula());
+    }
 }

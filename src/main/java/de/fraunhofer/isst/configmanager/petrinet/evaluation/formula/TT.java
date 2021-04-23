@@ -18,4 +18,9 @@ public class TT implements StateFormula, TransitionFormula {
     public String symbol() {
         return "TT";
     }
+
+    @Override
+    public String writeFormula() {
+        return symbol();
+    }
 }

@@ -20,4 +20,9 @@ public class NodeOR implements StateFormula {
     public String symbol() {
         return "OR";
     }
+
+    @Override
+    public String writeFormula() {
+        return String.format("%s(%s, %s)", symbol(), parameter1.writeFormula(), parameter2.writeFormula());
+    }
 }

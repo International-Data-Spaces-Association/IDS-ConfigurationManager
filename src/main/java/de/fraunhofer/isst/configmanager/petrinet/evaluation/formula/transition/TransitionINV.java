@@ -23,4 +23,9 @@ public class TransitionINV implements TransitionFormula {
     public String symbol() {
         return "INV";
     }
+
+    @Override
+    public String writeFormula() {
+        return String.format("%s(%s)", symbol(), parameter.writeFormula());
+    }
 }

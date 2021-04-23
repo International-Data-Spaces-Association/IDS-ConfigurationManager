@@ -20,4 +20,9 @@ public class NodeNOT implements StateFormula {
     public String symbol() {
         return "NOT";
     }
+
+    @Override
+    public String writeFormula() {
+        return String.format("%s(%s)", symbol(), parameter.writeFormula());
+    }
 }

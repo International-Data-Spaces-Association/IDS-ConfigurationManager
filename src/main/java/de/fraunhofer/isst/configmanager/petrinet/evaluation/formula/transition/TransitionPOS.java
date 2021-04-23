@@ -24,4 +24,9 @@ public class TransitionPOS implements TransitionFormula {
         return "POS";
     }
 
+    @Override
+    public String writeFormula() {
+        return String.format("%s(%s)", symbol(), parameter.writeFormula());
+    }
+
 }

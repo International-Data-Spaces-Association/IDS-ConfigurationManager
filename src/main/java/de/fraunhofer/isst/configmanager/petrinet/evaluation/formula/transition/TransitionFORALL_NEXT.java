@@ -24,4 +24,9 @@ public class TransitionFORALL_NEXT implements TransitionFormula {
         return "FORALL_NEXT";
     }
 
+    @Override
+    public String writeFormula() {
+        return String.format("%s(%s)", symbol(), parameter.writeFormula());
+    }
+
 }

@@ -23,4 +23,9 @@ public class TransitionEXIST_UNTIL implements TransitionFormula {
     public String symbol() {
         return "EXIST_UNTIL";
     }
+
+    @Override
+    public String writeFormula() {
+        return String.format("%s(%s, %s)", symbol(), parameter1.writeFormula(), parameter2.writeFormula());
+    }
 }

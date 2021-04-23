@@ -26,4 +26,9 @@ public class NodeFORALL_MODAL implements StateFormula {
     public String symbol() {
         return "FORALL_MODAL";
     }
+
+    @Override
+    public String writeFormula() {
+        return String.format("%s(%s, %s)", symbol(), parameter1.writeFormula(), parameter2.writeFormula());
+    }
 }

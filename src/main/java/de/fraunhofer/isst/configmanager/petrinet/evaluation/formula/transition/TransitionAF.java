@@ -20,4 +20,9 @@ public class TransitionAF implements TransitionFormula {
     public String symbol() {
         return "AF";
     }
+
+    @Override
+    public String writeFormula() {
+        return String.format("%s(%s)", symbol(), "expression");
+    }
 }

@@ -25,4 +25,9 @@ public class TransitionFORALL_MODAL implements TransitionFormula {
     public String symbol() {
         return "FORALL_MODAL";
     }
+
+    @Override
+    public String writeFormula() {
+        return String.format("%s(%s, %s)", symbol(), parameter1.writeFormula(), parameter2.writeFormula());
+    }
 }

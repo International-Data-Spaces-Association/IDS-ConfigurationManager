@@ -2,6 +2,7 @@ package de.fraunhofer.isst.configmanager.petrinet.builder;
 
 import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
+import de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeExpression;
 import de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionPOS;
 import de.fraunhofer.isst.configmanager.petrinet.simulator.PetriNetSimulator;
 import lombok.extern.slf4j.Slf4j;
@@ -17,8 +18,13 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.*;
 
+import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeAND.nodeAND;
+import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeMODAL.nodeMODAL;
+import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeNF.nodeNF;
+import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeOR.nodeOR;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionNOT.transitionNOT;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.FF.FF;
+import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.TT.TT;
 
 /**
  * Test building a PetriNet from a randomly generated AppRoute
@@ -65,7 +71,6 @@ class InfomodelPetriNetBuilderTest {
         var graph = PetriNetSimulator.buildStepGraph(petriNet);
         log.info(String.valueOf(graph.getArcs().size()));
         log.info(GraphVizGenerator.generateGraphViz(graph));
-        var formula = transitionNOT(FF());
     }
 
     /**
@@ -82,5 +87,11 @@ class InfomodelPetriNetBuilderTest {
             newList.add(list.get(i));
         }
         return newList;
+    }
+
+    @Test
+    public void testFormula(){
+        var formula = nodeAND(nodeMODAL(transitionNOT(FF())), nodeOR(nodeNF(NodeExpression.nodeExpression(x -> true, "testMsg")),TT()));
+        log.info(formula.writeFormula());
     }
 }

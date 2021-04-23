@@ -24,4 +24,9 @@ public class TransitionMODAL implements TransitionFormula {
         return "MODAL";
     }
 
+    @Override
+    public String writeFormula() {
+        return String.format("%s(%s)", symbol(), parameter.writeFormula());
+    }
+
 }

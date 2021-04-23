@@ -24,4 +24,8 @@ public class NodeMODAL implements StateFormula {
         return "MODAL";
     }
 
+    @Override
+    public String writeFormula() {
+        return String.format("%s(%s)", symbol(), parameter.writeFormula());
+    }
 }

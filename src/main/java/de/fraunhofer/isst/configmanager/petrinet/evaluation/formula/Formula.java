@@ -5,4 +5,6 @@ public interface Formula {
     boolean evaluate();
 
     String symbol();
+
+    String writeFormula();
 }

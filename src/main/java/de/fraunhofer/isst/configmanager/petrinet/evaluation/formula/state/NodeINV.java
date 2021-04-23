@@ -23,4 +23,9 @@ public class NodeINV implements StateFormula {
     public String symbol() {
         return "INV";
     }
+
+    @Override
+    public String writeFormula() {
+        return String.format("%s(%s)", symbol(), parameter.writeFormula());
+    }
 }

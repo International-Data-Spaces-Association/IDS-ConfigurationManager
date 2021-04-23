@@ -22,4 +22,9 @@ public class NodeEXIST_NEXT implements StateFormula {
     public String symbol() {
         return "EXIST_NEXT";
     }
+
+    @Override
+    public String writeFormula() {
+        return String.format("%s(%s)", symbol(), parameter.writeFormula());
+    }
 }

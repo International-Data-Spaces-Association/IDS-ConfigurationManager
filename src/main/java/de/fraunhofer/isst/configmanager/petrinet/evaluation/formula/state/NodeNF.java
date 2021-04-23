@@ -20,4 +20,9 @@ public class NodeNF implements StateFormula {
     public String symbol() {
         return "NF";
     }
+
+    @Override
+    public String writeFormula() {
+        return String.format("%s(%s)", symbol(), "expression");
+    }
 }

@@ -23,4 +23,9 @@ public class NodeALONG implements StateFormula {
     public String symbol() {
         return "ALONG";
     }
+
+    @Override
+    public String writeFormula() {
+        return String.format("%s(%s)", symbol(), parameter.writeFormula());
+    }
 }

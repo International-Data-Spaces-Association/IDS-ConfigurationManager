@@ -24,4 +24,9 @@ public class NodePOS implements StateFormula {
         return "POS";
     }
 
+    @Override
+    public String writeFormula() {
+        return String.format("%s(%s)", symbol(), parameter.writeFormula());
+    }
+
 }

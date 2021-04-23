@@ -18,4 +18,9 @@ public class FF implements StateFormula, TransitionFormula {
     public String symbol() {
         return "FF";
     }
+
+    @Override
+    public String writeFormula() {
+        return symbol();
+    }
 }

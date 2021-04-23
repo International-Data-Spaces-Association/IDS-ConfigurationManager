@@ -23,4 +23,9 @@ public class TransitionEV implements TransitionFormula {
     public String symbol() {
         return "EV";
     }
+
+    @Override
+    public String writeFormula() {
+        return String.format("%s(%s)", symbol(), parameter.writeFormula());
+    }
 }
