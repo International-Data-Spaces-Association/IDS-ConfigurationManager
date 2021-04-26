@@ -67,12 +67,10 @@ public class ResourceRepresentationController implements ResourceRepresentationA
                                                                final URI endpointId,
                                                                final String language,
                                                                final String filenameExtension,
-                                                               final Long bytesize,
-                                                               final String sourceType) {
+                                                               final Long bytesize) {
         if (log.isInfoEnabled()) {
             log.info(">> POST /resource/representation resourceId: " + resourceId + " endpointId: " + endpointId + " language: " + language
-                    + " filenameExtension: " + filenameExtension + " bytesize: " + bytesize
-                    + " sourceType: " + sourceType);
+                    + " filenameExtension: " + filenameExtension + " bytesize: " + bytesize);
         }
         ResponseEntity<String> response;
 
@@ -130,11 +128,11 @@ public class ResourceRepresentationController implements ResourceRepresentationA
                                                                final URI endpointId,
                                                                final String language,
                                                                final String filenameExtension,
-                                                               final Long bytesize)
+                                                               final Long bytesize){
         if (log.isInfoEnabled()) {
             log.info(">> PUT /resource/representation resourceId: " + resourceId + " representationId: "
                     + representationId + " endpointId: " + endpointId + " language: " + language + " filenameExtension: "
-                    + filenameExtension + " bytesize: " + bytesize + " sourceType: " + sourceType);
+                    + filenameExtension + " bytesize: " + bytesize);
         }
         ResponseEntity<String> response = null;
 
