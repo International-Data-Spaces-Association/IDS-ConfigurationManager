@@ -255,7 +255,7 @@ public class AppRouteService {
             }
         }
         // Search endpoint in the backend repository and in list of connector endpoints
-        if (endpoint == null && endpointService.getGenericEndpoints().size() != 0 && endpointId.toString().contains("genericEndpoint")) {
+        if (endpoint == null && !endpointService.getGenericEndpoints().isEmpty() && endpointId.toString().contains("genericEndpoint")) {
             final var genericEndpoint = endpointService.getGenericEndpoint(endpointId);
 
             if (genericEndpoint != null) {
@@ -263,7 +263,7 @@ public class AppRouteService {
             }
         }
 
-        if (endpoint == null && configModelService.getConfigModel().getConnectorDescription().getHasEndpoint().size() != 0
+        if (endpoint == null && !configModelService.getConfigModel().getConnectorDescription().getHasEndpoint().isEmpty()
                 && endpointId.toString().contains("connectorEndpoint")) {
 
             endpoint = configModelService.getConfigModel().getConnectorDescription().getHasEndpoint()

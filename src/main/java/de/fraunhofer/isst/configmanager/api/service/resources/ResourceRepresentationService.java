@@ -77,7 +77,7 @@ public class ResourceRepresentationService extends AbstractResourceService {
         }
 
         // Set first entry of endpoint informations to the new endpoint
-        if (endpointInformationRepository.findAll().size() > 0) {
+        if (!endpointInformationRepository.findAll().isEmpty()) {
             final var endpointInfo = endpointInformationRepository.findAll().get(0);
             endpointInfo.setEndpointId(endpointId.toString());
             endpointInformationRepository.saveAndFlush(endpointInfo);

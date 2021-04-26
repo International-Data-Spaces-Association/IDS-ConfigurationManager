@@ -61,7 +61,7 @@ public class ConfigModelService {
                         + "available! Error establishing connection to connector: " + e.getMessage());
             }
 
-            if (configModelRepository.findAll().size() > 0) {
+            if (!configModelRepository.findAll().isEmpty()) {
                 configModelObject = configModelRepository.findAll().get(0);
             } else {
                 if (log.isWarnEnabled()) {
