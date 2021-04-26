@@ -45,6 +45,6 @@ public interface EndpointApi {
 
     @PostMapping(value = "/connector/endpoint", produces = "application/ld+json")
     @Operation(summary = "Creates a new connector endpoint for the connector")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "Successfully created the connector endpoint for the connector")})
+    @ApiResponse(responseCode = "200", description = "Successfully created the connector endpoint for the connector")
     ResponseEntity<String> createConnectorEndpoint(@RequestParam("accessUrl") URI accessUrl, @RequestParam(value = "sourceType", required = false) String sourceType);
 }

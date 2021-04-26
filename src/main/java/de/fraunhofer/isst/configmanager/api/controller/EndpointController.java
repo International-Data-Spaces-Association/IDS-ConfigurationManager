@@ -172,7 +172,7 @@ public class EndpointController implements EndpointApi {
      */
     public ResponseEntity<String> createConnectorEndpoint(final URI accessUrl, final String sourceType) {
         if (log.isInfoEnabled()) {
-            log.info(">> POST /connector/endpoint accessUrl: " + accessUrl + " sourceType: " + sourceType)
+            log.info(">> POST /connector/endpoint accessUrl: " + accessUrl + " sourceType: " + sourceType);
         }
       
         final var configModelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
