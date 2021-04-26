@@ -1,5 +1,6 @@
 package de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition;
 
+import de.fraunhofer.isst.configmanager.petrinet.model.Node;
 import lombok.AllArgsConstructor;
 
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.TT.TT;
@@ -15,13 +16,18 @@ public class TransitionPOS implements TransitionFormula {
     private TransitionFormula parameter;
 
     @Override
-    public boolean evaluate() {
-        return transitionEXIST_UNTIL(TT(), parameter).evaluate();
+    public boolean evaluate(Node node) {
+        return transitionEXIST_UNTIL(TT(), parameter).evaluate(node);
     }
 
     @Override
     public String symbol() {
         return "POS";
+    }
+
+    @Override
+    public String writeFormula() {
+        return String.format("%s(%s)", symbol(), parameter.writeFormula());
     }
 
 }

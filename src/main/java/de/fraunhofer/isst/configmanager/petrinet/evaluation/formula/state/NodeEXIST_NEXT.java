@@ -1,5 +1,6 @@
 package de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state;
 
+import de.fraunhofer.isst.configmanager.petrinet.model.Node;
 import lombok.AllArgsConstructor;
 
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeMODAL.nodeMODAL;
@@ -14,12 +15,17 @@ public class NodeEXIST_NEXT implements StateFormula {
     private StateFormula parameter;
 
     @Override
-    public boolean evaluate() {
-        return nodeMODAL(transitionMODAL(parameter)).evaluate();
+    public boolean evaluate(Node node) {
+        return nodeMODAL(transitionMODAL(parameter)).evaluate(node);
     }
 
     @Override
     public String symbol() {
         return "EXIST_NEXT";
+    }
+
+    @Override
+    public String writeFormula() {
+        return String.format("%s(%s)", symbol(), parameter.writeFormula());
     }
 }

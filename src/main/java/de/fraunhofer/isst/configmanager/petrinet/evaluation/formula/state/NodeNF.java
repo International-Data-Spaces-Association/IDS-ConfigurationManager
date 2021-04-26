@@ -1,5 +1,7 @@
 package de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state;
 
+import de.fraunhofer.isst.configmanager.petrinet.model.Node;
+import de.fraunhofer.isst.configmanager.petrinet.model.Place;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -12,12 +14,17 @@ public class NodeNF implements StateFormula {
     private NodeExpression parameter;
 
     @Override
-    public boolean evaluate() {
-        return false;
+    public boolean evaluate(Node node) {
+        return node instanceof Place && parameter.getSubExpression().evaluate((Place) node);
     }
 
     @Override
     public String symbol() {
         return "NF";
+    }
+
+    @Override
+    public String writeFormula() {
+        return String.format("%s(%s)", symbol(), "expression");
     }
 }

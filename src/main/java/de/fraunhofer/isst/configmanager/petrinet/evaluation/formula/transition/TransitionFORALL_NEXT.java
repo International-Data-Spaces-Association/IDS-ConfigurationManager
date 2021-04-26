@@ -1,5 +1,6 @@
 package de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition;
 
+import de.fraunhofer.isst.configmanager.petrinet.model.Node;
 import lombok.AllArgsConstructor;
 
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionEXIST_NEXT.transitionEXIST_NEXT;
@@ -15,13 +16,18 @@ public class TransitionFORALL_NEXT implements TransitionFormula {
     private TransitionFormula parameter;
 
     @Override
-    public boolean evaluate() {
-        return transitionNOT(transitionEXIST_NEXT(transitionNOT(parameter))).evaluate();
+    public boolean evaluate(Node node) {
+        return transitionNOT(transitionEXIST_NEXT(transitionNOT(parameter))).evaluate(node);
     }
 
     @Override
     public String symbol() {
         return "FORALL_NEXT";
+    }
+
+    @Override
+    public String writeFormula() {
+        return String.format("%s(%s)", symbol(), parameter.writeFormula());
     }
 
 }

@@ -1,5 +1,6 @@
 package de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state;
 
+import de.fraunhofer.isst.configmanager.petrinet.model.Node;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -12,12 +13,17 @@ public class NodeAND implements StateFormula {
     private StateFormula parameter1, parameter2;
 
     @Override
-    public boolean evaluate() {
-        return parameter1.evaluate() && parameter2.evaluate();
+    public boolean evaluate(Node node) {
+        return parameter1.evaluate(node) && parameter2.evaluate(node);
     }
 
     @Override
     public String symbol() {
         return "AND";
+    }
+
+    @Override
+    public String writeFormula() {
+        return String.format("%s(%s, %s)", symbol(), parameter1.writeFormula(), parameter2.writeFormula());
     }
 }
