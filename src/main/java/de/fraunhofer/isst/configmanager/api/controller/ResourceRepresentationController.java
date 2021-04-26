@@ -7,7 +7,6 @@ import de.fraunhofer.iais.eis.Language;
 import de.fraunhofer.iais.eis.RepresentationBuilder;
 import de.fraunhofer.iais.eis.RepresentationImpl;
 import de.fraunhofer.iais.eis.ResourceImpl;
-import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.api.ResourceRepresentationApi;
 import de.fraunhofer.isst.configmanager.api.service.ConfigModelService;
@@ -36,24 +35,21 @@ import java.net.URI;
 @Slf4j
 @RestController
 @RequestMapping("/api/ui")
-@Tag(name = "Resource representation Management", description = "Endpoints for managing the representation of a resource")
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@Tag(name = "Resource representation Management", description = "Endpoints for managing the representation of a resource")
 public class ResourceRepresentationController implements ResourceRepresentationApi {
 
     transient ConfigModelService configModelService;
     transient ResourceRepresentationService resourceRepresentationService;
     transient DefaultResourceClient client;
-    transient Serializer serializer;
 
     @Autowired
     public ResourceRepresentationController(final ConfigModelService configModelService,
                                             final ResourceRepresentationService resourceRepresentationService,
-                                            final DefaultResourceClient client,
-                                            final Serializer serializer) {
+                                            final DefaultResourceClient client) {
         this.client = client;
         this.configModelService = configModelService;
         this.resourceRepresentationService = resourceRepresentationService;
-        this.serializer = serializer;
     }
 
     /**
@@ -71,9 +67,13 @@ public class ResourceRepresentationController implements ResourceRepresentationA
                                                                final URI endpointId,
                                                                final String language,
                                                                final String filenameExtension,
-                                                               final Long bytesize) {
-        log.info(">> POST /resource/representation resourceId: " + resourceId + " endpointId: " + endpointId + " language: " + language
-                + " filenameExtension: " + filenameExtension + " bytesize: " + bytesize);
+                                                               final Long bytesize,
+                                                               final String sourceType) {
+        if (log.isInfoEnabled()) {
+            log.info(">> POST /resource/representation resourceId: " + resourceId + " endpointId: " + endpointId + " language: " + language
+                    + " filenameExtension: " + filenameExtension + " bytesize: " + bytesize
+                    + " sourceType: " + sourceType);
+        }
         ResponseEntity<String> response;
 
         if (ValidateApiInput.notValid(resourceId.toString())) {
@@ -101,7 +101,9 @@ public class ResourceRepresentationController implements ResourceRepresentationA
                     jsonObject.put("connectorResponse", clientResponse);
                     response = ResponseEntity.ok(jsonObject.toJSONString());
                 } catch (IOException e) {
-                    log.error(e.getMessage(), e);
+                    if (log.isErrorEnabled()) {
+                        log.error(e.getMessage(), e);
+                    }
                     jsonObject.put("message", "Could not register the resource representation at the connector");
                     response = ResponseEntity.badRequest().body(jsonObject.toJSONString());
                 }
@@ -128,10 +130,12 @@ public class ResourceRepresentationController implements ResourceRepresentationA
                                                                final URI endpointId,
                                                                final String language,
                                                                final String filenameExtension,
-                                                               final Long bytesize) {
-        log.info(">> PUT /resource/representation resourceId: " + resourceId + " representationId: "
-                + representationId + " endpointId: " + endpointId + " language: " + language + " filenameExtension: "
-                + filenameExtension + " bytesize: " + bytesize);
+                                                               final Long bytesize)
+        if (log.isInfoEnabled()) {
+            log.info(">> PUT /resource/representation resourceId: " + resourceId + " representationId: "
+                    + representationId + " endpointId: " + endpointId + " language: " + language + " filenameExtension: "
+                    + filenameExtension + " bytesize: " + bytesize + " sourceType: " + sourceType);
+        }
         ResponseEntity<String> response = null;
 
         final var oldResourceCatalog = (ResourceImpl) resourceRepresentationService.getResource(resourceId);
@@ -141,7 +145,9 @@ public class ResourceRepresentationController implements ResourceRepresentationA
             oldResourceCatalog.setRepresentation(null);
 
             if (configModelService.getConfigModel().getAppRoute() == null) {
-                log.info("---- [ResourceRepresentationController updateResourceRepresentation] No AppRoute in ConfigModel!");
+                if (log.isInfoEnabled()) {
+                    log.info("---- [ResourceRepresentationController updateResourceRepresentation] No AppRoute in ConfigModel!");
+                }
             } else {
                 final var oldResourceRoute = (ResourceImpl) resourceRepresentationService.getResourceInAppRoute(resourceId);
                 if (oldResourceRoute != null) {
@@ -199,7 +205,9 @@ public class ResourceRepresentationController implements ResourceRepresentationA
                 }
             } catch (IOException e) {
                 configModelService.saveState();
-                log.error(e.getMessage(), e);
+                if (log.isErrorEnabled()) {
+                    log.error(e.getMessage(), e);
+                }
             }
         }
 

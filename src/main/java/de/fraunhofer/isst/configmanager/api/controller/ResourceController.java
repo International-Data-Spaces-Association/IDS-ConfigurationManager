@@ -31,8 +31,8 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 @RestController
 @RequestMapping("/api/ui")
-@Tag(name = "Resource Management", description = "Endpoints for managing the resource in the configuration manager")
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@Tag(name = "Resource Management", description = "Endpoints for managing the resource in the configuration manager")
 public class ResourceController implements ResourceApi {
 
     transient ResourceService resourceService;
@@ -62,7 +62,9 @@ public class ResourceController implements ResourceApi {
      */
     @Override
     public ResponseEntity<String> getResource(final URI resourceId) {
-        log.info(">> GET /resource resourceId: " + resourceId);
+        if (log.isInfoEnabled()) {
+            log.info(">> GET /resource resourceId: " + resourceId);
+        }
         ResponseEntity<String> response;
 
         if (ValidateApiInput.notValid(resourceId.toString())) {
@@ -92,13 +94,17 @@ public class ResourceController implements ResourceApi {
      */
     @Override
     public ResponseEntity<String> getResources() {
-        log.info(">> GET /resources");
+        if (log.isInfoEnabled()) {
+            log.info(">> GET /resources");
+        }
         return ResponseEntity.ok(resourceService.getOfferedResourcesAsJsonString());
     }
 
     @Override
     public ResponseEntity<String> getRequestedResources() {
-        log.info(">> GET /resources/requested");
+        if (log.isInfoEnabled()) {
+            log.info(">> GET /resources/requested");
+        }
         return ResponseEntity.ok(resourceService.getRequestedResourcesAsJsonString());
     }
 
@@ -112,7 +118,9 @@ public class ResourceController implements ResourceApi {
      */
     @Override
     public ResponseEntity<String> deleteResource(final URI resourceId) {
-        log.info(">> DELETE /resource resourceId: " + resourceId);
+        if (log.isInfoEnabled()) {
+            log.info(">> DELETE /resource resourceId: " + resourceId);
+        }
         ResponseEntity<String> response;
 
         if (ValidateApiInput.notValid(resourceId.toString())) {
@@ -128,7 +136,9 @@ public class ResourceController implements ResourceApi {
 
                 response = ResponseEntity.ok(jsonObject.toJSONString());
             } catch (IOException e) {
-                log.error(e.getMessage(), e);
+                if (log.isErrorEnabled()) {
+                    log.error(e.getMessage(), e);
+                }
 
                 response = ResponseEntity.badRequest().body("Could not send delete request to connector");
             }
@@ -159,9 +169,11 @@ public class ResourceController implements ResourceApi {
                                                  final String version,
                                                  final URI standardlicense,
                                                  final URI publisher) {
-        log.info(">> POST /resource title: " + title + " description: " + description
-                + " language: " + language + " keywords: " + keywords + " version: " + version
-                + " standardlicense: " + standardlicense + " publisher: " + publisher);
+        if (log.isInfoEnabled()) {
+            log.info(">> POST /resource title: " + title + " description: " + description
+                    + " language: " + language + " keywords: " + keywords + " version: " + version
+                    + " standardlicense: " + standardlicense + " publisher: " + publisher);
+        }
         ResponseEntity<String> response;
 
         if (ValidateApiInput.notValid(title, description, language, version, standardlicense.toString(), publisher.toString())) {
@@ -179,7 +191,11 @@ public class ResourceController implements ResourceApi {
                 response = ResponseEntity.ok(jsonObject.toJSONString());
             } catch (IOException e) {
                 jsonObject.put("message", "Could not register resource at connector");
-                log.error(e.getMessage(), e);
+
+                if (log.isErrorEnabled()) {
+                    log.error(e.getMessage(), e);
+                }
+
                 response = ResponseEntity.badRequest().body(jsonObject.toJSONString());
             }
         }
@@ -211,9 +227,11 @@ public class ResourceController implements ResourceApi {
                                                  final String version,
                                                  final URI standardlicense,
                                                  final URI publisher) {
-        log.info(">> PUT /resource title: " + title + " description: " + description + " language: "
-                + language + " keywords: " + keywords + " version: " + version
-                + " standardlicense: " + standardlicense + " publisher: " + publisher);
+        if (log.isInfoEnabled()) {
+            log.info(">> PUT /resource title: " + title + " description: " + description + " language: "
+                    + language + " keywords: " + keywords + " version: " + version
+                    + " standardlicense: " + standardlicense + " publisher: " + publisher);
+        }
         ResponseEntity<String> response;
 
         if (ValidateApiInput.notValid(resourceId.toString(), title, description, language, version, standardlicense.toString(), publisher.toString())) {
@@ -226,7 +244,6 @@ public class ResourceController implements ResourceApi {
                 if (updatedResource != null) {
                     final var clientResponse = client.updateResource(resourceId, updatedResource);
                     if (clientResponse.isSuccessful()) {
-                        //TODO move broker registrations to a parallel thread so it won't slow down response times
                         final var registered = brokerService.getRegisStatusForResource(resourceId);
                         registered.iterator().forEachRemaining(elem -> {
                             final var asJsonObject = (JSONObject) elem;
@@ -235,7 +252,9 @@ public class ResourceController implements ResourceApi {
                                 try {
                                     brokerClient.updateAtBroker(brokerId);
                                 } catch (IOException e) {
-                                    log.warn(String.format("Error while updating at broker: %s", e.getMessage()), e);
+                                    if (log.isWarnEnabled()) {
+                                        log.warn(String.format("Error while updating at broker: %s", e.getMessage()), e);
+                                    }
                                 }
                             });
                         });
@@ -252,7 +271,9 @@ public class ResourceController implements ResourceApi {
                             .body(String.format("No resource with ID %s was found!", resourceId));
                 }
             } catch (IOException e) {
-                log.error(e.getMessage(), e);
+                if (log.isErrorEnabled()) {
+                    log.error(e.getMessage(), e);
+                }
                 response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
             }
         }

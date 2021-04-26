@@ -5,12 +5,14 @@ import de.fraunhofer.iais.eis.ConfigurationModel;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.util.DispatchRequest;
 import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.util.ResourceMapper;
+import de.fraunhofer.isst.configmanager.data.util.QueryInput;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Credentials;
 import okhttp3.HttpUrl;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Service;
 
@@ -18,12 +20,12 @@ import java.io.IOException;
 import java.util.Objects;
 
 /**
- * An implementation of the interface DefaultConnectorClient for the DataspaceConnector.
+ * An implementation of the interface DefaultConnectorClient for the Dataspace Connector.
  */
 @Slf4j
 @Service
-@ConditionalOnExpression("${dataspace.connector.enabled:false}")
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@ConditionalOnExpression("${dataspace.connector.enabled:false}")
 public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient implements DefaultConnectorClient {
 
     public DataspaceConnectorClient(final ResourceMapper dataSpaceConnectorResourceMapper) {
@@ -52,7 +54,7 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
         final var request = builder.build();
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
-        if (!response.isSuccessful()) {
+        if (!response.isSuccessful() && log.isWarnEnabled()) {
             log.warn("---- [DataspaceConnectorClient getConfiguration] Could not get ConfigurationModel from {} with user {}. Response: {} - {}",
                     connectorUrl,
                     dataSpaceConnectorApiUsername,
@@ -66,8 +68,10 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
         try {
             configurationModel = SERIALIZER.deserialize(body, ConfigurationModel.class);
         } catch (IOException e) {
-            log.error("---- [DataspaceConnectorClient getConfiguration] SERIALIZER.deserialize threw IOException");
-            log.error(e.getMessage(), e);
+            if (log.isErrorEnabled()) {
+                log.error("---- [DataspaceConnectorClient getConfiguration] SERIALIZER.deserialize threw IOException");
+                log.error(e.getMessage(), e);
+            }
         }
 
         return configurationModel;
@@ -86,7 +90,7 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
         final var request = builder.build();
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
-        if (!response.isSuccessful()) {
+        if (!response.isSuccessful() && log.isWarnEnabled()) {
             log.warn("---- [DataspaceConnectorClient getSelfDeclaration] Could not get BaseConnector");
         }
 
@@ -96,8 +100,10 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
         try {
             baseConnector = SERIALIZER.deserialize(body, BaseConnector.class);
         } catch (IOException e) {
-            log.error("---- [DataspaceConnectorClient getSelfDeclaration] SERIALIZER.deserialize threw IOException");
-            log.error(e.getMessage(), e);
+            if (log.isErrorEnabled()) {
+                log.error("---- [DataspaceConnectorClient getSelfDeclaration] SERIALIZER.deserialize threw IOException");
+                log.error(e.getMessage(), e);
+            }
         }
 
         return baseConnector;
@@ -105,7 +111,9 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
 
     @Override
     public boolean sendConfiguration(final String configurationModel) throws IOException {
-        log.info(String.format("---- [DataspaceConnectorClient sendConfiguration] sending new configuration to %s", dataSpaceConnectorHost));
+        if (log.isInfoEnabled()) {
+            log.info(String.format("---- [DataspaceConnectorClient sendConfiguration] sending new configuration to %s", dataSpaceConnectorHost));
+        }
 
         final var builder = getRequestBuilder();
         builder.url(connectorBaseUrl + "admin/api/configuration");
@@ -120,7 +128,9 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
         var success = true;
 
         if (!response.isSuccessful()) {
-            log.warn("---- [DataspaceConnectorClient sendConfiguration] Updating ConfigurationModel failed!");
+            if (log.isWarnEnabled()) {
+                log.warn("---- [DataspaceConnectorClient sendConfiguration] Updating ConfigurationModel failed!");
+            }
             success = false;
         }
 
@@ -147,11 +157,13 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
                 dataSpaceConnectorApiPassword));
         builder.post(RequestBody.create(new byte[0], null));
 
-        log.info("---- [DataspaceConnectorClient getBaseConnector] " + url.toString());
+        if (log.isInfoEnabled()) {
+            log.info("---- [DataspaceConnectorClient getBaseConnector] " + url.toString());
+        }
         final var request = builder.build();
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
-        if (!response.isSuccessful()) {
+        if (!response.isSuccessful() && log.isWarnEnabled()) {
             log.warn("---- [DataspaceConnectorClient getBaseConnector] Could not get BaseConnector Info!");
         }
         final var body = Objects.requireNonNull(response.body()).string();
@@ -160,8 +172,10 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
         try {
             baseConnector = SERIALIZER.deserialize(body, BaseConnector.class);
         } catch (IOException e) {
-            log.error("---- [DataspaceConnectorClient getBaseConnector] SERIALIZER.deserialize threw IOException");
-            log.error(e.getMessage(), e);
+            if (log.isErrorEnabled()) {
+                log.error("---- [DataspaceConnectorClient getBaseConnector] SERIALIZER.deserialize threw IOException");
+                log.error(e.getMessage(), e);
+            }
         }
 
         return baseConnector;
@@ -169,7 +183,9 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
 
     @Override
     public String getPolicyPattern(final String policy) throws IOException {
-        log.info("---- [DataspaceConnectorClient getPolicyPattern] Get pattern for policy");
+        if (log.isInfoEnabled()) {
+            log.info("---- [DataspaceConnectorClient getPolicyPattern] Get pattern for policy");
+        }
 
         final var builder = getRequestBuilder();
         builder.url(connectorBaseUrl + "/admin/api/example/policy-validation");
@@ -180,7 +196,7 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
         final var request = builder.build();
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
-        if (!response.isSuccessful()) {
+        if (!response.isSuccessful() && log.isWarnEnabled()) {
             log.warn("---- [DataspaceConnectorClient getPolicyPattern] Pattern for policy could not be determined");
         }
 
@@ -191,7 +207,9 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
     public String requestContractAgreement(final String recipientId,
                                            final String requestedArtifactId,
                                            final String contractOffer) throws IOException {
-        log.info("---- [DataspaceConnectorClient requestContractAgreement] Request contract agreement with recipient: {} and artifact: {}", recipientId, requestedArtifactId);
+        if (log.isInfoEnabled()) {
+            log.info("---- [DataspaceConnectorClient requestContractAgreement] Request contract agreement with recipient: {} and artifact: {}", recipientId, requestedArtifactId);
+        }
 
         final var builder = getRequestBuilder();
         final var urlBuilder = new HttpUrl.Builder()
@@ -215,10 +233,55 @@ public class DataspaceConnectorClient extends AbstractDataspaceConnectorClient i
         final var request = builder.build();
         final var response = DispatchRequest.sendToDataspaceConnector(request);
 
-        if (!response.isSuccessful()) {
+        if (!response.isSuccessful() && log.isWarnEnabled()) {
             log.warn("---- [DataspaceConnectorClient requestContractAgreement] Could not request contract agreement");
         }
 
         return Objects.requireNonNull(response.body()).string();
+    }
+
+    @Override
+    public Response requestData(final String recipientId,
+                                final String requestedArtifactId,
+                                final String contractId,
+                                final String key,
+                                final QueryInput queryInput) throws IOException {
+        if (log.isInfoEnabled()) {
+            log.info("---- [DataspaceConnectorClient requestData] Request Data with recipient: {}, artifact: {},"
+                    + " contract: {}, key: {} and queryInput: {} ", recipientId, requestedArtifactId, contractId, key, queryInput);
+        }
+
+        final var builder = getRequestBuilder();
+        final var urlBuilder = new HttpUrl.Builder()
+                .scheme(protocol)
+                .host(dataSpaceConnectorHost)
+                .port(dataSpaceConnectorPort)
+                .addPathSegments("admin/api/request/artifact")
+                .addQueryParameter("recipient", recipientId)
+                .addQueryParameter("requestedArtifact", requestedArtifactId)
+                .addQueryParameter("key", key);
+
+        if (contractId != null && !contractId.isBlank()) {
+            urlBuilder.addQueryParameter("transferContract", contractId);
+        }
+
+        final var url = urlBuilder.build();
+        builder.url(url);
+        builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername, dataSpaceConnectorApiPassword));
+
+        if (queryInput != null) {
+            final var query = MAPPER.writeValueAsString(queryInput);
+            builder.post(RequestBody.create(query, okhttp3.MediaType.parse("application/json")));
+        } else {
+            builder.post(RequestBody.create(new byte[0], null));
+        }
+
+        final var request = builder.build();
+        final var response = DispatchRequest.sendToDataspaceConnector(request);
+
+        if (!response.isSuccessful() && log.isWarnEnabled()) {
+            log.warn("---- [DataspaceConnectorClient requestData] Could not request data");
+        }
+        return response;
     }
 }

@@ -2,9 +2,9 @@ package de.fraunhofer.isst.configmanager.api.service;
 
 import de.fraunhofer.iais.eis.AppEndpointType;
 import de.fraunhofer.iais.eis.Language;
-import de.fraunhofer.isst.configmanager.model.configlists.CustomAppRepository;
-import de.fraunhofer.isst.configmanager.model.customapp.CustomApp;
-import de.fraunhofer.isst.configmanager.model.customapp.CustomAppEndpoint;
+import de.fraunhofer.isst.configmanager.data.repositories.CustomAppRepository;
+import de.fraunhofer.isst.configmanager.data.entities.CustomApp;
+import de.fraunhofer.isst.configmanager.data.entities.CustomAppEndpoint;
 import de.fraunhofer.isst.configmanager.util.Utility;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -35,25 +35,29 @@ public class AppService {
 
         // If db is empty dummy apps will be created
         if (customAppRepository.count() == 0) {
-            log.info("---- [AppService] No custom app is found! Creating custom apps.");
+            if (log.isInfoEnabled()) {
+                log.info("---- [AppService] No custom app is found! Creating custom apps.");
+            }
             final List<CustomApp> customAppList = new ArrayList<>();
 
             final var customApp1 = new CustomApp();
             final var appName = System.getenv("CUSTOM_APP_NAME");
             customApp1.setTitle(Objects.requireNonNullElse(appName, "Custom App 1"));
-            log.info("---- [AppService] Created custom app with title: " + customApp1.getTitle());
+            if (log.isInfoEnabled()) {
+                log.info("---- [AppService] Created custom app with title: " + customApp1.getTitle());
+            }
 
             final List<CustomAppEndpoint> customAppEndpoints = new ArrayList<>();
 
             final var appEndpoint = Utility.createAppEndpoint(AppEndpointType.INPUT_ENDPOINT,
-                    new BigInteger("80"), "documentation", "information",
+                    BigInteger.valueOf(80), "documentation", "information",
                     "http://app1", "iPath", "oPath",
                     Language.DE, "PDF", "path");
             final var customAppEndpoint = new CustomAppEndpoint(appEndpoint);
 
 
             final var appEndpoint2 = Utility.createAppEndpoint(AppEndpointType.OUTPUT_ENDPOINT,
-                    new BigInteger("81"),
+                    BigInteger.valueOf(81),
                     "documentation", "information", "http://app2",
                     "iPath", "oPath", Language.DE, "JSON", "path");
             final var customAppEndpoint2 = new CustomAppEndpoint(appEndpoint2);

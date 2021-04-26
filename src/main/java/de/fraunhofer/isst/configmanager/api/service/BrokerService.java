@@ -2,9 +2,9 @@ package de.fraunhofer.isst.configmanager.api.service;
 
 import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.isst.configmanager.api.service.resources.ResourceService;
-import de.fraunhofer.isst.configmanager.model.config.BrokerStatus;
-import de.fraunhofer.isst.configmanager.model.config.CustomBroker;
-import de.fraunhofer.isst.configmanager.model.configlists.CustomBrokerRepository;
+import de.fraunhofer.isst.configmanager.data.enums.BrokerRegistrationStatus;
+import de.fraunhofer.isst.configmanager.data.entities.CustomBroker;
+import de.fraunhofer.isst.configmanager.data.repositories.CustomBrokerRepository;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -38,11 +38,13 @@ public class BrokerService {
 
         // If no broker is found in the database, a default broker is created at this point.
         if (customBrokerRepository.count() == 0) {
-            log.info("---- [BrokerService] Db is empty! Creating custom broker");
+            if (log.isInfoEnabled()) {
+                log.info("---- [BrokerService] Db is empty! Creating custom broker");
+            }
             final var customBroker = new CustomBroker();
             customBroker.setBrokerUri(URI.create("https://broker.ids.isst.fraunhofer.de/infrastructure"));
             customBroker.setTitle("IDS Broker");
-            customBroker.setBrokerStatus(BrokerStatus.UNREGISTERED);
+            customBroker.setBrokerRegistrationStatus(BrokerRegistrationStatus.UNREGISTERED);
             customBrokerRepository.save(customBroker);
         }
     }
@@ -52,17 +54,14 @@ public class BrokerService {
      *
      * @param brokerUri uri of the broker
      * @param title     title of the broker
-     * @return custom broker
      */
-    public CustomBroker createCustomBroker(final URI brokerUri, final String title) {
+    public void createCustomBroker(final URI brokerUri, final String title) {
         final var customBroker = new CustomBroker(brokerUri);
         if (title != null) {
             customBroker.setTitle(title);
-            customBroker.setBrokerStatus(BrokerStatus.UNREGISTERED);
         }
+        customBroker.setBrokerRegistrationStatus(BrokerRegistrationStatus.UNREGISTERED);
         customBrokerRepository.save(customBroker);
-
-        return customBroker;
     }
 
     /**
@@ -73,7 +72,7 @@ public class BrokerService {
      * @return true, when broker is updated
      */
     public boolean updateBroker(final URI brokerUri, final String title) {
-        boolean updated = false;
+        var updated = false;
         final var broker = getById(brokerUri);
 
         if (broker != null) {
@@ -94,13 +93,15 @@ public class BrokerService {
      * @return true, if broker is deleted
      */
     public boolean deleteBroker(final URI id) {
-        boolean deleted = false;
+        var deleted = false;
         final var customBroker = getById(id);
         if (customBroker != null) {
             customBrokerRepository.delete(customBroker);
             deleted = true;
         } else {
-            log.warn(String.format("---- [BrokerService deleteBroker] Tried to delete a Broker, but no config with id %s exists!", id.toString()));
+            if (log.isWarnEnabled()) {
+                log.warn(String.format("---- [BrokerService deleteBroker] Tried to delete a Broker, but no config with id %s exists!", id.toString()));
+            }
         }
         return deleted;
     }
@@ -127,12 +128,12 @@ public class BrokerService {
      * This method is responsible for setting the broker status.
      *
      * @param brokerId     id of the broker
-     * @param brokerStatus broker status
+     * @param brokerRegistrationStatus broker status
      */
-    public void setBrokerStatus(final URI brokerId, final BrokerStatus brokerStatus) {
+    public void setBrokerStatus(final URI brokerId, final BrokerRegistrationStatus brokerRegistrationStatus) {
         final var customBroker = getById(brokerId);
         if (customBroker != null) {
-            customBroker.setBrokerStatus(brokerStatus);
+            customBroker.setBrokerRegistrationStatus(brokerRegistrationStatus);
             customBrokerRepository.save(customBroker);
         }
     }
@@ -162,7 +163,9 @@ public class BrokerService {
         final var customBroker = getById(brokerUri);
         if (customBroker != null) {
             if (customBroker.getRegisteredResources() == null) {
-                log.info("---- [BrokerService deleteResourceAtBroker] Could not found any resource to delete");
+                if (log.isInfoEnabled()) {
+                    log.info("---- [BrokerService deleteResourceAtBroker] Could not found any resource to delete");
+                }
             } else {
                 final var registeredResources = customBroker.getRegisteredResources();
                 registeredResources.removeIf(s -> s.equals(resourceId.toString()));
@@ -182,7 +185,9 @@ public class BrokerService {
 
         final var customBrokers = customBrokerRepository.findAll();
         if (customBrokers.isEmpty()) {
-            log.info("---- [BrokerService getRegisStatusForResource] Could not find any broker");
+            if (log.isInfoEnabled()) {
+                log.info("---- [BrokerService getRegisStatusForResource] Could not find any broker");
+            }
         } else {
             final var jsonArray = new JSONArray();
             final var jsonObject = new JSONObject();
@@ -193,7 +198,7 @@ public class BrokerService {
                             jsonObject.clear();
                             jsonObject.put("brokerId", customBroker.getBrokerUri().toString());
                             jsonObject.put("brokerStatus",
-                                    customBroker.getBrokerStatus().toString());
+                                    customBroker.getBrokerRegistrationStatus().toString());
                             jsonObject.put("resourceId", resourceId.toString());
                             jsonArray.add(jsonObject);
                         }
@@ -212,12 +217,14 @@ public class BrokerService {
         final var jsonArray = new JSONArray();
         final var customBrokers = customBrokerRepository.findAll();
         if (customBrokers.isEmpty()) {
-            log.info("---- [BrokerService getRegisteredBroker] Could not find any broker");
+            if (log.isInfoEnabled()) {
+                log.info("---- [BrokerService getRegisteredBroker] Could not find any broker");
+            }
         } else {
             final var jsonObject = new JSONObject();
 
             for (final var broker : customBrokers) {
-                if (BrokerStatus.REGISTERED.equals(broker.getBrokerStatus())) {
+                if (BrokerRegistrationStatus.REGISTERED.equals(broker.getBrokerRegistrationStatus())) {
                     jsonObject.clear();
                     jsonObject.put("brokerId", broker.getBrokerUri().toString());
                     jsonArray.add(jsonObject);

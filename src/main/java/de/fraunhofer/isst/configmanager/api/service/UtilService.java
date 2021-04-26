@@ -4,10 +4,10 @@ import de.fraunhofer.iais.eis.ConnectorDeployMode;
 import de.fraunhofer.iais.eis.ConnectorStatus;
 import de.fraunhofer.iais.eis.Language;
 import de.fraunhofer.iais.eis.LogLevel;
-
 import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.model.BackendSource;
-import de.fraunhofer.isst.configmanager.model.config.BrokerStatus;
-import de.fraunhofer.isst.configmanager.model.routedeploymethod.DeployMethod;
+import de.fraunhofer.isst.configmanager.data.enums.BrokerRegistrationStatus;
+import de.fraunhofer.isst.configmanager.data.enums.RouteDeployMethod;
+import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.json.JSONException;
@@ -21,6 +21,7 @@ import java.util.List;
 /**
  * The class can be used to define auxiliary methods that are needed again and again.
  */
+@Slf4j
 @Service
 @Transactional
 public class UtilService {
@@ -32,86 +33,144 @@ public class UtilService {
      * @return enums as string
      */
     public String getSpecificEnum(final String enumName) {
-        final var jsonArray = new JSONArray();
-        JSONArray sortedJsonArray = null;
         final var name = enumName.toLowerCase();
+        JSONArray sortedJsonArray = null;
 
-        if (name.contains("loglevel")) {
-            final var logLevels = LogLevel.values();
-            for (final var logLevel : logLevels) {
-                var jsonObject = new JSONObject();
-                jsonObject.put("originalName", logLevel.name());
-                jsonObject.put("displayName", logLevel.getLabel().get(0).getValue());
-                jsonArray.add(jsonObject);
-            }
-            sortedJsonArray = sortJsonArray(jsonArray);
-        }
-        if (name.contains("connectorstatus")) {
-            final var connectorStatuses = ConnectorStatus.values();
-            for (final var connectorStatus : connectorStatuses) {
-                var jsonObject = new JSONObject();
-                jsonObject.put("originalName", connectorStatus.name());
-                jsonObject.put("displayName", connectorStatus.getLabel().get(0).getValue());
-                jsonArray.add(jsonObject);
-            }
-            sortedJsonArray = sortJsonArray(jsonArray);
-        }
-        if (name.contains("connectordeploymode")) {
-            final var connectorDeployModes = ConnectorDeployMode.values();
-            for (final var connectorDeployMode : connectorDeployModes) {
-                var jsonObject = new JSONObject();
-                jsonObject.put("originalName", connectorDeployMode.name());
-                jsonObject.put("displayName", connectorDeployMode.getLabel().get(0).getValue());
-                jsonArray.add(jsonObject);
-            }
-            sortedJsonArray = sortJsonArray(jsonArray);
-        }
-        if (name.contains("language")) {
-            final var languages = Language.values();
-            for (final var language : languages) {
-                var jsonObject = new JSONObject();
-                jsonObject.put("originalName", language.name());
-
-                //Workaround for infomodel issue LT = LessThan
-                if ("LT".equals(language.name())) {
-                    jsonObject.put("displayName", language.getLabel().get(1).getValue());
-                } else {
-                    jsonObject.put("displayName", language.getLabel().get(0).getValue());
-                }
-                jsonArray.add(jsonObject);
-            }
-            sortedJsonArray = sortJsonArray(jsonArray);
-        }
-        if (name.contains("sourcetype")) {
-            final var sourceTypes = BackendSource.Type.values();
-            for (final var sourceType : sourceTypes) {
-                var jsonObject = new JSONObject();
-                jsonObject.put("displayName", sourceType.name());
-                jsonArray.add(jsonObject);
-            }
-            sortedJsonArray = sortJsonArray(jsonArray);
-        }
-        if (name.contains("deploymethod")) {
-            final var deployMethods = DeployMethod.values();
-            for (final var deployMethod : deployMethods) {
-                var jsonObject = new JSONObject();
-                jsonObject.put("displayName", deployMethod.name());
-                jsonArray.add(jsonObject);
-            }
-            sortedJsonArray = sortJsonArray(jsonArray);
-        }
-        if (name.contains("brokerstatus")) {
-            final var brokerStatuses = BrokerStatus.values();
-            for (final var brokerStatus : brokerStatuses) {
-                var jsonObject = new JSONObject();
-                jsonObject.put("displayName", brokerStatus.name());
-                jsonArray.add(jsonObject);
-            }
-            sortedJsonArray = sortJsonArray(jsonArray);
+        switch (name) {
+            case "loglevel": sortedJsonArray = getLogLevel(); break;
+            case "connectorstatus": sortedJsonArray = getConnectorStatus(); break;
+            case "connectordeploymode": sortedJsonArray = getConnectorDeployMode(); break;
+            case "language": sortedJsonArray = getLanguage(); break;
+            case "sourcetype": sortedJsonArray = getSourceType(); break;
+            case "deploymethod": sortedJsonArray = getDeployMethod(); break;
+            case "brokerstatus": sortedJsonArray = getBrokerStatus(); break;
+            default: break;
         }
 
         assert sortedJsonArray != null;
         return sortedJsonArray.toJSONString();
+    }
+
+    private JSONArray getBrokerStatus() {
+        JSONArray sortedJsonArray;
+
+        final var jsonArray = new JSONArray();
+        final var brokerStatuses = BrokerRegistrationStatus.values();
+
+        for (final var brokerStatus : brokerStatuses) {
+            var jsonObject = new JSONObject();
+            jsonObject.put("displayName", brokerStatus.name());
+            jsonArray.add(jsonObject);
+        }
+
+        sortedJsonArray = sortJsonArray(jsonArray);
+        return sortedJsonArray;
+    }
+
+    private JSONArray getDeployMethod() {
+        JSONArray sortedJsonArray;
+
+        final var jsonArray = new JSONArray();
+        final var deployMethods = RouteDeployMethod.values();
+
+        for (final var deployMethod : deployMethods) {
+            var jsonObject = new JSONObject();
+            jsonObject.put("displayName", deployMethod.name());
+            jsonArray.add(jsonObject);
+        }
+
+        sortedJsonArray = sortJsonArray(jsonArray);
+        return sortedJsonArray;
+    }
+
+    private JSONArray getSourceType() {
+        JSONArray sortedJsonArray;
+
+        final var jsonArray = new JSONArray();
+        final var sourceTypes = BackendSource.Type.values();
+
+        for (final var sourceType : sourceTypes) {
+            var jsonObject = new JSONObject();
+            jsonObject.put("displayName", sourceType.name());
+            jsonArray.add(jsonObject);
+        }
+
+        sortedJsonArray = sortJsonArray(jsonArray);
+        return sortedJsonArray;
+    }
+
+    private JSONArray getLanguage() {
+        JSONArray sortedJsonArray;
+
+        final var jsonArray = new JSONArray();
+        final var languages = Language.values();
+
+        for (final var language : languages) {
+            var jsonObject = new JSONObject();
+            jsonObject.put("originalName", language.name());
+
+            //Workaround for infomodel issue LT = LessThan
+            if ("LT".equals(language.name())) {
+                jsonObject.put("displayName", language.getLabel().get(1).getValue());
+            } else {
+                jsonObject.put("displayName", language.getLabel().get(0).getValue());
+            }
+            jsonArray.add(jsonObject);
+        }
+
+        sortedJsonArray = sortJsonArray(jsonArray);
+        return sortedJsonArray;
+    }
+
+    private JSONArray getConnectorDeployMode() {
+        JSONArray sortedJsonArray;
+
+        final var jsonArray = new JSONArray();
+        final var connectorDeployModes = ConnectorDeployMode.values();
+
+        for (final var connectorDeployMode : connectorDeployModes) {
+            var jsonObject = new JSONObject();
+            jsonObject.put("originalName", connectorDeployMode.name());
+            jsonObject.put("displayName", connectorDeployMode.getLabel().get(0).getValue());
+            jsonArray.add(jsonObject);
+        }
+
+        sortedJsonArray = sortJsonArray(jsonArray);
+        return sortedJsonArray;
+    }
+
+    private JSONArray getConnectorStatus() {
+        JSONArray sortedJsonArray;
+
+        final var jsonArray = new JSONArray();
+        final var connectorStatuses = ConnectorStatus.values();
+
+        for (final var connectorStatus : connectorStatuses) {
+            var jsonObject = new JSONObject();
+            jsonObject.put("originalName", connectorStatus.name());
+            jsonObject.put("displayName", connectorStatus.getLabel().get(0).getValue());
+            jsonArray.add(jsonObject);
+        }
+
+        sortedJsonArray = sortJsonArray(jsonArray);
+        return sortedJsonArray;
+    }
+
+    private JSONArray getLogLevel() {
+        JSONArray sortedJsonArray;
+
+        final var jsonArray = new JSONArray();
+        final var logLevels = LogLevel.values();
+
+        for (final var logLevel : logLevels) {
+            var jsonObject = new JSONObject();
+            jsonObject.put("originalName", logLevel.name());
+            jsonObject.put("displayName", logLevel.getLabel().get(0).getValue());
+            jsonArray.add(jsonObject);
+        }
+
+        sortedJsonArray = sortJsonArray(jsonArray);
+        return sortedJsonArray;
     }
 
     /**
@@ -120,6 +179,7 @@ public class UtilService {
      */
     private JSONArray sortJsonArray(final JSONArray jsonArray) {
         List<JSONObject> jsonObjects = new ArrayList<>();
+
         var sortedJsonArray = new JSONArray();
 
         for (final var o : jsonArray) {
@@ -131,21 +191,22 @@ public class UtilService {
 
             @Override
             public int compare(final JSONObject a, final JSONObject b) {
-                String str1 = "";
-                String str2 = "";
+                var str1 = "";
+                var str2 = "";
                 try {
                     str1 = (String) a.get(KEY_NAME);
                     str2 = (String) b.get(KEY_NAME);
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    log.error(e.getMessage(), e);
                 }
                 return str1.compareTo(str2);
             }
         });
 
-        for (int i = 0; i < jsonArray.size(); i++) {
+        for (var i = 0; i < jsonArray.size(); i++) {
             sortedJsonArray.add(i, jsonObjects.get(i));
         }
+
         return sortedJsonArray;
     }
 }

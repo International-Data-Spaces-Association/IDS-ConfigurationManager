@@ -2,6 +2,8 @@ package de.fraunhofer.isst.configmanager.connector.clients;
 
 import de.fraunhofer.iais.eis.BaseConnector;
 import de.fraunhofer.iais.eis.ConfigurationModel;
+import de.fraunhofer.isst.configmanager.data.util.QueryInput;
+import okhttp3.Response;
 
 import java.io.IOException;
 
@@ -75,4 +77,17 @@ public interface DefaultConnectorClient {
      * @return string, contract agreement id
      */
     String requestContractAgreement(String recipientId, String requestedArtifactId, String contractOffer) throws IOException;
+
+    /**
+     * Requests data from an external connector.
+     *
+     * @param recipientId         the target connector uri
+     * @param requestedArtifactId the requested artifact uri
+     * @param contractId          the URI of the contract agreement
+     * @param key                 a unique validation key
+     * @param queryInput          the query input to fetch data from the backend systems
+     * @return requested data or error message
+     */
+    Response requestData(String recipientId, String requestedArtifactId, String contractId,
+                         String key, QueryInput queryInput) throws IOException;
 }

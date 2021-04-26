@@ -31,8 +31,8 @@ import java.util.ArrayList;
 @Slf4j
 @RestController
 @RequestMapping("/api/ui")
-@Tag(name = "Endpoints Management", description = "Different endpoint types can be managed here")
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@Tag(name = "Endpoints Management", description = "Different endpoint types can be managed here")
 public class EndpointController implements EndpointApi {
 
     transient Serializer serializer;
@@ -62,7 +62,9 @@ public class EndpointController implements EndpointApi {
                                                         final String sourceType,
                                                         final String username,
                                                         final String password) {
-        log.info(">> POST /generic/endpoint accessURL: " + accessURL + " sourceType: " + sourceType + " username: " + username);
+        if (log.isInfoEnabled()) {
+            log.info(">> POST /generic/endpoint accessURL: " + accessURL + " username: " + username);
+        }
         ResponseEntity<String> response;
 
         final var genericEndpoint = endpointService.createGenericEndpoint(accessURL, sourceType, username, password);
@@ -86,7 +88,9 @@ public class EndpointController implements EndpointApi {
      */
     @Override
     public ResponseEntity<String> getGenericEndpoints() {
-        log.info(">> GET /generic/endpoints");
+        if (log.isInfoEnabled()) {
+            log.info(">> GET /generic/endpoints");
+        }
         ResponseEntity<String> response;
 
         final var endpoints = endpointService.getGenericEndpoints();
@@ -94,7 +98,9 @@ public class EndpointController implements EndpointApi {
         try {
             response = ResponseEntity.ok(serializer.serialize(endpoints));
         } catch (IOException e) {
-            log.error(e.getMessage(), e);
+            if (log.isErrorEnabled()) {
+                log.error(e.getMessage(), e);
+            }
             response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
 
@@ -109,7 +115,9 @@ public class EndpointController implements EndpointApi {
      */
     @Override
     public ResponseEntity<String> deleteGenericEndpoint(final URI endpointId) {
-        log.info(">> DELETE /generic/endpoint endpointId: " + endpointId);
+        if (log.isInfoEnabled()) {
+            log.info(">> DELETE /generic/endpoint endpointId: " + endpointId);
+        }
         ResponseEntity<String> response;
 
         final var deleted = endpointService.deleteGenericEndpoint(endpointId);
@@ -139,7 +147,9 @@ public class EndpointController implements EndpointApi {
                                                         final String sourceType,
                                                         final String username,
                                                         final String password) {
-        log.info(">> PUT /generic/endpoint endpointId: " + endpointId + " accessURL: " + accessURL);
+        if (log.isInfoEnabled()) {
+            log.info(">> PUT /generic/endpoint endpointId: " + endpointId + " accessURL: " + accessURL);
+        }
         ResponseEntity<String> response;
 
         final var updated = endpointService.updateGenericEndpoint(endpointId, accessURL, sourceType, username, password);
@@ -160,10 +170,11 @@ public class EndpointController implements EndpointApi {
      * @param sourceType source type of the endpoint
      * @return a suitable http response depending on success
      */
-    @Override
     public ResponseEntity<String> createConnectorEndpoint(final URI accessUrl, final String sourceType) {
-        log.info(">> POST /connector/endpoint accessUrl: " + accessUrl + " sourceType: " + sourceType);
-
+        if (log.isInfoEnabled()) {
+            log.info(">> POST /connector/endpoint accessUrl: " + accessUrl + " sourceType: " + sourceType)
+        }
+      
         final var configModelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
         final var baseConnector = (BaseConnectorImpl) configModelImpl.getConnectorDescription();
 

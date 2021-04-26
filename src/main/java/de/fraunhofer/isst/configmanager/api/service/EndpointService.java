@@ -5,9 +5,9 @@ import de.fraunhofer.iais.eis.Endpoint;
 import de.fraunhofer.iais.eis.GenericEndpoint;
 import de.fraunhofer.iais.eis.GenericEndpointBuilder;
 import de.fraunhofer.iais.eis.GenericEndpointImpl;
-import de.fraunhofer.isst.configmanager.model.configlists.CustomGenericEndpointList;
-import de.fraunhofer.isst.configmanager.model.configlists.CustomGenericEndpointRepository;
-import de.fraunhofer.isst.configmanager.model.customgenericendpoint.CustomGenericEndpointObject;
+import de.fraunhofer.isst.configmanager.data.entities.CustomGenericEndpointList;
+import de.fraunhofer.isst.configmanager.data.repositories.CustomGenericEndpointRepository;
+import de.fraunhofer.isst.configmanager.data.entities.CustomGenericEndpointObject;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -48,8 +48,7 @@ public class EndpointService {
                                                  final String sourceType,
                                                  final String username,
                                                  final String password) {
-        GenericEndpoint endpoint = null;
-        endpoint = new GenericEndpointBuilder()._accessURL_(accessURL).build();
+        final var endpoint = new GenericEndpointBuilder()._accessURL_(accessURL).build();
         final var endpointImpl = (GenericEndpointImpl) endpoint;
 
         endpointImpl.setProperty("ids:sourceType", sourceType);
@@ -60,7 +59,9 @@ public class EndpointService {
                             new BasicAuthenticationBuilder()._authUsername_(username)._authPassword_(password).build()
                     );
         } else {
-            log.info("---- [EndpointService createGenericEndpoint] No authentication was created because username and password were not entered.");
+            if (log.isInfoEnabled()) {
+                log.info("---- [EndpointService createGenericEndpoint] No authentication was created because username and password were not entered.");
+            }
         }
 
         final var customGenericEndpointObject = new CustomGenericEndpointObject(endpoint);
@@ -85,9 +86,13 @@ public class EndpointService {
         try {
             customGenericEndpointList = customGenericEndpointRepository.findAll().stream().findAny().get();
             genericEndpoints = (ArrayList<Endpoint>) customGenericEndpointList.getEndpoints();
-            log.info("---- [EndpointService getGenericEndpoints] Generic endpoints found: " + genericEndpoints.size());
+            if (log.isInfoEnabled()) {
+                log.info("---- [EndpointService getGenericEndpoints] Generic endpoints found: " + genericEndpoints.size());
+            }
         } catch (NoSuchElementException e) {
-            log.info("---- [EndpointService getGenericEndpoints] No generic endpoints found!");
+            if (log.isInfoEnabled()) {
+                log.info("---- [EndpointService getGenericEndpoints] No generic endpoints found!");
+            }
         }
 
         return genericEndpoints;

@@ -16,7 +16,7 @@ public interface DefaultResourceClient {
      * @param resourceId id of the resource
      * @return map from the id of the resource and the resource itself
      */
-    Resource getRequestedResource(String accessURL, String resourceId) throws IOException;
+    String getRequestedResource(String accessURL, String resourceId) throws IOException;
 
 
     /**

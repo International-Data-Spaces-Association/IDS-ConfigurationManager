@@ -13,8 +13,8 @@ import de.fraunhofer.iais.eis.ProxyImpl;
 import de.fraunhofer.iais.eis.SecurityProfile;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultConnectorClient;
-import de.fraunhofer.isst.configmanager.model.config.ConfigModelObject;
-import de.fraunhofer.isst.configmanager.model.configlists.ConfigModelRepository;
+import de.fraunhofer.isst.configmanager.data.entities.ConfigModelObject;
+import de.fraunhofer.isst.configmanager.data.repositories.ConfigModelRepository;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
@@ -45,28 +45,36 @@ public class ConfigModelService {
     public ConfigModelService(final ConfigModelRepository configModelRepository,
                               final DefaultConnectorClient client) {
         this.configModelRepository = configModelRepository;
-        log.warn("---- [ConfigModelService] Initial StartUp! Trying to get current Configuration from Connector!");
+        if (log.isWarnEnabled()) {
+            log.warn("---- [ConfigModelService] Initial StartUp! Trying to get current Configuration from Connector!");
+        }
         try {
             final var connectorConfiguration = client.getConfiguration();
             updateConfigModel(connectorConfiguration);
 
-            log.info("---- [ConfigModelService] Received configuration from running Connector!");
+            if (log.isInfoEnabled()) {
+                log.info("---- [ConfigModelService] Received configuration from running Connector!");
+            }
         } catch (IOException e) {
-            log.warn("---- [ConfigModelService] Could not get Configmodel from Connector! Using old Config if "
-                    + "available! Error establishing connection to connector: " + e.getMessage());
+            if (log.isWarnEnabled()) {
+                log.warn("---- [ConfigModelService] Could not get Configmodel from Connector! Using old Config if "
+                        + "available! Error establishing connection to connector: " + e.getMessage());
+            }
 
-            if (configModelRepository.findAll().size() > 0) {
+            if (!configModelRepository.findAll().isEmpty()) {
                 configModelObject = configModelRepository.findAll().get(0);
             } else {
-                log.warn("---- [ConfigModelService] Connector Config not reachable and no old config available! Using new placeholder Config.");
-                createConfigModel(
-                        "NO_LOGGING",
-                        "TEST_DEPLOYMENT",
-                        "http://truststore",
-                        "password",
-                        "http://keystore",
-                        "password"
-                );
+                if (log.isWarnEnabled()) {
+                    log.warn("---- [ConfigModelService] Connector Config not reachable and no old config available! Using new placeholder Config.");
+                    createConfigModel(
+                            "NO_LOGGING",
+                            "TEST_DEPLOYMENT",
+                            "http://truststore",
+                            "password",
+                            "http://keystore",
+                            "password"
+                    );
+                }
             }
         }
     }
@@ -214,7 +222,7 @@ public class ConfigModelService {
     public void updateProxySettings(final URI proxyUri, final ArrayList<URI> noProxyUriList,
                                     final String username, final String password,
                                     final ConfigurationModelImpl configmodelImpl) {
-        if ("null".equals(proxyUri)) {
+        if ("null".equals(proxyUri.toString())) {
             configmodelImpl.setConnectorProxy(null);
         } else {
             if (getConfigModelObject().getConfigurationModel().getConnectorProxy() == null) {

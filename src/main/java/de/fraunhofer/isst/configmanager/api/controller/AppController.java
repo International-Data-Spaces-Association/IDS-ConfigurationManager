@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequestMapping("/api/ui")
-@Tag(name = "App Management", description = "Endpoints for managing the app in the configuration manager")
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@Tag(name = "App Management", description = "Endpoints for managing the app in the configuration manager")
 public class AppController implements AppApi {
 
     transient AppService appService;
@@ -37,7 +37,9 @@ public class AppController implements AppApi {
      */
     @Override
     public ResponseEntity<String> getApps() {
-        log.info(">> GET /apps");
+        if (log.isInfoEnabled()) {
+            log.info(">> GET /apps");
+        }
         ResponseEntity<String> response;
 
         final var customAppList = appService.getApps();
@@ -46,7 +48,9 @@ public class AppController implements AppApi {
             try {
                 response = ResponseEntity.ok(objectMapper.writeValueAsString(customAppList));
             } catch (JsonProcessingException e) {
-                log.error(e.getMessage(), e);
+                if (log.isErrorEnabled()) {
+                    log.error(e.getMessage(), e);
+                }
                 response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
         } else {
