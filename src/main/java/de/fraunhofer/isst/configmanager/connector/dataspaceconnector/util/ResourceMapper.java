@@ -100,11 +100,13 @@ public class ResourceMapper {
     public ResourceRepresentation mapRepresentation(final Representation representation) {
         final var resourceRepresentation = new ResourceRepresentation();
         resourceRepresentation.setUuid(readUUIDFromURI(representation.getId()));
-        int byteSize = 0;
+        var byteSize = 0;
+
         if (representation.getInstance() != null && !representation.getInstance().isEmpty()) {
             final var artifact = (Artifact) representation.getInstance().get(0);
             byteSize = artifact.getByteSize().intValue();
         }
+
         resourceRepresentation.setByteSize(byteSize);
         resourceRepresentation.setType(representation.getMediaType().getFilenameExtension());
         return resourceRepresentation;

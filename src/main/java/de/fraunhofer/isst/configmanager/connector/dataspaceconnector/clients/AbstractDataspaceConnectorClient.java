@@ -35,7 +35,7 @@ public abstract class AbstractDataspaceConnectorClient {
 
     String connectorBaseUrl = "";
 
-    public AbstractDataspaceConnectorClient(final ResourceMapper dataSpaceConnectorResourceMapper) {
+    protected AbstractDataspaceConnectorClient(final ResourceMapper dataSpaceConnectorResourceMapper) {
         this.dataSpaceConnectorResourceMapper = dataSpaceConnectorResourceMapper;
     }
 

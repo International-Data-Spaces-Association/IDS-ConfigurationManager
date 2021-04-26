@@ -143,24 +143,24 @@ public class ResourceContractService extends AbstractResourceService {
                     final var pipEndpoint = jsonNode.get("pipendpoint").asText();
 
                     contractOffer = resourceContractBuilder.buildNTimesUsage(binaryOperator, number, pipEndpoint);
-                    break;
                 }
+                break;
             case DURATION_USAGE:
                 if (contractJson != null && !contractJson.equals("{}")) {
                     final var jsonNode = resourceContractBuilder.getJsonNodeFromContract(contractJson);
                     final var number = jsonNode.get("number").asText();
 
                     contractOffer = resourceContractBuilder.buildDurationUsage(number);
-                    break;
                 }
+                break;
             case USAGE_NOTIFICATION:
                 if (contractJson != null && !contractJson.equals("{}")) {
                     final var jsonNode = resourceContractBuilder.getJsonNodeFromContract(contractJson);
                     final var url = jsonNode.get("url").asText();
 
                     contractOffer = resourceContractBuilder.buidUsageNotification(url);
-                    break;
                 }
+                break;
             case USAGE_LOGGING:
                 contractOffer = resourceContractBuilder.buildUsageLogging();
                 break;
@@ -172,8 +172,8 @@ public class ResourceContractService extends AbstractResourceService {
                     final var toDate = jsonNode.get("toDate").asText();
 
                     contractOffer = resourceContractBuilder.buildUsageDuringInterval(fromDate, toDate);
-                    break;
                 }
+                break;
             case USAGE_UNTIL_DELETION:
                 if (contractJson != null && !contractJson.equals("{}")) {
                     final var jsonNode = resourceContractBuilder.getJsonNodeFromContract(contractJson);
@@ -182,8 +182,8 @@ public class ResourceContractService extends AbstractResourceService {
                     final var deletionDate = jsonNode.get("deletionDate").asText();
 
                     contractOffer = resourceContractBuilder.buildUsageUntilDeletion(startDate, endDate, deletionDate);
-                    break;
                 }
+                break;
             default:
                 break;
         }

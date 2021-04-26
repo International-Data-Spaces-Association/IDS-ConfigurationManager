@@ -16,7 +16,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Properties;
 
@@ -49,7 +48,7 @@ public class ConfigmanagerApplication {
     public OpenAPI customOpenAPI() throws IOException {
         final var properties = new Properties();
 
-        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("application.properties")) {
+        try (var inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("application.properties")) {
             // This function may crash (e.g. ill-formatted file). Let it bubble up.
             properties.load(inputStream);
         }
@@ -102,6 +101,8 @@ public class ConfigmanagerApplication {
         final var maxHeapSize = Runtime.getRuntime().maxMemory() / mb;
         final var freeHeapSize = Runtime.getRuntime().freeMemory() / mb;
         final var threadCount = Thread.activeCount();
+
+        System.gc(); //Called manually as a precaution, so that the GC is eventually executed
 
         if (log.isInfoEnabled()) {
             log.info("[ConfigManager " + CURRENT_VERSION + "] Heap Size Stats: Used " + Math.toIntExact(currentHeapSize) + " MB - Free " + Math.toIntExact(freeHeapSize) + " MB - Max " + Math.toIntExact(maxHeapSize) + " MB - Running Threads: " + threadCount);

@@ -50,14 +50,14 @@ public class AppService {
             final List<CustomAppEndpoint> customAppEndpoints = new ArrayList<>();
 
             final var appEndpoint = Utility.createAppEndpoint(AppEndpointType.INPUT_ENDPOINT,
-                    new BigInteger("80"), "documentation", "information",
+                    BigInteger.valueOf(80), "documentation", "information",
                     "http://app1", "iPath", "oPath",
                     Language.DE, "PDF", "path");
             final var customAppEndpoint = new CustomAppEndpoint(appEndpoint);
 
 
             final var appEndpoint2 = Utility.createAppEndpoint(AppEndpointType.OUTPUT_ENDPOINT,
-                    new BigInteger("81"),
+                    BigInteger.valueOf(81),
                     "documentation", "information", "http://app2",
                     "iPath", "oPath", Language.DE, "JSON", "path");
             final var customAppEndpoint2 = new CustomAppEndpoint(appEndpoint2);

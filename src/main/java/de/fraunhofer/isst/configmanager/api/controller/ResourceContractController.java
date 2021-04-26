@@ -13,6 +13,7 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -71,23 +72,11 @@ public class ResourceContractController implements ResourceContractApi {
                 if (contractOffer != null) {
                     final var jsonObject = new JSONObject();
 
-                    try {
-                        jsonObject.put("resourceID", resourceId.toString());
-                        jsonObject.put("contractID", contractOffer.getId().toString());
-
-                        final var clientResponse = client.updateResourceContract(resourceId.toString(), contractJson);
-
-                        resourceContractService.updateResourceContractInAppRoute(resourceId, contractOffer);
-
-                        jsonObject.put("connectorResponse", clientResponse);
-                        response = ResponseEntity.ok(jsonObject.toJSONString());
-                    } catch (IOException e) {
-                        if (log.isErrorEnabled()) {
-                            log.error(e.getMessage(), e);
-                        }
-                        jsonObject.put("message", "Problems while updating the contract at the connector");
-                        response = ResponseEntity.badRequest().body(jsonObject.toJSONString());
-                    }
+                    response = updateResourceContract(
+                            resourceId,
+                            contractJson,
+                            contractOffer,
+                            jsonObject);
                 } else {
                     response = ResponseEntity.badRequest().body("Could not update the resource contract");
                 }
@@ -99,6 +88,32 @@ public class ResourceContractController implements ResourceContractApi {
             }
         }
 
+        return response;
+    }
+
+    @NotNull
+    private ResponseEntity<String> updateResourceContract(final URI resourceId,
+                                                          final String contractJson,
+                                                          final ContractOffer contractOffer,
+                                                          final JSONObject jsonObject) {
+        ResponseEntity<String> response;
+        try {
+            jsonObject.put("resourceID", resourceId.toString());
+            jsonObject.put("contractID", contractOffer.getId().toString());
+
+            final var clientResponse = client.updateResourceContract(resourceId.toString(), contractJson);
+
+            resourceContractService.updateResourceContractInAppRoute(resourceId, contractOffer);
+
+            jsonObject.put("connectorResponse", clientResponse);
+            response = ResponseEntity.ok(jsonObject.toJSONString());
+        } catch (IOException e) {
+            if (log.isErrorEnabled()) {
+                log.error(e.getMessage(), e);
+            }
+            jsonObject.put("message", "Problems while updating the contract at the connector");
+            response = ResponseEntity.badRequest().body(jsonObject.toJSONString());
+        }
         return response;
     }
 

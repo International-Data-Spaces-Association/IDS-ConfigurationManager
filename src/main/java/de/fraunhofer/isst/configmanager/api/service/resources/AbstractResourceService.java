@@ -25,7 +25,7 @@ public abstract class AbstractResourceService {
     transient DefaultConnectorClient connectorClient;
 
     @Autowired
-    public AbstractResourceService(final ConfigModelService configModelService,
+    protected AbstractResourceService(final ConfigModelService configModelService,
                                    final DefaultConnectorClient connectorClient) {
         this.configModelService = configModelService;
         this.connectorClient = connectorClient;

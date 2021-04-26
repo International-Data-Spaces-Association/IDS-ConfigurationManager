@@ -191,8 +191,8 @@ public class UtilService {
 
             @Override
             public int compare(final JSONObject a, final JSONObject b) {
-                String str1 = "";
-                String str2 = "";
+                var str1 = "";
+                var str2 = "";
                 try {
                     str1 = (String) a.get(KEY_NAME);
                     str2 = (String) b.get(KEY_NAME);
@@ -203,7 +203,7 @@ public class UtilService {
             }
         });
 
-        for (int i = 0; i < jsonArray.size(); i++) {
+        for (var i = 0; i < jsonArray.size(); i++) {
             sortedJsonArray.add(i, jsonObjects.get(i));
         }
 

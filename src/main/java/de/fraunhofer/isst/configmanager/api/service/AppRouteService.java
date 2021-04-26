@@ -104,7 +104,7 @@ public class AppRouteService {
      * @return true, if app route is deleted
      */
     public boolean deleteAppRoute(final URI routeId) {
-        boolean deleted = false;
+        var deleted = false;
 
         final var appRoute = getAppRoute(routeId);
 

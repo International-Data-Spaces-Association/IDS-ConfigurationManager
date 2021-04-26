@@ -77,7 +77,7 @@ public class ConnectorService {
                                    final String inboundModelVersion,
                                    final String outboundModelVersion) {
 
-        boolean updated = false;
+        var updated = false;
         final var connector = (BaseConnectorImpl) configModelService.getConfigModel().getConnectorDescription();
 
         if (connector != null) {

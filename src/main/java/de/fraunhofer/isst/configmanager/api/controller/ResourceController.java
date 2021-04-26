@@ -244,7 +244,6 @@ public class ResourceController implements ResourceApi {
                 if (updatedResource != null) {
                     final var clientResponse = client.updateResource(resourceId, updatedResource);
                     if (clientResponse.isSuccessful()) {
-                        //TODO move broker registrations to a parallel thread so it won't slow down response times
                         final var registered = brokerService.getRegisStatusForResource(resourceId);
                         registered.iterator().forEachRemaining(elem -> {
                             final var asJsonObject = (JSONObject) elem;

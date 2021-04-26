@@ -72,7 +72,7 @@ public class BrokerService {
      * @return true, when broker is updated
      */
     public boolean updateBroker(final URI brokerUri, final String title) {
-        boolean updated = false;
+        var updated = false;
         final var broker = getById(brokerUri);
 
         if (broker != null) {
@@ -93,7 +93,7 @@ public class BrokerService {
      * @return true, if broker is deleted
      */
     public boolean deleteBroker(final URI id) {
-        boolean deleted = false;
+        var deleted = false;
         final var customBroker = getById(id);
         if (customBroker != null) {
             customBrokerRepository.delete(customBroker);
