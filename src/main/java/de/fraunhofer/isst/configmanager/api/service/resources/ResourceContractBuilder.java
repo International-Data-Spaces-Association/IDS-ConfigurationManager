@@ -22,9 +22,19 @@ import org.springframework.stereotype.Service;
 import java.net.URI;
 import java.util.Objects;
 
+/**
+ * This class builds ContractOffer objects
+ */
 @Service
 public class ResourceContractBuilder {
 
+    /**
+     * This method creates a usage until deletion ContractOffer
+     * @param startDate start date of contract
+     * @param endDate end date of contract
+     * @param deletionDate deletion date of contract
+     * @return ContractOffer object with a usage until deletion policy
+     */
     public ContractOffer buildUsageUntilDeletion(final String startDate,
                                                  final String endDate,
                                                  final String deletionDate) {
@@ -57,6 +67,12 @@ public class ResourceContractBuilder {
                 .build();
     }
 
+    /**
+     * This method creates a usage during interval ContractOffer
+     * @param fromDate permission is valid after fromDate
+     * @param toDate permission is valid before toDate
+     * @return ContractOffer object with a usage during interval policy
+     */
     public ContractOffer buildUsageDuringInterval(final String fromDate,
                                                   final String toDate) {
         return new ContractOfferBuilder()
@@ -79,6 +95,10 @@ public class ResourceContractBuilder {
                 .build();
     }
 
+    /**
+     * This method creates a logging ContractOffer
+     * @return ContractOffer object with logging PostDuty
+     */
     public ContractOffer buildUsageLogging() {
         return new ContractOfferBuilder()
                 ._permission_(Util.asList(new PermissionBuilder()
@@ -92,6 +112,11 @@ public class ResourceContractBuilder {
                 .build();
     }
 
+    /**
+     * This method create a usage notification ContractOffer
+     * @param url url to where usage should be notified
+     * @return ContractOffer object with usage notification policy
+     */
     public ContractOffer buidUsageNotification(final String url) {
         return new ContractOfferBuilder()
                 ._permission_(Util.asList(new PermissionBuilder()
@@ -111,6 +136,11 @@ public class ResourceContractBuilder {
                 .build();
     }
 
+    /**
+     * This method creates a duration usage ContractOffer
+     * @param number usage duration time
+     * @return ContractOffer object with duration usage policy
+     */
     public ContractOffer buildDurationUsage(final String number) {
         return new ContractOfferBuilder()
                 ._permission_(Util.asList(new PermissionBuilder()
@@ -126,6 +156,11 @@ public class ResourceContractBuilder {
                 .build();
     }
 
+    /**
+     * This method reads a jsonNode and returns the corresponding BinaryOperator
+     * @param jsonNode jsonNode to parse
+     * @return BinaryOperator
+     */
     @NotNull
     public BinaryOperator getBinaryOperator(final JsonNode jsonNode) {
         final var operator = jsonNode.get("binaryoperator").asText();
@@ -141,6 +176,13 @@ public class ResourceContractBuilder {
         return binaryOperator;
     }
 
+    /**
+     * This method creates a n times usage ContractOffer
+     * @param binaryOperator operator for the constraint
+     * @param number how many times the usage should be allowed
+     * @param pipEndpoint PIP endpoint of constraint
+     * @return ContractOffer object with n times usage policy
+     */
     public ContractOffer buildNTimesUsage(final BinaryOperator binaryOperator,
                                           final String number,
                                           final String pipEndpoint) {
@@ -160,6 +202,10 @@ public class ResourceContractBuilder {
                 .build();
     }
 
+    /**
+     * This method creates a prohibit access contract offer
+     * @return ContractOffer with prohibition of access
+     */
     public ContractOffer buildProhibitAccess() {
         return new ContractOfferBuilder()
                 ._prohibition_(Util.asList(new ProhibitionBuilder()
@@ -170,6 +216,10 @@ public class ResourceContractBuilder {
                 .build();
     }
 
+    /**
+     * This method creates a provide access contract offer
+     * @return ContractOffer with access permission
+     */
     public ContractOffer buildProvideAccess() {
         return new ContractOfferBuilder()
                 ._permission_(Util.asList(new PermissionBuilder()
