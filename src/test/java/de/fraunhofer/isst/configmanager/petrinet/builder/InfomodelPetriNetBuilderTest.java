@@ -71,6 +71,7 @@ class InfomodelPetriNetBuilderTest {
         var graph = PetriNetSimulator.buildStepGraph(petriNet);
         log.info(String.valueOf(graph.getArcs().size()));
         log.info(GraphVizGenerator.generateGraphViz(graph));
+        log.info(PetriNetSimulator.enumPaths(graph).toString());
     }
 
     /**

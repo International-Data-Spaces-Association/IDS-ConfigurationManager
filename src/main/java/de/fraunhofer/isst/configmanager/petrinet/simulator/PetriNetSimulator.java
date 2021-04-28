@@ -55,7 +55,7 @@ public class PetriNetSimulator {
      * @param petriNet the initial PetriNet
      */
     public static void simulateNet(PetriNet petriNet){
-        int i = 0;;
+        int i = 0;
         log.info("Starting Simulation!");
         log.info(GraphVizGenerator.generateGraphViz(petriNet));
         while(makeStep(petriNet)){
@@ -105,7 +105,7 @@ public class PetriNetSimulator {
      * @return the StepGraph with all reachable states of the given PetriNet
      */
     public static StepGraph buildStepGraph(PetriNet petriNet){
-        var stepGraph = new StepGraph();
+        var stepGraph = new StepGraph(petriNet);
         stepGraph.getSteps().add(petriNet);
         for(var node : getPossibleTransitions(petriNet)){
             addStepToStepGraph(petriNet, petriNet.deepCopy(), node, stepGraph);
@@ -134,11 +134,11 @@ public class PetriNetSimulator {
         doTransition(copy, transitionCopy);
         for(var net : stepGraph.getSteps()){
             if (net.equals(copy)){
-                stepGraph.getArcs().add(new NetArc(parent, net));
+                stepGraph.getArcs().add(new NetArc(parent, net, transition.getID()));
                 return;
             }
         }
-        stepGraph.getArcs().add(new NetArc(parent, copy));
+        stepGraph.getArcs().add(new NetArc(parent, copy, transition.getID()));
         stepGraph.getSteps().add(copy);
         for(var node : getPossibleTransitions(copy)){
             addStepToStepGraph(copy, copy.deepCopy(), node, stepGraph);
@@ -161,4 +161,69 @@ public class PetriNetSimulator {
         return false;
     }
 
+    /**
+     * @param stepGraph a stepGraph
+     * @return enumerate all possible paths of the petri net
+     */
+    public static List<List<Node>> enumPaths(StepGraph stepGraph){
+        List<List<Node>> paths = new ArrayList<>();
+        var initiallyMarkedNodes = stepGraph.getInitial().getNodes().stream()
+                .filter(node -> node instanceof Place)
+                .filter(node -> ((Place) node).getMarkers() > 0)
+                .collect(Collectors.toList());
+        for(var place : initiallyMarkedNodes){
+            paths.addAll(enumPathsForNode(place, stepGraph, paths));
+        }
+        return paths;
+    }
+
+    /**
+     * @param node node from which paths should start
+     * @param stepGraph stepGraph of the PetriNet
+     * @param foundPaths already found Paths
+     * @return List of all Paths in the PetriNet starting from node
+     */
+    private static List<List<Node>> enumPathsForNode(Node node, StepGraph stepGraph, List<List<Node>> foundPaths){
+        if(foundPaths.stream().map(list -> list.get(0).equals(node)).reduce(false, Boolean::logicalOr)){
+            //paths already calculated
+            return List.of();
+        }
+        List<List<Node>> pathList = new ArrayList<>();
+        if(node instanceof Place){
+            //calculate all transitions that can follow this node
+            var followingTransitions = node.getSourceArcs().stream().map(Arc::getTarget)
+                    .filter(trans -> stepGraph.getArcs().stream()
+                            .map(NetArc::getUsedTransition)
+                            .anyMatch(used -> used.equals(trans.getID())))
+                    .collect(Collectors.toList());
+            //if no transitions following return a path of length 1
+            if(followingTransitions.isEmpty()){
+                return List.of(List.of(node));
+            }
+            for(var trans : followingTransitions){
+                //else create a path (node, [transitionPath]) for each path starting from each transition
+                var calc = enumPathsForNode(trans, stepGraph, pathList);
+                for(var list : calc){
+                    List<Node> startingFromThis = new ArrayList<>();
+                    startingFromThis.add(node);
+                    startingFromThis.addAll(list);
+                    pathList.add(startingFromThis);
+                }
+                pathList.addAll(calc);
+            }
+        }else if(node instanceof Transition){
+            //if a transition is reachable all following places are reachable
+            for(var place : node.getSourceArcs().stream().map(Arc::getTarget).collect(Collectors.toList())){
+                var calc = enumPathsForNode(place, stepGraph, pathList);
+                for(var list : calc){
+                    List<Node> startingFromThis = new ArrayList<>();
+                    startingFromThis.add(node);
+                    startingFromThis.addAll(list);
+                    pathList.add(startingFromThis);
+                }
+                pathList.addAll(calc);
+            }
+        }
+        return pathList;
+    }
 }
