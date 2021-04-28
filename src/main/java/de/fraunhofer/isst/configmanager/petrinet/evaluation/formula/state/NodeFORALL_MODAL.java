@@ -4,6 +4,8 @@ import de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.T
 import de.fraunhofer.isst.configmanager.petrinet.model.Node;
 import lombok.AllArgsConstructor;
 
+import java.util.List;
+
 @AllArgsConstructor
 public class NodeFORALL_MODAL implements StateFormula {
 
@@ -19,7 +21,7 @@ public class NodeFORALL_MODAL implements StateFormula {
     // parameter1, must be true for all successor states, parameter2 must
     // be true for the transitions between the current state and its successors.
     @Override
-    public boolean evaluate(Node node) {
+    public boolean evaluate(Node node, List<List<Node>> paths) {
         return false;
     }
 

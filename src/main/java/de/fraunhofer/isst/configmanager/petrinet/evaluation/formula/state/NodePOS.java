@@ -3,6 +3,8 @@ package de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state;
 import de.fraunhofer.isst.configmanager.petrinet.model.Node;
 import lombok.AllArgsConstructor;
 
+import java.util.List;
+
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.TT.TT;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeEXIST_UNTIL.nodeEXIST_UNTIL;
 
@@ -16,8 +18,8 @@ public class NodePOS implements StateFormula {
     private StateFormula parameter;
 
     @Override
-    public boolean evaluate(Node node) {
-        return nodeEXIST_UNTIL(TT(), parameter).evaluate(node);
+    public boolean evaluate(Node node, List<List<Node>> paths) {
+        return nodeEXIST_UNTIL(TT(), parameter).evaluate(node, paths);
     }
 
     @Override

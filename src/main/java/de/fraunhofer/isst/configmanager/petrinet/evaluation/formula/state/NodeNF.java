@@ -4,6 +4,8 @@ import de.fraunhofer.isst.configmanager.petrinet.model.Node;
 import de.fraunhofer.isst.configmanager.petrinet.model.Place;
 import lombok.AllArgsConstructor;
 
+import java.util.List;
+
 @AllArgsConstructor
 public class NodeNF implements StateFormula {
 
@@ -14,7 +16,7 @@ public class NodeNF implements StateFormula {
     private NodeExpression parameter;
 
     @Override
-    public boolean evaluate(Node node) {
+    public boolean evaluate(Node node, List<List<Node>> paths) {
         return node instanceof Place && parameter.getSubExpression().evaluate((Place) node);
     }
 

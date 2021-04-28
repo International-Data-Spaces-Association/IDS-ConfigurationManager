@@ -3,6 +3,8 @@ package de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state;
 import de.fraunhofer.isst.configmanager.petrinet.model.Node;
 import lombok.AllArgsConstructor;
 
+import java.util.List;
+
 @AllArgsConstructor
 public class NodeFORALL_UNTIL implements StateFormula {
 
@@ -14,7 +16,7 @@ public class NodeFORALL_UNTIL implements StateFormula {
 
     //TODO like EXIST_UNTIL for all paths
     @Override
-    public boolean evaluate(Node node) {
+    public boolean evaluate(Node node, List<List<Node>> paths) {
         return false;
     }
 

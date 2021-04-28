@@ -5,6 +5,8 @@ import de.fraunhofer.isst.configmanager.petrinet.model.Place;
 import de.fraunhofer.isst.configmanager.petrinet.model.Transition;
 import lombok.AllArgsConstructor;
 
+import java.util.List;
+
 @AllArgsConstructor
 public class TransitionAF implements TransitionFormula {
 
@@ -15,7 +17,7 @@ public class TransitionAF implements TransitionFormula {
     private ArcExpression parameter;
 
     @Override
-    public boolean evaluate(Node node) {
+    public boolean evaluate(Node node, List<List<Node>> paths) {
         return node instanceof Transition && parameter.getSubExpression().evaluate((Transition) node);
     }
 

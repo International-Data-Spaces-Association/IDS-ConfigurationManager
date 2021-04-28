@@ -71,7 +71,7 @@ class InfomodelPetriNetBuilderTest {
         var graph = PetriNetSimulator.buildStepGraph(petriNet);
         log.info(String.valueOf(graph.getArcs().size()));
         log.info(GraphVizGenerator.generateGraphViz(graph));
-        log.info(PetriNetSimulator.enumPaths(graph).toString());
+        log.info(PetriNetSimulator.getAllPaths(graph).toString());
     }
 
     /**
@@ -91,6 +91,7 @@ class InfomodelPetriNetBuilderTest {
     }
 
     @Test
+    @Disabled
     public void testFormula(){
         var formula = nodeAND(nodeMODAL(transitionNOT(FF())), nodeOR(nodeNF(NodeExpression.nodeExpression(x -> true, "testMsg")),TT()));
         log.info(formula.writeFormula());
