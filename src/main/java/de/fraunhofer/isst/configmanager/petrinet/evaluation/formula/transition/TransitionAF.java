@@ -1,7 +1,6 @@
 package de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition;
 
 import de.fraunhofer.isst.configmanager.petrinet.model.Node;
-import de.fraunhofer.isst.configmanager.petrinet.model.Place;
 import de.fraunhofer.isst.configmanager.petrinet.model.Transition;
 import lombok.AllArgsConstructor;
 

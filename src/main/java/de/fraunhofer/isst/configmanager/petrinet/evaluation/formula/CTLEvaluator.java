@@ -11,12 +11,12 @@ import java.util.List;
 public class CTLEvaluator {
 
     public static boolean evaluateNode(StateFormula ctlExpression, Place place, List<List<Node>> paths){
-        //TODO base evaluation on place
+        //base evaluation on place
         return ctlExpression.evaluate(place, paths);
     }
 
     public static boolean evaluateTransition(TransitionFormula ctlExpression, Transition transition, List<List<Node>> paths){
-        //TODO base evaluation on transition
+        //base evaluation on transition
         return ctlExpression.evaluate(transition, paths);
     }
 

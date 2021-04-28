@@ -170,14 +170,13 @@ public class PetriNetSimulator {
         List<List<Node>> len1 =getPathsOfLength1(stepGraph);
         List<List<Node>> lenN = new ArrayList<>(len1);
         List<List<Node>> allPaths = new ArrayList<>(len1);
+        int i = 1;
         while(!lenN.isEmpty()){
+            log.info("Calculating paths of length " + ++i);
             lenN = getPathsOfLengthNplus1(len1, lenN);
             if(!lenN.isEmpty()){
                 allPaths.addAll(lenN);
             }
-        }
-        for(var node : stepGraph.getInitial().getNodes()){
-            allPaths.add(List.of(node));
         }
         allPaths.sort(Comparator.comparingInt(List::size));
         return allPaths;
@@ -218,7 +217,7 @@ public class PetriNetSimulator {
         List<List<Node>> pathsLenNplus1 = new ArrayList<>();
         for(var pathN : pathsLenN){
             for(var path1 : pathsLen1){
-                if(pathN.get(pathN.size()-1).equals(path1.get(0)) && !pathN.get(0).equals(pathN.get(pathN.size()-1))){
+                if(pathN.get(pathN.size()-1).equals(path1.get(0)) && circleFree(pathN)){
                     var pathNplus1 = new ArrayList<>(pathN);
                     pathNplus1.add(path1.get(path1.size()-1));
                     pathsLenNplus1.add(pathNplus1);
@@ -228,4 +227,7 @@ public class PetriNetSimulator {
         return pathsLenNplus1;
     }
 
+    private static boolean circleFree(List list){
+        return list.stream().distinct().count() == list.size();
+    }
 }

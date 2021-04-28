@@ -17,7 +17,6 @@ public class NodeMODAL implements StateFormula {
 
     private TransitionFormula parameter;
 
-    //TODO
     // MODAL, is true if parameter evaluates to true for a transition following the current state
     @Override
     public boolean evaluate(Node node, List<List<Node>> paths) {

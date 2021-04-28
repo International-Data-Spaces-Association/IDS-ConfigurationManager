@@ -1,7 +1,6 @@
 package de.fraunhofer.isst.configmanager.petrinet.simulator;
 
 import de.fraunhofer.isst.configmanager.petrinet.model.PetriNet;
-import de.fraunhofer.isst.configmanager.petrinet.model.Transition;
 import lombok.Getter;
 
 import java.net.URI;

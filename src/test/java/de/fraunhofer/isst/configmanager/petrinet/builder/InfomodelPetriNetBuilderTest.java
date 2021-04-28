@@ -3,7 +3,7 @@ package de.fraunhofer.isst.configmanager.petrinet.builder;
 import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeExpression;
-import de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionPOS;
+import de.fraunhofer.isst.configmanager.petrinet.model.Place;
 import de.fraunhofer.isst.configmanager.petrinet.simulator.PetriNetSimulator;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Disabled;
@@ -71,7 +71,11 @@ class InfomodelPetriNetBuilderTest {
         var graph = PetriNetSimulator.buildStepGraph(petriNet);
         log.info(String.valueOf(graph.getArcs().size()));
         log.info(GraphVizGenerator.generateGraphViz(graph));
-        log.info(PetriNetSimulator.getAllPaths(graph).toString());
+        var allPaths = PetriNetSimulator.getAllPaths(graph);
+        log.info(allPaths.toString());
+        var formula = nodeAND(nodeMODAL(transitionNOT(FF())), nodeOR(nodeNF(NodeExpression.nodeExpression(x -> true, "testMsg")),TT()));
+        log.info("Formula: " + formula.writeFormula());
+        log.info("Result: " + CTLEvaluator.evaluate(formula,graph.getInitial().getNodes().stream().filter(node -> node instanceof Place).findAny().get(), allPaths));
     }
 
     /**
