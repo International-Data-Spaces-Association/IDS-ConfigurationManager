@@ -3,7 +3,7 @@ package de.fraunhofer.isst.configmanager.petrinet.builder;
 import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeExpression;
-import de.fraunhofer.isst.configmanager.petrinet.model.Place;
+import de.fraunhofer.isst.configmanager.petrinet.model.*;
 import de.fraunhofer.isst.configmanager.petrinet.simulator.PetriNetSimulator;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Disabled;
@@ -11,14 +11,13 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 import de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.*;
 
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeAND.nodeAND;
+import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeEXIST_UNTIL.nodeEXIST_UNTIL;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeFORALL_NEXT.nodeFORALL_NEXT;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeMODAL.nodeMODAL;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeNF.nodeNF;
@@ -78,10 +77,112 @@ class InfomodelPetriNetBuilderTest {
         log.info(allPaths.toString());
         var formula = nodeAND(nodeMODAL(transitionNOT(FF())), nodeOR(nodeNF(NodeExpression.nodeExpression(x -> true, "testMsg")),TT()));
         var formula2 = nodeAND(nodeFORALL_NEXT(nodeMODAL(transitionAF(arcExpression(x -> true,"")))), TT());
+        var formula3 = nodeEXIST_UNTIL(nodeMODAL(TT()), nodeNF(NodeExpression.nodeExpression(x -> x.getSourceArcs().isEmpty(), "")));
         log.info("Formula 1: " + formula.writeFormula());
         log.info("Result: " + CTLEvaluator.evaluate(formula,graph.getInitial().getNodes().stream().filter(node -> node instanceof Place).findAny().get(), allPaths));
         log.info("Formula 2: " + formula2.writeFormula());
         log.info("Result: " + CTLEvaluator.evaluate(formula2,graph.getInitial().getNodes().stream().filter(node -> node instanceof Place).findAny().get(), allPaths));
+        log.info("Formula 3: " + formula3.writeFormula());
+        log.info("Result: " + CTLEvaluator.evaluate(formula3,graph.getInitial().getNodes().stream().filter(node -> node.getID().equals(URI.create("place://source"))).findAny().get(), allPaths));
+    }
+
+    @Test
+    @Disabled
+    void testExamplePetriNet(){
+        var nodes = new HashSet<Node>();
+        //create nodes
+        var start = new PlaceImpl(URI.create("place://start"));
+        start.setMarkers(1);
+        var copy = new PlaceImpl(URI.create("place://copy"));
+        var init = new PlaceImpl(URI.create("place://init"));
+        var dat1 = new PlaceImpl(URI.create("place://data1"));
+        var dat2 = new PlaceImpl(URI.create("place://data2"));
+        var con1 = new PlaceImpl(URI.create("place://control1"));
+        var con2 = new PlaceImpl(URI.create("place://control2"));
+        var con3 = new PlaceImpl(URI.create("place://control3"));
+        var con4 = new PlaceImpl(URI.create("place://control4"));
+        var sample = new PlaceImpl(URI.create("place://sample"));
+        var mean = new PlaceImpl(URI.create("place://mean"));
+        var med = new PlaceImpl(URI.create("place://median"));
+        var rules = new PlaceImpl(URI.create("place://rules"));
+        var stor1 = new PlaceImpl(URI.create("place://stored1"));
+        var stor2 = new PlaceImpl(URI.create("place://stored2"));
+        var stor3 = new PlaceImpl(URI.create("place://stored3"));
+        var stor4 = new PlaceImpl(URI.create("place://stored4"));
+        var end = new PlaceImpl(URI.create("place://end"));
+        nodes.addAll(List.of(start, copy, init, dat1, dat2, con1, con2, con3, con4, sample, mean, med, rules, stor1, stor2, stor3, stor4, end));
+        var initTrans = new TransitionImpl(URI.create("trans://init"));
+        var getData = new TransitionImpl(URI.create("trans://getData"));
+        var copyData = new TransitionImpl(URI.create("trans://copyData"));
+        var extract = new TransitionImpl(URI.create("trans://extractSample"));
+        var calcMean = new TransitionImpl(URI.create("trans://calcMean"));
+        var calcMed = new TransitionImpl(URI.create("trans://calcMedian"));
+        var calcRules = new TransitionImpl(URI.create("trans://calcAPrioriRules"));
+        var store1 = new TransitionImpl(URI.create("trans://storeData1"));
+        var store2 = new TransitionImpl(URI.create("trans://storeData2"));
+        var store3 = new TransitionImpl(URI.create("trans://storeData3"));
+        var store4 = new TransitionImpl(URI.create("trans://storeData4"));
+        var endTrans = new TransitionImpl(URI.create("trans://end"));
+        nodes.addAll(List.of(initTrans, getData, copyData, extract, calcMean, calcMed, calcRules, store1, store2, store3, store4, endTrans));
+        //create arcs
+        var arcs = new HashSet<Arc>();
+        arcs.add(new ArcImpl(start, initTrans));
+        arcs.add(new ArcImpl(initTrans, copy));
+        arcs.add(new ArcImpl(initTrans, copy));
+        arcs.add(new ArcImpl(initTrans, init));
+        arcs.add(new ArcImpl(init, getData));
+        arcs.add(new ArcImpl(getData, dat1));
+        arcs.add(new ArcImpl(copy, copyData));
+        arcs.add(new ArcImpl(dat1, copyData));
+        arcs.add(new ArcImpl(copyData, dat1));
+        arcs.add(new ArcImpl(copyData, dat2));
+        arcs.add(new ArcImpl(getData, con1));
+        arcs.add(new ArcImpl(getData, con2));
+        arcs.add(new ArcImpl(getData, con3));
+        arcs.add(new ArcImpl(getData, con4));
+        arcs.add(new ArcImpl(dat2, extract));
+        arcs.add(new ArcImpl(dat2, calcMean));
+        arcs.add(new ArcImpl(dat2, calcMed));
+        arcs.add(new ArcImpl(dat2, calcRules));
+        arcs.add(new ArcImpl(con1, extract));
+        arcs.add(new ArcImpl(con2, calcMean));
+        arcs.add(new ArcImpl(con3, calcMed));
+        arcs.add(new ArcImpl(con4, calcRules));
+        arcs.add(new ArcImpl(extract, sample));
+        arcs.add(new ArcImpl(calcMean, mean));
+        arcs.add(new ArcImpl(calcMed, med));
+        arcs.add(new ArcImpl(calcRules, rules));
+        arcs.add(new ArcImpl(extract, copy));
+        arcs.add(new ArcImpl(calcMean, copy));
+        arcs.add(new ArcImpl(calcMed, copy));
+        arcs.add(new ArcImpl(calcRules, copy));
+        arcs.add(new ArcImpl(sample, store1));
+        arcs.add(new ArcImpl(mean, store2));
+        arcs.add(new ArcImpl(med, store3));
+        arcs.add(new ArcImpl(rules, store4));
+        arcs.add(new ArcImpl(store1, stor1));
+        arcs.add(new ArcImpl(store2, stor2));
+        arcs.add(new ArcImpl(store3, stor3));
+        arcs.add(new ArcImpl(store4, stor4));
+        arcs.add(new ArcImpl(stor1, endTrans));
+        arcs.add(new ArcImpl(stor2, endTrans));
+        arcs.add(new ArcImpl(stor3, endTrans));
+        arcs.add(new ArcImpl(stor4, endTrans));
+        arcs.add(new ArcImpl(endTrans, end));
+        //create petriNet and visualize
+        var petriNet = new PetriNetImpl(URI.create("https://petrinet"), nodes, arcs);
+        log.info(GraphVizGenerator.generateGraphViz(petriNet));
+        //build stepGraph and visualize
+        var graph = PetriNetSimulator.buildStepGraph(petriNet);
+        log.info(GraphVizGenerator.generateGraphViz(graph));
+        log.info(String.format("%d possible states!", graph.getSteps().size()));
+        //find valid paths and visualize
+        var allPaths = PetriNetSimulator.getAllPaths(graph);
+        log.info(String.format("Found %d valid Paths!", allPaths.size()));
+        //create formula and evaluate on start node (exists path from start to end)
+        var formula = nodeEXIST_UNTIL(nodeMODAL(TT()), nodeNF(NodeExpression.nodeExpression(x -> x.getSourceArcs().isEmpty(), "")));
+        log.info("Evaluating Formula: " + formula.writeFormula());
+        log.info("Result: " + CTLEvaluator.evaluate(formula,graph.getInitial().getNodes().stream().filter(node -> node.getID().equals(URI.create("place://start"))).findAny().get(), allPaths));
     }
 
     /**

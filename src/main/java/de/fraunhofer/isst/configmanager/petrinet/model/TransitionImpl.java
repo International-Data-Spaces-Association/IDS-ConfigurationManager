@@ -15,6 +15,8 @@ public class TransitionImpl implements Transition {
 
     private transient URI id;
 
+    private transient ContextObject contextObject;
+
     @JsonIgnore
     private transient Set<Arc> sourceArcs;
 
@@ -26,6 +28,13 @@ public class TransitionImpl implements Transition {
         this.sourceArcs = new HashSet<>();
         this.targetArcs = new HashSet<>();
     }
+
+    public void setContextObject(ContextObject contextObject){
+        this.contextObject = contextObject;
+    }
+
+    @Override
+    public ContextObject getContext() { return contextObject; }
 
     @Override
     public URI getID() {
@@ -49,7 +58,9 @@ public class TransitionImpl implements Transition {
 
     @Override
     public Node deepCopy() {
-        return new TransitionImpl(this.getID());
+        var copy = new TransitionImpl(this.getID());
+        copy.setContextObject(this.contextObject);
+        return copy;
     }
 
     @Override
@@ -57,7 +68,7 @@ public class TransitionImpl implements Transition {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TransitionImpl trans = (TransitionImpl) o;
-        return Objects.equals(id, trans.id);
+        return Objects.equals(id, trans.id) && Objects.equals(contextObject, trans.contextObject);
     }
 }
 

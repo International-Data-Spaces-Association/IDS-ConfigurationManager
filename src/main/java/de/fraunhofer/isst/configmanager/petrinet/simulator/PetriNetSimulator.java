@@ -125,7 +125,6 @@ public class PetriNetSimulator {
      *                  (if it doesn't already contain an equal PetriNet)
      */
     private static void addStepToStepGraph(PetriNet parent, PetriNet copy, Node transition, StepGraph stepGraph){
-        log.info("Adding Step!");
         Node transitionCopy = null;
         for(var node : copy.getNodes()){
             if(node.getID().equals(transition.getID())){
