@@ -19,9 +19,12 @@ import java.util.concurrent.ThreadLocalRandom;
 import de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.*;
 
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeAND.nodeAND;
+import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeFORALL_NEXT.nodeFORALL_NEXT;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeMODAL.nodeMODAL;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeNF.nodeNF;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeOR.nodeOR;
+import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.ArcExpression.arcExpression;
+import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionAF.transitionAF;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionNOT.transitionNOT;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.FF.FF;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.TT.TT;
@@ -74,8 +77,11 @@ class InfomodelPetriNetBuilderTest {
         var allPaths = PetriNetSimulator.getAllPaths(graph);
         log.info(allPaths.toString());
         var formula = nodeAND(nodeMODAL(transitionNOT(FF())), nodeOR(nodeNF(NodeExpression.nodeExpression(x -> true, "testMsg")),TT()));
-        log.info("Formula: " + formula.writeFormula());
+        var formula2 = nodeAND(nodeFORALL_NEXT(nodeMODAL(transitionAF(arcExpression(x -> true,"")))), TT());
+        log.info("Formula 1: " + formula.writeFormula());
         log.info("Result: " + CTLEvaluator.evaluate(formula,graph.getInitial().getNodes().stream().filter(node -> node instanceof Place).findAny().get(), allPaths));
+        log.info("Formula 2: " + formula2.writeFormula());
+        log.info("Result: " + CTLEvaluator.evaluate(formula2,graph.getInitial().getNodes().stream().filter(node -> node instanceof Place).findAny().get(), allPaths));
     }
 
     /**

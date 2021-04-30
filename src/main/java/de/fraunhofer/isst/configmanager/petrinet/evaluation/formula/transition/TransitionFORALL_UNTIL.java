@@ -20,8 +20,8 @@ public class TransitionFORALL_UNTIL implements TransitionFormula {
     public boolean evaluate(Node node, List<List<Node>> paths) {
         if(!(node instanceof Transition)) return false;
         for(var path: paths){
-            if(path.get(0).equals(node)){
-                for(int i = 0; i<path.size()-1;i++){
+            if(path.get(0).equals(node) && path.size()%2==1){
+                for(int i = 0; i<path.size()-1;i+=2){
                     if(!parameter1.evaluate(path.get(i), paths)) return false;
                 }
                 if(!parameter2.evaluate(path.get(path.size()-1), paths)) return false;

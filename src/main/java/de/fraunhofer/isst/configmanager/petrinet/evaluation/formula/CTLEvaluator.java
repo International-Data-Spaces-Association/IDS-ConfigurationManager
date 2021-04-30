@@ -21,7 +21,6 @@ public class CTLEvaluator {
     }
 
     public static boolean evaluate(Formula ctlExpression, Node node, List<List<Node>> paths){
-
             if(ctlExpression instanceof StateFormula && node instanceof Place){
                 return evaluateNode((StateFormula) ctlExpression, (Place) node, paths);
             }else if(ctlExpression instanceof TransitionFormula && node instanceof Transition){

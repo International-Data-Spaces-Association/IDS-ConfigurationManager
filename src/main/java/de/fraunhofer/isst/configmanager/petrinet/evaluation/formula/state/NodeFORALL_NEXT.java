@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 
 import java.util.List;
 
+import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeEXIST_NEXT.nodeEXIST_NEXT;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeNOT.nodeNOT;
 
 @AllArgsConstructor
@@ -18,7 +19,7 @@ public class NodeFORALL_NEXT implements StateFormula {
 
     @Override
     public boolean evaluate(Node node, List<List<Node>> paths) {
-        return nodeNOT(nodeFORALL_NEXT(nodeNOT(parameter))).evaluate(node, paths);
+        return nodeNOT(nodeEXIST_NEXT(nodeNOT(parameter))).evaluate(node, paths);
     }
 
     @Override
