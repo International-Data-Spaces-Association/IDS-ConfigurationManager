@@ -26,20 +26,38 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Utility class for creating Camel routes from AppRoutes.
+ * Component for creating Camel routes from AppRoutes.
  */
 @Component
 public class RouteManager {
 
+    /**
+     * The logger.
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(RouteManager.class);
 
+    /**
+     * Indicates if a Dataspace Connector or a Trusted Connector is being managed.
+     */
     @Value("${dataspace.connector.enabled}")
     private boolean dataspaceConnectorEnabled;
 
+    /**
+     * Helper for deploying and deleting Camel routes via HTTP.
+     */
     private final RouteHttpHelper routeHttpHelper;
 
+    /**
+     * Helper for deploying and deleting Camel routes in the file system.
+     */
     private final RouteFileHelper routeFileHelper;
 
+    /**
+     * Constructs a RouteManager.
+     *
+     * @param routeHttpHelper the RouteHttpHelper instance
+     * @param routeFileHelper the RouteFileHelper instance
+     */
     @Autowired
     public RouteManager(final RouteHttpHelper routeHttpHelper,
                         final RouteFileHelper routeFileHelper) {

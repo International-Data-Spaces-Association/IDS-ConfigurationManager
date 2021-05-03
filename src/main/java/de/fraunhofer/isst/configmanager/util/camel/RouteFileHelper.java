@@ -14,11 +14,20 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+/**
+ * Component for deploying and deleting Camel routes in the file system.
+ */
 @Component
 public class RouteFileHelper {
 
+    /**
+     * The logger.
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(RouteFileHelper.class);
 
+    /**
+     * Path for the Camel route files.
+     */
     @Value("${camel.xml-routes.directory}")
     private String filePath;
 

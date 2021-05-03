@@ -15,23 +15,44 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+/**
+ * Component for deploying and deleting Camel routes at the Camel application via HTTP.
+ */
 @Component
 public class RouteHttpHelper {
 
+    /**
+     * The logger.
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(RouteHttpHelper.class);
 
+    /**
+     * URL of the Camel application.
+     */
     @Value("${camel.application.url}")
     private String camelApplicationUrl;
 
+    /**
+     * Username for the Camel application.
+     */
     @Value("${camel.application.username}")
     private String camelApplicationUsername;
 
+    /**
+     * Password for the Camel application.
+     */
     @Value("${camel.application.password}")
     private String camelApplicationPassword;
 
+    /**
+     * The Camel application's API path for managing routes.
+     */
     @Value("${camel.application.path.routes}")
     private String camelApplicationRoutesPath;
 
+    /**
+     * The OkHttpClient for sending requests to the Camel application.
+     */
     private final OkHttpClient httpClient = OkHttpUtils.getUnsafeOkHttpClient();
 
     /**
@@ -72,7 +93,7 @@ public class RouteHttpHelper {
 
     /**
      * Deletes a route with the given ID at the Camel application specified in
-     * application.propeties.
+     * application.properties.
      *
      * @param routeId ID of the route to delete
      * @throws IOException if the HTTP request cannot be sent or the response status code is not 2xx
