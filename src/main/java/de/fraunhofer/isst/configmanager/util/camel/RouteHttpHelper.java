@@ -38,8 +38,9 @@ public class RouteHttpHelper {
      * Sends an XML route to the Camel application specified in application.properties as a file.
      *
      * @param xml the XML route
+     * @throws IOException if the HTTP request cannot be sent or the response status code is not 2xx
      */
-    public void sendRouteFileToCamelApplication(String xml) {
+    public void sendRouteFileToCamelApplication(String xml) throws IOException {
         final var url = camelApplicationUrl + camelApplicationRoutesPath;
 
         final var body = new MultipartBody.Builder().addFormDataPart("file",
@@ -58,11 +59,14 @@ public class RouteHttpHelper {
 
             if (!response.isSuccessful()) {
                 LOGGER.error("Error sending file to Camel: {}, {}", response.code(),
-                        response.body().string());
+                        (response.body() != null ? response.body().string() : "No response body."));
+                throw new IOException("Request for deploying route was unsuccessful with code "
+                        + response.code());
             }
 
         } catch (IOException e) {
             LOGGER.error("Error sending file to Camel: {}", e.getMessage());
+            throw e;
         }
     }
 
@@ -71,8 +75,9 @@ public class RouteHttpHelper {
      * application.propeties.
      *
      * @param routeId ID of the route to delete
+     * @throws IOException if the HTTP request cannot be sent or the response status code is not 2xx
      */
-    public void deleteRouteAtCamelApplication(String routeId) {
+    public void deleteRouteAtCamelApplication(String routeId) throws IOException {
         String url = camelApplicationUrl + camelApplicationRoutesPath + "/" + routeId;
 
         final var request = new Request.Builder()
@@ -87,10 +92,13 @@ public class RouteHttpHelper {
 
             if (!response.isSuccessful()) {
                 LOGGER.error("Error deleting route at Camel: {}, {}", response.code(),
-                        response.body().string());
+                        (response.body() != null ? response.body().string() : "No response body."));
+                throw new IOException("Request for deleting route was unsuccessful with code "
+                        + response.code());
             }
         } catch (IOException e) {
             LOGGER.error("Error deleting route at Camel: {}", e.getMessage());
+            throw e;
         }
     }
 

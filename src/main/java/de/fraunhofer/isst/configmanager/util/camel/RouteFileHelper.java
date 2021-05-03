@@ -28,33 +28,25 @@ public class RouteFileHelper {
      *
      * @param fileName the filename
      * @param content the content to write to the file
+     * @throws IOException if the file cannot be created or written
      */
-    public void writeToFile(String fileName, String content) {
-        FileWriter fileWriter = null;
-        BufferedWriter bufferedWriter = null;
+    public void writeToFile(String fileName, String content) throws IOException {
+        File file = new File(filePath + File.separator +  fileName);
 
-        try {
-            File file = new File(filePath + File.separator +  fileName);
+        try (FileWriter fileWriter = new FileWriter(file);
+             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
+
             if (!file.exists() && !file.createNewFile()) {
                 LOGGER.error("Could not create file '{}{}{}'", filePath, File.separator, fileName);
             }
-            fileWriter = new FileWriter(file);
-            bufferedWriter = new BufferedWriter(fileWriter);
-            bufferedWriter.write(content);
 
+            bufferedWriter.write(content);
             LOGGER.info("Successfully created file '{}{}{}'.", filePath, File.separator, fileName);
+
         } catch (IOException e) {
             LOGGER.error("Cannot write to file '{}{}{}' because an IO error occurred: {}",
                     filePath, File.separator, fileName, e.toString());
-        } finally {
-            try {
-                if (bufferedWriter != null)
-                    bufferedWriter.close();
-                if (fileWriter != null)
-                    fileWriter.close();
-            } catch (IOException e) {
-                LOGGER.error("Error closing a writer: {}", e.getMessage(), e);
-            }
+            throw e;
         }
     }
 
@@ -62,8 +54,9 @@ public class RouteFileHelper {
      * Deletes a file with a given name in the directory specified in application.properties.
      *
      * @param name the filename
+     * @throws IOException if the file cannot be deleted
      */
-    public void deleteFile (String name) {
+    public void deleteFile (String name) throws IOException {
         Path file = Paths.get(filePath + name);
         if (Files.exists(file)) {
             try {
@@ -72,9 +65,11 @@ public class RouteFileHelper {
             } catch (NoSuchFileException e) {
                 LOGGER.error("Cannot delete file '{}{}{}' because file does not exist.", filePath,
                         File.separator, name, e);
+                throw e;
             } catch (IOException e) {
                 LOGGER.error("Cannot delete file '{}{}{}' because an IO error occurred.", filePath,
                         File.separator, name, e);
+                throw e;
             }
         }
     }
