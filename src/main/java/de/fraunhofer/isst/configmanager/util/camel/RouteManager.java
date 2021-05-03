@@ -23,7 +23,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Component for creating Camel routes from AppRoutes.
@@ -78,12 +77,12 @@ public class RouteManager {
      * @param appRoute the app route to create a Camel route for
      * @throws RouteCreationException if the Camel route cannot be created or deployed
      */
-    public void createAndDeployXMLRoute(ConfigurationModel configurationModel,
-                                               AppRoute appRoute) throws RouteCreationException {
-        VelocityContext velocityContext = new VelocityContext();
+    public void createAndDeployXMLRoute(final ConfigurationModel configurationModel,
+                                        final AppRoute appRoute) throws RouteCreationException {
+        final var velocityContext = new VelocityContext();
 
         //create ID for Camel route
-        String camelRouteId = getCamelRouteId(appRoute);
+        final var camelRouteId = getCamelRouteId(appRoute);
         velocityContext.put("routeId", camelRouteId);
 
         //get route start and end (will either be connector, app or generic endpoint)
@@ -112,13 +111,13 @@ public class RouteManager {
      * @param velocityContext the Velocity context
      * @param routeStart start of the AppRoute
      */
-    private void addRouteStartToContext(VelocityContext velocityContext,
-                                               ArrayList<? extends Endpoint> routeStart) {
+    private void addRouteStartToContext(final VelocityContext velocityContext,
+                                        final ArrayList<? extends Endpoint> routeStart) {
         if (routeStart.get(0) instanceof ConnectorEndpoint) {
-            ConnectorEndpoint connectorEndpoint = (ConnectorEndpoint) routeStart.get(0);
+            final var connectorEndpoint = (ConnectorEndpoint) routeStart.get(0);
             velocityContext.put("startUrl", connectorEndpoint.getAccessURL().toString());
         } else if (routeStart.get(0) instanceof GenericEndpoint) {
-            GenericEndpoint genericEndpoint = (GenericEndpoint) routeStart.get(0);
+            final var genericEndpoint = (GenericEndpoint) routeStart.get(0);
             velocityContext.put("startUrl", genericEndpoint.getAccessURL().toString());
             addBasicAuthHeaderForGenericEndpoint(velocityContext, genericEndpoint);
         } else {
@@ -132,13 +131,13 @@ public class RouteManager {
      * @param velocityContext the Velocity context
      * @param routeEnd end of the AppRoute
      */
-    private void addRouteEndToContext(VelocityContext velocityContext,
-                                             ArrayList<? extends Endpoint> routeEnd) {
+    private void addRouteEndToContext(final VelocityContext velocityContext,
+                                      final ArrayList<? extends Endpoint> routeEnd) {
         if (routeEnd.get(0) instanceof ConnectorEndpoint) {
-            ConnectorEndpoint connectorEndpoint = (ConnectorEndpoint) routeEnd.get(0);
+            final var connectorEndpoint = (ConnectorEndpoint) routeEnd.get(0);
             velocityContext.put("endUrl", connectorEndpoint.getAccessURL().toString());
         } else if (routeEnd.get(0) instanceof GenericEndpoint) {
-            GenericEndpoint genericEndpoint = (GenericEndpoint) routeEnd.get(0);
+            final var genericEndpoint = (GenericEndpoint) routeEnd.get(0);
             velocityContext.put("endUrl", genericEndpoint.getAccessURL().toString());
             addBasicAuthHeaderForGenericEndpoint(velocityContext, genericEndpoint);
         } else {
@@ -152,14 +151,16 @@ public class RouteManager {
      * @param velocityContext the Velocity context
      * @param genericEndpoint the generic endpoint
      */
-    private void addBasicAuthHeaderForGenericEndpoint(VelocityContext velocityContext,
-                                                             GenericEndpoint genericEndpoint) {
+    private void addBasicAuthHeaderForGenericEndpoint(final VelocityContext velocityContext,
+                                                      final GenericEndpoint genericEndpoint) {
         if (genericEndpoint.getGenericEndpointAuthentication() != null) {
-            String username = genericEndpoint.getGenericEndpointAuthentication().getAuthUsername();
-            String password = genericEndpoint.getGenericEndpointAuthentication().getAuthPassword();
-            String auth = username + ":" + password;
-            byte[] encodedAuth = Base64.encodeBase64(auth.getBytes());
-            String authHeader = "Basic " + new String(encodedAuth);
+            final var username = genericEndpoint.getGenericEndpointAuthentication()
+                    .getAuthUsername();
+            final var password = genericEndpoint.getGenericEndpointAuthentication()
+                    .getAuthPassword();
+            final var auth = username + ":" + password;
+            final var encodedAuth = Base64.encodeBase64(auth.getBytes());
+            final var authHeader = "Basic " + new String(encodedAuth);
             velocityContext.put("genericEndpointAuthHeader", authHeader);
         }
     }
@@ -170,9 +171,9 @@ public class RouteManager {
      * @param velocityContext the Velocity context
      * @param routeSteps steps of the AppRoute
      */
-    private void addRouteStepsToContext(VelocityContext velocityContext,
-                                               ArrayList<? extends RouteStep> routeSteps) {
-        List<String> routeStepUrls = new ArrayList<>();
+    private void addRouteStepsToContext(final VelocityContext velocityContext,
+                                        final ArrayList<? extends RouteStep> routeSteps) {
+        final var routeStepUrls = new ArrayList<>();
         if (routeSteps != null) {
             for (RouteStep routeStep: routeSteps) {
                 routeStepUrls.add(routeStep.getAppRouteStart().get(0).getAccessURL().toString());
@@ -192,22 +193,23 @@ public class RouteManager {
      * @param velocityContext the Velocity context
      * @throws Exception if the route file cannot be created or deployed
      */
-    private void createDataspaceConnectorRoute(AppRoute appRoute,
-                                               VelocityContext velocityContext) throws Exception {
+    private void createDataspaceConnectorRoute(final AppRoute appRoute,
+                                               final VelocityContext velocityContext)
+            throws Exception {
         LOGGER.debug("Creating route for Dataspace Connector...");
 
         //add basic auth header for connector endpoint
         DataspaceConnectorRouteConfigurer.addBasicAuthToContext(velocityContext);
 
         //choose correct XML template based on route
-        Resource template = DataspaceConnectorRouteConfigurer.getRouteTemplate(appRoute);
+        final var template = DataspaceConnectorRouteConfigurer.getRouteTemplate(appRoute);
 
         if (template != null) {
             VelocityEngine velocityEngine = new VelocityEngine();
             velocityEngine.init();
 
             //populate route template with properties from velocity context to create route
-            StringWriter writer = populateTemplate(template, velocityEngine, velocityContext);
+            final var writer = populateTemplate(template, velocityEngine, velocityContext);
 
             //send the generated route (XML) to Camel via HTTP
             routeHttpHelper.sendRouteFileToCamelApplication(writer.toString());
@@ -233,24 +235,24 @@ public class RouteManager {
      * @param camelRouteId ID of the Camel route, which is used as the file name
      * @throws Exception if the route file cannot be created or deployed
      */
-    private void createTrustedConnectorRoute(AppRoute appRoute,
-                                                    VelocityContext velocityContext,
-                                                    ConfigurationModel configurationModel,
-                                                    String camelRouteId) throws Exception {
+    private void createTrustedConnectorRoute(final AppRoute appRoute,
+                                             final VelocityContext velocityContext,
+                                             final ConfigurationModel configurationModel,
+                                             final String camelRouteId) throws Exception {
         LOGGER.debug("Creating route for Trusted Connector...");
 
         //add SSL configuration for connector endpoint
         TrustedConnectorRouteConfigurer.addSslConfig(velocityContext, configurationModel);
 
         //choose correct XML template based on route
-        Resource template = TrustedConnectorRouteConfigurer.getRouteTemplate(appRoute);
+        final var template = TrustedConnectorRouteConfigurer.getRouteTemplate(appRoute);
 
         if (template != null) {
             VelocityEngine velocityEngine = new VelocityEngine();
             velocityEngine.init();
 
             //populate route template with properties from velocity context to create route
-            StringWriter writer = populateTemplate(template, velocityEngine, velocityContext);
+            final var writer = populateTemplate(template, velocityEngine, velocityContext);
 
             //write the generated route (XML) to a file in the designated directory
             routeFileHelper.writeToFile(camelRouteId + ".xml", writer.toString());
@@ -271,9 +273,10 @@ public class RouteManager {
      * @return the populated template as a string
      * @throws Exception if an error occurs while filling out the route template
      */
-    private StringWriter populateTemplate (Resource resource, VelocityEngine velocityEngine,
-                                                  VelocityContext velocityContext) throws Exception {
-        StringWriter stringWriter = new StringWriter();
+    private StringWriter populateTemplate (final Resource resource,
+                                           final VelocityEngine velocityEngine,
+                                           final VelocityContext velocityContext) throws Exception {
+        final var stringWriter = new StringWriter();
         InputStreamReader inputStreamReader;
 
         try {
@@ -297,7 +300,7 @@ public class RouteManager {
      * @param configurationModel the config model
      * @throws RouteDeletionException if any of the Camel routes cannot be deleted
      */
-    public void deleteRouteFiles(ConfigurationModel configurationModel)
+    public void deleteRouteFiles(final ConfigurationModel configurationModel)
             throws RouteDeletionException {
         for (AppRoute appRoute: configurationModel.getAppRoute()) {
             deleteRoute(appRoute);
@@ -313,8 +316,8 @@ public class RouteManager {
      * @param appRoute the AppRoute
      * @throws RouteDeletionException if the Camel route cannot be deleted
      */
-    public void deleteRoute(AppRoute appRoute) throws RouteDeletionException {
-        String camelRouteId = getCamelRouteId(appRoute);
+    public void deleteRoute(final AppRoute appRoute) throws RouteDeletionException {
+        final var camelRouteId = getCamelRouteId(appRoute);
 
         try {
             if (dataspaceConnectorEnabled) {
@@ -336,8 +339,8 @@ public class RouteManager {
      * @param appRoute the AppRoute
      * @return the Camel route ID
      */
-    private String getCamelRouteId(AppRoute appRoute) {
-        String appRouteId = appRoute.getId().toString()
+    private String getCamelRouteId(final AppRoute appRoute) {
+        final var appRouteId = appRoute.getId().toString()
                 .split("/")[appRoute.getId().toString().split("/").length - 1];
         return "app-route_" + appRouteId;
     }

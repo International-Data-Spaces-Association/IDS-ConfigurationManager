@@ -3,7 +3,6 @@ package de.fraunhofer.isst.configmanager.connector.trustedconnector;
 import de.fraunhofer.iais.eis.AppRoute;
 import de.fraunhofer.iais.eis.ConfigurationModel;
 import de.fraunhofer.iais.eis.ConnectorEndpoint;
-import de.fraunhofer.iais.eis.Endpoint;
 import de.fraunhofer.iais.eis.GenericEndpoint;
 import org.apache.velocity.VelocityContext;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -11,13 +10,15 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
 import java.net.URI;
-import java.util.ArrayList;
 
 /**
  * Utility class for configuring Camel routes for the TrustedConnector.
  */
 public class TrustedConnectorRouteConfigurer {
 
+    /**
+     * ResourceLoader for loading Camel route templates from the classpath.
+     */
     private static final ResourceLoader resourceLoader = new DefaultResourceLoader();
 
     private TrustedConnectorRouteConfigurer() {}
@@ -43,7 +44,7 @@ public class TrustedConnectorRouteConfigurer {
      * @return the route template
      */
     public static Resource getRouteTemplate(AppRoute appRoute) {
-        ArrayList<? extends Endpoint> routeStart = appRoute.getAppRouteStart();
+        final var routeStart = appRoute.getAppRouteStart();
 
         Resource resource;
         if (routeStart.get(0) instanceof GenericEndpoint) {
@@ -64,7 +65,7 @@ public class TrustedConnectorRouteConfigurer {
      * @return the URI as a string with the file scheme removed, if it was present.
      */
     private static String removeFileScheme(URI uri) {
-        String string = uri.toString();
+        var string = uri.toString();
 
         if (string.startsWith("file://")) {
             string = string.substring(7);

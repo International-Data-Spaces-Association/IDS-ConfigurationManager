@@ -61,7 +61,7 @@ public class RouteHttpHelper {
      * @param xml the XML route
      * @throws IOException if the HTTP request cannot be sent or the response status code is not 2xx
      */
-    public void sendRouteFileToCamelApplication(String xml) throws IOException {
+    public void sendRouteFileToCamelApplication(final String xml) throws IOException {
         final var url = camelApplicationUrl + camelApplicationRoutesPath;
 
         final var body = new MultipartBody.Builder().addFormDataPart("file",
@@ -98,8 +98,8 @@ public class RouteHttpHelper {
      * @param routeId ID of the route to delete
      * @throws IOException if the HTTP request cannot be sent or the response status code is not 2xx
      */
-    public void deleteRouteAtCamelApplication(String routeId) throws IOException {
-        String url = camelApplicationUrl + camelApplicationRoutesPath + "/" + routeId;
+    public void deleteRouteAtCamelApplication(final String routeId) throws IOException {
+        final var url = camelApplicationUrl + camelApplicationRoutesPath + "/" + routeId;
 
         final var request = new Request.Builder()
                 .url(url)

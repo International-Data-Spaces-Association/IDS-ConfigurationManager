@@ -11,7 +11,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
@@ -39,8 +38,8 @@ public class RouteFileHelper {
      * @param content the content to write to the file
      * @throws IOException if the file cannot be created or written
      */
-    public void writeToFile(String fileName, String content) throws IOException {
-        File file = new File(filePath + File.separator +  fileName);
+    public void writeToFile(final String fileName, final String content) throws IOException {
+        final var file = new File(filePath + File.separator +  fileName);
 
         try (FileWriter fileWriter = new FileWriter(file);
              BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
@@ -65,8 +64,8 @@ public class RouteFileHelper {
      * @param name the filename
      * @throws IOException if the file cannot be deleted
      */
-    public void deleteFile (String name) throws IOException {
-        Path file = Paths.get(filePath + name);
+    public void deleteFile (final String name) throws IOException {
+        final var file = Paths.get(filePath + name);
         if (Files.exists(file)) {
             try {
                 Files.delete(file);

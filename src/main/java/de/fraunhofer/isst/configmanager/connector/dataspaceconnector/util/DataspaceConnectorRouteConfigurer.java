@@ -2,7 +2,6 @@ package de.fraunhofer.isst.configmanager.connector.dataspaceconnector.util;
 
 import de.fraunhofer.iais.eis.AppRoute;
 import de.fraunhofer.iais.eis.ConnectorEndpoint;
-import de.fraunhofer.iais.eis.Endpoint;
 import de.fraunhofer.iais.eis.GenericEndpoint;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.velocity.VelocityContext;
@@ -12,16 +11,20 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-
 /**
  * Utility class for configuring Camel routes for the Dataspace Connector.
  */
 @Component
 public class DataspaceConnectorRouteConfigurer {
 
+    /**
+     * Username for the Dataspace Connector.
+     */
     private static String dataSpaceConnectorApiUsername;
 
+    /**
+     * Password for the Dataspace Connector.
+     */
     private static String dataSpaceConnectorApiPassword;
 
     @Value("${dataspace.connector.api.username}")
@@ -34,6 +37,9 @@ public class DataspaceConnectorRouteConfigurer {
         dataSpaceConnectorApiPassword = password;
     }
 
+    /**
+     * ResourceLoader for loading Camel route templates from the classpath.
+     */
     private static final ResourceLoader resourceLoader = new DefaultResourceLoader();
 
     private DataspaceConnectorRouteConfigurer() {}
@@ -45,9 +51,9 @@ public class DataspaceConnectorRouteConfigurer {
      * @param velocityContext the context containing the values to insert into the route template
      */
     public static void addBasicAuthToContext(VelocityContext velocityContext) {
-        String auth = dataSpaceConnectorApiUsername + ":" + dataSpaceConnectorApiPassword;
-        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes());
-        String authHeader = "Basic " + new String(encodedAuth);
+        final var auth = dataSpaceConnectorApiUsername + ":" + dataSpaceConnectorApiPassword;
+        final var encodedAuth = Base64.encodeBase64(auth.getBytes());
+        final var authHeader = "Basic " + new String(encodedAuth);
         velocityContext.put("connectorAuthHeader", authHeader);
     }
 
@@ -58,7 +64,7 @@ public class DataspaceConnectorRouteConfigurer {
      * @return the route template
      */
     public static Resource getRouteTemplate(AppRoute appRoute) {
-        ArrayList<? extends Endpoint> routeStart = appRoute.getAppRouteStart();
+        final var routeStart = appRoute.getAppRouteStart();
 
         Resource resource;
         if (routeStart.get(0) instanceof GenericEndpoint) {
