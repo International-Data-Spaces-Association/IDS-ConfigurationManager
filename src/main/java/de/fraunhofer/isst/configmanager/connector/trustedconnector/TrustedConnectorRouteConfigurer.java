@@ -1,4 +1,4 @@
-package de.fraunhofer.isst.configmanager.communication.trustedconnector;
+package de.fraunhofer.isst.configmanager.connector.trustedconnector;
 
 import de.fraunhofer.iais.eis.AppRoute;
 import de.fraunhofer.iais.eis.ConfigurationModel;

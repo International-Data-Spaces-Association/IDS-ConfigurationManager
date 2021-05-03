@@ -6,13 +6,14 @@ import de.fraunhofer.iais.eis.ConnectorEndpoint;
 import de.fraunhofer.iais.eis.Endpoint;
 import de.fraunhofer.iais.eis.GenericEndpoint;
 import de.fraunhofer.iais.eis.RouteStep;
-import de.fraunhofer.isst.configmanager.communication.trustedconnector.TrustedConnectorRouteConfigurer;
+import de.fraunhofer.isst.configmanager.connector.trustedconnector.TrustedConnectorRouteConfigurer;
 import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.util.DataspaceConnectorRouteConfigurer;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
@@ -25,17 +26,22 @@ import java.util.List;
  * Utility class for creating Camel routes from AppRoutes.
  */
 @Component
-public class RouteManagementUtils {
+public class RouteManager {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RouteManagementUtils.class);
-
-    private static boolean dataspaceConnectorEnabled;
-
-    private RouteManagementUtils() {}
+    private static final Logger LOGGER = LoggerFactory.getLogger(RouteManager.class);
 
     @Value("${dataspace.connector.enabled}")
-    public void setDataspaceConnectorEnabled(boolean value) {
-        dataspaceConnectorEnabled = value;
+    private boolean dataspaceConnectorEnabled;
+
+    private final RouteHttpHelper routeHttpHelper;
+
+    private final RouteFileHelper routeFileHelper;
+
+    @Autowired
+    public RouteManager(final RouteHttpHelper routeHttpHelper,
+                        final RouteFileHelper routeFileHelper) {
+        this.routeHttpHelper = routeHttpHelper;
+        this.routeFileHelper = routeFileHelper;
     }
 
     /**
@@ -50,7 +56,7 @@ public class RouteManagementUtils {
      *                           information
      * @param appRoute the app route to create a Camel route for
      */
-    public static void createAndDeployXMLRoute(ConfigurationModel configurationModel,
+    public void createAndDeployXMLRoute(ConfigurationModel configurationModel,
                                                AppRoute appRoute) {
         VelocityContext velocityContext = new VelocityContext();
 
@@ -79,7 +85,7 @@ public class RouteManagementUtils {
      * @param velocityContext the Velocity context
      * @param routeStart start of the AppRoute
      */
-    private static void addRouteStartToContext(VelocityContext velocityContext,
+    private void addRouteStartToContext(VelocityContext velocityContext,
                                                ArrayList<? extends Endpoint> routeStart) {
         if (routeStart.get(0) instanceof ConnectorEndpoint) {
             ConnectorEndpoint connectorEndpoint = (ConnectorEndpoint) routeStart.get(0);
@@ -99,7 +105,7 @@ public class RouteManagementUtils {
      * @param velocityContext the Velocity context
      * @param routeEnd end of the AppRoute
      */
-    private static void addRouteEndToContext(VelocityContext velocityContext,
+    private void addRouteEndToContext(VelocityContext velocityContext,
                                              ArrayList<? extends Endpoint> routeEnd) {
         if (routeEnd.get(0) instanceof ConnectorEndpoint) {
             ConnectorEndpoint connectorEndpoint = (ConnectorEndpoint) routeEnd.get(0);
@@ -119,7 +125,7 @@ public class RouteManagementUtils {
      * @param velocityContext the Velocity context
      * @param genericEndpoint the generic endpoint
      */
-    private static void addBasicAuthHeaderForGenericEndpoint(VelocityContext velocityContext,
+    private void addBasicAuthHeaderForGenericEndpoint(VelocityContext velocityContext,
                                                              GenericEndpoint genericEndpoint) {
         if (genericEndpoint.getGenericEndpointAuthentication() != null) {
             String username = genericEndpoint.getGenericEndpointAuthentication().getAuthUsername();
@@ -137,7 +143,7 @@ public class RouteManagementUtils {
      * @param velocityContext the Velocity context
      * @param routeSteps steps of the AppRoute
      */
-    private static void addRouteStepsToContext(VelocityContext velocityContext,
+    private void addRouteStepsToContext(VelocityContext velocityContext,
                                                ArrayList<? extends RouteStep> routeSteps) {
         List<String> routeStepUrls = new ArrayList<>();
         if (routeSteps != null) {
@@ -158,7 +164,7 @@ public class RouteManagementUtils {
      * @param appRoute the AppRoute object
      * @param velocityContext the Velocity context
      */
-    private static void createDataspaceConnectorRoute(AppRoute appRoute,
+    private void createDataspaceConnectorRoute(AppRoute appRoute,
                                                       VelocityContext velocityContext) {
         LOGGER.debug("Creating route for Dataspace Connector...");
 
@@ -176,7 +182,7 @@ public class RouteManagementUtils {
             StringWriter writer = populateTemplate(template, velocityEngine, velocityContext);
 
             //send the generated route (XML) to Camel via HTTP
-            RouteHttpUtils.sendRouteFileToCamelApplication(writer.toString());
+            routeHttpHelper.sendRouteFileToCamelApplication(writer.toString());
         } else {
             LOGGER.warn("Template is null. Unable to create XML route file for AppRoute"
                     + " with ID '{}'", appRoute.getId());
@@ -196,7 +202,7 @@ public class RouteManagementUtils {
      *                           required for the Trusted Connector's SSL configuration
      * @param camelRouteId ID of the Camel route, which is used as the file name
      */
-    private static void createTrustedConnectorRoute(AppRoute appRoute,
+    private void createTrustedConnectorRoute(AppRoute appRoute,
                                                     VelocityContext velocityContext,
                                                     ConfigurationModel configurationModel,
                                                     String camelRouteId) {
@@ -216,7 +222,7 @@ public class RouteManagementUtils {
             StringWriter writer = populateTemplate(template, velocityEngine, velocityContext);
 
             //write the generated route (XML) to a file in the designated directory
-            RouteFileUtils.writeToFile(camelRouteId + ".xml", writer.toString());
+            routeFileHelper.writeToFile(camelRouteId + ".xml", writer.toString());
         } else {
             LOGGER.warn("Template is null. Unable to create XML route file for AppRoute"
                     + " with ID '{}'", appRoute.getId());
@@ -231,7 +237,7 @@ public class RouteManagementUtils {
      * @param velocityContext the context containing the values to insert into the template
      * @return the populated template as a string
      */
-    private static StringWriter populateTemplate (Resource resource, VelocityEngine velocityEngine,
+    private StringWriter populateTemplate (Resource resource, VelocityEngine velocityEngine,
                                                   VelocityContext velocityContext)  {
         StringWriter stringWriter = new StringWriter();
         InputStreamReader inputStreamReader;
@@ -252,11 +258,11 @@ public class RouteManagementUtils {
 
     /**
      * Deletes all Camel routes associated with app routes from a given config model by calling
-     * {@link RouteManagementUtils#deleteRoute(AppRoute)}.
+     * {@link RouteManager#deleteRoute(AppRoute)}.
      *
      * @param configurationModel the config model
      */
-    public static void deleteRouteFiles(ConfigurationModel configurationModel) {
+    public void deleteRouteFiles(ConfigurationModel configurationModel) {
         for (AppRoute appRoute: configurationModel.getAppRoute()) {
             deleteRoute(appRoute);
         }
@@ -270,13 +276,13 @@ public class RouteManagementUtils {
      *
      * @param appRoute the AppRoute
      */
-    public static void deleteRoute(AppRoute appRoute) {
+    public void deleteRoute(AppRoute appRoute) {
         String camelRouteId = getCamelRouteId(appRoute);
 
         if (dataspaceConnectorEnabled) {
-            RouteHttpUtils.deleteRouteAtCamelApplication(camelRouteId);
+            routeHttpHelper.deleteRouteAtCamelApplication(camelRouteId);
         } else {
-            RouteFileUtils.deleteFile(camelRouteId + ".xml");
+            routeFileHelper.deleteFile(camelRouteId + ".xml");
         }
     }
 
@@ -287,7 +293,7 @@ public class RouteManagementUtils {
      * @param appRoute the AppRoute
      * @return the Camel route ID
      */
-    private static String getCamelRouteId(AppRoute appRoute) {
+    private String getCamelRouteId(AppRoute appRoute) {
         String appRouteId = appRoute.getId().toString()
                 .split("/")[appRoute.getId().toString().split("/").length - 1];
         return "app-route_" + appRouteId;
