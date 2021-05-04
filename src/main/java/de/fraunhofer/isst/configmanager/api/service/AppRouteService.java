@@ -17,6 +17,9 @@ import de.fraunhofer.isst.configmanager.data.repositories.EndpointInformationRep
 import de.fraunhofer.isst.configmanager.data.repositories.RouteDeployMethodRepository;
 import de.fraunhofer.isst.configmanager.data.entities.CustomApp;
 import de.fraunhofer.isst.configmanager.data.entities.EndpointInformation;
+import de.fraunhofer.isst.configmanager.util.camel.RouteManager;
+import de.fraunhofer.isst.configmanager.util.camel.exceptions.RouteCreationException;
+import de.fraunhofer.isst.configmanager.util.camel.exceptions.RouteDeletionException;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +44,7 @@ public class AppRouteService {
     transient ConfigModelService configModelService;
     transient EndpointService endpointService;
     transient ResourceService resourceService;
+    transient RouteManager routeManager;
     transient RouteDeployMethodRepository routeDeployMethodRepository;
     transient EndpointInformationRepository endpointInformationRepository;
     transient CustomAppRepository customAppRepository;
@@ -51,13 +55,15 @@ public class AppRouteService {
                            final EndpointInformationRepository endpointInformationRepository,
                            final CustomAppRepository customAppRepository,
                            final EndpointService endpointService,
-                           final ResourceService resourceService) {
+                           final ResourceService resourceService,
+                           final RouteManager routeManager) {
         this.configModelService = configModelService;
         this.routeDeployMethodRepository = routeDeployMethodRepository;
         this.endpointInformationRepository = endpointInformationRepository;
         this.customAppRepository = customAppRepository;
         this.endpointService = endpointService;
         this.resourceService = resourceService;
+        this.routeManager = routeManager;
     }
 
     /**
@@ -112,6 +118,13 @@ public class AppRouteService {
             deleted = configModelService.getConfigModel().getAppRoute().remove(appRoute);
 
             if (deleted) {
+                try {
+                    routeManager.deleteRoute(appRoute);
+                } catch (RouteDeletionException e) {
+                    if(log.isErrorEnabled()){
+                        log.error(e.getMessage(), e);
+                    }
+                }
                 configModelService.saveState();
             }
         }
@@ -219,6 +232,15 @@ public class AppRouteService {
                             ._appRouteEnd_(Util.asList(endpoint))
                             ._appRouteOutput_(Util.asList(resourceImpl))
                             .build();
+
+                    // Creating camel route
+                    try {
+                        routeManager.createAndDeployXMLRoute(configModelService.getConfigModel(), appRouteImpl);
+                    } catch (RouteCreationException e) {
+                        if(log.isErrorEnabled()){
+                            log.error(e.getMessage(), e);
+                        }
+                    }
                 } else {
                     routeStep = new RouteStepBuilder()._routeDeployMethod_(deployMethod)
                             ._appRouteStart_(Util.asList(startEndpoint))
