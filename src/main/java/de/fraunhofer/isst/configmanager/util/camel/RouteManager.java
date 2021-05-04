@@ -6,35 +6,30 @@ import de.fraunhofer.iais.eis.ConnectorEndpoint;
 import de.fraunhofer.iais.eis.Endpoint;
 import de.fraunhofer.iais.eis.GenericEndpoint;
 import de.fraunhofer.iais.eis.RouteStep;
-import de.fraunhofer.isst.configmanager.connector.trustedconnector.TrustedConnectorRouteConfigurer;
 import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.util.DataspaceConnectorRouteConfigurer;
+import de.fraunhofer.isst.configmanager.connector.trustedconnector.TrustedConnectorRouteConfigurer;
 import de.fraunhofer.isst.configmanager.util.camel.exceptions.NoSuitableTemplateException;
 import de.fraunhofer.isst.configmanager.util.camel.exceptions.RouteCreationException;
 import de.fraunhofer.isst.configmanager.util.camel.exceptions.RouteDeletionException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
-import java.io.*;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 
 /**
  * Component for creating Camel routes from AppRoutes.
  */
+@Slf4j
 @Component
 public class RouteManager {
-
-    /**
-     * The logger.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(RouteManager.class);
-
     /**
      * Indicates if a Dataspace Connector or a Trusted Connector is being managed.
      */
@@ -175,7 +170,7 @@ public class RouteManager {
                                         final ArrayList<? extends RouteStep> routeSteps) {
         final var routeStepUrls = new ArrayList<>();
         if (routeSteps != null) {
-            for (RouteStep routeStep: routeSteps) {
+            for (final var routeStep: routeSteps) {
                 routeStepUrls.add(routeStep.getAppRouteStart().get(0).getAccessURL().toString());
             }
         }
@@ -196,7 +191,10 @@ public class RouteManager {
     private void createDataspaceConnectorRoute(final AppRoute appRoute,
                                                final VelocityContext velocityContext)
             throws Exception {
-        LOGGER.debug("Creating route for Dataspace Connector...");
+
+        if (log.isDebugEnabled()) {
+            log.debug("---- [RouteManager createDataspaceConnectorRoute]Creating route for Dataspace Connector...");
+        }
 
         //add basic auth header for connector endpoint
         DataspaceConnectorRouteConfigurer.addBasicAuthToContext(velocityContext);
@@ -205,7 +203,7 @@ public class RouteManager {
         final var template = DataspaceConnectorRouteConfigurer.getRouteTemplate(appRoute);
 
         if (template != null) {
-            VelocityEngine velocityEngine = new VelocityEngine();
+            final var velocityEngine = new VelocityEngine();
             velocityEngine.init();
 
             //populate route template with properties from velocity context to create route
@@ -214,8 +212,11 @@ public class RouteManager {
             //send the generated route (XML) to Camel via HTTP
             routeHttpHelper.sendRouteFileToCamelApplication(writer.toString());
         } else {
-            LOGGER.warn("Template is null. Unable to create XML route file for AppRoute"
-                    + " with ID '{}'", appRoute.getId());
+            if (log.isWarnEnabled()) {
+                log.warn("---- [RouteManager createDataspaceConnectorRoute] Template is null. Unable to create XML route file for AppRoute"
+                        + " with ID '{}'", appRoute.getId());
+            }
+
             throw new NoSuitableTemplateException("No suitable Camel route template found for "
                     + "AppRoute with ID '" + appRoute.getId() + "'");
         }
@@ -239,7 +240,9 @@ public class RouteManager {
                                              final VelocityContext velocityContext,
                                              final ConfigurationModel configurationModel,
                                              final String camelRouteId) throws Exception {
-        LOGGER.debug("Creating route for Trusted Connector...");
+        if (log.isDebugEnabled()) {
+            log.debug("---- [RouteManager createTrustedConnectorRoute] Creating route for Trusted Connector...");
+        }
 
         //add SSL configuration for connector endpoint
         TrustedConnectorRouteConfigurer.addSslConfig(velocityContext, configurationModel);
@@ -248,7 +251,7 @@ public class RouteManager {
         final var template = TrustedConnectorRouteConfigurer.getRouteTemplate(appRoute);
 
         if (template != null) {
-            VelocityEngine velocityEngine = new VelocityEngine();
+            final var velocityEngine = new VelocityEngine();
             velocityEngine.init();
 
             //populate route template with properties from velocity context to create route
@@ -257,8 +260,11 @@ public class RouteManager {
             //write the generated route (XML) to a file in the designated directory
             routeFileHelper.writeToFile(camelRouteId + ".xml", writer.toString());
         } else {
-            LOGGER.warn("Template is null. Unable to create XML route file for AppRoute"
-                    + " with ID '{}'", appRoute.getId());
+            if (log.isWarnEnabled()) {
+                log.warn("Template is null. Unable to create XML route file for AppRoute"
+                        + " with ID '{}'", appRoute.getId());
+            }
+
             throw new NoSuitableTemplateException("No suitable Camel route template found for "
                     + "AppRoute with ID '" + appRoute.getId() + "'");
         }
@@ -273,9 +279,9 @@ public class RouteManager {
      * @return the populated template as a string
      * @throws Exception if an error occurs while filling out the route template
      */
-    private StringWriter populateTemplate (final Resource resource,
-                                           final VelocityEngine velocityEngine,
-                                           final VelocityContext velocityContext) throws Exception {
+    private StringWriter populateTemplate(final Resource resource,
+                                          final VelocityEngine velocityEngine,
+                                          final VelocityContext velocityContext) throws Exception {
         final var stringWriter = new StringWriter();
         InputStreamReader inputStreamReader;
 
@@ -283,10 +289,14 @@ public class RouteManager {
             inputStreamReader = new InputStreamReader(resource.getInputStream());
             velocityEngine.evaluate(velocityContext, stringWriter, "", inputStreamReader);
         } catch (Exception e) {
-            String camelRouteId = (String) velocityContext.get("routeId");
-            LOGGER.error("An error occurred while populating template. Please check all respective "
-                    + "files for connection with ID '{}' for correctness! (Error message: {})",
-                    camelRouteId, e.toString());
+            final var camelRouteId = (String) velocityContext.get("routeId");
+
+            if (log.isErrorEnabled()) {
+                log.error("An error occurred while populating template. Please check all respective "
+                                + "files for connection with ID '{}' for correctness! (Error message: {})",
+                        camelRouteId, e.toString());
+            }
+
             throw e;
         }
 
@@ -302,7 +312,7 @@ public class RouteManager {
      */
     public void deleteRouteFiles(final ConfigurationModel configurationModel)
             throws RouteDeletionException {
-        for (AppRoute appRoute: configurationModel.getAppRoute()) {
+        for (final var appRoute: configurationModel.getAppRoute()) {
             deleteRoute(appRoute);
         }
     }

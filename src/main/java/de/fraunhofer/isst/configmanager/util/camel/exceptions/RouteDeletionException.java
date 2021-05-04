@@ -4,6 +4,7 @@ package de.fraunhofer.isst.configmanager.util.camel.exceptions;
  * Thrown to indicate that an error occurred while trying to delete a Camel route.
  */
 public class RouteDeletionException extends Exception {
+    private static final long serialVersionUID = 42L;
 
     /**
      * Constructs a RouteDeletionException with the specified message.

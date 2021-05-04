@@ -4,6 +4,7 @@ package de.fraunhofer.isst.configmanager.util.camel.exceptions;
  * Thrown to indicate that an error occurred during creation or deployment of a Camel route.
  */
 public class RouteCreationException extends Exception {
+    private static final long serialVersionUID = 42L;
 
     /**
      * Constructs a RouteCreationException with the specified message.

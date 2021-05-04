@@ -1,6 +1,11 @@
 package de.fraunhofer.isst.configmanager.connector.trustedconnector;
 
-import de.fraunhofer.iais.eis.*;
+import de.fraunhofer.iais.eis.BaseConnector;
+import de.fraunhofer.iais.eis.ConfigurationModel;
+import de.fraunhofer.iais.eis.ConfigurationModelBuilder;
+import de.fraunhofer.iais.eis.ConnectorDeployMode;
+import de.fraunhofer.iais.eis.ConnectorStatus;
+import de.fraunhofer.iais.eis.LogLevel;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.data.util.QueryInput;
 import okhttp3.Response;
@@ -15,7 +20,7 @@ import java.net.URI;
 public class TrustedConnectorClient implements DefaultConnectorClient {
 
     @Override
-    public boolean sendConfiguration(String configurationModel) throws IOException {
+    public boolean sendConfiguration(final String configurationModel) throws IOException {
         return false;
     }
 
@@ -38,12 +43,12 @@ public class TrustedConnectorClient implements DefaultConnectorClient {
     }
 
     @Override
-    public BaseConnector getBaseConnector(String accessURL, String resourceId) throws IOException {
+    public BaseConnector getBaseConnector(final String accessURL, final String resourceId) throws IOException {
         return null;
     }
 
     @Override
-    public String getPolicyPattern(String policy) {
+    public String getPolicyPattern(final String policy) {
         return null;
     }
 
@@ -53,13 +58,18 @@ public class TrustedConnectorClient implements DefaultConnectorClient {
     }
 
     @Override
-    public String requestContractAgreement(String recipientId, String requestedArtifactId, String contractOffer) throws IOException {
+    public String requestContractAgreement(final String recipientId,
+                                           final String requestedArtifactId,
+                                           final String contractOffer) throws IOException {
         return null;
     }
 
     @Override
-    public Response requestData(String recipientId, String requestedArtifactId,
-                                String contractId, String key, QueryInput queryInput) throws IOException {
+    public Response requestData(final String recipientId,
+                                final String requestedArtifactId,
+                                final String contractId,
+                                final String key,
+                                final QueryInput queryInput) throws IOException {
         return null;
     }
 }

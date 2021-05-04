@@ -1,7 +1,6 @@
 package de.fraunhofer.isst.configmanager.util.camel;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -16,14 +15,9 @@ import java.nio.file.Paths;
 /**
  * Component for deploying and deleting Camel routes in the file system.
  */
+@Slf4j
 @Component
 public class RouteFileHelper {
-
-    /**
-     * The logger.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(RouteFileHelper.class);
-
     /**
      * Path for the Camel route files.
      */
@@ -41,19 +35,25 @@ public class RouteFileHelper {
     public void writeToFile(final String fileName, final String content) throws IOException {
         final var file = new File(filePath + File.separator +  fileName);
 
-        try (FileWriter fileWriter = new FileWriter(file);
-             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
+        try (var fileWriter = new FileWriter(file);
+             var bufferedWriter = new BufferedWriter(fileWriter)) {
 
-            if (!file.exists() && !file.createNewFile()) {
-                LOGGER.error("Could not create file '{}{}{}'", filePath, File.separator, fileName);
+            if (log.isErrorEnabled() && !file.exists() && !file.createNewFile()) {
+                log.error("Could not create file '{}{}{}'", filePath, File.separator, fileName);
             }
 
             bufferedWriter.write(content);
-            LOGGER.info("Successfully created file '{}{}{}'.", filePath, File.separator, fileName);
+
+            if (log.isInfoEnabled()) {
+                log.info("Successfully created file '{}{}{}'.", filePath, File.separator, fileName);
+            }
 
         } catch (IOException e) {
-            LOGGER.error("Cannot write to file '{}{}{}' because an IO error occurred: {}",
-                    filePath, File.separator, fileName, e.toString());
+            if (log.isErrorEnabled()) {
+                log.error("Cannot write to file '{}{}{}' because an IO error occurred: {}",
+                        filePath, File.separator, fileName, e.toString());
+            }
+
             throw e;
         }
     }
@@ -64,19 +64,26 @@ public class RouteFileHelper {
      * @param name the filename
      * @throws IOException if the file cannot be deleted
      */
-    public void deleteFile (final String name) throws IOException {
+    public void deleteFile(final String name) throws IOException {
         final var file = Paths.get(filePath + name);
         if (Files.exists(file)) {
             try {
                 Files.delete(file);
-                LOGGER.info("Successfully deleted file '{}{}{}'.", filePath, File.separator, name);
+
+                if (log.isInfoEnabled()) {
+                    log.info("Successfully deleted file '{}{}{}'.", filePath, File.separator, name);
+                }
             } catch (NoSuchFileException e) {
-                LOGGER.error("Cannot delete file '{}{}{}' because file does not exist.", filePath,
-                        File.separator, name, e);
+                if (log.isErrorEnabled()) {
+                    log.error("Cannot delete file '{}{}{}' because file does not exist.", filePath,
+                            File.separator, name, e);
+                }
                 throw e;
             } catch (IOException e) {
-                LOGGER.error("Cannot delete file '{}{}{}' because an IO error occurred.", filePath,
-                        File.separator, name, e);
+                if (log.isErrorEnabled()) {
+                    log.error("Cannot delete file '{}{}{}' because an IO error occurred.", filePath,
+                            File.separator, name, e);
+                }
                 throw e;
             }
         }

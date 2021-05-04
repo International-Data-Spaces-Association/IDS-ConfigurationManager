@@ -4,6 +4,7 @@ package de.fraunhofer.isst.configmanager.util.camel.exceptions;
  * Thrown to indicate that no suitable Camel route template was found for a given AppRoute.
  */
 public class NoSuitableTemplateException extends Exception {
+    private static final long serialVersionUID = 42L;
 
     /**
      * Constructs a NoSuitableTemplateException with the specified message.

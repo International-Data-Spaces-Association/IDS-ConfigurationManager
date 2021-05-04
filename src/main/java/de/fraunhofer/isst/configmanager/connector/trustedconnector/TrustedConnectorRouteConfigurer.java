@@ -14,12 +14,12 @@ import java.net.URI;
 /**
  * Utility class for configuring Camel routes for the TrustedConnector.
  */
-public class TrustedConnectorRouteConfigurer {
+public final class TrustedConnectorRouteConfigurer {
 
     /**
      * ResourceLoader for loading Camel route templates from the classpath.
      */
-    private static final ResourceLoader resourceLoader = new DefaultResourceLoader();
+    private static final ResourceLoader RESOURCE_LOADER = new DefaultResourceLoader();
 
     private TrustedConnectorRouteConfigurer() {}
 
@@ -30,7 +30,7 @@ public class TrustedConnectorRouteConfigurer {
      * @param velocityContext the context containing the values to insert into the route template
      * @param configurationModel the config model containing key- and truststore information
      */
-    public static void addSslConfig(VelocityContext velocityContext, ConfigurationModel configurationModel) {
+    public static void addSslConfig(final VelocityContext velocityContext, final ConfigurationModel configurationModel) {
         velocityContext.put("keyStorePath", removeFileScheme(configurationModel.getKeyStore()));
         velocityContext.put("keyStorePassword", configurationModel.getKeyStorePassword());
         velocityContext.put("trustStorePath", removeFileScheme(configurationModel.getTrustStore()));
@@ -43,14 +43,14 @@ public class TrustedConnectorRouteConfigurer {
      * @param appRoute the app route
      * @return the route template
      */
-    public static Resource getRouteTemplate(AppRoute appRoute) {
+    public static Resource getRouteTemplate(final AppRoute appRoute) {
         final var routeStart = appRoute.getAppRouteStart();
 
         Resource resource;
         if (routeStart.get(0) instanceof GenericEndpoint) {
-            resource = resourceLoader.getResource("classpath:camel-templates/trustedconnector/idscp2_client_template_1.vm");
+            resource = RESOURCE_LOADER.getResource("classpath:camel-templates/trustedconnector/idscp2_client_template_1.vm");
         } else if (routeStart.get(0) instanceof ConnectorEndpoint) {
-            resource = resourceLoader.getResource("classpath:camel-templates/trustedconnector/idscp2_server_template_1.vm");
+            resource = RESOURCE_LOADER.getResource("classpath:camel-templates/trustedconnector/idscp2_server_template_1.vm");
         } else {
             resource = null;
         }
@@ -64,7 +64,7 @@ public class TrustedConnectorRouteConfigurer {
      * @param uri the URI
      * @return the URI as a string with the file scheme removed, if it was present.
      */
-    private static String removeFileScheme(URI uri) {
+    private static String removeFileScheme(final URI uri) {
         var string = uri.toString();
 
         if (string.startsWith("file://")) {

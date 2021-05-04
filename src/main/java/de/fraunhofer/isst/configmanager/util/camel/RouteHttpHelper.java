@@ -1,31 +1,26 @@
 package de.fraunhofer.isst.configmanager.util.camel;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
 import de.fraunhofer.isst.configmanager.util.OkHttpUtils;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.Credentials;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 /**
  * Component for deploying and deleting Camel routes at the Camel application via HTTP.
  */
+@Slf4j
 @Component
 public class RouteHttpHelper {
-
-    /**
-     * The logger.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(RouteHttpHelper.class);
-
     /**
      * URL of the Camel application.
      */
@@ -79,14 +74,20 @@ public class RouteHttpHelper {
             final var response = httpClient.newCall(request).execute();
 
             if (!response.isSuccessful()) {
-                LOGGER.error("Error sending file to Camel: {}, {}", response.code(),
-                        (response.body() != null ? response.body().string() : "No response body."));
+                if (log.isErrorEnabled()) {
+                    log.error("Error sending file to Camel: {}, {}", response.code(),
+                            response.body() != null ? Objects.requireNonNull(response.body()).string() : "No response body.");
+                }
+
                 throw new IOException("Request for deploying route was unsuccessful with code "
                         + response.code());
             }
 
         } catch (IOException e) {
-            LOGGER.error("Error sending file to Camel: {}", e.getMessage());
+            if (log.isErrorEnabled()) {
+                log.error("Error sending file to Camel: {}", e.getMessage());
+            }
+
             throw e;
         }
     }
@@ -112,13 +113,19 @@ public class RouteHttpHelper {
             final var response = httpClient.newCall(request).execute();
 
             if (!response.isSuccessful()) {
-                LOGGER.error("Error deleting route at Camel: {}, {}", response.code(),
-                        (response.body() != null ? response.body().string() : "No response body."));
+                if (log.isErrorEnabled()) {
+                    log.error("Error deleting route at Camel: {}, {}", response.code(),
+                            response.body() != null ? Objects.requireNonNull(response.body()).string() : "No response body.");
+                }
+
                 throw new IOException("Request for deleting route was unsuccessful with code "
                         + response.code());
             }
         } catch (IOException e) {
-            LOGGER.error("Error deleting route at Camel: {}", e.getMessage());
+            if (log.isErrorEnabled()) {
+                log.error("Error deleting route at Camel: {}", e.getMessage());
+            }
+
             throw e;
         }
     }
