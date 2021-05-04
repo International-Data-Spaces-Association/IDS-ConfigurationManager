@@ -7,7 +7,7 @@ import de.fraunhofer.iais.eis.ConnectorEndpointBuilder;
 import de.fraunhofer.iais.eis.SecurityProfile;
 import de.fraunhofer.iais.eis.util.TypedLiteral;
 import de.fraunhofer.iais.eis.util.Util;
-import de.fraunhofer.isst.configmanager.model.configlists.ConfigModelRepository;
+import de.fraunhofer.isst.configmanager.data.repositories.ConfigModelRepository;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -38,8 +38,10 @@ public class ConnectorService {
 
         // If no connector is found in the database, a default connector is created at this point.
         if (configModelRepository.findAll().get(0).getConfigurationModel().getConnectorDescription() == null) {
-            log.info("---- [ConnectorService] No connector description is found in the configuration model! Creating"
-                    + " default connector description");
+            if (log.isInfoEnabled()) {
+                log.info("---- [ConnectorService] No connector description is found in the configuration model! Creating"
+                        + " default connector description");
+            }
 
             final var connector = new BaseConnectorBuilder()
                     ._inboundModelVersion_(new ArrayList<>(List.of("3.1.0")))
@@ -75,7 +77,7 @@ public class ConnectorService {
                                    final String inboundModelVersion,
                                    final String outboundModelVersion) {
 
-        boolean updated = false;
+        var updated = false;
         final var connector = (BaseConnectorImpl) configModelService.getConfigModel().getConnectorDescription();
 
         if (connector != null) {

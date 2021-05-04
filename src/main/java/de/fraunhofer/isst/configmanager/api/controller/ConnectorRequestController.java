@@ -3,7 +3,7 @@ package de.fraunhofer.isst.configmanager.api.controller;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.api.ConnectorRequestApi;
 import de.fraunhofer.isst.configmanager.api.service.ConnectorRequestService;
-import de.fraunhofer.isst.configmanager.model.config.QueryInput;
+import de.fraunhofer.isst.configmanager.data.util.QueryInput;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
@@ -47,7 +47,9 @@ public class ConnectorRequestController implements ConnectorRequestApi {
      */
     @Override
     public ResponseEntity<String> requestMetadata(final URI recipientId, final URI requestedResourceId) {
-        log.info(">> POST /request/description recipientId: {} and requestedResource: {}", recipientId, requestedResourceId);
+        if (log.isInfoEnabled()) {
+            log.info(">> POST /request/description recipientId: {} and requestedResource: {}", recipientId, requestedResourceId);
+        }
         ResponseEntity<String> response;
 
         if (requestedResourceId != null) {
@@ -85,8 +87,10 @@ public class ConnectorRequestController implements ConnectorRequestApi {
     public ResponseEntity<String> requestContract(final URI recipientId,
                                                   final URI requestedArtifactId,
                                                   final String contractOffer) {
-        log.info(">> POST /request/contract with recipient: {}, artifact: {}, contract: {}",
-                recipientId, requestedArtifactId, contractOffer);
+        if (log.isInfoEnabled()) {
+            log.info(">> POST /request/contract with recipient: {}, artifact: {}, contract: {}",
+                    recipientId, requestedArtifactId, contractOffer);
+        }
 
 
         ResponseEntity<String> response;
@@ -126,8 +130,10 @@ public class ConnectorRequestController implements ConnectorRequestApi {
                                               final UUID key,
                                               final QueryInput queryInput) {
 
-        log.info(">> POST /request/artifact with recipient: {}, artifact: {}, contract: {}, key: {} and queryInput: {} ",
-                recipientId, requestedArtifactId, contractId, key, queryInput);
+        if (log.isInfoEnabled()) {
+            log.info(">> POST /request/artifact with recipient: {}, artifact: {}, contract: {}, key: {} and queryInput: {} ",
+                    recipientId, requestedArtifactId, contractId, key, queryInput);
+        }
 
         ResponseEntity<String> response = null;
         try {
@@ -146,7 +152,9 @@ public class ConnectorRequestController implements ConnectorRequestApi {
                 response = ResponseEntity.badRequest().body(clientResponseString);
             }
         } catch (IOException e) {
-            log.error(e.getMessage());
+            if (log.isErrorEnabled()) {
+                log.error(e.getMessage());
+            }
         }
         return response;
     }

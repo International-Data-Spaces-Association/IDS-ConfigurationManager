@@ -5,6 +5,7 @@ import de.fraunhofer.isst.configmanager.petrinet.model.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,7 +56,7 @@ public class PetriNetSimulator {
      * @param petriNet the initial PetriNet
      */
     public static void simulateNet(PetriNet petriNet){
-        int i = 0;;
+        int i = 0;
         log.info("Starting Simulation!");
         log.info(GraphVizGenerator.generateGraphViz(petriNet));
         while(makeStep(petriNet)){
@@ -105,7 +106,7 @@ public class PetriNetSimulator {
      * @return the StepGraph with all reachable states of the given PetriNet
      */
     public static StepGraph buildStepGraph(PetriNet petriNet){
-        var stepGraph = new StepGraph();
+        var stepGraph = new StepGraph(petriNet);
         stepGraph.getSteps().add(petriNet);
         for(var node : getPossibleTransitions(petriNet)){
             addStepToStepGraph(petriNet, petriNet.deepCopy(), node, stepGraph);
@@ -134,11 +135,11 @@ public class PetriNetSimulator {
         doTransition(copy, transitionCopy);
         for(var net : stepGraph.getSteps()){
             if (net.equals(copy)){
-                stepGraph.getArcs().add(new NetArc(parent, net));
+                stepGraph.getArcs().add(new NetArc(parent, net, transition.getID()));
                 return;
             }
         }
-        stepGraph.getArcs().add(new NetArc(parent, copy));
+        stepGraph.getArcs().add(new NetArc(parent, copy, transition.getID()));
         stepGraph.getSteps().add(copy);
         for(var node : getPossibleTransitions(copy)){
             addStepToStepGraph(copy, copy.deepCopy(), node, stepGraph);
@@ -161,4 +162,72 @@ public class PetriNetSimulator {
         return false;
     }
 
+    /**
+     * @param stepGraph PetriNet StepGraph
+     * @return all paths possible in given petriNet
+     */
+    public static List<List<Node>> getAllPaths(StepGraph stepGraph){
+        List<List<Node>> len1 =getPathsOfLength1(stepGraph);
+        List<List<Node>> lenN = new ArrayList<>(len1);
+        List<List<Node>> allPaths = new ArrayList<>(len1);
+        int i = 1;
+        while(!lenN.isEmpty()){
+            log.info("Calculating paths of length " + ++i);
+            lenN = getPathsOfLengthNplus1(len1, lenN);
+            if(!lenN.isEmpty()){
+                allPaths.addAll(lenN);
+            }
+        }
+        allPaths.sort(Comparator.comparingInt(List::size));
+        return allPaths;
+    }
+
+    /**
+     * @param stepGraph PetriNet StepGraph
+     * @return all possible paths of length 1 (either Place -> Transition or Transition -> Place)
+     */
+    private static List<List<Node>> getPathsOfLength1(StepGraph stepGraph){
+        List<List<Node>> paths = new ArrayList<>();
+        for(var node : stepGraph.getInitial().getNodes()){
+            if(node instanceof Place){
+                var followingTransitions = node.getSourceArcs().stream().map(Arc::getTarget)
+                        .filter(trans -> stepGraph.getArcs().stream()
+                                .map(NetArc::getUsedTransition)
+                                .anyMatch(used -> used.equals(trans.getID())))
+                        .collect(Collectors.toList());
+                for(var succ : followingTransitions){
+                    paths.add(List.of(node, succ));
+                }
+            }
+            if(node instanceof Transition){
+                for(var succ : node.getSourceArcs().stream().map(Arc::getTarget).collect(Collectors.toSet())){
+                    paths.add(List.of(node, succ));
+                }
+            }
+        }
+        return paths;
+    }
+
+    /**
+     * @param pathsLen1 set of possible paths of length 1
+     * @param pathsLenN all possible paths of length n (stop considering as soon as path gets circular (first = last))
+     * @return all possible paths of length n+1
+     */
+    private static List<List<Node>> getPathsOfLengthNplus1(List<List<Node>> pathsLen1, List<List<Node>> pathsLenN){
+        List<List<Node>> pathsLenNplus1 = new ArrayList<>();
+        for(var pathN : pathsLenN){
+            for(var path1 : pathsLen1){
+                if(pathN.get(pathN.size()-1).equals(path1.get(0)) && circleFree(pathN)){
+                    var pathNplus1 = new ArrayList<>(pathN);
+                    pathNplus1.add(path1.get(path1.size()-1));
+                    pathsLenNplus1.add(pathNplus1);
+                }
+            }
+        }
+        return pathsLenNplus1;
+    }
+
+    private static boolean circleFree(List list){
+        return list.stream().distinct().count() == list.size();
+    }
 }

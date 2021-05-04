@@ -10,10 +10,8 @@ import de.fraunhofer.iais.eis.util.RdfResource;
 import de.fraunhofer.iais.eis.util.TypedLiteral;
 import de.fraunhofer.isst.configmanager.api.service.EndpointService;
 import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.model.BackendSource;
-import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.model.ResourceIDPair;
 import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.model.ResourceMetadata;
 import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.model.ResourceRepresentation;
-import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.model.repos.ResourceIDPairRepository;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
@@ -23,7 +21,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.UUID;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -36,14 +33,10 @@ import java.util.stream.Collectors;
 public class ResourceMapper {
 
     static Serializer serializer = new Serializer();
-    static Pattern uuidRegex = Pattern.compile("[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}");
     transient EndpointService endpointService;
-    transient ResourceIDPairRepository resourceIDPairRepository;
 
 
-    public ResourceMapper(final ResourceIDPairRepository resourceIDPairRepository,
-                          final EndpointService endpointService) {
-        this.resourceIDPairRepository = resourceIDPairRepository;
+    public ResourceMapper(final EndpointService endpointService) {
         this.endpointService = endpointService;
     }
 
@@ -59,30 +52,6 @@ public class ResourceMapper {
         final var path = id.getPath();
         final var idStr = path.substring(path.lastIndexOf('/') + 1);
         return UUID.fromString(idStr);
-    }
-
-    /**
-     * This method takes the response from the connector and generates a ResourceIDPair, which
-     * holds the uri and the uuid. This is be persisted in the database and finally the method returns the
-     * extracted uuid from the response.
-     *
-     * @param response of the connector
-     * @param id       of the resource
-     * @return uuid
-     */
-    public UUID createFromResponse(final String response, final URI id) {
-        final var matcher = uuidRegex.matcher(response);
-        UUID uuid = null;
-
-        if (matcher.find()) {
-            final var uuidString = matcher.group(0);
-            uuid = UUID.fromString(uuidString);
-
-            final var pair = new ResourceIDPair(uuid, id);
-            resourceIDPairRepository.saveAndFlush(pair);
-        }
-
-        return uuid;
     }
 
     /**
@@ -131,11 +100,13 @@ public class ResourceMapper {
     public ResourceRepresentation mapRepresentation(final Representation representation) {
         final var resourceRepresentation = new ResourceRepresentation();
         resourceRepresentation.setUuid(readUUIDFromURI(representation.getId()));
-        int byteSize = 0;
+        var byteSize = 0;
+
         if (representation.getInstance() != null && !representation.getInstance().isEmpty()) {
             final var artifact = (Artifact) representation.getInstance().get(0);
             byteSize = artifact.getByteSize().intValue();
         }
+
         resourceRepresentation.setByteSize(byteSize);
         resourceRepresentation.setType(representation.getMediaType().getFilenameExtension());
         return resourceRepresentation;

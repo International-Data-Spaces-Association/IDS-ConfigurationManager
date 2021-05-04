@@ -1,8 +1,6 @@
 package de.fraunhofer.isst.configmanager.api.service.resources;
 
 import de.fraunhofer.iais.eis.AppRouteImpl;
-import de.fraunhofer.iais.eis.DigitalContent;
-import de.fraunhofer.iais.eis.RepresentationImpl;
 import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.iais.eis.RouteStep;
 import de.fraunhofer.iais.eis.RouteStepImpl;
@@ -10,8 +8,8 @@ import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.api.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.api.service.EndpointService;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultConnectorClient;
-import de.fraunhofer.isst.configmanager.model.configlists.EndpointInformationRepository;
-import de.fraunhofer.isst.configmanager.model.endpointinfo.EndpointInformation;
+import de.fraunhofer.isst.configmanager.data.repositories.EndpointInformationRepository;
+import de.fraunhofer.isst.configmanager.data.entities.EndpointInformation;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 
@@ -45,92 +42,6 @@ public class ResourceRepresentationService extends AbstractResourceService {
         super(configModelService, connectorClient);
         this.endpointService = endpointService;
         this.endpointInformationRepository = endpointInformationRepository;
-    }
-
-    /**
-     * @param representationId id of the representation
-     * @return representation implementation
-     */
-    public RepresentationImpl getResourceRepresentationInCatalog(final URI representationId) {
-        return (RepresentationImpl) getResources()
-                .stream()
-                .map(DigitalContent::getRepresentation)
-                .flatMap(Collection::stream)
-                .filter(representation -> representation.getId().equals(representationId))
-                .findAny()
-                .orElse(null);
-    }
-
-    /**
-     * @param resourceId       id of the resource
-     * @param representationId id of the representation to delete
-     */
-    public void deleteResourceRepresentationFromAppRoute(final URI resourceId,
-                                                         final URI representationId) {
-        if (configModelService.getConfigModel().getAppRoute() == null) {
-            log.info("---- [ResourceRepresentationService deleteResourceRepresentationFromAppRoute] Could not find"
-                    + " any app route to delete the resource");
-        } else {
-            final ArrayList<RouteStep> emptyList = new ArrayList<>();
-            for (final var route : configModelService.getConfigModel().getAppRoute()) {
-                if (route == null) {
-                    continue;
-                }
-                if (route.getAppRouteOutput() != null) {
-                    for (final var resource : route.getAppRouteOutput()) {
-                        if (resource.getRepresentation() != null) {
-                            resource.getRepresentation().removeIf(representation ->
-                                    representation.getId().equals(representationId)
-                            );
-                        }
-                    }
-                }
-                if (route.getHasSubRoute() == null) {
-                    continue;
-                }
-                for (final var subRoute : route.getHasSubRoute()) {
-                    deleteRepresentationFromSubRoutes(subRoute, emptyList, resourceId,
-                            representationId);
-                }
-            }
-        }
-        configModelService.saveState();
-    }
-
-    /**
-     * Delete occurrence of a resource representation with resourceID and representationID from.
-     * all SubRoutes
-     *
-     * @param current          current Node in AppRoute
-     * @param visited          already visited AppRoutes
-     * @param resourceId       ID of the Resource for which the representation should be deleted
-     * @param representationId ID of the Representation to delete
-     */
-    private void deleteRepresentationFromSubRoutes(final RouteStep current,
-                                                   final List<RouteStep> visited,
-                                                   final URI resourceId,
-                                                   final URI representationId) {
-        if (current == null) {
-            return;
-        }
-        if (current.getAppRouteOutput() != null) {
-            for (final var resource : current.getAppRouteOutput()) {
-                if (resource.getRepresentation() != null) {
-                    resource.getRepresentation().removeIf(representation ->
-                            representation.getId().equals(representationId)
-                    );
-                }
-            }
-        }
-        if (current.getHasSubRoute() == null) {
-            return;
-        }
-        for (final var subRoute : current.getHasSubRoute()) {
-            if (!visited.contains(subRoute)) {
-                visited.add(current);
-                deleteFromSubRoutes(subRoute, visited, resourceId);
-            }
-        }
     }
 
     /**
@@ -166,7 +77,7 @@ public class ResourceRepresentationService extends AbstractResourceService {
         }
 
         // Set first entry of endpoint informations to the new endpoint
-        if (endpointInformationRepository.findAll().size() > 0) {
+        if (!endpointInformationRepository.findAll().isEmpty()) {
             final var endpointInfo = endpointInformationRepository.findAll().get(0);
             endpointInfo.setEndpointId(endpointId.toString());
             endpointInformationRepository.saveAndFlush(endpointInfo);
@@ -196,7 +107,9 @@ public class ResourceRepresentationService extends AbstractResourceService {
                 for (final var resource : appRoute.getAppRouteOutput()) {
                     if (resourceId.equals(resource.getId())) {
                         foundResource = resource;
-                        log.info("---- [ResourceRepresentationService getResourceInAppRoute] Resource is found in the app route");
+                        if (log.isInfoEnabled()) {
+                            log.info("---- [ResourceRepresentationService getResourceInAppRoute] Resource is found in the app route");
+                        }
                         break;
                     }
                 }
@@ -208,7 +121,7 @@ public class ResourceRepresentationService extends AbstractResourceService {
                 foundResource = getResourceInSubroutes(subRoute, emptyList, resourceId);
             }
         }
-        if (foundResource == null) {
+        if (foundResource == null && log.isInfoEnabled()) {
             log.info("---- [ResourceRepresentationService getResourceInAppRoute] Could not find any resource"
                     + " in app routes and subroutes");
         }
@@ -232,7 +145,9 @@ public class ResourceRepresentationService extends AbstractResourceService {
             for (final var resource : routeStep.getAppRouteOutput()) {
                 if (resourceId.equals(resource.getId())) {
                     foundResource = resource;
-                    log.info("---- [ResourceRepresentationService getResourceInSubroutes] Resource is found in subroute");
+                    if (log.isInfoEnabled()) {
+                        log.info("---- [ResourceRepresentationService getResourceInSubroutes] Resource is found in subroute");
+                    }
                     break;
                 }
             }

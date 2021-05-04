@@ -23,7 +23,7 @@
         <Root level="info">
             <AppenderRef ref="RollingFile"/>
         </Root>
-        <Logger name="org.springframework" level="info">
+        <Logger name="org.springframework" level="warn">
             <AppenderRef ref="ConsoleAppender"/>
         </Logger>
         <Logger name="org.hibernate" level="error">

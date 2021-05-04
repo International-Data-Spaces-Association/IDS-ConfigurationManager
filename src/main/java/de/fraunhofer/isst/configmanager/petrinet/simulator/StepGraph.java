@@ -12,10 +12,13 @@ import java.util.Set;
 @Getter
 public class StepGraph {
 
-    public StepGraph(){
+    public StepGraph(PetriNet initial){
+        this.initial = initial;
         steps = new HashSet<>();
         arcs = new HashSet<>();
     }
+
+    private PetriNet initial;
 
     /**
      * Each Step a PetriNet can make is represented as a PetriNet

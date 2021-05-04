@@ -7,7 +7,7 @@ import de.fraunhofer.iais.eis.RouteStep;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.api.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultConnectorClient;
-import de.fraunhofer.isst.configmanager.model.usagecontrol.Pattern;
+import de.fraunhofer.isst.configmanager.data.enums.UsagePolicyName;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -40,21 +40,6 @@ public class ResourceContractService extends AbstractResourceService {
     }
 
     /**
-     * This method returns from a resource the contract offer.
-     *
-     * @param resourceId id of the resource
-     * @return contract offer
-     */
-    public ContractOffer getResourceContract(final URI resourceId) {
-        for (final var resource : getResources()) {
-            if (resourceId.equals(resource.getId()) && resource.getContractOffer().get(0) != null) {
-                return resource.getContractOffer().get(0);
-            }
-        }
-        return null;
-    }
-
-    /**
      * This method updates the resource contract with the given parameters.
      *
      * @param resourceId    id of the resource
@@ -64,7 +49,9 @@ public class ResourceContractService extends AbstractResourceService {
                                                  final ContractOffer contractOffer) {
         // Update resource representation in app route
         if (configModelService.getConfigModel().getAppRoute() == null) {
-            log.info("---- [ResourceContractService updateResourceContractInAppRoute] Could not find any app route");
+            if (log.isInfoEnabled()) {
+                log.info("---- [ResourceContractService updateResourceContractInAppRoute] Could not find any app route");
+            }
         } else {
             final ArrayList<RouteStep> emptyList = new ArrayList<>();
             for (final var appRoute : configModelService.getConfigModel().getAppRoute()) {
@@ -77,7 +64,9 @@ public class ResourceContractService extends AbstractResourceService {
                         if (resourceId.equals(resource.getId())) {
                             final var resourceImpl = (ResourceImpl) resource;
                             resourceImpl.setContractOffer(Util.asList(contractOffer));
-                            log.info("---- [ResourceContractService updateResourceContractInSubroutes] Updated resource contract in the app route");
+                            if (log.isInfoEnabled()) {
+                                log.info("---- [ResourceContractService updateResourceContractInSubroutes] Updated resource contract in the app route");
+                            }
                             break;
                         }
                     }
@@ -112,7 +101,9 @@ public class ResourceContractService extends AbstractResourceService {
                 if (resourceId.equals(resource.getId())) {
                     final var resourceImpl = (ResourceImpl) resource;
                     resourceImpl.setContractOffer(Util.asList(contractOffer));
-                    log.info("---- [ResourceContractService updateResourceContractInSubroutes] Updated resource contract in the subroute");
+                    if (log.isInfoEnabled()) {
+                        log.info("---- [ResourceContractService updateResourceContractInSubroutes] Updated resource contract in the subroute");
+                    }
                     break;
                 }
             }
@@ -129,14 +120,14 @@ public class ResourceContractService extends AbstractResourceService {
     }
 
     /**
-     * @param pattern      pattern to create appropriate contract offer
+     * @param usagePolicyName      pattern to create appropriate contract offer
      * @param contractJson the request body which holds the necessary information
      * @return contract offer
      */
-    public ContractOffer getContractOffer(final Pattern pattern, final String contractJson) throws JsonProcessingException {
+    public ContractOffer getContractOffer(final UsagePolicyName usagePolicyName, final String contractJson) throws JsonProcessingException {
         ContractOffer contractOffer = null;
 
-        switch (pattern) {
+        switch (usagePolicyName) {
             case PROVIDE_ACCESS:
                 contractOffer = resourceContractBuilder.buildProvideAccess();
                 break;
@@ -152,24 +143,24 @@ public class ResourceContractService extends AbstractResourceService {
                     final var pipEndpoint = jsonNode.get("pipendpoint").asText();
 
                     contractOffer = resourceContractBuilder.buildNTimesUsage(binaryOperator, number, pipEndpoint);
-                    break;
                 }
+                break;
             case DURATION_USAGE:
                 if (contractJson != null && !contractJson.equals("{}")) {
                     final var jsonNode = resourceContractBuilder.getJsonNodeFromContract(contractJson);
                     final var number = jsonNode.get("number").asText();
 
                     contractOffer = resourceContractBuilder.buildDurationUsage(number);
-                    break;
                 }
+                break;
             case USAGE_NOTIFICATION:
                 if (contractJson != null && !contractJson.equals("{}")) {
                     final var jsonNode = resourceContractBuilder.getJsonNodeFromContract(contractJson);
                     final var url = jsonNode.get("url").asText();
 
                     contractOffer = resourceContractBuilder.buidUsageNotification(url);
-                    break;
                 }
+                break;
             case USAGE_LOGGING:
                 contractOffer = resourceContractBuilder.buildUsageLogging();
                 break;
@@ -181,8 +172,8 @@ public class ResourceContractService extends AbstractResourceService {
                     final var toDate = jsonNode.get("toDate").asText();
 
                     contractOffer = resourceContractBuilder.buildUsageDuringInterval(fromDate, toDate);
-                    break;
                 }
+                break;
             case USAGE_UNTIL_DELETION:
                 if (contractJson != null && !contractJson.equals("{}")) {
                     final var jsonNode = resourceContractBuilder.getJsonNodeFromContract(contractJson);
@@ -191,8 +182,8 @@ public class ResourceContractService extends AbstractResourceService {
                     final var deletionDate = jsonNode.get("deletionDate").asText();
 
                     contractOffer = resourceContractBuilder.buildUsageUntilDeletion(startDate, endDate, deletionDate);
-                    break;
                 }
+                break;
             default:
                 break;
         }

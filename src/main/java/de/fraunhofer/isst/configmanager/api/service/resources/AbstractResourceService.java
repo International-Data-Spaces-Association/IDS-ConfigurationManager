@@ -17,15 +17,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-@FieldDefaults(level = AccessLevel.PROTECTED)
 @Service
+@FieldDefaults(level = AccessLevel.PROTECTED)
 public abstract class AbstractResourceService {
 
     transient ConfigModelService configModelService;
     transient DefaultConnectorClient connectorClient;
 
     @Autowired
-    public AbstractResourceService(final ConfigModelService configModelService,
+    protected AbstractResourceService(final ConfigModelService configModelService,
                                    final DefaultConnectorClient connectorClient) {
         this.configModelService = configModelService;
         this.connectorClient = connectorClient;
@@ -61,7 +61,9 @@ public abstract class AbstractResourceService {
         try {
             baseConnector = connectorClient.getSelfDeclaration();
         } catch (IOException e) {
-            log.error(e.getMessage(), e);
+            if (log.isErrorEnabled()) {
+                log.error(e.getMessage(), e);
+            }
         }
         if (baseConnector != null && baseConnector.getResourceCatalog() != null) {
             for (final var resourceCatalog : baseConnector.getResourceCatalog()) {

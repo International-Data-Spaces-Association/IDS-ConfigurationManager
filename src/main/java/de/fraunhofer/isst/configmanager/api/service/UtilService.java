@@ -5,12 +5,11 @@ import de.fraunhofer.iais.eis.ConnectorStatus;
 import de.fraunhofer.iais.eis.Language;
 import de.fraunhofer.iais.eis.LogLevel;
 import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.model.BackendSource;
-import de.fraunhofer.isst.configmanager.model.config.BrokerStatus;
-import de.fraunhofer.isst.configmanager.model.routedeploymethod.DeployMethod;
+import de.fraunhofer.isst.configmanager.data.enums.BrokerRegistrationStatus;
+import de.fraunhofer.isst.configmanager.data.enums.RouteDeployMethod;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,12 +51,11 @@ public class UtilService {
         return sortedJsonArray.toJSONString();
     }
 
-    @NotNull
     private JSONArray getBrokerStatus() {
         JSONArray sortedJsonArray;
 
         final var jsonArray = new JSONArray();
-        final var brokerStatuses = BrokerStatus.values();
+        final var brokerStatuses = BrokerRegistrationStatus.values();
 
         for (final var brokerStatus : brokerStatuses) {
             var jsonObject = new JSONObject();
@@ -69,12 +67,11 @@ public class UtilService {
         return sortedJsonArray;
     }
 
-    @NotNull
     private JSONArray getDeployMethod() {
         JSONArray sortedJsonArray;
 
         final var jsonArray = new JSONArray();
-        final var deployMethods = DeployMethod.values();
+        final var deployMethods = RouteDeployMethod.values();
 
         for (final var deployMethod : deployMethods) {
             var jsonObject = new JSONObject();
@@ -86,7 +83,6 @@ public class UtilService {
         return sortedJsonArray;
     }
 
-    @NotNull
     private JSONArray getSourceType() {
         JSONArray sortedJsonArray;
 
@@ -103,7 +99,6 @@ public class UtilService {
         return sortedJsonArray;
     }
 
-    @NotNull
     private JSONArray getLanguage() {
         JSONArray sortedJsonArray;
 
@@ -127,7 +122,6 @@ public class UtilService {
         return sortedJsonArray;
     }
 
-    @NotNull
     private JSONArray getConnectorDeployMode() {
         JSONArray sortedJsonArray;
 
@@ -145,7 +139,6 @@ public class UtilService {
         return sortedJsonArray;
     }
 
-    @NotNull
     private JSONArray getConnectorStatus() {
         JSONArray sortedJsonArray;
 
@@ -163,7 +156,6 @@ public class UtilService {
         return sortedJsonArray;
     }
 
-    @NotNull
     private JSONArray getLogLevel() {
         JSONArray sortedJsonArray;
 
@@ -199,8 +191,8 @@ public class UtilService {
 
             @Override
             public int compare(final JSONObject a, final JSONObject b) {
-                String str1 = "";
-                String str2 = "";
+                var str1 = "";
+                var str2 = "";
                 try {
                     str1 = (String) a.get(KEY_NAME);
                     str2 = (String) b.get(KEY_NAME);
@@ -211,7 +203,7 @@ public class UtilService {
             }
         });
 
-        for (int i = 0; i < jsonArray.size(); i++) {
+        for (var i = 0; i < jsonArray.size(); i++) {
             sortedJsonArray.add(i, jsonObjects.get(i));
         }
 

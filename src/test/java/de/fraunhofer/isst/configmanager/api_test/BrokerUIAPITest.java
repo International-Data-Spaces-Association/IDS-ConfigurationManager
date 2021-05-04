@@ -2,11 +2,8 @@ package de.fraunhofer.isst.configmanager.api_test;
 
 import de.fraunhofer.isst.configmanager.api.controller.BrokerController;
 import de.fraunhofer.isst.configmanager.api.service.BrokerService;
-import de.fraunhofer.isst.configmanager.api.service.resources.ResourceService;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultBrokerClient;
-import de.fraunhofer.isst.configmanager.connector.clients.DefaultConnectorClient;
-import de.fraunhofer.isst.configmanager.connector.clients.DefaultResourceClient;
-import de.fraunhofer.isst.configmanager.model.config.CustomBroker;
+import de.fraunhofer.isst.configmanager.data.entities.CustomBroker;
 import de.fraunhofer.isst.configmanager.util.TestUtil;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -21,6 +18,7 @@ import java.net.URI;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -34,16 +32,7 @@ public class BrokerUIAPITest {
     private transient BrokerService brokerService;
 
     @MockBean
-    private DefaultConnectorClient defaultConnectorClient;
-
-    @MockBean
     private DefaultBrokerClient defaultBrokerClient;
-
-    @MockBean
-    private DefaultResourceClient defaultResourceClient;
-
-    @MockBean
-    private ResourceService resourceService;
 
     @Test
     public void should_add_new_broker() throws Exception {
@@ -52,8 +41,7 @@ public class BrokerUIAPITest {
         requestParams.add("brokerUri", "https://example.com");
         requestParams.add("title", "CustomBroker");
 
-        CustomBroker broker = TestUtil.createCustomBroker();
-        Mockito.when(brokerService.createCustomBroker(URI.create("https://example.com"), "CustomBroker")).thenReturn(broker);
+        doNothing().when(brokerService).createCustomBroker(URI.create("https://example.com"), "CustomBroker");
 
         this.mockMvc.perform(post("/api/ui/broker").params(requestParams)).andExpect(status().isOk());
     }

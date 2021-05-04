@@ -12,11 +12,11 @@ import de.fraunhofer.iais.eis.RouteStep;
 import de.fraunhofer.iais.eis.RouteStepBuilder;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.api.service.resources.ResourceService;
-import de.fraunhofer.isst.configmanager.model.configlists.CustomAppRepository;
-import de.fraunhofer.isst.configmanager.model.configlists.EndpointInformationRepository;
-import de.fraunhofer.isst.configmanager.model.configlists.RouteDeployMethodRepository;
-import de.fraunhofer.isst.configmanager.model.customapp.CustomApp;
-import de.fraunhofer.isst.configmanager.model.endpointinfo.EndpointInformation;
+import de.fraunhofer.isst.configmanager.data.repositories.CustomAppRepository;
+import de.fraunhofer.isst.configmanager.data.repositories.EndpointInformationRepository;
+import de.fraunhofer.isst.configmanager.data.repositories.RouteDeployMethodRepository;
+import de.fraunhofer.isst.configmanager.data.entities.CustomApp;
+import de.fraunhofer.isst.configmanager.data.entities.EndpointInformation;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -81,7 +81,7 @@ public class AppRouteService {
         if (routeDeployMethod.isEmpty()) {
             deployMethod = "custom";
         } else {
-            deployMethod = routeDeployMethod.get(0).getDeployMethod().toString();
+            deployMethod = routeDeployMethod.get(0).getRouteDeployMethod().toString();
         }
 
         final var appRoute = new AppRouteBuilder()
@@ -104,7 +104,7 @@ public class AppRouteService {
      * @return true, if app route is deleted
      */
     public boolean deleteAppRoute(final URI routeId) {
-        boolean deleted = false;
+        var deleted = false;
 
         final var appRoute = getAppRoute(routeId);
 
@@ -191,7 +191,7 @@ public class AppRouteService {
             if (routeDeployMethod.isEmpty()) {
                 deployMethod = "custom";
             } else {
-                deployMethod = routeDeployMethod.get(0).getDeployMethod().toString();
+                deployMethod = routeDeployMethod.get(0).getRouteDeployMethod().toString();
             }
 
             // Create route step
@@ -255,7 +255,7 @@ public class AppRouteService {
             }
         }
         // Search endpoint in the backend repository and in list of connector endpoints
-        if (endpoint == null && endpointService.getGenericEndpoints().size() != 0 && endpointId.toString().contains("genericEndpoint")) {
+        if (endpoint == null && !endpointService.getGenericEndpoints().isEmpty() && endpointId.toString().contains("genericEndpoint")) {
             final var genericEndpoint = endpointService.getGenericEndpoint(endpointId);
 
             if (genericEndpoint != null) {
@@ -263,7 +263,7 @@ public class AppRouteService {
             }
         }
 
-        if (endpoint == null && configModelService.getConfigModel().getConnectorDescription().getHasEndpoint().size() != 0
+        if (endpoint == null && !configModelService.getConfigModel().getConnectorDescription().getHasEndpoint().isEmpty()
                 && endpointId.toString().contains("connectorEndpoint")) {
 
             endpoint = configModelService.getConfigModel().getConnectorDescription().getHasEndpoint()

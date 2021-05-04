@@ -9,9 +9,8 @@ import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.api.AppRouteApi;
 import de.fraunhofer.isst.configmanager.api.service.AppRouteService;
 import de.fraunhofer.isst.configmanager.api.service.ConfigModelService;
-import de.fraunhofer.isst.configmanager.model.configlists.RouteDeployMethodRepository;
-import de.fraunhofer.isst.configmanager.model.routedeploymethod.DeployMethod;
-import de.fraunhofer.isst.configmanager.model.routedeploymethod.RouteDeployMethod;
+import de.fraunhofer.isst.configmanager.data.repositories.RouteDeployMethodRepository;
+import de.fraunhofer.isst.configmanager.data.enums.RouteDeployMethod;
 import de.fraunhofer.isst.configmanager.util.Utility;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
@@ -35,8 +34,8 @@ import java.util.ArrayList;
 @Slf4j
 @RestController
 @RequestMapping("/api/ui")
-@Tag(name = "App Route Management", description = "Endpoints for managing the app routes in the configuration manager")
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@Tag(name = "App Route Management", description = "Endpoints for managing the app routes in the configuration manager")
 public class AppRouteController implements AppRouteApi {
 
     transient ConfigModelService configModelService;
@@ -58,8 +57,8 @@ public class AppRouteController implements AppRouteApi {
         this.objectMapper = objectMapper;
 
         if (routeDeployMethodRepository.count() == 0) {
-            final var routeDeployMethod = new RouteDeployMethod();
-            routeDeployMethod.setDeployMethod(DeployMethod.NONE);
+            final var routeDeployMethod = new de.fraunhofer.isst.configmanager.data.entities.RouteDeployMethod();
+            routeDeployMethod.setRouteDeployMethod(RouteDeployMethod.NONE);
             routeDeployMethodRepository.save(routeDeployMethod);
         }
     }
@@ -72,7 +71,10 @@ public class AppRouteController implements AppRouteApi {
      */
     @Override
     public ResponseEntity<String> createAppRoute(final String description) {
-        log.info(">> POST /approute description: " + description);
+        if (log.isInfoEnabled()) {
+            log.info(">> POST /approute description: " + description);
+        }
+
         ResponseEntity<String> response;
 
         final var appRoute = appRouteService.createAppRoute(description);
@@ -81,10 +83,15 @@ public class AppRouteController implements AppRouteApi {
             final var jsonObject = new JSONObject();
             jsonObject.put("id", appRoute.getId().toString());
             jsonObject.put("message", "Created a new app route successfully");
-            log.info("---- [AppRouteController createAppRoute] Created app route successfully");
+
+            if (log.isInfoEnabled()) {
+                log.info("---- [AppRouteController createAppRoute] Created app route successfully");
+            }
             response = ResponseEntity.ok(jsonObject.toJSONString());
         } else {
-            log.info("---- [AppRouteController createAppRoute] Could not create app route");
+            if (log.isInfoEnabled()) {
+                log.info("---- [AppRouteController createAppRoute] Could not create app route");
+            }
             response = ResponseEntity.badRequest().body("Can not create an app route");
         }
 
@@ -99,16 +106,25 @@ public class AppRouteController implements AppRouteApi {
      */
     @Override
     public ResponseEntity<String> deleteAppRoute(final URI routeId) {
-        log.info(">> DELETE /approute routeId: " + routeId);
+        if (log.isInfoEnabled()) {
+            log.info(">> DELETE /approute routeId: " + routeId);
+        }
+
         ResponseEntity<String> response;
 
         final boolean deleted = appRouteService.deleteAppRoute(routeId);
 
         if (deleted) {
-            log.info("---- [AppRouteController deleteAppRoute] App route with id: " + routeId + " is deleted.");
+            if (log.isInfoEnabled()) {
+                log.info("---- [AppRouteController deleteAppRoute] App route with id: " + routeId + " is deleted.");
+            }
+
             response = ResponseEntity.ok(Utility.jsonMessage("message", "App route with id: " + routeId + " is deleted."));
         } else {
-            log.info("---- [AppRouteController deleteAppRoute] Could not delete app route with id: " + routeId);
+            if (log.isInfoEnabled()) {
+                log.info("---- [AppRouteController deleteAppRoute] Could not delete app route with id: " + routeId);
+            }
+
             response = ResponseEntity.badRequest().body("Could not delete app route with id: " + routeId);
         }
 
@@ -123,7 +139,10 @@ public class AppRouteController implements AppRouteApi {
      */
     @Override
     public ResponseEntity<String> getAppRoute(final URI routeId) {
-        log.info(">> GET /approute routeId: " + routeId);
+        if (log.isInfoEnabled()) {
+            log.info(">> GET /approute routeId: " + routeId);
+        }
+
         ResponseEntity<String> response;
 
         final var appRoute = appRouteService.getAppRoute(routeId);
@@ -131,15 +150,21 @@ public class AppRouteController implements AppRouteApi {
         if (appRoute != null) {
             try {
                 final var appRouteString = serializer.serialize(appRoute);
-                log.info("---- [AppRouteController getAppRoute] Returning app route");
+                if (log.isInfoEnabled()) {
+                    log.info("---- [AppRouteController getAppRoute] Returning app route");
+                }
                 response = ResponseEntity.ok(appRouteString);
             } catch (IOException e) {
-                log.error("---- [AppRouteController getAppRoute] Problem while serializing app route!");
-                log.error(e.getMessage(), e);
+                if (log.isErrorEnabled()) {
+                    log.error("---- [AppRouteController getAppRoute] Problem while serializing app route!");
+                    log.error(e.getMessage(), e);
+                }
                 response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not serialize app route to jsonld");
             }
         } else {
-            log.info("---- [AppRouteController getAppRoute] Could not get app route with id: " + routeId);
+            if (log.isInfoEnabled()) {
+                log.info("---- [AppRouteController getAppRoute] Could not get app route with id: " + routeId);
+            }
             response = ResponseEntity.badRequest().body("Could not get app route with id: " + routeId);
         }
 
@@ -153,22 +178,30 @@ public class AppRouteController implements AppRouteApi {
      */
     @Override
     public ResponseEntity<String> getAppRoutes() {
-        log.info(">> GET /approutes");
+        if (log.isInfoEnabled()) {
+            log.info(">> GET /approutes");
+        }
         ResponseEntity<String> response;
 
         final var appRouteList = appRouteService.getAppRoutes();
 
         try {
             if (appRouteList == null) {
-                log.info("---- [AppRouteController getAppRoutes] Returning empty list since no app routes are present");
+                if (log.isInfoEnabled()) {
+                    log.info("---- [AppRouteController getAppRoutes] Returning empty list since no app routes are present");
+                }
                 response = ResponseEntity.ok(serializer.serialize(new ArrayList<AppRoute>()));
             } else {
-                log.info("---- [AppRouteController getAppRoutes] Returning list of app routes");
+                if (log.isInfoEnabled()) {
+                    log.info("---- [AppRouteController getAppRoutes] Returning list of app routes");
+                }
                 response = ResponseEntity.ok(serializer.serialize(appRouteList));
             }
         } catch (IOException e) {
-            log.error("---- [AppRouteController getAppRoutes] Problem while serializing app routes list!");
-            log.error(e.getMessage(), e);
+            if (log.isErrorEnabled()) {
+                log.error("---- [AppRouteController getAppRoutes] Problem while serializing app routes list!");
+                log.error(e.getMessage(), e);
+            }
             response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
 
@@ -195,11 +228,13 @@ public class AppRouteController implements AppRouteApi {
                                                      final int endCoordinateX,
                                                      final int endCoordinateY,
                                                      final URI resourceId) {
-        log.info(">> POST /approute/step routeId: " + routeId + " startId: " + startId
-                + " startCoordinateX: " + startCoordinateX
-                + " startCoordinateY: " + startCoordinateY + " endID: " + endID
-                + " endCoordinateX: " + endCoordinateX
-                + " endCoordinateY: " + endCoordinateY + " resourceId: " + resourceId);
+        if (log.isInfoEnabled()) {
+            log.info(">> POST /approute/step routeId: " + routeId + " startId: " + startId
+                    + " startCoordinateX: " + startCoordinateX
+                    + " startCoordinateY: " + startCoordinateY + " endID: " + endID
+                    + " endCoordinateX: " + endCoordinateX
+                    + " endCoordinateY: " + endCoordinateY + " resourceId: " + resourceId);
+        }
         ResponseEntity<String> response;
 
         final var routeStep = appRouteService.createAppRouteStep(routeId, startId,
@@ -211,10 +246,14 @@ public class AppRouteController implements AppRouteApi {
             jsonObject.put("routeStepId", routeStep.getId().toString());
             jsonObject.put("message", "Successfully created the route step");
 
-            log.info("---- [AppRouteController createAppRouteStep] Successfully created the route step");
+            if (log.isInfoEnabled()) {
+                log.info("---- [AppRouteController createAppRouteStep] Successfully created the route step");
+            }
             response = ResponseEntity.ok(jsonObject.toJSONString());
         } else {
-            log.warn("---- [AppRouteController createAppRouteStep] Could not create the route step");
+            if (log.isWarnEnabled()) {
+                log.warn("---- [AppRouteController createAppRouteStep] Could not create the route step");
+            }
             response = ResponseEntity.badRequest().body("Could not create the route step");
         }
 
@@ -230,7 +269,9 @@ public class AppRouteController implements AppRouteApi {
      */
     @Override
     public ResponseEntity<String> getEndpointInformation(final URI routeId, final URI endpointId) {
-        log.info(">> GET /approute/step/endpoint/info routeId: " + routeId + " endpointId: " + endpointId);
+        if (log.isInfoEnabled()) {
+            log.info(">> GET /approute/step/endpoint/info routeId: " + routeId + " endpointId: " + endpointId);
+        }
         ResponseEntity<String> response;
 
         final var endpointInformation = appRouteService.getEndpointInformation(routeId, endpointId);
@@ -238,15 +279,21 @@ public class AppRouteController implements AppRouteApi {
         if (endpointInformation != null) {
             try {
                 final var endpointInfo = objectMapper.writeValueAsString(endpointInformation);
-                log.info("---- [AppRouteController getEndpointInformation Returning endpoint information");
+                if (log.isInfoEnabled()) {
+                    log.info("---- [AppRouteController getEndpointInformation Returning endpoint information");
+                }
                 response = ResponseEntity.ok(endpointInfo);
             } catch (JsonProcessingException e) {
-                log.error("---- [AppRouteController getEndpointInformation Could not parse endpoint Information to JSON!");
-                log.error(e.getMessage(), e);
+                if (log.isErrorEnabled()) {
+                    log.error("---- [AppRouteController getEndpointInformation Could not parse endpoint Information to JSON!");
+                    log.error(e.getMessage(), e);
+                }
                 response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not parse endpoint information to JSON");
             }
         } else {
-            log.warn("---- [AppRouteController getEndpointInformation] Endpoint Information is null");
+            if (log.isWarnEnabled()) {
+                log.warn("---- [AppRouteController getEndpointInformation] Endpoint Information is null");
+            }
             response = ResponseEntity.badRequest().body("Could not get endpoint information");
         }
 
@@ -256,28 +303,34 @@ public class AppRouteController implements AppRouteApi {
     /**
      * This method updates the route deploy method of all app route and route steps.
      *
-     * @param deployMethod route deploy method
+     * @param routeDeployMethod route deploy method
      * @return a suitable http response depending on success
      */
     @Override
-    public ResponseEntity<String> updateRouteDeployMethod(final DeployMethod deployMethod) {
-        log.info(">> PUT /route/deploymethod deployMethod: " + deployMethod);
+    public ResponseEntity<String> updateRouteDeployMethod(final RouteDeployMethod routeDeployMethod) {
+        if (log.isInfoEnabled()) {
+            log.info(">> PUT /route/deploymethod deployMethod: " + routeDeployMethod);
+        }
         ResponseEntity<String> response;
 
         if (routeDeployMethodRepository.count() != 0) {
             final var existingDeployMethod = routeDeployMethodRepository.findAll().get(0);
-            existingDeployMethod.setDeployMethod(deployMethod);
+            existingDeployMethod.setRouteDeployMethod(routeDeployMethod);
 
             routeDeployMethodRepository.save(existingDeployMethod);
 
             // Updates the deploy method from the app routes and route steps
-            updateDeployMethodFromRoutes(deployMethod);
+            updateDeployMethodFromRoutes(routeDeployMethod);
 
-            log.info("---- [AppRouteController updateRouteDeployMethod] Updated successfully the route deploy method");
+            if (log.isInfoEnabled()) {
+                log.info("---- [AppRouteController updateRouteDeployMethod] Updated successfully the route deploy method");
+            }
 
             response = ResponseEntity.ok("Updated successfully the route deploy method");
         } else {
-            log.warn("---- [AppRouteController updateRouteDeployMethod] Could not update the route deploy method");
+            if (log.isWarnEnabled()) {
+                log.warn("---- [AppRouteController updateRouteDeployMethod] Could not update the route deploy method");
+            }
             response = ResponseEntity.badRequest().body("Could not update the route deploy method");
         }
 
@@ -291,17 +344,23 @@ public class AppRouteController implements AppRouteApi {
      */
     @Override
     public ResponseEntity<String> getRouteDeployMethod() {
-        log.info(">> GET /route/deploymethod");
+        if (log.isInfoEnabled()) {
+            log.info(">> GET /route/deploymethod");
+        }
         ResponseEntity<String> response;
 
         final var routeDeployMethods = routeDeployMethodRepository.findAll();
 
         try {
-            log.info("---- [AppRouteController getRouteDeployMethod] Returning the deploy route method");
+            if (log.isInfoEnabled()) {
+                log.info("---- [AppRouteController getRouteDeployMethod] Returning the deploy route method");
+            }
             response = ResponseEntity.ok(objectMapper.writeValueAsString(routeDeployMethods));
         } catch (JsonProcessingException e) {
-            log.error("---- [AppRouteController getRouteDeployMethod] Could not get deploy method from the app routes!");
-            log.error(e.getMessage(), e);
+            if (log.isErrorEnabled()) {
+                log.error("---- [AppRouteController getRouteDeployMethod] Could not get deploy method from the app routes!");
+                log.error(e.getMessage(), e);
+            }
             response = ResponseEntity.badRequest().body("Could not get deploy method from the app routes");
         }
 
@@ -311,10 +370,12 @@ public class AppRouteController implements AppRouteApi {
     /**
      * This method updates the deploy method from every app route and route step.
      *
-     * @param deployMethod deploy method of the route
+     * @param routeDeployMethod deploy method of the route
      */
-    private void updateDeployMethodFromRoutes(final DeployMethod deployMethod) {
-        log.info("---- [AppRouteController updateDeployMethodFromRoutes] Updating deploymethod for every app route and route step...");
+    private void updateDeployMethodFromRoutes(final RouteDeployMethod routeDeployMethod) {
+        if (log.isInfoEnabled()) {
+            log.info("---- [AppRouteController updateDeployMethodFromRoutes] Updating deploymethod for every app route and route step...");
+        }
 
         final var appRouteList = configModelService.getConfigModel().getAppRoute();
         if (appRouteList != null) {
@@ -322,14 +383,14 @@ public class AppRouteController implements AppRouteApi {
             for (final var appRoute : appRouteList) {
                 if (appRoute != null) {
                     final var appRouteImpl = (AppRouteImpl) appRoute;
-                    appRouteImpl.setRouteDeployMethod(deployMethod.toString());
+                    appRouteImpl.setRouteDeployMethod(routeDeployMethod.toString());
 
                     // Update deploy method from route steps
                     if (appRoute.getHasSubRoute() != null) {
                         for (final var routeStep : appRoute.getHasSubRoute()) {
                             if (routeStep != null) {
                                 final var routeStepImpl = (RouteStepImpl) routeStep;
-                                routeStepImpl.setRouteDeployMethod(deployMethod.toString());
+                                routeStepImpl.setRouteDeployMethod(routeDeployMethod.toString());
                             }
                         }
                     }

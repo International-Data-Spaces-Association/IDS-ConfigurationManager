@@ -2,7 +2,7 @@ package de.fraunhofer.isst.configmanager.connector.clients;
 
 import de.fraunhofer.iais.eis.BaseConnector;
 import de.fraunhofer.iais.eis.ConfigurationModel;
-import de.fraunhofer.isst.configmanager.model.config.QueryInput;
+import de.fraunhofer.isst.configmanager.data.util.QueryInput;
 import okhttp3.Response;
 
 import java.io.IOException;

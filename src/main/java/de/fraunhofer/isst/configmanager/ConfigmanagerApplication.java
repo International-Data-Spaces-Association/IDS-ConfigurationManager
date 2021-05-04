@@ -16,7 +16,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Properties;
 
@@ -31,8 +30,11 @@ public class ConfigmanagerApplication {
     public static final String CURRENT_VERSION = "7.0.0";
 
     public static void main(final String[] args) {
-        log.info("---- [ConfigmanagerApplication] Starting ConfigManager " + CURRENT_VERSION);
-        log.info("---- [ConfigmanagerApplication] Used JVM charset (should be UTF-8): " + Charset.defaultCharset());
+        if (log.isInfoEnabled()) {
+            log.info("---- [ConfigmanagerApplication] Starting ConfigManager " + CURRENT_VERSION);
+            log.info("---- [ConfigmanagerApplication] Used JVM charset (should be UTF-8): " + Charset.defaultCharset());
+        }
+
         SpringApplication.run(ConfigmanagerApplication.class, args);
     }
 
@@ -45,7 +47,8 @@ public class ConfigmanagerApplication {
     @Bean
     public OpenAPI customOpenAPI() throws IOException {
         final var properties = new Properties();
-        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("application.properties")) {
+
+        try (var inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("application.properties")) {
             // This function may crash (e.g. ill-formatted file). Let it bubble up.
             properties.load(inputStream);
         }
@@ -85,20 +88,25 @@ public class ConfigmanagerApplication {
     public ObjectMapper getObjectMapper() {
         final var objectMapper = new ObjectMapper();
         final var ptv = BasicPolymorphicTypeValidator.builder().build();
+
         objectMapper.activateDefaultTyping(ptv);
+
         return objectMapper;
     }
 
-    @Scheduled(fixedRate = 60_000)
+    @Scheduled(fixedRate = 60_000, initialDelay = 30_000)
     public void logInfoStillAlive() {
-
-        System.gc();
         final var mb = 1024L * 1024L;
         final var currentHeapSize = Runtime.getRuntime().totalMemory() / mb;
         final var maxHeapSize = Runtime.getRuntime().maxMemory() / mb;
         final var freeHeapSize = Runtime.getRuntime().freeMemory() / mb;
         final var threadCount = Thread.activeCount();
-        log.info("[ConfigManager " + CURRENT_VERSION + "] Heap Size Stats: Used " + Math.toIntExact(currentHeapSize) + " MB - Free " + Math.toIntExact(freeHeapSize) + " MB - Max " + Math.toIntExact(maxHeapSize) + " MB - Running Threads: " + threadCount);
-        log.info("[ConfigManager " + CURRENT_VERSION + "] Waiting for API call...");
+
+        System.gc(); //Called manually as a precaution, so that the GC is eventually executed
+
+        if (log.isInfoEnabled()) {
+            log.info("[ConfigManager " + CURRENT_VERSION + "] Heap Size Stats: Used " + Math.toIntExact(currentHeapSize) + " MB - Free " + Math.toIntExact(freeHeapSize) + " MB - Max " + Math.toIntExact(maxHeapSize) + " MB - Running Threads: " + threadCount);
+            log.info("[ConfigManager " + CURRENT_VERSION + "] Waiting for API call...");
+        }
     }
 }
