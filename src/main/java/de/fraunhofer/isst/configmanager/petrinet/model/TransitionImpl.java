@@ -59,7 +59,7 @@ public class TransitionImpl implements Transition {
     @Override
     public Node deepCopy() {
         var copy = new TransitionImpl(this.getID());
-        copy.setContextObject(this.contextObject);
+        if(this.contextObject != null) copy.setContextObject(this.contextObject.deepCopy());
         return copy;
     }
 
