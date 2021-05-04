@@ -82,6 +82,12 @@ public class AppController implements AppApi, ExampleDemoApi {
     }
 
     @Override
+    public ResponseEntity<String> pushImage(String imageName) {
+        appStoreClient.pushImage(imageName);
+        return ResponseEntity.ok("Pushed image successfully to registry");
+    }
+
+    @Override
     public ResponseEntity<String> getContainers() {
         return ResponseEntity.ok(appStoreClient.getContainers().toString());
     }
@@ -90,18 +96,18 @@ public class AppController implements AppApi, ExampleDemoApi {
     public ResponseEntity<String> buildContainer(String imageName) {
         String containerID = appStoreClient.buildContainer(imageName);
         String substring = containerID.substring(0, 11);
-        return ResponseEntity.ok("Created container with id: " + substring);
+        return ResponseEntity.ok("Created container with id: " + substring + " successfully");
     }
 
     @Override
     public ResponseEntity<String> startContainer(String containerID) {
         appStoreClient.startContainer(containerID);
-        return ResponseEntity.ok("Started Container");
+        return ResponseEntity.ok("Started Container successfully");
     }
 
     @Override
     public ResponseEntity<String> stopContainer(String containerID) {
         appStoreClient.stopContainer(containerID);
-        return ResponseEntity.ok("Stopped Container");
+        return ResponseEntity.ok("Stopped Container successfully");
     }
 }

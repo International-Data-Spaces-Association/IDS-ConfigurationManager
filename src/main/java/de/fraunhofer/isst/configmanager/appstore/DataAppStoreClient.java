@@ -1,7 +1,7 @@
 package de.fraunhofer.isst.configmanager.appstore;
 
 import com.github.dockerjava.api.DockerClient;
-import com.github.dockerjava.api.command.CreateContainerResponse;
+import com.github.dockerjava.api.async.ResultCallback;
 import com.github.dockerjava.api.command.PullImageResultCallback;
 import com.github.dockerjava.api.model.AuthConfig;
 import com.github.dockerjava.api.model.Container;
@@ -44,29 +44,32 @@ public class DataAppStoreClient implements AppStoreClient {
 
         boolean pulledImage = false;
 
-        log.info("Full image name: " + imageName);
+        if (log.isInfoEnabled()) {
+            log.info("Full image name: " + imageName);
+        }
 
-        // Authenticate with server and necessary credentials
-        AuthConfig authConfig = new AuthConfig()
-                .withUsername(username)
-                .withPassword(password)
-                .withRegistryAddress(registryAddress);
-        log.info("Authentication configuration: " + authConfig.toString());
-        var authResponse = dockerClient.authCmd().withAuthConfig(authConfig).exec();
-        log.info("Status of authentication: " + authResponse.getStatus());
+        final var authConfig = createAuthConfig();
+        final var authResponse = dockerClient.authCmd().withAuthConfig(authConfig).exec();
 
-        log.info("Pulling docker image for app store started");
+        if (log.isInfoEnabled()) {
+            log.info("Status of authentication: " + authResponse.getStatus());
+            log.info("Pulling docker image for app store started");
+        }
+
         try {
             pulledImage = dockerClient.pullImageCmd(imageName)
                     .withAuthConfig(authConfig)
                     .exec(new PullImageResultCallback()).awaitCompletion(300, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            log.info("Failed to pull the docker image");
-            log.error(e.getMessage(), e);
+            if (log.isErrorEnabled()) {
+                log.error("Failed to pull the docker image. Occurred exception: {}", e.getMessage(), e);
+            }
         }
         if (pulledImage) {
-            log.info("Success on pulling docker image");
-            List<Image> images = dockerClient.listImagesCmd().exec();
+            if (log.isInfoEnabled()) {
+                log.info("Success on pulling docker image");
+            }
+            final var images = dockerClient.listImagesCmd().exec();
             log.info(images.toString());
         }
         return pulledImage;
@@ -84,20 +87,25 @@ public class DataAppStoreClient implements AppStoreClient {
 
     @Override
     public String buildContainer(String imageName) {
-        log.info("Creating a new Docker Container from the image: " + imageName);
-        CreateContainerResponse createContainerResponse = dockerClient.createContainerCmd(imageName).exec();
-        return createContainerResponse.getId();
+        if (log.isInfoEnabled()) {
+            log.info("Creating a new Docker Container from the image: " + imageName);
+        }
+        return dockerClient.createContainerCmd(imageName).exec().getId();
     }
 
     @Override
     public void startContainer(String containerID) {
-        log.info("Starting the Docker Container with id: " + containerID);
+        if (log.isInfoEnabled()) {
+            log.info("Starting the Docker Container with id: " + containerID);
+        }
         dockerClient.startContainerCmd(containerID).exec();
     }
 
     @Override
     public void stopContainer(String containerID) {
-        log.info("Stop the container with id: " + containerID);
+        if (log.isInfoEnabled()) {
+            log.info("Stop the container with id: " + containerID);
+        }
         dockerClient.stopContainerCmd(containerID).exec();
     }
 }

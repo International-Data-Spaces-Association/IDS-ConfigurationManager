@@ -13,6 +13,9 @@ public interface ExampleDemoApi {
     @PostMapping(value = "/appstore/images/pull")
     ResponseEntity<String> getImage(@RequestParam("String imageName") String imageName);
 
+    @PostMapping(value = "/appstore/images/push")
+    ResponseEntity<String> pushImage(@RequestParam("String imageName") String imageName);
+
     @GetMapping(value = "/appstore/containers")
     ResponseEntity<String> getContainers();
 
