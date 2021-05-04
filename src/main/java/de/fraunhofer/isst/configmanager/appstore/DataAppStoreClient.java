@@ -40,7 +40,7 @@ public class DataAppStoreClient implements AppStoreClient {
     }
 
     @Override
-    public boolean pullAppImageFromRegistry(String imageName) {
+    public boolean pullImage(String imageName) {
 
         boolean pulledImage = false;
 

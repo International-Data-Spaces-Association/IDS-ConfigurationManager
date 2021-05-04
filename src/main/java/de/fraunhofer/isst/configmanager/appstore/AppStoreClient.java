@@ -12,7 +12,7 @@ public interface AppStoreClient {
      * @param imageName name of the image which will be pulled
      * @return true, if image is pulled
      */
-    boolean pullAppImageFromRegistry(String imageName);
+    boolean pullImage(String imageName);
 
     /**
      * @return list of all used images
