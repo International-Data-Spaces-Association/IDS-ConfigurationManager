@@ -3,17 +3,20 @@ package de.fraunhofer.isst.configmanager.appstore;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.async.ResultCallback;
 import com.github.dockerjava.api.command.PullImageResultCallback;
+import com.github.dockerjava.api.command.RemoveImageCmd;
 import com.github.dockerjava.api.model.AuthConfig;
 import com.github.dockerjava.api.model.Container;
 import com.github.dockerjava.api.model.Image;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
+import com.github.dockerjava.core.command.RemoveImageCmdImpl;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -81,8 +84,19 @@ public class DataAppStoreClient implements AppStoreClient {
     }
 
     @Override
+    public void removeImage(String imageID) {
+        if (log.isInfoEnabled()) {
+            log.info("Removing image with id: {}", imageID);
+        }
+        dockerClient.removeImageCmd(imageID).withForce(true).exec();
+    }
+
+    @Override
     public List<Container> getContainers() {
-        return dockerClient.listContainersCmd().exec();
+        final var statusFilter = new ArrayList<String>();
+        statusFilter.add("exited");
+        statusFilter.add("running");
+        return dockerClient.listContainersCmd().withStatusFilter(statusFilter).exec();
     }
 
     @Override

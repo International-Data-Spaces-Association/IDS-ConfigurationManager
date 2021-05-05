@@ -15,9 +15,19 @@ public interface AppStoreClient {
     boolean pullImage(String imageName);
 
     /**
+     * @param imageName id of the image, which will be pushed to a registry service
+     */
+    void pushImage(String imageName);
+
+    /**
      * @return list of all used images
      */
     List<Image> getImages();
+
+    /**
+     * @param imageID id of the image
+     */
+    void removeImage(String imageID);
 
     /**
      * @return list of all used containers

@@ -3,9 +3,7 @@ package de.fraunhofer.isst.configmanager.api.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fraunhofer.isst.configmanager.api.AppApi;
-import de.fraunhofer.isst.configmanager.api.ExampleDemoApi;
 import de.fraunhofer.isst.configmanager.api.service.AppService;
-import de.fraunhofer.isst.configmanager.appstore.AppStoreClient;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -21,17 +19,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/ui")
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Tag(name = "App Management", description = "Endpoints for managing the app in the configuration manager")
-public class AppController implements AppApi, ExampleDemoApi {
+public class AppController implements AppApi{
 
     transient AppService appService;
     transient ObjectMapper objectMapper;
-    transient AppStoreClient appStoreClient;
 
     @Autowired
-    public AppController(final AppService appService, final ObjectMapper objectMapper, final AppStoreClient appStoreClient) {
+    public AppController(final AppService appService, final ObjectMapper objectMapper) {
         this.appService = appService;
         this.objectMapper = objectMapper;
-        this.appStoreClient = appStoreClient;
     }
 
     /**
@@ -62,52 +58,5 @@ public class AppController implements AppApi, ExampleDemoApi {
         }
 
         return response;
-    }
-
-    @Override
-    public ResponseEntity<String> getImages() {
-        return ResponseEntity.ok(appStoreClient.getImages().toString());
-    }
-
-    @Override
-    public ResponseEntity<String> getImage(String imageName) {
-        var result = appStoreClient.pullImage(imageName);
-        ResponseEntity<String> response;
-        if (result) {
-            response = ResponseEntity.ok("Pulled image successfully");
-        } else {
-            response = ResponseEntity.badRequest().body("Could not pull image");
-        }
-        return response;
-    }
-
-    @Override
-    public ResponseEntity<String> pushImage(String imageName) {
-        appStoreClient.pushImage(imageName);
-        return ResponseEntity.ok("Pushed image successfully to registry");
-    }
-
-    @Override
-    public ResponseEntity<String> getContainers() {
-        return ResponseEntity.ok(appStoreClient.getContainers().toString());
-    }
-
-    @Override
-    public ResponseEntity<String> buildContainer(String imageName) {
-        String containerID = appStoreClient.buildContainer(imageName);
-        String substring = containerID.substring(0, 11);
-        return ResponseEntity.ok("Created container with id: " + substring + " successfully");
-    }
-
-    @Override
-    public ResponseEntity<String> startContainer(String containerID) {
-        appStoreClient.startContainer(containerID);
-        return ResponseEntity.ok("Started Container successfully");
-    }
-
-    @Override
-    public ResponseEntity<String> stopContainer(String containerID) {
-        appStoreClient.stopContainer(containerID);
-        return ResponseEntity.ok("Stopped Container successfully");
     }
 }
