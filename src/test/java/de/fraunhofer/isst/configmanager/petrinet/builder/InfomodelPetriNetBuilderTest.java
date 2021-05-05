@@ -122,6 +122,7 @@ class InfomodelPetriNetBuilderTest {
         var stor4 = new PlaceImpl(URI.create("place://stored4"));
         var end = new PlaceImpl(URI.create("place://end"));
         nodes.addAll(List.of(start, copy, init, dat1, dat2, con1, con2, con3, con4, sample, mean, med, rules, stor1, stor2, stor3, stor4, end));
+        //create transitions with context
         var initTrans = new TransitionImpl(URI.create("trans://init"));
         initTrans.setContextObject(new ContextObject(List.of(), null, null, null));
         var getData = new TransitionImpl(URI.create("trans://getData"));
@@ -197,9 +198,12 @@ class InfomodelPetriNetBuilderTest {
         log.info(GraphVizGenerator.generateGraphViz(petriNet));
         //build stepGraph and visualize
         var graph = PetriNetSimulator.buildStepGraph(petriNet);
-        log.info(GraphVizGenerator.generateGraphViz(graph));
+        //log.info(GraphVizGenerator.generateGraphViz(graph));
         log.info(String.format("%d possible states!", graph.getSteps().size()));
         //find valid paths and visualize
+        var transitionList = PetriNetSimulator.getAllPaths(graph);
+        log.info("Transitions: " + transitionList.size());
+        /*
         var allPaths = PetriNetSimulator.getAllPaths(graph);
         log.info(String.format("Found %d valid Paths!", allPaths.size()));
         //create formula and evaluate on start node (exists path from start to end)
@@ -234,6 +238,7 @@ class InfomodelPetriNetBuilderTest {
         );
         log.info("Formula France: " + formulaFrance.writeFormula());
         log.info("Result: " + CTLEvaluator.evaluate(formulaFrance, graph.getInitial().getNodes().stream().filter(node -> node.getID().equals(URI.create("place://start"))).findAny().get(), allPaths));
+         */
     }
 
     /**

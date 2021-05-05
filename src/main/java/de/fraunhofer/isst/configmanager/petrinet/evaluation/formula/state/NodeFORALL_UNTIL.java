@@ -16,6 +16,7 @@ public class NodeFORALL_UNTIL implements StateFormula {
     private StateFormula parameter1, parameter2;
 
     //like EXIST_UNTIL for all paths
+    //TODO fix evaluation: use filtered paths
     @Override
     public boolean evaluate(Node node, List<List<Node>> paths) {
         if(!(node instanceof Place)) return false;

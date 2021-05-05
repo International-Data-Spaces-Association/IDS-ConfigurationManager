@@ -72,4 +72,11 @@ public class PlaceImpl implements Place {
                 Objects.equals(id, place.id);
     }
 
+    public boolean equalsExceptMarking(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PlaceImpl place = (PlaceImpl) o;
+        return Objects.equals(id, place.id);
+    }
+
 }

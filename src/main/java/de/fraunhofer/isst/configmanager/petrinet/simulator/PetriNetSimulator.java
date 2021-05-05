@@ -4,7 +4,9 @@ import de.fraunhofer.isst.configmanager.petrinet.builder.GraphVizGenerator;
 import de.fraunhofer.isst.configmanager.petrinet.model.*;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -178,7 +180,7 @@ public class PetriNetSimulator {
             }
         }
         allPaths.sort(Comparator.comparingInt(List::size));
-        return allPaths;
+        return filterPaths(allPaths);
     }
 
     /**
@@ -228,5 +230,65 @@ public class PetriNetSimulator {
 
     private static boolean circleFree(List list){
         return list.stream().distinct().count() == list.size();
+    }
+
+    public static List<List<Object>> calculatePaths(StepGraph stepGraph){
+        List<List<Object>> len1 =calcPathsOfLength1(stepGraph);
+        List<List<Object>> lenN = new ArrayList<>(len1);
+        lenN = lenN.stream().filter(path -> path.get(0).equals(stepGraph.getInitial())).collect(Collectors.toList());
+        List<List<Object>> allPaths = new ArrayList<>(lenN);
+        int i = 1;
+        while(!lenN.isEmpty()){
+            log.info("Calculating paths of length " + ++i);
+            lenN = calcPathsOfLengthNplus1(len1, lenN);
+            log.info(String.format("Length %d: %d", i, lenN.size()));
+            if(!lenN.isEmpty()){
+                allPaths.addAll(lenN);
+            }
+        }
+        allPaths.sort(Comparator.comparingInt(List::size));
+        return allPaths;
+    }
+
+    private static List<List<Object>> calcPathsOfLength1(StepGraph stepGraph){
+        List<List<Object>> paths = new ArrayList<>();
+        for(var arc : stepGraph.getArcs()){
+            var sourcePart = new ArrayList<>();
+            sourcePart.add(arc.getSource());
+            sourcePart.add(arc.getUsedTransition());
+            paths.add(sourcePart);
+            var targetPart = new ArrayList<>();
+            targetPart.add(arc.getUsedTransition());
+            targetPart.add(arc.getTarget());
+            paths.add(targetPart);
+        }
+        return paths;
+    }
+
+    private static List<List<Object>> calcPathsOfLengthNplus1(List<List<Object>> len1, List<List<Object>> lenN){
+        List<List<Object>> pathsLenNplus1 = new ArrayList<>();
+        for(var pathN : lenN){
+            for(var path1 : len1){
+                if(pathN.get(pathN.size()-1).equals(path1.get(0)) && circleFree(pathN)){
+                    var pathNplus1 = new ArrayList<>(pathN);
+                    pathNplus1.add(path1.get(path1.size()-1));
+                    pathsLenNplus1.add(pathNplus1);
+                }
+            }
+        }
+        return pathsLenNplus1;
+    }
+
+    private static List<List<Node>> filterPaths(List<List<Node>> paths){
+        List<List<Node>> filtered = new ArrayList<>(List.copyOf(paths));
+        var filteredCopy = new ArrayList<>(filtered);
+        for(var pathY : filteredCopy){
+            for(var pathX : paths){
+                if(pathX.get(0).equals(pathY.get(0)) && !pathX.equals(pathY) && Collections.indexOfSubList(pathY, pathX) != -1){
+                    filtered.remove(pathX);
+                }
+            }
+        }
+        return filtered;
     }
 }
