@@ -22,6 +22,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Minor Change: New API GET /api/ui/connector/status to return the accessibility-status of the Public-Connector-Endpoint
 - Minor Change: New API PUT /resource/contract/update to create the contract in the configmanager and update it at the dataspace connector
 - Minor Change: New setting option to address the DSC via HTTP or HTTPS. dataspace.communication.ssl=true/false in application.properties and DATASPACE_COMMUNICATION_SSL=true/false in docker-compose environment.
+- Minor Change: The CM now tries to reach the connector max 10 times during startup, with a pause of 5 seconds each time, instead of just try once.
 
 ### Changes
 - Patch Change: Code and Architecture refactoring
@@ -38,6 +39,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Patch Change: Updated recursion methods in ResourceService that caused problems
 - Patch Change: A percent sign within URLs in the UI no longer results in an error in the CM-Backend.
 - Patch Change: Refactored Swagger-UI API Documentation, added all actually possible return-status-codes for API calls
+
+### Infomodel Maintenance
+- Patch Change: Upgraded infomodel-java-artifacts 4.0.2 -> 4.0.6
+- Used infomodel artifacts: java, util, serializer
 
 ### Dependency Maintenance
 - Add: org.apache.logging.log4j:log4j-web 2.14.1 (Apache 2.0)
