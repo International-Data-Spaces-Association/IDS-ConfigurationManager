@@ -68,11 +68,13 @@ class InfomodelPetriNetBuilderTest {
         }
         var subroutes = new ArrayList<RouteStep>();
         for (int i = 0; i < ThreadLocalRandom.current().nextInt(MINIMUM_SUBROUTE,MAXIMUM_SUBROUTE); i++){
-            subroutes.add(new RouteStepBuilder(URI.create("http://subroute" + i))._appRouteStart_(randomSubList(endpointlist))._appRouteEnd_(randomSubList(endpointlist)).build());
+            subroutes.add(new RouteStepBuilder(URI.create("http://subroute" + i))
+                    ._appRouteStart_((ArrayList<Endpoint>) randomSubList(endpointlist))
+                    ._appRouteEnd_((ArrayList<Endpoint>) randomSubList(endpointlist)).build());
         }
         var appRoute = new AppRouteBuilder(URI.create("http://approute"))
-                ._appRouteStart_(randomSubList(endpointlist))
-                ._appRouteEnd_(randomSubList(endpointlist))
+                ._appRouteStart_((ArrayList<Endpoint>) randomSubList(endpointlist))
+                ._appRouteEnd_((ArrayList<Endpoint>) randomSubList(endpointlist))
                 ._hasSubRoute_(subroutes)
                 .build();
 
