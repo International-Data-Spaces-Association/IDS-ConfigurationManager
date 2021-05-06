@@ -6,6 +6,7 @@ import de.fraunhofer.iais.eis.ConfigurationModel;
 import de.fraunhofer.iais.eis.ConfigurationModelBuilder;
 import de.fraunhofer.iais.eis.ConfigurationModelImpl;
 import de.fraunhofer.iais.eis.ConnectorDeployMode;
+import de.fraunhofer.iais.eis.ConnectorEndpointBuilder;
 import de.fraunhofer.iais.eis.ConnectorStatus;
 import de.fraunhofer.iais.eis.LogLevel;
 import de.fraunhofer.iais.eis.ProxyBuilder;
@@ -113,12 +114,16 @@ public class ConfigModelService {
                                   final String keyStore,
                                   final String keyStorePassword) {
 
+        final var connectorEndpointBuilder = new ConnectorEndpointBuilder();
+        connectorEndpointBuilder._accessURL_(URI.create("https://example.com"));
+
         final var connector = new BaseConnectorBuilder()
-                ._inboundModelVersion_(new ArrayList<>(List.of("3.1.0")))
-                ._outboundModelVersion_("3.1.0")
+                ._inboundModelVersion_(new ArrayList<>(List.of("4.0.6")))
+                ._outboundModelVersion_("4.0.6")
                 ._securityProfile_(SecurityProfile.BASE_SECURITY_PROFILE)
                 ._maintainer_(URI.create("https://example.com"))
                 ._curator_(URI.create("https://example.com"))
+                ._hasDefaultEndpoint_(connectorEndpointBuilder.build())
                 .build();
 
         final var configurationModel = new ConfigurationModelBuilder()
