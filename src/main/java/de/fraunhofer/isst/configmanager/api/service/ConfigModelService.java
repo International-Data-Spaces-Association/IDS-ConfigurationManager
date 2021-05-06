@@ -82,7 +82,7 @@ public class ConfigModelService {
     private void getConnectorConfig(final DefaultConnectorClient client) throws InterruptedException {
         ConfigurationModel connectorConfiguration = null;
 
-        for (var i = 1; i < 10; i++) {
+        for (var i = 1; i <= 10; i++) {
             try {
                 if (log.isInfoEnabled()) {
                     log.info("---- [ConfigModelService] Try to reach the connector: " + i + "/10");
