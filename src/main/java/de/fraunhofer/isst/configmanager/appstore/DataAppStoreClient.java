@@ -3,13 +3,11 @@ package de.fraunhofer.isst.configmanager.appstore;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.async.ResultCallback;
 import com.github.dockerjava.api.command.PullImageResultCallback;
-import com.github.dockerjava.api.command.RemoveImageCmd;
 import com.github.dockerjava.api.model.AuthConfig;
 import com.github.dockerjava.api.model.Container;
 import com.github.dockerjava.api.model.Image;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
-import com.github.dockerjava.core.command.RemoveImageCmdImpl;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -48,14 +46,14 @@ public class DataAppStoreClient implements AppStoreClient {
         boolean pulledImage = false;
 
         if (log.isInfoEnabled()) {
-            log.info("Full image name: " + imageName);
+            log.info("Full image name: {}", imageName);
         }
 
         final var authConfig = createAuthConfig();
         final var authResponse = dockerClient.authCmd().withAuthConfig(authConfig).exec();
 
         if (log.isInfoEnabled()) {
-            log.info("Status of authentication: " + authResponse.getStatus());
+            log.info("Status of authentication: {}", authResponse.getStatus());
             log.info("Pulling docker image for app store started");
         }
 
@@ -76,6 +74,29 @@ public class DataAppStoreClient implements AppStoreClient {
             log.info(images.toString());
         }
         return pulledImage;
+    }
+
+    @Override
+    public void pushImage(String imageName) {
+
+        final var authConfig = createAuthConfig();
+        final var authResponse = dockerClient.authCmd().withAuthConfig(authConfig).exec();
+
+        if (log.isInfoEnabled()) {
+            log.info("Status of authentication: {}", authResponse.getStatus());
+            log.info("Pushing image to registry started");
+        }
+
+        try {
+            dockerClient.pushImageCmd(imageName)
+                    .withAuthConfig(authConfig)
+                    .exec(new ResultCallback.Adapter<>())
+                    .awaitCompletion(300, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            if (log.isErrorEnabled()) {
+                log.error(e.getMessage(), e);
+            }
+        }
     }
 
     @Override
@@ -102,7 +123,7 @@ public class DataAppStoreClient implements AppStoreClient {
     @Override
     public String buildContainer(String imageName) {
         if (log.isInfoEnabled()) {
-            log.info("Creating a new Docker Container from the image: " + imageName);
+            log.info("Creating a new Docker Container from the image: {}", imageName);
         }
         return dockerClient.createContainerCmd(imageName).exec().getId();
     }
@@ -110,7 +131,7 @@ public class DataAppStoreClient implements AppStoreClient {
     @Override
     public void startContainer(String containerID) {
         if (log.isInfoEnabled()) {
-            log.info("Starting the Docker Container with id: " + containerID);
+            log.info("Starting the Docker Container with id: {}", containerID);
         }
         dockerClient.startContainerCmd(containerID).exec();
     }
@@ -118,8 +139,24 @@ public class DataAppStoreClient implements AppStoreClient {
     @Override
     public void stopContainer(String containerID) {
         if (log.isInfoEnabled()) {
-            log.info("Stop the container with id: " + containerID);
+            log.info("Stop the container with id: {}", containerID);
         }
         dockerClient.stopContainerCmd(containerID).exec();
+    }
+
+    @Override
+    public void removeContainer(String containerID) {
+        if (log.isInfoEnabled()) {
+            log.info("Removing the container with id: {}", containerID);
+        }
+        dockerClient.removeContainerCmd(containerID).withForce(true).exec();
+    }
+
+    /**
+     * @return authorization config
+     */
+    private AuthConfig createAuthConfig() {
+        return new AuthConfig().withUsername(username).withPassword(password)
+                .withRegistryAddress(registryAddress);
     }
 }

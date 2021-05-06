@@ -35,7 +35,7 @@ public interface AppStoreClient {
     List<Container> getContainers();
 
     /**
-     * @param imageName   name of the image
+     * @param imageName name of the image
      */
     String buildContainer(String imageName);
 
@@ -48,4 +48,9 @@ public interface AppStoreClient {
      * @param containerID id of the container, which will be stopped
      */
     void stopContainer(String containerID);
+
+    /**
+     * @param containerID id of the container, which will be removed
+     */
+    void removeContainer(String containerID);
 }
