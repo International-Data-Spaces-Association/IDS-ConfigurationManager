@@ -10,21 +10,20 @@ import java.util.List;
 
 @AllArgsConstructor
 public class NodeMODAL implements StateFormula {
+    private TransitionFormula parameter;
 
-    public static NodeMODAL nodeMODAL(TransitionFormula parameter){
+    public static NodeMODAL nodeMODAL(final TransitionFormula parameter){
         return new NodeMODAL(parameter);
     }
 
-    private TransitionFormula parameter;
-
     // MODAL, is true if parameter evaluates to true for a transition following the current state
     @Override
-    public boolean evaluate(Node node, List<List<Node>> paths) {
+    public boolean evaluate(final Node node, final List<List<Node>> paths) {
         return node instanceof Place &&
                 node.getSourceArcs().stream()
                         .map(Arc::getTarget)
                         .map(transition -> parameter.evaluate(transition, paths))
-                        .reduce(false, (a,b) -> a || b);
+                        .reduce(false, (a, b) -> a || b);
     }
 
     @Override

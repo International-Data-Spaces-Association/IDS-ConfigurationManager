@@ -10,15 +10,14 @@ import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.trans
 
 @AllArgsConstructor
 public class TransitionPOS implements TransitionFormula {
+    private TransitionFormula parameter;
 
-    public static TransitionPOS transitionPOS(TransitionFormula parameter){
+    public static TransitionPOS transitionPOS(final TransitionFormula parameter){
         return new TransitionPOS(parameter);
     }
 
-    private TransitionFormula parameter;
-
     @Override
-    public boolean evaluate(Node node, List<List<Node>> paths) {
+    public boolean evaluate(final Node node, final List<List<Node>> paths) {
         return transitionEXIST_UNTIL(TT(), parameter).evaluate(node, paths);
     }
 

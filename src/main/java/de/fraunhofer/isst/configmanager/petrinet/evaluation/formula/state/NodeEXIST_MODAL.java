@@ -12,16 +12,16 @@ import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.trans
 
 @AllArgsConstructor
 public class NodeEXIST_MODAL implements StateFormula {
-
-    private static NodeEXIST_MODAL nodeEXIST_MODAL(StateFormula parameter1, TransitionFormula parameter2){
-        return new NodeEXIST_MODAL(parameter1, parameter2);
-    }
-
     private StateFormula parameter1;
     private TransitionFormula parameter2;
 
+    private static NodeEXIST_MODAL nodeEXIST_MODAL(final StateFormula parameter1,
+                                                   final TransitionFormula parameter2) {
+        return new NodeEXIST_MODAL(parameter1, parameter2);
+    }
+
     @Override
-    public boolean evaluate(Node node, List<List<Node>> paths) {
+    public boolean evaluate(final Node node, final List<List<Node>> paths) {
         return transitionMODAL(nodeAND(parameter1, nodeMODAL(parameter2))).evaluate(node, paths);
     }
 

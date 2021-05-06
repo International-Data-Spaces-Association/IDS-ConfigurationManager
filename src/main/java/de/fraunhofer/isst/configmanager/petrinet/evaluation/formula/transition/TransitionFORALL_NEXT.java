@@ -10,15 +10,14 @@ import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.trans
 
 @AllArgsConstructor
 public class TransitionFORALL_NEXT implements TransitionFormula {
+    private TransitionFormula parameter;
 
-    public static TransitionFORALL_NEXT transitionFORALL_NEXT(TransitionFormula parameter){
+    public static TransitionFORALL_NEXT transitionFORALL_NEXT(final TransitionFormula parameter){
         return new TransitionFORALL_NEXT(parameter);
     }
 
-    private TransitionFormula parameter;
-
     @Override
-    public boolean evaluate(Node node, List<List<Node>> paths) {
+    public boolean evaluate(final Node node, final List<List<Node>> paths) {
         return transitionNOT(transitionEXIST_NEXT(transitionNOT(parameter))).evaluate(node, paths);
     }
 

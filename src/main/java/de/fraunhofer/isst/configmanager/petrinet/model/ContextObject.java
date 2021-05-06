@@ -7,22 +7,31 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@AllArgsConstructor
 @Getter
+@AllArgsConstructor
 public class ContextObject {
 
     private List<String> context;
-    private String read, write, erase;
+    private String read;
+    private String write;
+    private String erase;
 
-   public ContextObject deepCopy(){
+   public ContextObject deepCopy() {
        return new ContextObject(context, read, write, erase);
    }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ContextObject that = (ContextObject) o;
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        final var that = (ContextObject) o;
+
         return Objects.equals(context, that.context) && Objects.equals(read, that.read) && Objects.equals(write, that.write) && Objects.equals(erase, that.erase);
     }
 

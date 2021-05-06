@@ -7,15 +7,14 @@ import java.util.List;
 
 @AllArgsConstructor
 public class NodeNOT implements StateFormula {
+    private StateFormula parameter;
 
-    public static NodeNOT nodeNOT(StateFormula parameter){
+    public static NodeNOT nodeNOT(final StateFormula parameter){
         return new NodeNOT(parameter);
     }
 
-    private StateFormula parameter;
-
     @Override
-    public boolean evaluate(Node node, List<List<Node>> paths) {
+    public boolean evaluate(final Node node, final List<List<Node>> paths) {
         return !parameter.evaluate(node, paths);
     }
 

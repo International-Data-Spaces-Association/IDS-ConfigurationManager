@@ -10,15 +10,14 @@ import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state
 
 @AllArgsConstructor
 public class NodeALONG implements StateFormula {
+    private StateFormula parameter;
 
-    public static NodeALONG nodeALONG(StateFormula parameter){
+    public static NodeALONG nodeALONG(final StateFormula parameter) {
         return new NodeALONG(parameter);
     }
 
-    private StateFormula parameter;
-
     @Override
-    public boolean evaluate(Node node, List<List<Node>> paths) {
+    public boolean evaluate(final Node node, final List<List<Node>> paths) {
         return nodeNOT(nodeEV(nodeNOT(parameter))).evaluate(node, paths);
     }
 

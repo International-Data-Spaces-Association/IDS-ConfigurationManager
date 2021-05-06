@@ -10,15 +10,14 @@ import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.trans
 
 @AllArgsConstructor
 public class TransitionEV implements TransitionFormula {
+    private TransitionFormula parameter;
 
-    public static TransitionEV transitionEV(TransitionFormula parameter){
+    public static TransitionEV transitionEV(final TransitionFormula parameter) {
         return new TransitionEV(parameter);
     }
 
-    private TransitionFormula parameter;
-
     @Override
-    public boolean evaluate(Node node, List<List<Node>> paths) {
+    public boolean evaluate(final Node node, final List<List<Node>> paths) {
         return transitionFORALL_UNTIL(TT(), parameter).evaluate(node, paths);
     }
 

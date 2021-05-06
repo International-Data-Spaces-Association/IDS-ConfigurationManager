@@ -8,12 +8,12 @@ import java.util.List;
 
 public class TT implements StateFormula, TransitionFormula {
 
-    public static TT TT(){
+    public static TT TT() {
         return new TT();
     }
 
     @Override
-    public boolean evaluate(Node node, List<List<Node>> paths) {
+    public boolean evaluate(final Node node, final List<List<Node>> paths) {
         return true;
     }
 

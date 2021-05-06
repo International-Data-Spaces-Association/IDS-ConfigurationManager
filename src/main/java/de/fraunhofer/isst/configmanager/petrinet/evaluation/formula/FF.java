@@ -8,12 +8,12 @@ import java.util.List;
 
 public class FF implements StateFormula, TransitionFormula {
 
-    public static FF FF(){
+    public static FF FF() {
         return new FF();
     }
 
     @Override
-    public boolean evaluate(Node node, List<List<Node>> paths) {
+    public boolean evaluate(final Node node, final List<List<Node>> paths) {
         return false;
     }
 

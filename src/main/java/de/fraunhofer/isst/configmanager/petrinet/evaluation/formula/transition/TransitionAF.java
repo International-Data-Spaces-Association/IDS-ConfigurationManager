@@ -8,15 +8,14 @@ import java.util.List;
 
 @AllArgsConstructor
 public class TransitionAF implements TransitionFormula {
+    private ArcExpression parameter;
 
-    public static TransitionAF transitionAF(ArcExpression parameter){
+    public static TransitionAF transitionAF(final ArcExpression parameter){
         return new TransitionAF(parameter);
     }
 
-    private ArcExpression parameter;
-
     @Override
-    public boolean evaluate(Node node, List<List<Node>> paths) {
+    public boolean evaluate(final Node node, final List<List<Node>> paths) {
         return node instanceof Transition && parameter.getSubExpression().evaluate((Transition) node);
     }
 

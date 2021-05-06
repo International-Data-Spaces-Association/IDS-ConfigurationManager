@@ -10,15 +10,14 @@ import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state
 
 @AllArgsConstructor
 public class NodeINV implements StateFormula {
+    private StateFormula parameter;
 
-    public static NodeINV nodeINV(StateFormula parameter){
+    public static NodeINV nodeINV(final StateFormula parameter){
         return new NodeINV(parameter);
     }
 
-    private StateFormula parameter;
-
     @Override
-    public boolean evaluate(Node node, List<List<Node>> paths) {
+    public boolean evaluate(final Node node, final List<List<Node>> paths) {
         return nodeNOT(nodePOS(nodeNOT(parameter))).evaluate(node, paths);
     }
 

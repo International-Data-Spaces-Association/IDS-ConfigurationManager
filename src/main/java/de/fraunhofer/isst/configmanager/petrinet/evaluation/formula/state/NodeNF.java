@@ -8,15 +8,14 @@ import java.util.List;
 
 @AllArgsConstructor
 public class NodeNF implements StateFormula {
+    private NodeExpression parameter;
 
-    public static NodeNF nodeNF(NodeExpression parameter){
+    public static NodeNF nodeNF(final NodeExpression parameter){
         return new NodeNF(parameter);
     }
 
-    private NodeExpression parameter;
-
     @Override
-    public boolean evaluate(Node node, List<List<Node>> paths) {
+    public boolean evaluate(final Node node, final List<List<Node>> paths) {
         return node instanceof Place && parameter.getSubExpression().evaluate((Place) node);
     }
 

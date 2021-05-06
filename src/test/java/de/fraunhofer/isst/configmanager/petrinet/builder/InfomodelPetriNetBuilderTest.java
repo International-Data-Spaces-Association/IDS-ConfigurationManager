@@ -1,9 +1,20 @@
 package de.fraunhofer.isst.configmanager.petrinet.builder;
 
-import de.fraunhofer.iais.eis.*;
+import de.fraunhofer.iais.eis.AppRouteBuilder;
+import de.fraunhofer.iais.eis.Endpoint;
+import de.fraunhofer.iais.eis.EndpointBuilder;
+import de.fraunhofer.iais.eis.RouteStep;
+import de.fraunhofer.iais.eis.RouteStepBuilder;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
-import de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeExpression;
-import de.fraunhofer.isst.configmanager.petrinet.model.*;
+import de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.CTLEvaluator;
+import de.fraunhofer.isst.configmanager.petrinet.model.Arc;
+import de.fraunhofer.isst.configmanager.petrinet.model.ArcImpl;
+import de.fraunhofer.isst.configmanager.petrinet.model.ContextObject;
+import de.fraunhofer.isst.configmanager.petrinet.model.Node;
+import de.fraunhofer.isst.configmanager.petrinet.model.PetriNetImpl;
+import de.fraunhofer.isst.configmanager.petrinet.model.Place;
+import de.fraunhofer.isst.configmanager.petrinet.model.PlaceImpl;
+import de.fraunhofer.isst.configmanager.petrinet.model.TransitionImpl;
 import de.fraunhofer.isst.configmanager.petrinet.simulator.PetriNetSimulator;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Disabled;
@@ -11,33 +22,24 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-import de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.*;
-
+import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.FF.FF;
+import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.TT.TT;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeAND.nodeAND;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeEXIST_UNTIL.nodeEXIST_UNTIL;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeExpression.nodeExpression;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeFORALL_MODAL.nodeFORALL_MODAL;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeFORALL_NEXT.nodeFORALL_NEXT;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeFORALL_UNTIL.nodeFORALL_UNTIL;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeMODAL.nodeMODAL;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeNF.nodeNF;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeNOT.nodeNOT;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeOR.nodeOR;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodePOS.nodePOS;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.ArcExpression.arcExpression;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionAF.transitionAF;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionAND.transitionAND;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionEXIST_UNTIL.transitionEXIST_UNTIL;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionFORALL_UNTIL.transitionFORALL_UNTIL;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionMODAL.transitionMODAL;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionNOT.transitionNOT;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.FF.FF;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.TT.TT;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionOR.transitionOR;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionPOS.transitionPOS;
 
 /**
  * Test building a PetriNet from a randomly generated AppRoute
@@ -77,24 +79,37 @@ class InfomodelPetriNetBuilderTest {
         //build a petriNet from the generated AppRoute and log generated GraphViz representation
         var petriNet = InfomodelPetriNetBuilder.petriNetFromAppRoute(appRoute, false);
         var ser = new Serializer();
-        log.info(ser.serialize(appRoute));
-        log.info(GraphVizGenerator.generateGraphViz(petriNet));
+        if (log.isInfoEnabled()) {
+            log.info(ser.serialize(appRoute));
+            log.info(GraphVizGenerator.generateGraphViz(petriNet));
+        }
 
         //build a full Graph of all possible steps in the PetriNet and log generated GraphViz representation
         var graph = PetriNetSimulator.buildStepGraph(petriNet);
-        log.info(String.valueOf(graph.getArcs().size()));
-        log.info(GraphVizGenerator.generateGraphViz(graph));
+
+        if (log.isInfoEnabled()) {
+            log.info(String.valueOf(graph.getArcs().size()));
+            log.info(GraphVizGenerator.generateGraphViz(graph));
+        }
+
         var allPaths = PetriNetSimulator.getAllPaths(graph);
-        log.info(allPaths.toString());
+
+        if (log.isInfoEnabled()) {
+            log.info(allPaths.toString());
+        }
+
         var formula = nodeAND(nodeMODAL(transitionNOT(FF())), nodeOR(nodeNF(nodeExpression(x -> true, "testMsg")),TT()));
         var formula2 = nodeAND(nodeFORALL_NEXT(nodeMODAL(transitionAF(arcExpression(x -> true,"")))), TT());
         var formula3 = nodeEXIST_UNTIL(nodeMODAL(TT()), nodeNF(nodeExpression(x -> x.getSourceArcs().isEmpty(), "")));
-        log.info("Formula 1: " + formula.writeFormula());
-        log.info("Result: " + CTLEvaluator.evaluate(formula,graph.getInitial().getNodes().stream().filter(node -> node instanceof Place).findAny().get(), allPaths));
-        log.info("Formula 2: " + formula2.writeFormula());
-        log.info("Result: " + CTLEvaluator.evaluate(formula2,graph.getInitial().getNodes().stream().filter(node -> node instanceof Place).findAny().get(), allPaths));
-        log.info("Formula 3: " + formula3.writeFormula());
-        log.info("Result: " + CTLEvaluator.evaluate(formula3,graph.getInitial().getNodes().stream().filter(node -> node.getID().equals(URI.create("place://source"))).findAny().get(), allPaths));
+
+        if (log.isInfoEnabled()) {
+            log.info("Formula 1: " + formula.writeFormula());
+            log.info("Result: " + CTLEvaluator.evaluate(formula, graph.getInitial().getNodes().stream().filter(node -> node instanceof Place).findAny().get(), allPaths));
+            log.info("Formula 2: " + formula2.writeFormula());
+            log.info("Result: " + CTLEvaluator.evaluate(formula2, graph.getInitial().getNodes().stream().filter(node -> node instanceof Place).findAny().get(), allPaths));
+            log.info("Formula 3: " + formula3.writeFormula());
+            log.info("Result: " + CTLEvaluator.evaluate(formula3, graph.getInitial().getNodes().stream().filter(node -> node.getID().equals(URI.create("place://source"))).findAny().get(), allPaths));
+        }
     }
 
     @Test
@@ -195,14 +210,26 @@ class InfomodelPetriNetBuilderTest {
         arcs.add(new ArcImpl(endTrans, end));
         //create petriNet and visualize
         var petriNet = new PetriNetImpl(URI.create("https://petrinet"), nodes, arcs);
-        log.info(GraphVizGenerator.generateGraphViz(petriNet));
+
+        if (log.isInfoEnabled()) {
+            log.info(GraphVizGenerator.generateGraphViz(petriNet));
+        }
+
         //build stepGraph and visualize
         var graph = PetriNetSimulator.buildStepGraph(petriNet);
-        //log.info(GraphVizGenerator.generateGraphViz(graph));
-        log.info(String.format("%d possible states!", graph.getSteps().size()));
+
+        if (log.isInfoEnabled()) {
+            //log.info(GraphVizGenerator.generateGraphViz(graph));
+            log.info(String.format("%d possible states!", graph.getSteps().size()));
+        }
+
         //find valid paths and visualize
         var transitionList = PetriNetSimulator.getAllPaths(graph);
-        log.info("Transitions: " + transitionList.size());
+
+        if (log.isInfoEnabled()) {
+            log.info("Transitions: " + transitionList.size());
+        }
+
         /*
         var allPaths = PetriNetSimulator.getAllPaths(graph);
         log.info(String.format("Found %d valid Paths!", allPaths.size()));
@@ -259,8 +286,10 @@ class InfomodelPetriNetBuilderTest {
 
     @Test
     @Disabled
-    public void testFormula(){
+    void testFormula(){
         var formula = nodeAND(nodeMODAL(transitionNOT(FF())), nodeOR(nodeNF(nodeExpression(x -> true, "testMsg")),TT()));
-        log.info(formula.writeFormula());
+        if (log.isInfoEnabled()) {
+            log.info(formula.writeFormula());
+        }
     }
 }

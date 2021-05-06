@@ -8,24 +8,33 @@ import java.util.List;
 
 @AllArgsConstructor
 public class NodeFORALL_UNTIL implements StateFormula {
+    private StateFormula parameter1;
+    private StateFormula parameter2;
 
-    public static NodeFORALL_UNTIL nodeFORALL_UNTIL(StateFormula parameter1, StateFormula parameter2){
+    public static NodeFORALL_UNTIL nodeFORALL_UNTIL(final StateFormula parameter1,
+                                                    final StateFormula parameter2){
         return new NodeFORALL_UNTIL(parameter1, parameter2);
     }
-
-    private StateFormula parameter1, parameter2;
 
     //like EXIST_UNTIL for all paths
     //TODO fix evaluation: use filtered paths
     @Override
-    public boolean evaluate(Node node, List<List<Node>> paths) {
-        if(!(node instanceof Place)) return false;
-        for(var path: paths){
-            if(path.get(0).equals(node) && path.size()%2==1){
-                for(int i = 0; i<path.size()-1;i+=2){
-                    if(!parameter1.evaluate(path.get(i), paths)) return false;
+    public boolean evaluate(final Node node, final List<List<Node>> paths) {
+        if (!(node instanceof Place)) {
+            return false;
+        }
+
+        for (final var path: paths) {
+            if (path.get(0).equals(node) && path.size() % 2 == 1) {
+                for (var i = 0; i < path.size() - 1; i += 2) {
+                    if (!parameter1.evaluate(path.get(i), paths)) {
+                        return false;
+                    }
                 }
-                if(!parameter2.evaluate(path.get(path.size()-1), paths)) return false;
+
+                if (!parameter2.evaluate(path.get(path.size() - 1), paths)) {
+                    return false;
+                }
             }
         }
         return true;

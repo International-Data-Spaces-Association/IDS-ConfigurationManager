@@ -7,15 +7,16 @@ import java.util.List;
 
 @AllArgsConstructor
 public class TransitionAND implements TransitionFormula {
+    private TransitionFormula parameter1;
+    private TransitionFormula parameter2;
 
-    public static TransitionAND transitionAND(TransitionFormula parameter1, TransitionFormula parameter2){
+    public static TransitionAND transitionAND(final TransitionFormula parameter1,
+                                              final TransitionFormula parameter2) {
         return new TransitionAND(parameter1, parameter2);
     }
 
-    private TransitionFormula parameter1, parameter2;
-
     @Override
-    public boolean evaluate(Node node, List<List<Node>> paths) {
+    public boolean evaluate(final Node node, final List<List<Node>> paths) {
         return parameter1.evaluate(node, paths) && parameter2.evaluate(node, paths);
     }
 
