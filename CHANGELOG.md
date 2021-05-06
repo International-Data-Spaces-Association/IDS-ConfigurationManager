@@ -50,6 +50,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Upgrade: org.springframework.security:spring-security-test 5.4.2 -> 5.4.6
 - Upgrade: org.projectlombok:lombok 1.18.18 -> 1.18.20
 - Upgrade: junit:junit 4.13.1 -> 4.13.2
+- Upgrade: org.springdoc:springdoc-openapi-ui 1.5.7 -> 1.5.8
 - Exclude: com.vaadin.external.google:android-json from org.springframework.boot:spring-boot-starter-test
 - Remove: io.jsonwebtoken:jjwt 0.9.1
 
