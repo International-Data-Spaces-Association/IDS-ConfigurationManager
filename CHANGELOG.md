@@ -47,6 +47,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Patch Change: IDS Resources Duration Policy in (h) in edit mode is poluted with xml-coding (2^^xsd:duration instead of 2), fixed by upgrading infomodel dependencies
 
 ### Dependency Maintenance
+- Dependabot: Dependabot will now automatically suggest pull requests for updates to dependencies.
 - Add: org.apache.logging.log4j:log4j-web 2.14.1 (Apache 2.0)
 - Upgrade: org.springframework.boot:spring-boot-starter-parent 2.4.2 -> 2.4.5
 - Upgrade: org.springframework.security:spring-security-test 5.4.2 -> 5.4.6
