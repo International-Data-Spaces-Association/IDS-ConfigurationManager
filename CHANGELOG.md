@@ -18,6 +18,11 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Remove 20 unused APIs (= 1.150 lines of code) (unused by ConfigManager-UI project)
 - For the APIs of the enums, in addition to the technical name, such as DE for the language-dropdown, the written labels are now also supplied, e.g. German <-> DE. The structure of the API returns has changed accordingly
 
+### Major Change: Infomodel Maintenance
+- Major Change: Upgraded infomodel-java-artifacts 4.0.2 -> 4.0.6
+- Used infomodel artifacts: java, util, serializer
+- Changes the structure of the API-enums-returns like country abbreviations. These now have the URI form "http://.../code/EN" instead of simply returning an abbreviation like "EN".
+
 ### Added
 - Minor Change: New API GET /api/ui/connector/status to return the accessibility-status of the Public-Connector-Endpoint
 - Minor Change: New API PUT /resource/contract/update to create the contract in the configmanager and update it at the dataspace connector
@@ -39,10 +44,6 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Patch Change: Updated recursion methods in ResourceService that caused problems
 - Patch Change: A percent sign within URLs in the UI no longer results in an error in the CM-Backend.
 - Patch Change: Refactored Swagger-UI API Documentation, added all actually possible return-status-codes for API calls
-
-### Infomodel Maintenance
-- Patch Change: Upgraded infomodel-java-artifacts 4.0.2 -> 4.0.6
-- Used infomodel artifacts: java, util, serializer
 
 ### Dependency Maintenance
 - Add: org.apache.logging.log4j:log4j-web 2.14.1 (Apache 2.0)
