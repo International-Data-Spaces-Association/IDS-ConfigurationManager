@@ -44,6 +44,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Patch Change: Updated recursion methods in ResourceService that caused problems
 - Patch Change: A percent sign within URLs in the UI no longer results in an error in the CM-Backend.
 - Patch Change: Refactored Swagger-UI API Documentation, added all actually possible return-status-codes for API calls
+- Patch Change: IDS Resources Duration Policy in (h) in edit mode is poluted with xml-coding (2^^xsd:duration instead of 2), fixed by upgrading infomodel dependencies
 
 ### Dependency Maintenance
 - Add: org.apache.logging.log4j:log4j-web 2.14.1 (Apache 2.0)
