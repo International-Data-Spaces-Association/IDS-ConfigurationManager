@@ -1,21 +1,21 @@
 package de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition;
 
 import de.fraunhofer.isst.configmanager.petrinet.model.Node;
-import de.fraunhofer.isst.configmanager.petrinet.model.Place;
 import de.fraunhofer.isst.configmanager.petrinet.model.Transition;
 import lombok.AllArgsConstructor;
 
+import java.util.List;
+
 @AllArgsConstructor
 public class TransitionAF implements TransitionFormula {
+    private ArcExpression parameter;
 
-    public static TransitionAF transitionAF(ArcExpression parameter){
+    public static TransitionAF transitionAF(final ArcExpression parameter){
         return new TransitionAF(parameter);
     }
 
-    private ArcExpression parameter;
-
     @Override
-    public boolean evaluate(Node node) {
+    public boolean evaluate(final Node node, final List<List<Node>> paths) {
         return node instanceof Transition && parameter.getSubExpression().evaluate((Transition) node);
     }
 

@@ -139,7 +139,7 @@ public class BrokerService {
     }
 
     /**
-     * This method registers resources at a broker
+     * This method registers resources at a broker.
      *
      * @param brokerId broker uri
      */
@@ -221,7 +221,7 @@ public class BrokerService {
     }
 
     /**
-     * This method returns a JSONArray with the currently registered brokers
+     * This method returns a JSONArray with the currently registered brokers.
      *
      * @return json array of all registered broker
      */

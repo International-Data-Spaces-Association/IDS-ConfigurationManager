@@ -4,14 +4,16 @@ import de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.StateF
 import de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionFormula;
 import de.fraunhofer.isst.configmanager.petrinet.model.Node;
 
+import java.util.List;
+
 public class FF implements StateFormula, TransitionFormula {
 
-    public static FF FF(){
+    public static FF FF() {
         return new FF();
     }
 
     @Override
-    public boolean evaluate(Node node) {
+    public boolean evaluate(final Node node, final List<List<Node>> paths) {
         return false;
     }
 

@@ -23,13 +23,14 @@ import java.net.URI;
 import java.util.Objects;
 
 /**
- * This class builds ContractOffer objects
+ * This class builds ContractOffer objects.
  */
 @Service
 public class ResourceContractBuilder {
 
     /**
-     * This method creates a usage until deletion ContractOffer
+     * This method creates a usage until deletion ContractOffer.
+     *
      * @param startDate start date of contract
      * @param endDate end date of contract
      * @param deletionDate deletion date of contract
@@ -68,7 +69,8 @@ public class ResourceContractBuilder {
     }
 
     /**
-     * This method creates a usage during interval ContractOffer
+     * This method creates a usage during interval ContractOffer.
+     *
      * @param fromDate permission is valid after fromDate
      * @param toDate permission is valid before toDate
      * @return ContractOffer object with a usage during interval policy
@@ -96,7 +98,8 @@ public class ResourceContractBuilder {
     }
 
     /**
-     * This method creates a logging ContractOffer
+     * This method creates a logging ContractOffer.
+     *
      * @return ContractOffer object with logging PostDuty
      */
     public ContractOffer buildUsageLogging() {
@@ -113,7 +116,8 @@ public class ResourceContractBuilder {
     }
 
     /**
-     * This method create a usage notification ContractOffer
+     * This method create a usage notification ContractOffer.
+     *
      * @param url url to where usage should be notified
      * @return ContractOffer object with usage notification policy
      */
@@ -137,7 +141,8 @@ public class ResourceContractBuilder {
     }
 
     /**
-     * This method creates a duration usage ContractOffer
+     * This method creates a duration usage ContractOffer.
+     *
      * @param number usage duration time
      * @return ContractOffer object with duration usage policy
      */
@@ -157,7 +162,8 @@ public class ResourceContractBuilder {
     }
 
     /**
-     * This method reads a jsonNode and returns the corresponding BinaryOperator
+     * This method reads a jsonNode and returns the corresponding BinaryOperator.
+     *
      * @param jsonNode jsonNode to parse
      * @return BinaryOperator
      */
@@ -177,7 +183,8 @@ public class ResourceContractBuilder {
     }
 
     /**
-     * This method creates a n times usage ContractOffer
+     * This method creates a n times usage ContractOffer.
+     *
      * @param binaryOperator operator for the constraint
      * @param number how many times the usage should be allowed
      * @param pipEndpoint PIP endpoint of constraint
@@ -203,7 +210,8 @@ public class ResourceContractBuilder {
     }
 
     /**
-     * This method creates a prohibit access contract offer
+     * This method creates a prohibit access contract offer.
+     *
      * @return ContractOffer with prohibition of access
      */
     public ContractOffer buildProhibitAccess() {
@@ -217,7 +225,8 @@ public class ResourceContractBuilder {
     }
 
     /**
-     * This method creates a provide access contract offer
+     * This method creates a provide access contract offer.
+     *
      * @return ContractOffer with access permission
      */
     public ContractOffer buildProvideAccess() {

@@ -6,6 +6,7 @@ import de.fraunhofer.iais.eis.ConfigurationModel;
 import de.fraunhofer.iais.eis.ConfigurationModelBuilder;
 import de.fraunhofer.iais.eis.ConfigurationModelImpl;
 import de.fraunhofer.iais.eis.ConnectorDeployMode;
+import de.fraunhofer.iais.eis.ConnectorEndpointBuilder;
 import de.fraunhofer.iais.eis.ConnectorStatus;
 import de.fraunhofer.iais.eis.LogLevel;
 import de.fraunhofer.iais.eis.ProxyBuilder;
@@ -27,6 +28,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Service class for the configuration model.
@@ -45,37 +47,60 @@ public class ConfigModelService {
     public ConfigModelService(final ConfigModelRepository configModelRepository,
                               final DefaultConnectorClient client) {
         this.configModelRepository = configModelRepository;
-        if (log.isWarnEnabled()) {
-            log.warn("---- [ConfigModelService] Initial StartUp! Trying to get current Configuration from Connector!");
+        if (log.isInfoEnabled()) {
+            log.info("---- [ConfigModelService] ConfigManager StartUp! Trying to get current Configuration from Connector!");
         }
         try {
-            final var connectorConfiguration = client.getConfiguration();
-            updateConfigModel(connectorConfiguration);
+            getConnectorConfig(client);
 
             if (log.isInfoEnabled()) {
                 log.info("---- [ConfigModelService] Received configuration from running Connector!");
             }
-        } catch (IOException e) {
-            if (log.isWarnEnabled()) {
-                log.warn("---- [ConfigModelService] Could not get Configmodel from Connector! Using old Config if "
-                        + "available! Error establishing connection to connector: " + e.getMessage());
+        } catch (InterruptedException e) {
+            if (log.isInfoEnabled()) {
+                log.info("---- [ConfigModelService] Could not get Configmodel from Connector! Using old Config if available!");
             }
 
             if (!configModelRepository.findAll().isEmpty()) {
                 configModelObject = configModelRepository.findAll().get(0);
             } else {
-                if (log.isWarnEnabled()) {
-                    log.warn("---- [ConfigModelService] Connector Config not reachable and no old config available! Using new placeholder Config.");
-                    createConfigModel(
-                            "NO_LOGGING",
-                            "TEST_DEPLOYMENT",
-                            "http://truststore",
-                            "password",
-                            "http://keystore",
-                            "password"
-                    );
+                if (log.isInfoEnabled()) {
+                    log.info("---- [ConfigModelService] Connector Config not reachable and no old config available! Using new placeholder Config.");
                 }
+
+                createConfigModel(
+                        "NO_LOGGING",
+                        "TEST_DEPLOYMENT",
+                        "http://truststore",
+                        "password",
+                        "http://keystore",
+                        "password"
+                );
             }
+        }
+    }
+
+    private void getConnectorConfig(final DefaultConnectorClient client) throws InterruptedException {
+        ConfigurationModel connectorConfiguration = null;
+
+        for (var i = 1; i <= 10; i++) {
+            try {
+                if (log.isInfoEnabled()) {
+                    log.info("---- [ConfigModelService] Try to reach the connector: " + i + "/10");
+                }
+                connectorConfiguration = client.getConfiguration();
+                updateConfigModel(connectorConfiguration);
+                break;
+            } catch (IOException e) {
+                if (log.isInfoEnabled()) {
+                    log.info("---- [ConfigModelService] Could not reach the connector, starting next try in 5 seconds.");
+                }
+                TimeUnit.SECONDS.sleep(5);
+            }
+        }
+
+        if (connectorConfiguration == null) {
+            throw new InterruptedException();
         }
     }
 
@@ -113,12 +138,16 @@ public class ConfigModelService {
                                   final String keyStore,
                                   final String keyStorePassword) {
 
+        final var connectorEndpointBuilder = new ConnectorEndpointBuilder();
+        connectorEndpointBuilder._accessURL_(URI.create("https://example.com"));
+
         final var connector = new BaseConnectorBuilder()
-                ._inboundModelVersion_(new ArrayList<>(List.of("3.1.0")))
-                ._outboundModelVersion_("3.1.0")
+                ._inboundModelVersion_(new ArrayList<>(List.of("4.0.6")))
+                ._outboundModelVersion_("4.0.6")
                 ._securityProfile_(SecurityProfile.BASE_SECURITY_PROFILE)
                 ._maintainer_(URI.create("https://example.com"))
                 ._curator_(URI.create("https://example.com"))
+                ._hasDefaultEndpoint_(connectorEndpointBuilder.build())
                 .build();
 
         final var configurationModel = new ConfigurationModelBuilder()

@@ -6,24 +6,24 @@ import de.fraunhofer.isst.configmanager.petrinet.model.Node;
 import de.fraunhofer.isst.configmanager.petrinet.model.Place;
 import lombok.AllArgsConstructor;
 
+import java.util.List;
+
 @AllArgsConstructor
 public class NodeMODAL implements StateFormula {
+    private TransitionFormula parameter;
 
-    public static NodeMODAL nodeMODAL(TransitionFormula parameter){
+    public static NodeMODAL nodeMODAL(final TransitionFormula parameter){
         return new NodeMODAL(parameter);
     }
 
-    private TransitionFormula parameter;
-
-    //TODO
     // MODAL, is true if parameter evaluates to true for a transition following the current state
     @Override
-    public boolean evaluate(Node node) {
+    public boolean evaluate(final Node node, final List<List<Node>> paths) {
         return node instanceof Place &&
                 node.getSourceArcs().stream()
                         .map(Arc::getTarget)
-                        .map(transition -> parameter.evaluate(transition))
-                        .reduce(false, (a,b) -> a || b);
+                        .map(transition -> parameter.evaluate(transition, paths))
+                        .reduce(false, (a, b) -> a || b);
     }
 
     @Override

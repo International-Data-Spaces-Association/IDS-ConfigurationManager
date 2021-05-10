@@ -158,7 +158,7 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
-            <version>1.5.7</version>
+            <version>1.5.8</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
@@ -217,19 +217,19 @@
         <dependency>
             <groupId>de.fraunhofer.iais.eis.ids.infomodel</groupId>
             <artifactId>java</artifactId>
-            <version>4.0.2</version>
+            <version>4.0.6</version>
         </dependency>
 
         <dependency>
-            <groupId>de.fraunhofer.iais.eis.ids.infomodel</groupId>
+            <groupId>de.fraunhofer.iais.eis.infomodel</groupId>
             <artifactId>util</artifactId>
-            <version>4.0.2</version>
+            <version>4.0.6</version>
         </dependency>
 
         <dependency>
             <groupId>de.fraunhofer.iais.eis.ids</groupId>
             <artifactId>infomodel-serializer</artifactId>
-            <version>4.0.2</version>
+            <version>4.0.6</version>
             <exclusions>
                 <exclusion>
                     <groupId>de.fraunhofer.iais.eis.ids.infomodel</groupId>

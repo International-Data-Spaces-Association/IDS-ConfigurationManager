@@ -3,17 +3,13 @@ package de.fraunhofer.isst.configmanager.petrinet.simulator;
 import de.fraunhofer.isst.configmanager.petrinet.model.PetriNet;
 import lombok.Getter;
 
+import java.net.URI;
+
 /**
- * Arc connecting Steps in a PetriNet execution inside the {@link StepGraph}
+ * Arc connecting Steps in a PetriNet execution inside the {@link StepGraph}.
  */
 @Getter
 public class NetArc {
-
-    public NetArc(PetriNet source, PetriNet target){
-        this.source = source;
-        this.target = target;
-    }
-
     /**
      * PetriNet from which target is reachable, using a transition.
      */
@@ -25,4 +21,11 @@ public class NetArc {
      */
     private PetriNet target;
 
+    private URI usedTransition;
+
+    public NetArc(final PetriNet source, final PetriNet target, final URI usedTransition) {
+        this.source = source;
+        this.target = target;
+        this.usedTransition = usedTransition;
+    }
 }

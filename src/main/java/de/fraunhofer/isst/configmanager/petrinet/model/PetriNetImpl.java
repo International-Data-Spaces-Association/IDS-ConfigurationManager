@@ -1,6 +1,6 @@
 package de.fraunhofer.isst.configmanager.petrinet.model;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.net.URI;
@@ -11,19 +11,13 @@ import java.util.Set;
 /**
  * Implementation class of the {@link PetriNet} interface.
  */
+@AllArgsConstructor
 public class PetriNetImpl implements PetriNet, HasId {
-    
-    private static final ObjectMapper mapper = new ObjectMapper();
+
     private transient URI id;
     private transient Set<Node> nodes;
     private transient Set<Arc> arcs;
-    
-    public PetriNetImpl(URI id, Set<Node> nodes, Set<Arc> arcs) {
-        this.id = id;
-        this.nodes = nodes;
-        this.arcs = arcs;
-    }
-    
+
     @Override
     public Set<Node> getNodes() {
         return nodes;
@@ -37,12 +31,14 @@ public class PetriNetImpl implements PetriNet, HasId {
     @Override
     @SneakyThrows
     public PetriNet deepCopy() {
-        var nodeCopy = new HashSet<Node>();
-        for (var node : nodes) {
+        final var nodeCopy = new HashSet<Node>();
+        for (final var node : nodes) {
             nodeCopy.add(node.deepCopy());
         }
-        var arcCopy = new HashSet<Arc>();
-        for (var arc : arcs) {
+
+        final var arcCopy = new HashSet<Arc>();
+
+        for (final var arc : arcs) {
             arcCopy.add(
                     new ArcImpl(
                             nodeById(arc.getSource().getID(), nodeCopy),
@@ -59,27 +55,35 @@ public class PetriNetImpl implements PetriNet, HasId {
     }
     
     /**
-     * Get a node by its id (if it exists)
+     * Get a node by its id (if it exists).
      * @param id the ID of the Node to search for
      * @param nodes a Set of Nodes
      * @return the node with the given id (if it exists)
      */
-    private static Node nodeById(URI id, Set<Node> nodes) {
-        for (var node : nodes) {
-            if (node.getID().equals(id)) return node;
+    private static Node nodeById(final URI id, final Set<Node> nodes) {
+        for (final var node : nodes) {
+            if (node.getID().equals(id)) {
+                return node;
+            }
         }
         return null;
     }
     
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        PetriNetImpl petriNet = (PetriNetImpl) o;
-        var eq1 = Objects.equals(id, petriNet.id);
-        var eq2 = nodes.stream().map(s -> petriNet.nodes.stream().filter(n -> n.getID().equals(s.getID())).anyMatch(n -> n.equals(s))).reduce(true, (a, b) -> a && b);
-        var eq3 = arcs.stream().map(s -> petriNet.arcs.stream().anyMatch(n -> n.equals(s))).reduce(true, (a, b) -> a && b);
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        final var petriNet = (PetriNetImpl) o;
+        final var eq1 = Objects.equals(id, petriNet.id);
+        final var eq2 = nodes.stream().map(s -> petriNet.nodes.stream().filter(n -> n.getID().equals(s.getID())).anyMatch(n -> n.equals(s))).reduce(true, (a, b) -> a && b);
+        final var eq3 = arcs.stream().map(s -> petriNet.arcs.stream().anyMatch(n -> n.equals(s))).reduce(true, (a, b) -> a && b);
+
         return eq1 && eq2 && eq3;
     }
-    
 }

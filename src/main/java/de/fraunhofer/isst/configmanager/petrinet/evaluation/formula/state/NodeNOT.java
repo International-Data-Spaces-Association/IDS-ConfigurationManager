@@ -3,18 +3,19 @@ package de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state;
 import de.fraunhofer.isst.configmanager.petrinet.model.Node;
 import lombok.AllArgsConstructor;
 
+import java.util.List;
+
 @AllArgsConstructor
 public class NodeNOT implements StateFormula {
+    private StateFormula parameter;
 
-    public static NodeNOT nodeNOT(StateFormula parameter){
+    public static NodeNOT nodeNOT(final StateFormula parameter){
         return new NodeNOT(parameter);
     }
 
-    private StateFormula parameter;
-
     @Override
-    public boolean evaluate(Node node) {
-        return !parameter.evaluate(node);
+    public boolean evaluate(final Node node, final List<List<Node>> paths) {
+        return !parameter.evaluate(node, paths);
     }
 
     @Override

@@ -11,7 +11,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  *
  * X -> T -> O  ==> O -> T -> X
  */
-@JsonTypeInfo(use = com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME, property = "@type")
 @JsonSubTypes({@JsonSubTypes.Type(TransitionImpl.class)})
-public interface Transition extends Node{
+@JsonTypeInfo(use = com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME, property = "@type")
+public interface Transition extends Node {
+
+    ContextObject getContext();
+
 }
