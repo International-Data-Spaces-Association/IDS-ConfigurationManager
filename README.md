@@ -2,19 +2,15 @@
 <img src="images/ConfigManager.png">
 </p>
 
-<br>
-
 <p align="center">
-<a href="https://github.com/International-Data-Spaces-Association/IDS-ConfigurationManager/blob/development/LICENSE"><img src="https://img.shields.io/github/license/International-Data-Spaces-Association/IDS-ConfigurationManager"></a>
-<a href="https://github.com/International-Data-Spaces-Association/IDS-ConfigurationManager/issues"><img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat"></a>
-<img src="https://img.shields.io/github/workflow/status/International-Data-Spaces-Association/IDS-ConfigurationManager/Development-Maven-Build">
-<img src="https://img.shields.io/github/v/release/International-Data-Spaces-Association/IDS-ConfigurationManager">
-<img src="https://img.shields.io/github/languages/code-size/International-Data-Spaces-Association/IDS-ConfigurationManager">
-<img src="https://img.shields.io/github/contributors/International-Data-Spaces-Association/IDS-ConfigurationManager">
-<img src="https://img.shields.io/badge/Dependabot-Active-green">
+<a href="https://github.com/International-Data-Spaces-Association/IDS-ConfigurationManager/blob/development/LICENSE">License</a> •
+<a href="https://github.com/International-Data-Spaces-Association/IDS-ConfigurationManager/issues">Issues</a> •
+<a href="https://github.com/International-Data-Spaces-Association/IDS-ConfigurationManager/discussions">Discussions</a> •
+<a href="https://github.com/International-Data-Spaces-Association/IDS-ConfigurationManager/blob/development/CONTRIBUTING.md">Contributing</a> •
+<a href="https://github.com/International-Data-Spaces-Association/IDS-ConfigurationManager/blob/development/CODE_OF_CONDUCT.md">Code of Conduct</a>
 </p>
 
-# IDS - Configuration Manager
+# IDS-Configuration Manager
 
 The configuration manager is the administrative part of a connector. It main task is to manage and validate the
 configuration model, followed by the deployment of the connector. The configuration model is an extensible domain model
