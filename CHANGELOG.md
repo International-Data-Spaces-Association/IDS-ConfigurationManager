@@ -49,6 +49,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Dependency Maintenance
 - Dependabot: Dependabot will now automatically suggest pull requests for updates to dependencies.
 - Add: org.apache.logging.log4j:log4j-web 2.14.1 (Apache 2.0)
+- Add: org.postgresql:postgresql 42.2.20 (BSD-2-Clause)
 - Upgrade: org.springframework.boot:spring-boot-starter-parent 2.4.2 -> 2.4.5
 - Upgrade: org.springframework.security:spring-security-test 5.4.2 -> 5.4.6
 - Upgrade: org.projectlombok:lombok 1.18.18 -> 1.18.20
