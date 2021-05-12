@@ -213,6 +213,15 @@
         </dependency>
 
 
+        <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
+        <!-- License: BSD-2-Clause -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.20</version>
+        </dependency>
+
+
         <!-- Infomodel -->
         <dependency>
             <groupId>de.fraunhofer.iais.eis.ids.infomodel</groupId>
