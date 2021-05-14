@@ -28,9 +28,10 @@ public class TransitionEXIST_UNTIL implements TransitionFormula {
         check: for (final var path: paths){
             if (path.get(0).equals(node) && paths.size() % 2 == 1) {
                 for (var i = 0; i < path.size() - 1; i += 2){
-                    if (!parameter1.evaluate(path.get(i), paths)) {
-                        continue check;
-                    }
+                    var res1 = parameter1.evaluate(path.get(i), paths);
+                    var res2 = parameter2.evaluate(path.get(i), paths);
+                    if(res2) return true;
+                    if(!res1) continue check;
                 }
 
                 if(parameter2.evaluate(path.get(path.size()-1), paths)) {

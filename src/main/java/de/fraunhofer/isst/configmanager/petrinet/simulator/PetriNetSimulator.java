@@ -273,7 +273,7 @@ public class PetriNetSimulator {
         return pathsLenNplus1;
     }
 
-    private static boolean circleFree(final List list){
+    public static boolean circleFree(final List list){
         return list.stream().distinct().count() == list.size();
     }
 
