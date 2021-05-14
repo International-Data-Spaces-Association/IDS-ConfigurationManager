@@ -4,10 +4,12 @@ import de.fraunhofer.isst.configmanager.petrinet.model.Node;
 import de.fraunhofer.isst.configmanager.petrinet.model.Place;
 import de.fraunhofer.isst.configmanager.petrinet.simulator.PetriNetSimulator;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
 @AllArgsConstructor
+@Slf4j
 public class NodeFORALL_UNTIL implements StateFormula {
     private StateFormula parameter1;
     private StateFormula parameter2;
@@ -26,15 +28,15 @@ public class NodeFORALL_UNTIL implements StateFormula {
         }
 
         check: for (final var path: paths) {
+            if(!path.get(0).equals(node)) continue;
             int offset;
             if(PetriNetSimulator.circleFree(path)){
-                if(!path.get(0).equals(node)) continue;
                 if (path.size() % 2 == 1) {
                     offset = 1;
                 }else {
                     offset = 2;
                 }
-                for (var i = 0; i < path.size() - offset; i += 2) {
+                for (var i = 2; i < path.size() - offset; i += 2) {
                     var res1 = parameter1.evaluate(path.get(i), paths);
                     var res2 = parameter2.evaluate(path.get(i), paths);
                     if(res2) continue check;
@@ -45,6 +47,15 @@ public class NodeFORALL_UNTIL implements StateFormula {
                 }
             }else{
                 //TODO path contains circle
+                //if something on the circle fulfills param2 accept, if something does not fulfill param1 reject
+                for (var i = 2; i<path.size() - 1; i+=2){
+                    var res1 = parameter1.evaluate(path.get(i), paths);
+                    var res2 = parameter2.evaluate(path.get(i), paths);
+                    if(res2) continue check;
+                    if(!res1) return false;
+                }
+                //if everything on circle fulfills param1 but not param2: complicated case
+                log.info("test");
             }
         }
         return true;

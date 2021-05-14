@@ -353,6 +353,8 @@ public class PetriNetSimulator {
                 }
             }
         }
+        //put circlefree paths at beginnig of list, so they get checked first
+        filtered.sort((o1, o2) -> Boolean.compare(circleFree(o2), circleFree(o1)));
         return filtered;
     }
 }
