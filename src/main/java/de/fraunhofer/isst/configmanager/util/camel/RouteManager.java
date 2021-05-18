@@ -161,20 +161,29 @@ public class RouteManager {
     }
 
     /**
-     * Extracts the URLs of the {@link AppRoute}'s steps and adds them to the Velocity context.
+     * Extracts the start and end URLs of the {@link AppRoute}'s steps and adds them to the
+     * Velocity context.
      *
      * @param velocityContext the Velocity context
      * @param routeSteps steps of the AppRoute
      */
     private void addRouteStepsToContext(final VelocityContext velocityContext,
                                         final ArrayList<? extends RouteStep> routeSteps) {
-        final var routeStepUrls = new ArrayList<>();
+        final var routeStepStartUrls = new ArrayList<String>();
+        final var routeStepEndUrls = new ArrayList<String>();
+
         if (routeSteps != null) {
             for (final var routeStep: routeSteps) {
-                routeStepUrls.add(routeStep.getAppRouteStart().get(0).getAccessURL().toString());
+                final var stepStart = routeStep.getAppRouteStart().get(0);
+                routeStepStartUrls.add(stepStart.getAccessURL().toString());
+
+                final var stepEnd = routeStep.getAppRouteEnd().get(0);
+                routeStepEndUrls.add(stepEnd.getAccessURL().toString());
             }
         }
-        velocityContext.put("routeStepUrls", routeStepUrls);
+
+        velocityContext.put("routeStepStartUrls", routeStepStartUrls);
+        velocityContext.put("routeStepEndUrls", routeStepEndUrls);
     }
 
     /**
