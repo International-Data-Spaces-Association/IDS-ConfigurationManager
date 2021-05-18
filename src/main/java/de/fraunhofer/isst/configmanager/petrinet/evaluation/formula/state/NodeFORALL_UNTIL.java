@@ -2,10 +2,12 @@ package de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state;
 
 import de.fraunhofer.isst.configmanager.petrinet.model.Node;
 import de.fraunhofer.isst.configmanager.petrinet.model.Place;
+import de.fraunhofer.isst.configmanager.petrinet.model.Transition;
 import de.fraunhofer.isst.configmanager.petrinet.simulator.PetriNetSimulator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
@@ -55,7 +57,10 @@ public class NodeFORALL_UNTIL implements StateFormula {
                     if(!res1) return false;
                 }
                 //if everything on circle fulfills param1 but not param2: complicated case
-                log.info("test");
+                var lastPlace = path.get(path.size()-1) instanceof Place ? path.get(path.size()-1) : path.get(path.size()-2);
+                var newPaths = new ArrayList<>(paths);
+                newPaths.remove(path);
+                if(!this.evaluate(lastPlace, newPaths)) return false;
             }
         }
         return true;
