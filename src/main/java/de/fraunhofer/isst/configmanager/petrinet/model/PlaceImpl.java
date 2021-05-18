@@ -8,7 +8,7 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * Implementation class of the {@link Place} interface
+ * Implementation class of the {@link Place} interface.
  */
 public class PlaceImpl implements Place {
 
@@ -21,7 +21,7 @@ public class PlaceImpl implements Place {
     @JsonIgnore
     private transient Set<Arc> targetArcs;
 
-    public PlaceImpl(URI id){
+    public PlaceImpl(final URI id) {
         this.id = id;
         this.sourceArcs = new HashSet<>();
         this.targetArcs = new HashSet<>();
@@ -39,16 +39,18 @@ public class PlaceImpl implements Place {
     }
 
     @Override
-    public Set<Arc> getTargetArcs() { return targetArcs; }
+    public Set<Arc> getTargetArcs() {
+        return targetArcs;
+    }
 
     @Override
-    public boolean isComplementOf(Node other) {
+    public boolean isComplementOf(final Node other) {
         return Transition.class.isAssignableFrom(other.getClass());
     }
 
     @Override
     public Node deepCopy() {
-        var copy = new PlaceImpl(this.getID());
+        final var copy = new PlaceImpl(this.getID());
         copy.setMarkers(this.getMarkers());
         return copy;
     }
@@ -59,17 +61,36 @@ public class PlaceImpl implements Place {
     }
 
     @Override
-    public void setMarkers(int markers) {
+    public void setMarkers(final int markers) {
         this.markers = markers;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        PlaceImpl place = (PlaceImpl) o;
-        return markers == place.markers &&
-                Objects.equals(id, place.id);
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        final var place = (PlaceImpl) o;
+
+        return markers == place.markers && Objects.equals(id, place.id);
+    }
+
+    public boolean equalsExceptMarking(final Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        final var place = (PlaceImpl) o;
+        return Objects.equals(id, place.id);
     }
 
 }

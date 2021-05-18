@@ -11,9 +11,9 @@ import java.util.Set;
  * Places are regular Nodes, while Transitions decide,
  * which Steps can be made in the PetriNet.
  */
-@JsonTypeInfo(use = com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME, property = "@type")
 @JsonSubTypes({@JsonSubTypes.Type(Transition.class), @JsonSubTypes.Type(Place.class)})
-public interface Node extends HasId{
+@JsonTypeInfo(use = com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME, property = "@type")
+public interface Node extends HasId {
 
     /**
      * @return get all {@link Arc}, where this node is the source (this -> other)
@@ -30,7 +30,7 @@ public interface Node extends HasId{
      * @return true if this node has a different type (eg. other=place, this=transition)
      */
     boolean isComplementOf(Node other);
-    
+
     /*
      * create a deep copy of the Node.
      * @return a deep copy of the Node

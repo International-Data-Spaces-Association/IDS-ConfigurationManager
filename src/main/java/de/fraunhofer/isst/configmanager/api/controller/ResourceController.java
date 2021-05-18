@@ -100,6 +100,11 @@ public class ResourceController implements ResourceApi {
         return ResponseEntity.ok(resourceService.getOfferedResourcesAsJsonString());
     }
 
+    /**
+     * This method returns a http response with all requested resources
+     *
+     * @return response with requested resources from the connector
+     */
     @Override
     public ResponseEntity<String> getRequestedResources() {
         if (log.isInfoEnabled()) {

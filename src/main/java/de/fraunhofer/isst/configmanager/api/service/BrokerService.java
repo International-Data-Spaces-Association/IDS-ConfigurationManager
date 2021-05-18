@@ -138,6 +138,11 @@ public class BrokerService {
         }
     }
 
+    /**
+     * This method registers resources at a broker.
+     *
+     * @param brokerId broker uri
+     */
     public void sentSelfDescToBroker(final URI brokerId) {
         final var customBroker = getById(brokerId);
         customBroker.setRegisteredResources(
@@ -147,6 +152,11 @@ public class BrokerService {
         customBrokerRepository.save(customBroker);
     }
 
+    /**
+     * This methods unregisters the resources at a broker
+     *
+     * @param brokerId broker uri
+     */
     public void unregisteredAtBroker(final URI brokerId) {
         final var customBroker = getById(brokerId);
         customBroker.setRegisteredResources(new ArrayList<>());
@@ -211,6 +221,8 @@ public class BrokerService {
     }
 
     /**
+     * This method returns a JSONArray with the currently registered brokers.
+     *
      * @return json array of all registered broker
      */
     public JSONArray getRegisteredBroker() {
