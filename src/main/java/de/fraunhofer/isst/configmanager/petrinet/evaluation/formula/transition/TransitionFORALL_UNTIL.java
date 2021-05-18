@@ -6,6 +6,7 @@ import de.fraunhofer.isst.configmanager.petrinet.simulator.PetriNetSimulator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
@@ -40,9 +41,13 @@ public class TransitionFORALL_UNTIL implements TransitionFormula {
                     var res1 = parameter1.evaluate(path.get(i), paths);
                     var res2 = parameter2.evaluate(path.get(i), paths);
                     if(res2) continue check;
-                    if(!res1) return false;
+                    if(!res1){
+                        log.info(path.get(i).toString());
+                        return false;
+                    }
                 }
                 if (!parameter2.evaluate(path.get(path.size() - offset), paths)) {
+                    log.info(path.get(path.size() - offset).toString());
                     return false;
                 }
             }else{
@@ -52,10 +57,16 @@ public class TransitionFORALL_UNTIL implements TransitionFormula {
                     var res1 = parameter1.evaluate(path.get(i), paths);
                     var res2 = parameter2.evaluate(path.get(i), paths);
                     if(res2) continue check;
-                    if(!res1) return false;
+                    if(!res1){
+                        log.info(path.get(i).toString());
+                        return false;
+                    }
                 }
                 //if everything on circle fulfills param1 but not param2: complicated case
-                log.info("test");
+                var lastTransition = path.get(path.size()-1) instanceof Transition ? path.get(path.size()-1) : path.get(path.size()-2);
+                var newPaths = new ArrayList<>(paths);
+                newPaths.remove(path);
+                if(!this.evaluate(lastTransition, newPaths)) return false;
             }
         }
         return true;
