@@ -16,6 +16,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Major Changes
 - Remove 20 unused APIs (= 1.150 lines of code) (unused by ConfigManager-UI project)
 - For the APIs of the enums, in addition to the technical name, such as DE for the language-dropdown, the written labels are now also supplied, e.g. German <-> DE. The structure of the API returns has changed accordingly
+- Specification of a source-type of a backend-connection for API POST/PUT /generic/endpoint new and mandatory, removed parameter for API POST/PUT /resource/representation 
 
 ### Major Change: Infomodel Maintenance
 - Major Change: Upgraded infomodel-java-artifacts 4.0.2 -> 4.0.6
