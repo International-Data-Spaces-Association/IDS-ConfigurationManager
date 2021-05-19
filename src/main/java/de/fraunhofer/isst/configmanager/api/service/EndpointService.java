@@ -142,14 +142,15 @@ public class EndpointService {
 
         var updated = false;
         final var genericEndpointold = getGenericEndpoint(id);
-        final var genericEndpointNew = getGenericEndpoint(id);
-
-
+        final var genericEndpointNew = new GenericEndpointBuilder(genericEndpointold.getId())
+                ._accessURL_(genericEndpointold.getAccessURL())
+                ._genericEndpointAuthentication_(genericEndpointold.getGenericEndpointAuthentication())
+                .build();
 
         if (genericEndpointNew != null) {
             final var genericEndpointNewImpl = (GenericEndpointImpl) genericEndpointNew;
 
-            if(sourceType != null){
+            if (sourceType != null) {
                 genericEndpointNewImpl.setProperty("ids:sourceType", sourceType);
             }
 
@@ -177,14 +178,17 @@ public class EndpointService {
             }
         }
 
-        final var index = this.getGenericEndpoints().indexOf(genericEndpointold);
+        final var customGenericEndpoints =
+                customGenericEndpointList.getCustomGenericEndpointObjects();
 
-        if (index != -1) {
-            this.getGenericEndpoints().set(index, genericEndpointNew);
-            customGenericEndpointList = customGenericEndpointRepository.saveAndFlush(customGenericEndpointList);
-            updated = true;
+        for (int i = 0; i < customGenericEndpoints.size(); i++) {
+            if (id.equals(customGenericEndpoints.get(i).getEndpoint().getId())) {
+                customGenericEndpoints.set(i, new CustomGenericEndpointObject(genericEndpointNew));
+                customGenericEndpointList = customGenericEndpointRepository.saveAndFlush(customGenericEndpointList);
+                updated = true;
+
+            }
         }
-
         return updated;
     }
 }
