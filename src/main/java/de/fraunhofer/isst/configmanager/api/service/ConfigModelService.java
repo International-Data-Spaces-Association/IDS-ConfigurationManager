@@ -82,20 +82,23 @@ public class ConfigModelService {
 
     private void getConnectorConfig(final DefaultConnectorClient client) throws InterruptedException {
         ConfigurationModel connectorConfiguration = null;
+        final var connectionAttemps = 10;
 
-        for (var i = 1; i <= 10; i++) {
+        for (var i = 1; i <= connectionAttemps; i++) {
             try {
                 if (log.isInfoEnabled()) {
-                    log.info("---- [ConfigModelService] Try to reach the connector: " + i + "/10");
+                    log.info("---- [ConfigModelService] Try to reach the connector: " + i + "/" + connectionAttemps);
                 }
                 connectorConfiguration = client.getConfiguration();
                 updateConfigModel(connectorConfiguration);
                 break;
             } catch (IOException e) {
-                if (log.isInfoEnabled()) {
-                    log.info("---- [ConfigModelService] Could not reach the connector, starting next try in 5 seconds.");
+                if (i < connectionAttemps) {
+                    if (log.isInfoEnabled()) {
+                        log.info("---- [ConfigModelService] Could not reach the connector, starting next try in 5 seconds.");
+                    }
+                    TimeUnit.SECONDS.sleep(5);
                 }
-                TimeUnit.SECONDS.sleep(5);
             }
         }
 
