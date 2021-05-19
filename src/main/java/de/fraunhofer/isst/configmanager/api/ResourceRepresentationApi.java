@@ -19,8 +19,7 @@ public interface ResourceRepresentationApi {
                                                         @RequestParam("endpointId") URI endpointId,
                                                         @RequestParam("language") String language,
                                                         @RequestParam("filenameExtension") String filenameExtension,
-                                                        @RequestParam("bytesize") Long bytesize,
-                                                        @RequestParam("sourceType") String sourceType);
+                                                        @RequestParam("bytesize") Long bytesize);
 
     @PutMapping(value = "/resource/representation", produces = "application/ld+json")
     @Operation(summary = "Updates the representation for a resource")
@@ -32,6 +31,5 @@ public interface ResourceRepresentationApi {
                                                         @RequestParam(value = "endpointId") URI endpointId,
                                                         @RequestParam(value = "language", required = false) String language,
                                                         @RequestParam(value = "filenameExtension", required = false) String filenameExtension,
-                                                        @RequestParam(value = "bytesize", required = false) Long bytesize,
-                                                        @RequestParam(value = "sourceType", required = false) String sourceType);
+                                                        @RequestParam(value = "bytesize", required = false) Long bytesize);
 }

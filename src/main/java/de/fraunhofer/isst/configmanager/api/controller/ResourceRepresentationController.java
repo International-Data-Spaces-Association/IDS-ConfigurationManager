@@ -60,7 +60,6 @@ public class ResourceRepresentationController implements ResourceRepresentationA
      * @param language          the language
      * @param filenameExtension the extension of the file
      * @param bytesize          the size of the representation
-     * @param sourceType        the source type of the representation
      * @return a suitable http response depending on success
      */
     @Override
@@ -68,16 +67,14 @@ public class ResourceRepresentationController implements ResourceRepresentationA
                                                                final URI endpointId,
                                                                final String language,
                                                                final String filenameExtension,
-                                                               final Long bytesize,
-                                                               final String sourceType) {
+                                                               final Long bytesize) {
         if (log.isInfoEnabled()) {
             log.info(">> POST /resource/representation resourceId: " + resourceId + " endpointId: " + endpointId + " language: " + language
-                    + " filenameExtension: " + filenameExtension + " bytesize: " + bytesize
-                    + " sourceType: " + sourceType);
+                    + " filenameExtension: " + filenameExtension + " bytesize: " + bytesize);
         }
         ResponseEntity<String> response;
 
-        if (ValidateApiInput.notValid(resourceId.toString(), sourceType)) {
+        if (ValidateApiInput.notValid(resourceId.toString())) {
             response = ResponseEntity.badRequest().body("All validated parameter have undefined as value!");
         } else {
             if (resourceRepresentationService.getResources() == null || resourceRepresentationService.getResources().isEmpty()) {
@@ -88,7 +85,6 @@ public class ResourceRepresentationController implements ResourceRepresentationA
                         ._mediaType_(new IANAMediaTypeBuilder()._filenameExtension_(filenameExtension).build())
                         ._instance_(Util.asList(new ArtifactBuilder()
                                 ._byteSize_(BigInteger.valueOf(bytesize)).build())).build();
-                representation.setProperty("ids:sourceType", sourceType);
 
                 final var jsonObject = new JSONObject();
 
@@ -124,7 +120,6 @@ public class ResourceRepresentationController implements ResourceRepresentationA
      * @param language          the language
      * @param filenameExtension the extension of the file
      * @param bytesize          the size of the representation
-     * @param sourceType        the source type of the representation
      * @return a suitable http response depending on success
      */
     @Override
@@ -133,12 +128,11 @@ public class ResourceRepresentationController implements ResourceRepresentationA
                                                                final URI endpointId,
                                                                final String language,
                                                                final String filenameExtension,
-                                                               final Long bytesize,
-                                                               final String sourceType) {
+                                                               final Long bytesize){
         if (log.isInfoEnabled()) {
             log.info(">> PUT /resource/representation resourceId: " + resourceId + " representationId: "
                     + representationId + " endpointId: " + endpointId + " language: " + language + " filenameExtension: "
-                    + filenameExtension + " bytesize: " + bytesize + " sourceType: " + sourceType);
+                    + filenameExtension + " bytesize: " + bytesize);
         }
         ResponseEntity<String> response = null;
 
@@ -171,9 +165,6 @@ public class ResourceRepresentationController implements ResourceRepresentationA
             }
             if (bytesize != null) {
                 representationImpl.setInstance(Util.asList(new ArtifactBuilder()._byteSize_(BigInteger.valueOf(bytesize)).build()));
-            }
-            if (sourceType != null) {
-                representationImpl.setProperty("ids:sourceType", sourceType);
             }
             // Update representation in app route
             if (configModelService.getConfigModel().getAppRoute() != null) {

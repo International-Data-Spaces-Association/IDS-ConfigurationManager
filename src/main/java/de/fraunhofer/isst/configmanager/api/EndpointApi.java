@@ -17,6 +17,7 @@ public interface EndpointApi {
     @ApiResponse(responseCode = "200", description = "Created a generic endpoint")
     @ApiResponse(responseCode = "400", description = "Can not create the generic endpoint")
     ResponseEntity<String> createGenericEndpoint(@RequestParam(value = "accessURL") URI accessURL,
+                                                 @RequestParam(value = "sourceType") String sourceType,
                                                  @RequestParam(value = "username", required = false) String username,
                                                  @RequestParam(value = "password", required = false) String password);
 
@@ -38,11 +39,13 @@ public interface EndpointApi {
     @ApiResponse(responseCode = "400", description = "Can not update the generic endpoint")
     ResponseEntity<String> updateGenericEndpoint(@RequestParam(value = "id") URI id,
                                                  @RequestParam(value = "accessURL", required = false) URI accessURL,
+                                                 @RequestParam(value = "sourceType", required = false) String sourceType,
                                                  @RequestParam(value = "username", required = false) String username,
                                                  @RequestParam(value = "password", required = false) String password);
 
     @PostMapping(value = "/connector/endpoint", produces = "application/ld+json")
     @Operation(summary = "Creates a new connector endpoint for the connector")
     @ApiResponse(responseCode = "200", description = "Successfully created the connector endpoint for the connector")
-    ResponseEntity<String> createConnectorEndpoint(@RequestParam("accessUrl") URI accessUrl);
+    ResponseEntity<String> createConnectorEndpoint(@RequestParam("accessUrl") URI accessUrl,
+                                                   @RequestParam(value = "sourceType", required = false) String sourceType);
 }

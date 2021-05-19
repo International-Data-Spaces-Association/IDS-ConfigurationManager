@@ -113,19 +113,19 @@ public class ResourceMapper {
     }
 
     /**
-     * The method resolves the source type of a representation.
+     * The method resolves the source type of a endpoint.
      *
-     * @param representation the representation, which holds the sourceType to get
+     * @param genericEndpoint the endpoint, which holds the sourceType to get
      * @return a source type
      */
-    private BackendSource.Type resolveSourceType(final Representation representation) {
+    private BackendSource.Type resolveSourceType(final GenericEndpoint genericEndpoint) {
         BackendSource.Type sourceType;
-        final var typedLiteral = (TypedLiteral) representation.getProperties()
+        final var typedLiteral = (TypedLiteral) genericEndpoint.getProperties()
                 .getOrDefault("https://w3id.org/idsa/core/sourceType", null);
         if (typedLiteral != null) {
             sourceType = BackendSource.Type.valueOf(typedLiteral.getValue());
         } else {
-            final var propName = (String) representation.getProperties().get("ids:sourceType");
+            final var propName = (String) genericEndpoint.getProperties().get("ids:sourceType");
             sourceType = BackendSource.Type.valueOf(propName);
         }
         return sourceType;
@@ -134,12 +134,10 @@ public class ResourceMapper {
     /**
      * This method creates a new backend source for the representation.
      *
-     * @param endpointId     id of the endpoint
-     * @param representation representation
+     * @param endpointId id of the endpoint
      * @return backend source
      */
-    public BackendSource createBackendSource(final String endpointId,
-                                             final Representation representation) {
+    public BackendSource createBackendSource(final String endpointId) {
         final var backendSource = new BackendSource();
         final var endpoint = (GenericEndpoint) endpointService.getGenericEndpoints()
                 .stream()
@@ -157,8 +155,8 @@ public class ResourceMapper {
                 backendSource.setUrl(URI.create("https://example.com"));
                 backendSource.setUsername("");
             }
+            backendSource.setType(resolveSourceType(endpoint));
         }
-        backendSource.setType(resolveSourceType(representation));
         return backendSource;
     }
 }
