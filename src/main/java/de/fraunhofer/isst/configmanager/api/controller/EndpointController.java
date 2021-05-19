@@ -174,7 +174,7 @@ public class EndpointController implements EndpointApi {
         if (log.isInfoEnabled()) {
             log.info(">> POST /connector/endpoint accessUrl: " + accessUrl + " sourceType: " + sourceType);
         }
-      
+
         final var configModelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
         final var baseConnector = (BaseConnectorImpl) configModelImpl.getConnectorDescription();
 

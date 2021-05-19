@@ -39,9 +39,10 @@ public class EndpointService {
     /**
      * This method creates a generic endpoint with the given parameters.
      *
-     * @param accessURL access url of the endpoint
-     * @param username  username for the authentication
-     * @param password  password for the authentication
+     * @param accessURL  access url of the endpoint
+     * @param sourceType the source type of the representation
+     * @param username   username for the authentication
+     * @param password   password for the authentication
      * @return generic endpoint
      */
     public GenericEndpoint createGenericEndpoint(final URI accessURL,
@@ -128,10 +129,11 @@ public class EndpointService {
     /**
      * This method updates a generic endpoint with the given parameters.
      *
-     * @param id        id of the generic endpoint
-     * @param accessURL access url of the endpoint
-     * @param username  username for the authentication
-     * @param password  password for the authentication
+     * @param id         id of the generic endpoint
+     * @param accessURL  access url of the endpoint
+     * @param sourceType the source type of the representation
+     * @param username   username for the authentication
+     * @param password   password for the authentication
      * @return true, if generic endpoint is updated
      */
     public boolean updateGenericEndpoint(final URI id,
@@ -178,15 +180,13 @@ public class EndpointService {
             }
         }
 
-        final var customGenericEndpoints =
-                customGenericEndpointList.getCustomGenericEndpointObjects();
+        final var customGenericEndpoints = customGenericEndpointList.getCustomGenericEndpointObjects();
 
-        for (int i = 0; i < customGenericEndpoints.size(); i++) {
+        for (var i = 0; i < customGenericEndpoints.size(); i++) {
             if (id.equals(customGenericEndpoints.get(i).getEndpoint().getId())) {
                 customGenericEndpoints.set(i, new CustomGenericEndpointObject(genericEndpointNew));
                 customGenericEndpointList = customGenericEndpointRepository.saveAndFlush(customGenericEndpointList);
                 updated = true;
-
             }
         }
         return updated;
