@@ -1,16 +1,11 @@
 package de.fraunhofer.isst.configmanager.petrinet.simulator;
 
 import de.fraunhofer.isst.configmanager.petrinet.builder.GraphVizGenerator;
-import de.fraunhofer.isst.configmanager.petrinet.model.Arc;
-import de.fraunhofer.isst.configmanager.petrinet.model.Node;
-import de.fraunhofer.isst.configmanager.petrinet.model.PetriNet;
-import de.fraunhofer.isst.configmanager.petrinet.model.Place;
-import de.fraunhofer.isst.configmanager.petrinet.model.PlaceImpl;
-import de.fraunhofer.isst.configmanager.petrinet.model.Transition;
-import de.fraunhofer.isst.configmanager.petrinet.model.TransitionImpl;
+import de.fraunhofer.isst.configmanager.petrinet.model.*;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -153,7 +148,6 @@ public class PetriNetSimulator {
                                            final Node transition,
                                            final StepGraph stepGraph){
         Node transitionCopy = null;
-
         for (final var node : copy.getNodes()) {
             if (node.getID().equals(transition.getID())) {
                 transitionCopy = node;
@@ -339,6 +333,50 @@ public class PetriNetSimulator {
             }
         }
         return pathsLenNplus1;
+    }
+
+    public static PetriNet getUnfoldedPetriNet(PetriNet petriNet){
+        var unfolded = petriNet.deepCopy();
+        var transitions = unfolded.getNodes().stream().filter(trans -> trans instanceof Transition).collect(Collectors.toList());
+        for(var transition : transitions){
+            unfolded.getNodes().remove(transition);
+            var transpart1 = new TransitionImpl(URI.create(String.format("%s_start", transition.getID().toString())));
+            var transpart2 = new TransitionImpl(URI.create(String.format("%s_end", transition.getID().toString())));
+            var transplace = new InnerPlace(URI.create(String.format("%s_place", transition.getID().toString())), (Transition) transition);
+            unfolded.getNodes().add(transpart1);
+            unfolded.getNodes().add(transpart2);
+            unfolded.getNodes().add(transplace);
+            var innerArc1 = new ArcImpl(transpart1, transplace);
+            var innerArc2 = new ArcImpl(transplace, transpart2);
+            unfolded.getArcs().add(innerArc1);
+            unfolded.getArcs().add(innerArc2);
+            var targetArcs = transition.getTargetArcs();
+            var sourceArcs = transition.getSourceArcs();
+            unfolded.getArcs().removeAll(targetArcs);
+            unfolded.getArcs().removeAll(sourceArcs);
+            for(var arc : targetArcs){
+                var newArc = new ArcImpl(arc.getSource(), transpart1);
+                unfolded.getArcs().add(newArc);
+            }
+            for(var arc : sourceArcs){
+                var newArc = new ArcImpl(transpart2, arc.getTarget());
+                unfolded.getArcs().add(newArc);
+            }
+        }
+        return unfolded;
+    }
+
+    public static List<List<Transition>> getParallelSets(StepGraph stepGraph){
+        List<List<Transition>> parallelSets = new ArrayList<>();
+        for(var step : stepGraph.getSteps()){
+            var parallelTrans = step.getNodes().stream().filter(node -> node instanceof InnerPlace)
+                    .filter(place -> ((InnerPlace) place).getMarkers() > 0)
+                    .map(place -> ((InnerPlace) place).getOriginalTrans())
+                    .distinct()
+                    .collect(Collectors.toList());
+            if(parallelTrans.size() >= 2) parallelSets.add(parallelTrans);
+        }
+        return parallelSets;
     }
 
     private static List<List<Node>> filterPaths(final List<List<Node>> paths) {
