@@ -337,7 +337,7 @@ public class PetriNetSimulator {
 
     public static PetriNet getUnfoldedPetriNet(PetriNet petriNet){
         var unfolded = petriNet.deepCopy();
-        var transitions = unfolded.getNodes().stream().filter(trans -> trans instanceof Transition).collect(Collectors.toList());
+        var transitions = unfolded.getNodes().stream().filter(trans -> trans instanceof Transition).filter(trans -> ((Transition) trans).getContext().getType() == ContextObject.TransType.APP).collect(Collectors.toList());
         for(var transition : transitions){
             unfolded.getNodes().remove(transition);
             var transpart1 = new TransitionImpl(URI.create(String.format("%s_start", transition.getID().toString())));

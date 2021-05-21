@@ -31,15 +31,11 @@ import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeFORALL_NEXT.nodeFORALL_NEXT;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeMODAL.nodeMODAL;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeNF.nodeNF;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeNOT.nodeNOT;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeOR.nodeOR;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodePOS.nodePOS;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.ArcExpression.arcExpression;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionAF.transitionAF;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionAND.transitionAND;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionEV.transitionEV;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionEXIST_UNTIL.transitionEXIST_UNTIL;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionFORALL_UNTIL.transitionFORALL_UNTIL;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionMODAL.transitionMODAL;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionNOT.transitionNOT;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionOR.transitionOR;
@@ -175,6 +171,7 @@ class InfomodelPetriNetBuilderTest {
     @Disabled
     void testUnfoldNet(){
         var petriNet = buildPaperNet();
+        var stepGraph = PetriNetSimulator.buildStepGraph(petriNet);
         var unfolded = PetriNetSimulator.getUnfoldedPetriNet(petriNet);
         log.info(GraphVizGenerator.generateGraphViz(unfolded));
         log.info(String.valueOf(unfolded.deepCopy().equals(unfolded)));
@@ -236,29 +233,29 @@ class InfomodelPetriNetBuilderTest {
         nodes.addAll(List.of(start, copy, init, dat1, dat2, con1, con2, con3, con4, sample, mean, med, rules, stor1, stor2, stor3, stor4, end));
         //create transitions with context
         var initTrans = new TransitionImpl(URI.create("trans://init"));
-        initTrans.setContextObject(new ContextObject(List.of(), null, null, null));
+        initTrans.setContextObject(new ContextObject(List.of(), null, null, null, ContextObject.TransType.CONTROL));
         var getData = new TransitionImpl(URI.create("trans://getData"));
-        getData.setContextObject(new ContextObject(List.of(), null, "data", null));
+        getData.setContextObject(new ContextObject(List.of(), null, "data", null, ContextObject.TransType.APP));
         var copyData = new TransitionImpl(URI.create("trans://copyData"));
-        copyData.setContextObject(new ContextObject(List.of(""), "data", "data", null));
+        copyData.setContextObject(new ContextObject(List.of(""), "data", "data", null, ContextObject.TransType.APP));
         var extract = new TransitionImpl(URI.create("trans://extractSample"));
-        extract.setContextObject(new ContextObject(List.of("france"), "data", "sample", "data"));
+        extract.setContextObject(new ContextObject(List.of("france"), "data", "sample", "data", ContextObject.TransType.APP));
         var calcMean = new TransitionImpl(URI.create("trans://calcMean"));
-        calcMean.setContextObject(new ContextObject(List.of("france"), "data", "mean", "data"));
+        calcMean.setContextObject(new ContextObject(List.of("france"), "data", "mean", "data", ContextObject.TransType.APP));
         var calcMed = new TransitionImpl(URI.create("trans://calcMedian"));
-        calcMed.setContextObject(new ContextObject(List.of("france"), "data", "median", "data"));
+        calcMed.setContextObject(new ContextObject(List.of("france"), "data", "median", "data", ContextObject.TransType.APP));
         var calcRules = new TransitionImpl(URI.create("trans://calcAPrioriRules"));
-        calcRules.setContextObject(new ContextObject(List.of("france", "high_performance"), "data", "rules", "data"));
+        calcRules.setContextObject(new ContextObject(List.of("france", "high_performance"), "data", "rules", "data", ContextObject.TransType.APP));
         var store1 = new TransitionImpl(URI.create("trans://storeData1"));
-        store1.setContextObject(new ContextObject(List.of(), "sample", null, "sample"));
+        store1.setContextObject(new ContextObject(List.of(), "sample", null, "sample", ContextObject.TransType.APP));
         var store2 = new TransitionImpl(URI.create("trans://storeData2"));
-        store2.setContextObject(new ContextObject(List.of(), "mean", null, "mean"));
+        store2.setContextObject(new ContextObject(List.of(), "mean", null, "mean", ContextObject.TransType.APP));
         var store3 = new TransitionImpl(URI.create("trans://storeData3"));
-        store3.setContextObject(new ContextObject(List.of(), "median", null, "median"));
+        store3.setContextObject(new ContextObject(List.of(), "median", null, "median", ContextObject.TransType.APP));
         var store4 = new TransitionImpl(URI.create("trans://storeData4"));
-        store4.setContextObject(new ContextObject(List.of(), "rules", null, "rules"));
+        store4.setContextObject(new ContextObject(List.of(), "rules", null, "rules", ContextObject.TransType.APP));
         var endTrans = new TransitionImpl(URI.create("trans://end"));
-        endTrans.setContextObject(new ContextObject(List.of(), null, null, null));
+        endTrans.setContextObject(new ContextObject(List.of(), null, null, null, ContextObject.TransType.CONTROL));
         nodes.addAll(List.of(initTrans, getData, copyData, extract, calcMean, calcMed, calcRules, store1, store2, store3, store4, endTrans));
         //create arcs
         var arcs = new HashSet<Arc>();

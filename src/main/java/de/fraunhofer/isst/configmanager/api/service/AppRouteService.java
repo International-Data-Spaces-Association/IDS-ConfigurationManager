@@ -1,22 +1,13 @@
 package de.fraunhofer.isst.configmanager.api.service;
 
-import de.fraunhofer.iais.eis.AppRoute;
-import de.fraunhofer.iais.eis.AppRouteBuilder;
-import de.fraunhofer.iais.eis.AppRouteImpl;
-import de.fraunhofer.iais.eis.BaseConnectorImpl;
-import de.fraunhofer.iais.eis.ConfigurationModelImpl;
-import de.fraunhofer.iais.eis.ConnectorEndpointBuilder;
-import de.fraunhofer.iais.eis.Endpoint;
-import de.fraunhofer.iais.eis.ResourceImpl;
-import de.fraunhofer.iais.eis.RouteStep;
-import de.fraunhofer.iais.eis.RouteStepBuilder;
+import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.api.service.resources.ResourceService;
+import de.fraunhofer.isst.configmanager.data.entities.CustomApp;
+import de.fraunhofer.isst.configmanager.data.entities.EndpointInformation;
 import de.fraunhofer.isst.configmanager.data.repositories.CustomAppRepository;
 import de.fraunhofer.isst.configmanager.data.repositories.EndpointInformationRepository;
 import de.fraunhofer.isst.configmanager.data.repositories.RouteDeployMethodRepository;
-import de.fraunhofer.isst.configmanager.data.entities.CustomApp;
-import de.fraunhofer.isst.configmanager.data.entities.EndpointInformation;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
