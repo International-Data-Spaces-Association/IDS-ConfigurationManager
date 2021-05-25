@@ -1,6 +1,10 @@
 package de.fraunhofer.isst.configmanager.api.service;
 
-import de.fraunhofer.iais.eis.*;
+import de.fraunhofer.iais.eis.BaseConnectorBuilder;
+import de.fraunhofer.iais.eis.BaseConnectorImpl;
+import de.fraunhofer.iais.eis.ConfigurationModelImpl;
+import de.fraunhofer.iais.eis.ConnectorEndpointBuilder;
+import de.fraunhofer.iais.eis.SecurityProfile;
 import de.fraunhofer.iais.eis.util.TypedLiteral;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.data.repositories.ConfigModelRepository;
