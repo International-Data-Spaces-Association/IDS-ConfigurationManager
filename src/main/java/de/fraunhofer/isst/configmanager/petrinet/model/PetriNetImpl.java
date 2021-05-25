@@ -4,9 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.net.URI;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Implementation class of the {@link PetriNet} interface.
@@ -32,17 +30,18 @@ public class PetriNetImpl implements PetriNet, HasId {
     @SneakyThrows
     public PetriNet deepCopy() {
         final var nodeCopy = new HashSet<Node>();
+        Map<URI, Node> nodeClones = new HashMap<>();
         for (final var node : nodes) {
-            nodeCopy.add(node.deepCopy());
+            nodeClones.put(node.getID(), node.deepCopy());
         }
+        nodeCopy.addAll(nodeClones.values());
 
         final var arcCopy = new HashSet<Arc>();
-
         for (final var arc : arcs) {
             arcCopy.add(
                     new ArcImpl(
-                            nodeById(arc.getSource().getID(), nodeCopy),
-                            nodeById(arc.getTarget().getID(), nodeCopy)
+                            (Node) nodeClones.get(arc.getSource().getID()),
+                            (Node) nodeClones.get(arc.getTarget().getID())
                     )
             );
         }
@@ -78,12 +77,15 @@ public class PetriNetImpl implements PetriNet, HasId {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-
         final var petriNet = (PetriNetImpl) o;
-        final var eq1 = Objects.equals(id, petriNet.id);
-        final var eq2 = nodes.stream().map(s -> petriNet.nodes.stream().filter(n -> n.getID().equals(s.getID())).anyMatch(n -> n.equals(s))).reduce(true, (a, b) -> a && b);
-        final var eq3 = arcs.stream().map(s -> petriNet.arcs.stream().anyMatch(n -> n.equals(s))).reduce(true, (a, b) -> a && b);
+        return Objects.equals(id, petriNet.id) && arcsEqual(petriNet.arcs) && nodesEqual(petriNet.nodes);
+    }
 
-        return eq1 && eq2 && eq3;
+    private boolean nodesEqual(Set<Node> otherNodes){
+        return nodes.stream().map(s -> otherNodes.stream().filter(n -> n.getID().equals(s.getID())).anyMatch(n -> n.equals(s))).reduce(true, (a, b) -> a && b);
+    }
+
+    private boolean arcsEqual(Set<Arc> otherArcs){
+        return arcs.stream().map(s -> otherArcs.stream().anyMatch(n -> n.equals(s))).reduce(true, (a, b) -> a && b);
     }
 }

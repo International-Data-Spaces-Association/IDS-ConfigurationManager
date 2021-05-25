@@ -52,12 +52,14 @@ public class EndpointController implements EndpointApi {
      * This method creates a generic endpoint with the given parameters.
      *
      * @param accessURL access url of the parameter
+     * @param sourceType source type of the endpoint
      * @param username  username for the authentication
      * @param password  password for the authentication
      * @return a suitable http response depending on success
      */
     @Override
     public ResponseEntity<String> createGenericEndpoint(final URI accessURL,
+                                                        final String sourceType,
                                                         final String username,
                                                         final String password) {
         if (log.isInfoEnabled()) {
@@ -65,7 +67,7 @@ public class EndpointController implements EndpointApi {
         }
         ResponseEntity<String> response;
 
-        final var genericEndpoint = endpointService.createGenericEndpoint(accessURL, username, password);
+        final var genericEndpoint = endpointService.createGenericEndpoint(accessURL, sourceType, username, password);
         if (genericEndpoint != null) {
             final var jsonObject = new JSONObject();
             jsonObject.put("id", genericEndpoint.getId().toString());
@@ -134,6 +136,7 @@ public class EndpointController implements EndpointApi {
      *
      * @param endpointId id of the generic endpoint
      * @param accessURL  access url of the endpoint
+     * @param sourceType source type of the endpoint
      * @param username   username for authentication
      * @param password   password for authentication
      * @return a suitable http response depending on success
@@ -141,6 +144,7 @@ public class EndpointController implements EndpointApi {
     @Override
     public ResponseEntity<String> updateGenericEndpoint(final URI endpointId,
                                                         final URI accessURL,
+                                                        final String sourceType,
                                                         final String username,
                                                         final String password) {
         if (log.isInfoEnabled()) {
@@ -148,7 +152,7 @@ public class EndpointController implements EndpointApi {
         }
         ResponseEntity<String> response;
 
-        final var updated = endpointService.updateGenericEndpoint(endpointId, accessURL, username, password);
+        final var updated = endpointService.updateGenericEndpoint(endpointId, accessURL, sourceType, username, password);
 
         if (updated) {
             response = ResponseEntity.ok("Updated the generic endpoint with id: " + endpointId);
@@ -163,12 +167,12 @@ public class EndpointController implements EndpointApi {
      * This method creates a connector endpoint with given parameters.
      *
      * @param accessUrl access url of the endpoint
+     * @param sourceType source type of the endpoint
      * @return a suitable http response depending on success
      */
-    @Override
-    public ResponseEntity<String> createConnectorEndpoint(final URI accessUrl) {
+    public ResponseEntity<String> createConnectorEndpoint(final URI accessUrl, final String sourceType) {
         if (log.isInfoEnabled()) {
-            log.info(">> POST /connector/endpoint accessUrl: " + accessUrl);
+            log.info(">> POST /connector/endpoint accessUrl: " + accessUrl + " sourceType: " + sourceType);
         }
 
         final var configModelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
@@ -180,6 +184,8 @@ public class EndpointController implements EndpointApi {
 
         final var connectorEndpoints = (ArrayList<ConnectorEndpoint>) baseConnector.getHasEndpoint();
         final var connectorEndpoint = new ConnectorEndpointBuilder()._accessURL_(accessUrl).build();
+
+        connectorEndpoint.setProperty("ids:sourceType", sourceType);
 
         connectorEndpoints.add(connectorEndpoint);
         configModelService.saveState();

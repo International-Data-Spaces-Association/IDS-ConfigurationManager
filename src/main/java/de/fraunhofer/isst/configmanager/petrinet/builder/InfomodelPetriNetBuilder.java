@@ -3,15 +3,7 @@ package de.fraunhofer.isst.configmanager.petrinet.builder;
 import de.fraunhofer.iais.eis.AppRoute;
 import de.fraunhofer.iais.eis.Endpoint;
 import de.fraunhofer.iais.eis.RouteStep;
-import de.fraunhofer.isst.configmanager.petrinet.model.Arc;
-import de.fraunhofer.isst.configmanager.petrinet.model.ArcImpl;
-import de.fraunhofer.isst.configmanager.petrinet.model.Node;
-import de.fraunhofer.isst.configmanager.petrinet.model.PetriNet;
-import de.fraunhofer.isst.configmanager.petrinet.model.PetriNetImpl;
-import de.fraunhofer.isst.configmanager.petrinet.model.Place;
-import de.fraunhofer.isst.configmanager.petrinet.model.PlaceImpl;
-import de.fraunhofer.isst.configmanager.petrinet.model.Transition;
-import de.fraunhofer.isst.configmanager.petrinet.model.TransitionImpl;
+import de.fraunhofer.isst.configmanager.petrinet.model.*;
 import lombok.experimental.UtilityClass;
 
 import java.net.URI;

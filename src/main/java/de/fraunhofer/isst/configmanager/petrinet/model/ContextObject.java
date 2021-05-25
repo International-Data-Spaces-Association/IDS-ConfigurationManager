@@ -15,9 +15,10 @@ public class ContextObject {
     private String read;
     private String write;
     private String erase;
+    private TransType type;
 
    public ContextObject deepCopy() {
-       return new ContextObject(context, read, write, erase);
+       return new ContextObject(context, read, write, erase, type);
    }
 
     @Override
@@ -38,5 +39,10 @@ public class ContextObject {
     @Override
     public int hashCode() {
         return Objects.hash(new ArrayList<>(context), read, write, erase);
+    }
+
+    public enum TransType {
+        APP,
+        CONTROL
     }
 }

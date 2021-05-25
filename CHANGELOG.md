@@ -16,6 +16,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Major Changes
 - Remove 20 unused APIs (= 1.150 lines of code) (unused by ConfigManager-UI project)
 - For the APIs of the enums, in addition to the technical name, such as DE for the language-dropdown, the written labels are now also supplied, e.g. German <-> DE. The structure of the API returns has changed accordingly
+- Specification of a source-type of a backend-connection for API POST/PUT /generic/endpoint new and mandatory, removed parameter for API POST/PUT /resource/representation 
 
 ### Major Change: Infomodel Maintenance
 - Major Change: Upgraded infomodel-java-artifacts 4.0.2 -> 4.0.6
@@ -26,7 +27,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Minor Change: New API GET /api/ui/connector/status to return the accessibility-status of the Public-Connector-Endpoint
 - Minor Change: New API PUT /resource/contract/update to create the contract in the configmanager and update it at the dataspace connector
 - Minor Change: New setting option to address the DSC via HTTP or HTTPS. dataspace.communication.ssl=true/false in application.properties and DATASPACE_COMMUNICATION_SSL=true/false in docker-compose environment.
-- Minor Change: The CM now tries to reach the connector max 10 times during startup, with a pause of 5 seconds each time, instead of just try once.
+- Minor Change: The CM now tries to reach the connector several times during startup, with a pause of 5 seconds each time, instead of just try once. The number of tries can be set individually via application.properties or docker-compose e.g. dataspace.connector.connectionattemps=5.
 
 ### Changes
 - Patch Change: Code and Architecture refactoring
@@ -49,11 +50,11 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Dependabot: Dependabot will now automatically suggest pull requests for updates to dependencies.
 - Add: org.apache.logging.log4j:log4j-web 2.14.1 (Apache 2.0)
 - Add: org.postgresql:postgresql 42.2.20 (BSD-2-Clause)
-- Upgrade: org.springframework.boot:spring-boot-starter-parent 2.4.2 -> 2.4.5
-- Upgrade: org.springframework.security:spring-security-test 5.4.2 -> 5.4.6
+- Upgrade: org.springframework.boot:spring-boot-starter-parent 2.4.2 -> 2.5.0
+- Upgrade: org.springframework.security:spring-security-test 5.4.2 -> 5.5.0
 - Upgrade: org.projectlombok:lombok 1.18.18 -> 1.18.20
 - Upgrade: junit:junit 4.13.1 -> 4.13.2
-- Upgrade: org.springdoc:springdoc-openapi-ui 1.5.7 -> 1.5.8
+- Upgrade: org.springdoc:springdoc-openapi-ui 1.5.7 -> 1.5.9
 - Exclude: com.vaadin.external.google:android-json from org.springframework.boot:spring-boot-starter-test
 - Remove: io.jsonwebtoken:jjwt 0.9.1
 

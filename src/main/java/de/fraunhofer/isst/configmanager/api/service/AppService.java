@@ -2,9 +2,9 @@ package de.fraunhofer.isst.configmanager.api.service;
 
 import de.fraunhofer.iais.eis.AppEndpointType;
 import de.fraunhofer.iais.eis.Language;
-import de.fraunhofer.isst.configmanager.data.repositories.CustomAppRepository;
 import de.fraunhofer.isst.configmanager.data.entities.CustomApp;
 import de.fraunhofer.isst.configmanager.data.entities.CustomAppEndpoint;
+import de.fraunhofer.isst.configmanager.data.repositories.CustomAppRepository;
 import de.fraunhofer.isst.configmanager.util.Utility;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;

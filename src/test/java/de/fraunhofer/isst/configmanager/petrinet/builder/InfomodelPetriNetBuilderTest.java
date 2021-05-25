@@ -7,14 +7,8 @@ import de.fraunhofer.iais.eis.RouteStep;
 import de.fraunhofer.iais.eis.RouteStepBuilder;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.CTLEvaluator;
-import de.fraunhofer.isst.configmanager.petrinet.model.Arc;
-import de.fraunhofer.isst.configmanager.petrinet.model.ArcImpl;
-import de.fraunhofer.isst.configmanager.petrinet.model.ContextObject;
-import de.fraunhofer.isst.configmanager.petrinet.model.Node;
-import de.fraunhofer.isst.configmanager.petrinet.model.PetriNetImpl;
-import de.fraunhofer.isst.configmanager.petrinet.model.Place;
-import de.fraunhofer.isst.configmanager.petrinet.model.PlaceImpl;
-import de.fraunhofer.isst.configmanager.petrinet.model.TransitionImpl;
+import de.fraunhofer.isst.configmanager.petrinet.model.*;
+import de.fraunhofer.isst.configmanager.petrinet.simulator.ParallelEvaluator;
 import de.fraunhofer.isst.configmanager.petrinet.simulator.PetriNetSimulator;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Disabled;
@@ -31,20 +25,17 @@ import java.util.concurrent.ThreadLocalRandom;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.FF.FF;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.TT.TT;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeAND.nodeAND;
+import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeEV.nodeEV;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeEXIST_UNTIL.nodeEXIST_UNTIL;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeExpression.nodeExpression;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeFORALL_NEXT.nodeFORALL_NEXT;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeMODAL.nodeMODAL;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeNF.nodeNF;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeNOT.nodeNOT;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeOR.nodeOR;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodePOS.nodePOS;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.ArcExpression.arcExpression;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionAF.transitionAF;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionAND.transitionAND;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionEV.transitionEV;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionEXIST_UNTIL.transitionEXIST_UNTIL;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionFORALL_UNTIL.transitionFORALL_UNTIL;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionMODAL.transitionMODAL;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionNOT.transitionNOT;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionOR.transitionOR;
@@ -126,6 +117,98 @@ class InfomodelPetriNetBuilderTest {
     @Test
     @Disabled
     void testExamplePetriNet(){
+        var petriNet = buildPaperNet();
+
+        if (log.isInfoEnabled()) {
+            log.info(GraphVizGenerator.generateGraphViz(petriNet));
+        }
+
+        //build stepGraph and visualize
+        var graph = PetriNetSimulator.buildStepGraph(petriNet);
+
+        if (log.isInfoEnabled()) {
+            //log.info(GraphVizGenerator.generateGraphViz(graph));
+            log.info(String.format("%d possible states!", graph.getSteps().size()));
+        }
+
+        var allPaths = PetriNetSimulator.getAllPaths(graph);
+        log.info(String.format("Found %d valid Paths!", allPaths.size()));
+        //an end node is eventually reachable
+        var endReachable = nodeEV(nodeNF(nodeExpression(x -> x.getSourceArcs().isEmpty(), "")));
+        log.info("Evaluating Formula: " + endReachable.writeFormula());
+        //log.info("Result: " + CTLEvaluator.evaluate(endReachable, graph.getInitial().getNodes().stream().filter(node -> node.getID().equals(URI.create("place://start"))).findAny().get(), allPaths));
+        //a transition is reachable, which reads data without 'france' in context, after that transition data is overwritten or erased (or an end is reached)
+        var formulaFrance = transitionPOS(transitionAND(transitionAF(arcExpression(x -> x.getContext().getRead() != null && x.getContext().getRead().equals("data") && !x.getContext().getContext().contains("france"), "")), transitionEV(transitionOR(transitionAF(arcExpression(x -> x.getContext().getWrite() != null && x.getContext().getWrite().equals("data") || x.getContext().getErase() != null && x.getContext().getErase().equals("data"), "")), transitionMODAL(nodeNF(nodeExpression(x -> x.getSourceArcs().isEmpty(), " ")))))));
+        log.info("Formula France: " + formulaFrance.writeFormula());
+        log.info("Result: " + CTLEvaluator.evaluate(formulaFrance, graph.getInitial().getNodes().stream().filter(node -> node.getID().equals(URI.create("trans://getData"))).findAny().get(), allPaths));
+        //a transition is reachable, which reads data
+        var formulaDataUsage = nodeMODAL(transitionPOS(transitionAF(arcExpression(x -> x.getContext().getRead() != null && x.getContext().getRead().equals("data"), ""))));
+        log.info("Formula Data: " + formulaDataUsage.writeFormula());
+        log.info("Result: " + CTLEvaluator.evaluate(formulaDataUsage, graph.getInitial().getNodes().stream().filter(node -> node.getID().equals(URI.create("place://start"))).findAny().get(), allPaths));
+        //a transition is reachable, which is reading data. From there another transition is reachable, which also reads data, from this the end or a transition which overwrites or erases data is reachable.
+        var formulaUseAndDelete = transitionPOS(
+                                                transitionAND(
+                                                        transitionAF(arcExpression(x -> x.getContext().getRead() != null && x.getContext().getRead().equals("data"), "")),
+                                                        transitionPOS(
+                                                                transitionAND(
+                                                                    transitionAF(arcExpression(x -> x.getContext().getRead() != null || x.getContext().getRead().equals("data"), "")),
+                                                                    transitionEV(
+                                                                        transitionOR(
+                                                                                transitionAF(arcExpression(x -> x.getContext().getWrite() != null && x.getContext().getWrite().equals("data") || x.getContext().getErase() != null && x.getContext().getErase().equals("data"), "")),
+                                                                                transitionMODAL(nodeNF(nodeExpression(x -> x.getSourceArcs().isEmpty(), " ")))
+                                                                        )
+                                                                    )
+                                                                )
+
+                                                            )
+                                                )
+        );
+        log.info("Formula Use And Delete: " + formulaUseAndDelete.writeFormula());
+        log.info("Result: " + CTLEvaluator.evaluate(formulaUseAndDelete, graph.getInitial().getNodes().stream().filter(node -> node.getID().equals(URI.create("trans://getData"))).findAny().get(), allPaths));
+    }
+
+    @Test
+    @Disabled
+    void testUnfoldNet(){
+        var petriNet = buildPaperNet();
+        var stepGraph = PetriNetSimulator.buildStepGraph(petriNet);
+        var unfolded = PetriNetSimulator.getUnfoldedPetriNet(petriNet);
+        log.info(GraphVizGenerator.generateGraphViz(unfolded));
+        log.info(String.valueOf(unfolded.deepCopy().equals(unfolded)));
+        var unfoldedGraph = PetriNetSimulator.buildStepGraph(unfolded);
+        log.info(String.format("Step Graph has %d possible combinations!", unfoldedGraph.getSteps().size()));
+        log.info("Getting parallel sets...");
+        var parallelSets = PetriNetSimulator.getParallelSets(unfoldedGraph);
+        log.info(String.format("Found %d possible parallel executions!", parallelSets.size()));
+        log.info(String.format("3 parallel reading Transitions: %s", ParallelEvaluator.nParallelTransitionsWithCondition(x -> x.getContext().getRead() != null && x.getContext().getRead().equals("data"), 3, parallelSets)));
+    }
+
+    /**
+     * @param input A List
+     * @param <T> Generic Type for given list
+     * @return a random sublist with a size between MINIMUM_STARTEND and MAXIMUM_STARTEND
+     */
+    public static <T> ArrayList<? extends T> randomSubList(List<T> input) {
+        var newSize = ThreadLocalRandom.current().nextInt(MINIMUM_STARTEND,MAXIMUM_STARTEND);
+        var list = new ArrayList<>(input);
+        Collections.shuffle(list);
+        ArrayList<T> newList = new ArrayList<>();
+        for(int i = 0; i< newSize; i++){
+            newList.add(list.get(i));
+        }
+        return newList;
+    }
+
+    @Test
+    @Disabled
+    void testFormula(){
+        var formula = nodeAND(nodeMODAL(transitionNOT(FF())), nodeOR(nodeNF(nodeExpression(x -> true, "testMsg")),TT()));
+        if (log.isInfoEnabled()) {
+            log.info(formula.writeFormula());
+        }
+    }
+
+    private PetriNet buildPaperNet(){
         var nodes = new HashSet<Node>();
         //create nodes
         var start = new PlaceImpl(URI.create("place://start"));
@@ -150,29 +233,29 @@ class InfomodelPetriNetBuilderTest {
         nodes.addAll(List.of(start, copy, init, dat1, dat2, con1, con2, con3, con4, sample, mean, med, rules, stor1, stor2, stor3, stor4, end));
         //create transitions with context
         var initTrans = new TransitionImpl(URI.create("trans://init"));
-        initTrans.setContextObject(new ContextObject(List.of(), null, null, null));
+        initTrans.setContextObject(new ContextObject(List.of(), null, null, null, ContextObject.TransType.CONTROL));
         var getData = new TransitionImpl(URI.create("trans://getData"));
-        getData.setContextObject(new ContextObject(List.of(), null, "data", null));
+        getData.setContextObject(new ContextObject(List.of(), null, "data", null, ContextObject.TransType.APP));
         var copyData = new TransitionImpl(URI.create("trans://copyData"));
-        copyData.setContextObject(new ContextObject(List.of(""), "data", "data", null));
+        copyData.setContextObject(new ContextObject(List.of(""), "data", "data", null, ContextObject.TransType.APP));
         var extract = new TransitionImpl(URI.create("trans://extractSample"));
-        extract.setContextObject(new ContextObject(List.of("france"), "data", "sample", "data"));
+        extract.setContextObject(new ContextObject(List.of("france"), "data", "sample", "data", ContextObject.TransType.APP));
         var calcMean = new TransitionImpl(URI.create("trans://calcMean"));
-        calcMean.setContextObject(new ContextObject(List.of("france"), "data", "mean", "data"));
+        calcMean.setContextObject(new ContextObject(List.of("france"), "data", "mean", "data", ContextObject.TransType.APP));
         var calcMed = new TransitionImpl(URI.create("trans://calcMedian"));
-        calcMed.setContextObject(new ContextObject(List.of("france"), "data", "median", "data"));
+        calcMed.setContextObject(new ContextObject(List.of("france"), "data", "median", "data", ContextObject.TransType.APP));
         var calcRules = new TransitionImpl(URI.create("trans://calcAPrioriRules"));
-        calcRules.setContextObject(new ContextObject(List.of("france", "high_performance"), "data", "rules", "data"));
+        calcRules.setContextObject(new ContextObject(List.of("france", "high_performance"), "data", "rules", "data", ContextObject.TransType.APP));
         var store1 = new TransitionImpl(URI.create("trans://storeData1"));
-        store1.setContextObject(new ContextObject(List.of(), "sample", null, "sample"));
+        store1.setContextObject(new ContextObject(List.of(), "sample", null, "sample", ContextObject.TransType.APP));
         var store2 = new TransitionImpl(URI.create("trans://storeData2"));
-        store2.setContextObject(new ContextObject(List.of(), "mean", null, "mean"));
+        store2.setContextObject(new ContextObject(List.of(), "mean", null, "mean", ContextObject.TransType.APP));
         var store3 = new TransitionImpl(URI.create("trans://storeData3"));
-        store3.setContextObject(new ContextObject(List.of(), "median", null, "median"));
+        store3.setContextObject(new ContextObject(List.of(), "median", null, "median", ContextObject.TransType.APP));
         var store4 = new TransitionImpl(URI.create("trans://storeData4"));
-        store4.setContextObject(new ContextObject(List.of(), "rules", null, "rules"));
+        store4.setContextObject(new ContextObject(List.of(), "rules", null, "rules", ContextObject.TransType.APP));
         var endTrans = new TransitionImpl(URI.create("trans://end"));
-        endTrans.setContextObject(new ContextObject(List.of(), null, null, null));
+        endTrans.setContextObject(new ContextObject(List.of(), null, null, null, ContextObject.TransType.CONTROL));
         nodes.addAll(List.of(initTrans, getData, copyData, extract, calcMean, calcMed, calcRules, store1, store2, store3, store4, endTrans));
         //create arcs
         var arcs = new HashSet<Arc>();
@@ -220,79 +303,6 @@ class InfomodelPetriNetBuilderTest {
         arcs.add(new ArcImpl(stor4, endTrans));
         arcs.add(new ArcImpl(endTrans, end));
         //create petriNet and visualize
-        var petriNet = new PetriNetImpl(URI.create("https://petrinet"), nodes, arcs);
-
-        if (log.isInfoEnabled()) {
-            log.info(GraphVizGenerator.generateGraphViz(petriNet));
-        }
-
-        //build stepGraph and visualize
-        var graph = PetriNetSimulator.buildStepGraph(petriNet);
-
-        if (log.isInfoEnabled()) {
-            //log.info(GraphVizGenerator.generateGraphViz(graph));
-            log.info(String.format("%d possible states!", graph.getSteps().size()));
-        }
-
-        var allPaths = PetriNetSimulator.getAllPaths(graph);
-        log.info(PetriNetSimulator.circleFree(allPaths.get(0))+ " ");
-        log.info(String.format("Found %d valid Paths!", allPaths.size()));
-        //an end node is reachable
-        var endReachable = nodePOS(nodeNF(nodeExpression(x -> x.getSourceArcs().isEmpty(), "")));
-        log.info("Evaluating Formula: " + endReachable.writeFormula());
-        log.info("Result: " + CTLEvaluator.evaluate(endReachable, graph.getInitial().getNodes().stream().filter(node -> node.getID().equals(URI.create("place://start"))).findAny().get(), allPaths));
-        //a transition is reachable, which reads data without 'france' in context, after that transition data is overwritten or erased (or an end is reached)
-        var formulaFrance = transitionPOS(transitionAND(transitionAF(arcExpression(x -> x.getContext().getRead() != null && x.getContext().getRead().equals("data") && !x.getContext().getContext().contains("france"), "")), transitionEV(transitionOR(transitionAF(arcExpression(x -> x.getContext().getWrite() != null && x.getContext().getWrite().equals("data") || x.getContext().getErase() != null && x.getContext().getErase().equals("data"), "")), transitionMODAL(nodeNF(nodeExpression(x -> x.getSourceArcs().isEmpty(), " ")))))));
-        log.info("Formula France: " + formulaFrance.writeFormula());
-        log.info("Result: " + CTLEvaluator.evaluate(formulaFrance, graph.getInitial().getNodes().stream().filter(node -> node.getID().equals(URI.create("trans://getData"))).findAny().get(), allPaths));
-        //a transition is reachable, which reads data
-        var formulaDataUsage = nodeMODAL(transitionPOS(transitionAF(arcExpression(x -> x.getContext().getRead() != null && x.getContext().getRead().equals("data"), ""))));
-        log.info("Formula Data: " + formulaDataUsage.writeFormula());
-        log.info("Result: " + CTLEvaluator.evaluate(formulaDataUsage, graph.getInitial().getNodes().stream().filter(node -> node.getID().equals(URI.create("place://start"))).findAny().get(), allPaths));
-        //a transition is reachable, which is reading data. From there another transition is reachable, which also reads data, from this the end or a transition which overwrites or erases data is reachable.
-        var formulaUseAndDelete = transitionPOS(
-                                                transitionAND(
-                                                        transitionAF(arcExpression(x -> x.getContext().getRead() != null && x.getContext().getRead().equals("data"), "")),
-                                                        transitionPOS(
-                                                                transitionAND(
-                                                                    transitionAF(arcExpression(x -> x.getContext().getRead() != null || x.getContext().getRead().equals("data"), "")),
-                                                                    transitionEV(
-                                                                        transitionOR(
-                                                                                transitionAF(arcExpression(x -> x.getContext().getWrite() != null && x.getContext().getWrite().equals("data") || x.getContext().getErase() != null && x.getContext().getErase().equals("data"), "")),
-                                                                                transitionMODAL(nodeNF(nodeExpression(x -> x.getSourceArcs().isEmpty(), " ")))
-                                                                        )
-                                                                    )
-                                                                )
-
-                                                            )
-                                                )
-        );
-        log.info("Formula Use And Delete: " + formulaUseAndDelete.writeFormula());
-        log.info("Result: " + CTLEvaluator.evaluate(formulaUseAndDelete, graph.getInitial().getNodes().stream().filter(node -> node.getID().equals(URI.create("trans://getData"))).findAny().get(), allPaths));
-    }
-
-    /**
-     * @param input A List
-     * @param <T> Generic Type for given list
-     * @return a random sublist with a size between MINIMUM_STARTEND and MAXIMUM_STARTEND
-     */
-    public static <T> ArrayList<? extends T> randomSubList(List<T> input) {
-        var newSize = ThreadLocalRandom.current().nextInt(MINIMUM_STARTEND,MAXIMUM_STARTEND);
-        var list = new ArrayList<>(input);
-        Collections.shuffle(list);
-        ArrayList<T> newList = new ArrayList<>();
-        for(int i = 0; i< newSize; i++){
-            newList.add(list.get(i));
-        }
-        return newList;
-    }
-
-    @Test
-    @Disabled
-    void testFormula(){
-        var formula = nodeAND(nodeMODAL(transitionNOT(FF())), nodeOR(nodeNF(nodeExpression(x -> true, "testMsg")),TT()));
-        if (log.isInfoEnabled()) {
-            log.info(formula.writeFormula());
-        }
+        return new PetriNetImpl(URI.create("https://petrinet"), nodes, arcs);
     }
 }

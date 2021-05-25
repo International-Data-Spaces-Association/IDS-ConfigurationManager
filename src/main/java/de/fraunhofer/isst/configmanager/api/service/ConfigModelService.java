@@ -1,17 +1,6 @@
 package de.fraunhofer.isst.configmanager.api.service;
 
-import de.fraunhofer.iais.eis.BaseConnectorBuilder;
-import de.fraunhofer.iais.eis.BasicAuthenticationBuilder;
-import de.fraunhofer.iais.eis.ConfigurationModel;
-import de.fraunhofer.iais.eis.ConfigurationModelBuilder;
-import de.fraunhofer.iais.eis.ConfigurationModelImpl;
-import de.fraunhofer.iais.eis.ConnectorDeployMode;
-import de.fraunhofer.iais.eis.ConnectorEndpointBuilder;
-import de.fraunhofer.iais.eis.ConnectorStatus;
-import de.fraunhofer.iais.eis.LogLevel;
-import de.fraunhofer.iais.eis.ProxyBuilder;
-import de.fraunhofer.iais.eis.ProxyImpl;
-import de.fraunhofer.iais.eis.SecurityProfile;
+import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.data.entities.ConfigModelObject;
@@ -21,6 +10,7 @@ import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,18 +30,21 @@ import java.util.concurrent.TimeUnit;
 public class ConfigModelService {
 
     final transient ConfigModelRepository configModelRepository;
+
+
     @Getter
     ConfigModelObject configModelObject;
 
     @Autowired
     public ConfigModelService(final ConfigModelRepository configModelRepository,
-                              final DefaultConnectorClient client) {
+                              final DefaultConnectorClient client,
+                              final  @Value("${dataspace.connector.connectionattemps}") Integer connectionAttemps) {
         this.configModelRepository = configModelRepository;
         if (log.isInfoEnabled()) {
             log.info("---- [ConfigModelService] ConfigManager StartUp! Trying to get current Configuration from Connector!");
         }
         try {
-            getConnectorConfig(client);
+            getConnectorConfig(client, connectionAttemps);
 
             if (log.isInfoEnabled()) {
                 log.info("---- [ConfigModelService] Received configuration from running Connector!");
@@ -80,9 +73,9 @@ public class ConfigModelService {
         }
     }
 
-    private void getConnectorConfig(final DefaultConnectorClient client) throws InterruptedException {
+    private void getConnectorConfig(final DefaultConnectorClient client,
+                                    final Integer connectionAttemps) throws InterruptedException {
         ConfigurationModel connectorConfiguration = null;
-        final var connectionAttemps = 10;
 
         for (var i = 1; i <= connectionAttemps; i++) {
             try {
