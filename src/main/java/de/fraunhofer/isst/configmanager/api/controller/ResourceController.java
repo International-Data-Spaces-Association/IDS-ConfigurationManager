@@ -97,7 +97,15 @@ public class ResourceController implements ResourceApi {
         if (log.isInfoEnabled()) {
             log.info(">> GET /resources");
         }
-        return ResponseEntity.ok(resourceService.getOfferedResourcesAsJsonString());
+        ResponseEntity<String> response;
+        final var resources = resourceService.getResources();
+        try {
+            response = ResponseEntity.ok(serializer.serialize(resources));
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+            response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+        return response;
     }
 
     /**
@@ -110,7 +118,15 @@ public class ResourceController implements ResourceApi {
         if (log.isInfoEnabled()) {
             log.info(">> GET /resources/requested");
         }
-        return ResponseEntity.ok(resourceService.getRequestedResourcesAsJsonString());
+        ResponseEntity<String> response;
+        final var resources = resourceService.getRequestedResources();
+        try {
+            response = ResponseEntity.ok(serializer.serialize(resources));
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+            response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+        return response;
     }
 
     /**
