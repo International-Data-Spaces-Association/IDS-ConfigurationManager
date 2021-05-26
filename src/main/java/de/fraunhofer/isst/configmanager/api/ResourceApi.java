@@ -23,6 +23,7 @@ public interface ResourceApi {
     @GetMapping(value = "/resources", produces = "application/ld+json")
     @Operation(summary = "Returns all resources from the connector")
     @ApiResponse(responseCode = "200", description = "Successfully returned all resources from the connector")
+    @ApiResponse(responseCode = "500", description = "Internal server error")
     ResponseEntity<String> getResources();
 
     @GetMapping(value = "/resources/requested", produces = "application/ld+json")

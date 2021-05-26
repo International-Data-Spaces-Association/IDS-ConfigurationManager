@@ -88,33 +88,33 @@ public class ResourceService extends AbstractResourceService {
         }
     }
 
-    /**
-     * This method returns all offered resources of a connector as plain json String.
-     *
-     * @return list of resources from the connector
-     */
-    public String getOfferedResourcesAsJsonString() {
-        try {
-            return resourceClient.getOfferedResourcesAsJsonString();
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-            return null;
-        }
-    }
+//    /**
+//     * This method returns all offered resources of a connector as plain json String.
+//     *
+//     * @return list of resources from the connector
+//     */
+//    public String getOfferedResourcesAsJsonString() {
+//        try {
+//            return resourceClient.getOfferedResourcesAsJsonString();
+//        } catch (IOException e) {
+//            log.error(e.getMessage(), e);
+//            return null;
+//        }
+//    }
 
-    /**
-     * This method returns all requested resources of a connector as plain json String.
-     *
-     * @return list of resources from the connector
-     */
-    public String getRequestedResourcesAsJsonString() {
-        try {
-            return resourceClient.getRequestedResourcesAsJsonString();
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-            return null;
-        }
-    }
+//    /**
+//     * This method returns all requested resources of a connector as plain json String.
+//     *
+//     * @return list of resources from the connector
+//     */
+//    public String getRequestedResourcesAsJsonString() {
+//        try {
+//            return resourceClient.getRequestedResourcesAsJsonString();
+//        } catch (IOException e) {
+//            log.error(e.getMessage(), e);
+//            return null;
+//        }
+//    }
 
     /**
      * @param resourceId id of the resource

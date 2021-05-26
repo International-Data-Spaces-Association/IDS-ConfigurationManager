@@ -1,6 +1,5 @@
 package de.fraunhofer.isst.configmanager.connector.dataspaceconnector.clients;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fraunhofer.iais.eis.Representation;
 import de.fraunhofer.iais.eis.Resource;
@@ -33,41 +32,41 @@ public class DataspaceResourceClient extends AbstractDataspaceConnectorClient im
         super(dataSpaceConnectorResourceMapper);
     }
 
-    @Override
-    public String getOfferedResourcesAsJsonString() throws IOException {
-        final var baseConnectorNode = getJsonNodeOfBaseConnector();
-        final var offeredResourceNode = baseConnectorNode.findValue("ids:offeredResource");
-        return offeredResourceNode.toString();
-    }
+//    @Override
+//    public String getOfferedResourcesAsJsonString() throws IOException {
+//        final var baseConnectorNode = getJsonNodeOfBaseConnector();
+//        final var offeredResourceNode = baseConnectorNode.findValue("ids:offeredResource");
+//        return offeredResourceNode.toString();
+//    }
 
-    @Override
-    public String getRequestedResourcesAsJsonString() throws IOException {
-        final var baseConnectorNode = getJsonNodeOfBaseConnector();
-        final var requestedResourceNode = baseConnectorNode.findValue("ids:requestedResource");
-        return requestedResourceNode.toString();
-    }
+//    @Override
+//    public String getRequestedResourcesAsJsonString() throws IOException {
+//        final var baseConnectorNode = getJsonNodeOfBaseConnector();
+//        final var requestedResourceNode = baseConnectorNode.findValue("ids:requestedResource");
+//        return requestedResourceNode.toString();
+//    }
 
-    private JsonNode getJsonNodeOfBaseConnector() throws IOException {
-        final var connectorUrl = connectorBaseUrl + "admin/api/connector";
-
-        final var builder = getRequestBuilder();
-        builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername,
-                dataSpaceConnectorApiPassword));
-        builder.url(connectorUrl);
-        builder.get();
-
-        final var request = builder.build();
-        final var response = DispatchRequest.sendToDataspaceConnector(request);
-
-        if (!response.isSuccessful() && log.isWarnEnabled()) {
-            log.warn("---- [DataspaceResourceClient getJsonNodeOfBaseConnector] Could not get BaseConnector");
-        }
-
-        final var body = Objects.requireNonNull(response.body()).string();
-        final var mapper = new ObjectMapper();
-
-        return mapper.readTree(body);
-    }
+//    private JsonNode getJsonNodeOfBaseConnector() throws IOException {
+//        final var connectorUrl = connectorBaseUrl + "admin/api/connector";
+//
+//        final var builder = getRequestBuilder();
+//        builder.header("Authorization", Credentials.basic(dataSpaceConnectorApiUsername,
+//                dataSpaceConnectorApiPassword));
+//        builder.url(connectorUrl);
+//        builder.get();
+//
+//        final var request = builder.build();
+//        final var response = DispatchRequest.sendToDataspaceConnector(request);
+//
+//        if (!response.isSuccessful() && log.isWarnEnabled()) {
+//            log.warn("---- [DataspaceResourceClient getJsonNodeOfBaseConnector] Could not get BaseConnector");
+//        }
+//
+//        final var body = Objects.requireNonNull(response.body()).string();
+//        final var mapper = new ObjectMapper();
+//
+//        return mapper.readTree(body);
+//    }
 
     @Override
     public String getRequestedResource(final String accessURL, final String resourceId) throws IOException {
