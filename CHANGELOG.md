@@ -1,9 +1,69 @@
+```
+   ____                __  _         __  __
+  / ___| ___   _ __   / _|(_)  __ _ |  \/  |  __ _  _ __    __ _   __ _   ___  _ __
+ | |    / _ \ | '_ \ | |_ | | / _` || |\/| | / _` || '_ \  / _` | / _` | / _ \| '__|
+ | |___| (_) || | | ||  _|| || (_| || |  | || (_| || | | || (_| || (_| ||  __/| |
+  \____|\___/ |_| |_||_|  |_| \__, ||_|  |_| \__,_||_| |_| \__,_| \__, | \___||_|
+                              |___/                               |___/
+```
 # Changelog
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
-to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [7.0.0] - 2021-05-26
+### Major Changes
+- Remove 20 unused APIs (= 1.150 lines of code) (unused by ConfigManager-UI project)
+- For the APIs of the enums, in addition to the technical name, such as DE for the language-dropdown, the written labels are now also supplied, e.g. German <-> DE. The structure of the API returns has changed accordingly
+- Specification of a source-type of a backend-connection for API POST/PUT /generic/endpoint new and mandatory, removed parameter for API POST/PUT /resource/representation 
+
+### Major Change: Infomodel Maintenance
+- Major Change: Upgraded infomodel-java-artifacts 4.0.2 -> 4.0.6
+- Used infomodel artifacts: java, util, serializer
+- Changes the structure of the API-enums-returns like country abbreviations. These now have the URI form "http://.../code/EN" instead of simply returning an abbreviation like "EN".
+
+### Added
+- Minor Change: New API GET /api/ui/connector/status to return the accessibility-status of the Public-Connector-Endpoint
+- Minor Change: New API PUT /resource/contract/update to create the contract in the configmanager and update it at the dataspace connector
+- Minor Change: New setting option to address the DSC via HTTP or HTTPS. dataspace.communication.ssl=true/false in application.properties and DATASPACE_COMMUNICATION_SSL=true/false in docker-compose environment.
+- Minor Change: The CM now tries to reach the connector several times during startup, with a pause of 5 seconds each time, instead of just try once. The number of tries can be set individually via application.properties or docker-compose e.g. dataspace.connector.connectionattemps=5.
+
+### Changes
+- Patch Change: Code and Architecture refactoring
+- Patch Change: Docker, the Java version to be used is now fixed in the Dockerfile
+- Patch Change: If running infomodel-deserialize throws IOException,  these are now explicitly logged in the DataspaceConnectorClient
+- Patch Change: Added Log-Guard levels at console log-outputs and switched spring log level to warn
+- Patch Change: Refactored Model/Data-Architecture
+
+### Fixes
+- Patch Change: POST /api/ui/broker/register now return success:false if connector doesn't return 200 and GET /api/ui/brokers returns not registered in this case
+- Patch Change: Resources are updated at broker after they have been edited
+- Patch Change: Internal Database can be reached and viewed again at: http://localhost:8081/console
+- Patch Change: After editing the connector settings the broker will be updated with the new information
+- Patch Change: Updated recursion methods in ResourceService that caused problems
+- Patch Change: A percent sign within URLs in the UI no longer results in an error in the CM-Backend.
+- Patch Change: Refactored Swagger-UI API Documentation, added all actually possible return-status-codes for API calls
+- Patch Change: IDS Resources Duration Policy in (h) in edit mode is poluted with xml-coding (2^^xsd:duration instead of 2), fixed by upgrading infomodel dependencies
+- Patch Change: ResourceService is now use the Serializer-Artifact for returning all ressources
+
+### Dependency Maintenance
+- Dependabot: Dependabot will now automatically suggest pull requests for updates to dependencies.
+- Add: org.apache.logging.log4j:log4j-web 2.14.1 (Apache 2.0)
+- Add: org.postgresql:postgresql 42.2.20 (BSD-2-Clause)
+- Upgrade: org.springframework.boot:spring-boot-starter-parent 2.4.2 -> 2.5.0
+- Upgrade: org.springframework.security:spring-security-test 5.4.2 -> 5.5.0
+- Upgrade: org.projectlombok:lombok 1.18.18 -> 1.18.20
+- Upgrade: junit:junit 4.13.1 -> 4.13.2
+- Upgrade: org.springdoc:springdoc-openapi-ui 1.5.7 -> 1.5.9
+- Exclude: com.vaadin.external.google:android-json from org.springframework.boot:spring-boot-starter-test
+- Remove: io.jsonwebtoken:jjwt 0.9.1
+
+### Miscellaneous
+- Added custom banner at application startup instead of default banner
+- Disabled Swagger Petstore default playground
+- Docs: Updated Readme
+- Docs: Add package-info files where appropriate
 
 ## [6.0.0] - 2021-03-26
 

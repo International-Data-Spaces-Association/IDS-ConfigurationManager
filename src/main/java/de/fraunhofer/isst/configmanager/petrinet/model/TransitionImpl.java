@@ -15,16 +15,27 @@ public class TransitionImpl implements Transition {
 
     private transient URI id;
 
+    private transient ContextObject contextObject;
+
     @JsonIgnore
     private transient Set<Arc> sourceArcs;
 
     @JsonIgnore
     private transient Set<Arc> targetArcs;
 
-    public TransitionImpl(URI id){
+    public TransitionImpl(final URI id) {
         this.id = id;
         this.sourceArcs = new HashSet<>();
         this.targetArcs = new HashSet<>();
+    }
+
+    public void setContextObject(final ContextObject contextObject) {
+        this.contextObject = contextObject;
+    }
+
+    @Override
+    public ContextObject getContext() {
+        return contextObject;
     }
 
     @Override
@@ -43,21 +54,33 @@ public class TransitionImpl implements Transition {
     }
 
     @Override
-    public boolean isComplementOf(Node other) {
+    public boolean isComplementOf(final Node other) {
         return Place.class.isAssignableFrom(other.getClass());
     }
 
     @Override
     public Node deepCopy() {
-        return new TransitionImpl(this.getID());
+        final var copy = new TransitionImpl(this.getID());
+        if (this.contextObject != null) {
+            copy.setContextObject(this.contextObject.deepCopy());
+        }
+
+        return copy;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        TransitionImpl trans = (TransitionImpl) o;
-        return Objects.equals(id, trans.id);
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        final var trans = (TransitionImpl) o;
+
+        return Objects.equals(id, trans.id) && Objects.equals(contextObject, trans.contextObject);
     }
 }
 

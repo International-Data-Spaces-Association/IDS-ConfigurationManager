@@ -13,33 +13,32 @@ import java.util.Set;
  *
  * Arcs can either connect Node->Transition or Transition->Node.
  */
-@JsonTypeInfo(use = com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME, property = "@type")
 @JsonSubTypes({@JsonSubTypes.Type(PetriNetImpl.class)})
+@JsonTypeInfo(use = com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME, property = "@type")
 public interface PetriNet {
-    
+
     /**
      * Getter for the Nodes of the PetriNet.
      * @return Nodes of the PetriNet
      */
     Set<Node> getNodes();
-    
+
     /**
      * Getter for the Arcs of the PetriNet.
      * @return Nodes of the PetriNet
      */
     Set<Arc> getArcs();
-    
+
     /**
      * Create a copy of the PetriNet, copy its Nodes and Arcs in the process.
      * @return a deep copy of the current PetriNet
      */
     PetriNet deepCopy();
-    
+
     /**
-     * Equals Method for PetriNets
+     * Equals Method for PetriNets.
      * @param other another object
      * @return true if this equals the given object
      */
     boolean equals(Object other);
-
 }

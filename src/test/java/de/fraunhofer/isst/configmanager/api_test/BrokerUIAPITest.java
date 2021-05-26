@@ -1,10 +1,9 @@
 package de.fraunhofer.isst.configmanager.api_test;
 
-import de.fraunhofer.isst.configmanager.communication.clients.DefaultConnectorClient;
-import de.fraunhofer.isst.configmanager.configmanagement.entities.config.CustomBroker;
-import de.fraunhofer.isst.configmanager.configmanagement.service.BrokerService;
-import de.fraunhofer.isst.configmanager.configmanagement.service.ResourceService;
-import de.fraunhofer.isst.configmanager.controller.BrokerUIController;
+import de.fraunhofer.isst.configmanager.api.controller.BrokerController;
+import de.fraunhofer.isst.configmanager.api.service.BrokerService;
+import de.fraunhofer.isst.configmanager.connector.clients.DefaultBrokerClient;
+import de.fraunhofer.isst.configmanager.data.entities.CustomBroker;
 import de.fraunhofer.isst.configmanager.util.TestUtil;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -19,11 +18,15 @@ import java.net.URI;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.mockito.Mockito.doNothing;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(BrokerUIController.class)
-public class BrokerUIAPITest {
+@WebMvcTest(BrokerController.class)
+class BrokerUIAPITest {
 
     @Autowired
     private transient MockMvc mockMvc;
@@ -32,39 +35,22 @@ public class BrokerUIAPITest {
     private transient BrokerService brokerService;
 
     @MockBean
-    private DefaultConnectorClient defaultConnectorClient;
-
-    @MockBean
-    private ResourceService resourceService;
+    private DefaultBrokerClient defaultBrokerClient;
 
     @Test
-    public void should_get_current_broker() throws Exception {
-
-        CustomBroker broker = TestUtil.createCustomBroker();
-        Mockito.when(brokerService.getById(broker.getBrokerUri())).thenReturn(broker);
-
-        MvcResult result = this.mockMvc.perform(get("/api/ui/broker").
-                param("brokerUri", broker.getBrokerUri().toString())).andReturn();
-
-
-        assertEquals(200, result.getResponse().getStatus());
-    }
-
-    @Test
-    public void should_add_new_broker() throws Exception {
+    void should_add_new_broker() throws Exception {
 
         LinkedMultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
         requestParams.add("brokerUri", "https://example.com");
         requestParams.add("title", "CustomBroker");
 
-        CustomBroker broker = TestUtil.createCustomBroker();
-        Mockito.when(brokerService.createCustomBroker(URI.create("https://example.com"), "CustomBroker")).thenReturn(broker);
+        doNothing().when(brokerService).createCustomBroker(URI.create("https://example.com"), "CustomBroker");
 
         this.mockMvc.perform(post("/api/ui/broker").params(requestParams)).andExpect(status().isOk());
     }
 
     @Test
-    public void should_update_broker() throws Exception {
+    void should_update_broker() throws Exception {
 
         CustomBroker broker = TestUtil.createCustomBroker();
 
@@ -79,7 +65,7 @@ public class BrokerUIAPITest {
     }
 
     @Test
-    public void should_return_broker_list() throws Exception {
+    void should_return_broker_list() throws Exception {
 
         List<CustomBroker> brokers = TestUtil.brokers();
         Mockito.when(brokerService.getCustomBrokers()).thenReturn(brokers);
@@ -89,7 +75,7 @@ public class BrokerUIAPITest {
     }
 
     @Test
-    public void should_delete_a_broker() throws Exception {
+    void should_delete_a_broker() throws Exception {
 
         CustomBroker customBroker = TestUtil.createCustomBroker();
         Mockito.when(brokerService.deleteBroker(Mockito.any(URI.class))).thenReturn(true);

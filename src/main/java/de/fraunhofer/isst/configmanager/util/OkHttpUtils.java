@@ -7,6 +7,7 @@ import okhttp3.OkHttpClient;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import java.security.cert.X509Certificate;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -15,9 +16,10 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @UtilityClass
 public class OkHttpUtils {
+    private static final int TIMEOUT = 30;
 
     /**
-     * Static method for generating an OkHttpClient which does not validate Certificate Chains
+     * Static method for generating an OkHttpClient which does not validate Certificate Chains.
      *
      * @return unsafe OKHttpClient
      */
@@ -27,18 +29,16 @@ public class OkHttpUtils {
             final var trustAllCerts = new TrustManager[]{
                     new X509TrustManager() {
                         @Override
-                        public void checkClientTrusted(java.security.cert.X509Certificate[] chain
-                                , String authType) {
+                        public void checkClientTrusted(final X509Certificate[] chain, final String authType) {
                         }
 
                         @Override
-                        public void checkServerTrusted(java.security.cert.X509Certificate[] chain
-                                , String authType) {
+                        public void checkServerTrusted(final X509Certificate[] chain, final String authType) {
                         }
 
                         @Override
-                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                            return new java.security.cert.X509Certificate[]{};
+                        public X509Certificate[] getAcceptedIssuers() {
+                            return new X509Certificate[]{};
                         }
                     }
             };
@@ -46,21 +46,22 @@ public class OkHttpUtils {
             // Install the all-trusting trust manager
             final var sslContext = SSLContext.getInstance("SSL");
             sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+
             // Create an ssl socket factory with our all-trusting manager
             final var sslSocketFactory = sslContext.getSocketFactory();
 
             final var builder = new OkHttpClient.Builder();
             builder.sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0]);
             builder.hostnameVerifier((hostname, session) -> true);
-            builder.connectTimeout(30, TimeUnit.SECONDS);
-            builder.writeTimeout(30, TimeUnit.SECONDS);
-            builder.readTimeout(30, TimeUnit.SECONDS);
+            builder.connectTimeout(TIMEOUT, TimeUnit.SECONDS);
+            builder.writeTimeout(TIMEOUT, TimeUnit.SECONDS);
+            builder.readTimeout(TIMEOUT, TimeUnit.SECONDS);
 
             return builder.build();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
+
             throw new UnsupportedOperationException(e);
         }
     }
-
 }

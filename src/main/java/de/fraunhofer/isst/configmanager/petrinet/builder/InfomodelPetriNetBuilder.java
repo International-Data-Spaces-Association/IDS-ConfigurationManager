@@ -4,6 +4,7 @@ import de.fraunhofer.iais.eis.AppRoute;
 import de.fraunhofer.iais.eis.Endpoint;
 import de.fraunhofer.iais.eis.RouteStep;
 import de.fraunhofer.isst.configmanager.petrinet.model.*;
+import lombok.experimental.UtilityClass;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -14,6 +15,7 @@ import java.util.Set;
 /**
  * Provide static methods, to generate a Petri Net (https://en.wikipedia.org/wiki/Petri_net) from an Infomodel AppRoute.
  */
+@UtilityClass
 public class InfomodelPetriNetBuilder {
 
     /**
@@ -23,44 +25,49 @@ public class InfomodelPetriNetBuilder {
      * @param appRoute an Infomodel {@link AppRoute}
      * @return a Petri Net created from the AppRoute
      */
-    public static PetriNet petriNetFromAppRoute(AppRoute appRoute, boolean includeAppRoute){
+    public static PetriNet petriNetFromAppRoute(final AppRoute appRoute,
+                                                final boolean includeAppRoute) {
 
         //create sets for places, transitions and arcs
-        var places = new HashMap<URI, Place>();
-        var transitions = new HashMap<URI, Transition>();
-        var arcs = new HashSet<Arc>();
+        final var places = new HashMap<URI, Place>();
+        final var transitions = new HashMap<URI, Transition>();
+        final var arcs = new HashSet<Arc>();
 
-        if(includeAppRoute){
+        if (includeAppRoute){
             //create initial place from AppRoute
-            var place = new PlaceImpl(appRoute.getId());
+            final var place = new PlaceImpl(appRoute.getId());
             places.put(place.getID(), place);
 
             //for every AppRouteStart create a Transition and add AppRouteStart -> AppRoute
-            for(var endpoint : appRoute.getAppRouteStart()){
-                var trans = getTransition(transitions, endpoint);
-                var arc = new ArcImpl(trans, place);
+            for (final var endpoint : appRoute.getAppRouteStart()) {
+                final var trans = getTransition(transitions, endpoint);
+                final var arc = new ArcImpl(trans, place);
+
                 arcs.add(arc);
             }
 
             //for every AppRouteEnd create a Transition and add AppRoute -> AppRouteEnd
-            for(var endpoint : appRoute.getAppRouteEnd()){
-                var trans = getTransition(transitions, endpoint);
-                var arc = new ArcImpl(place, trans);
+            for (final var endpoint : appRoute.getAppRouteEnd()) {
+                final var trans = getTransition(transitions, endpoint);
+                final var arc = new ArcImpl(place, trans);
+
                 arcs.add(arc);
             }
         }
 
         //add every SubRoute of the AppRoute to the PetriNet
-        for(var subroute : appRoute.getHasSubRoute()){
+        for (final var subroute : appRoute.getHasSubRoute()) {
             addSubRouteToPetriNet(subroute, arcs, places, transitions);
         }
 
         //create a PetriNet with all Arcs, Transitions and Places from the AppRoute
-        var nodes = new HashSet<Node>();
+        final var nodes = new HashSet<Node>();
         nodes.addAll(places.values());
         nodes.addAll(transitions.values());
-        var petriNet = new PetriNetImpl(appRoute.getId(), nodes, arcs);
+
+        final var petriNet = new PetriNetImpl(appRoute.getId(), nodes, arcs);
         addFirstAndLastNode(petriNet);
+
         return petriNet;
     }
 
@@ -72,28 +79,31 @@ public class InfomodelPetriNetBuilder {
      * @param places list of places of the current Petri Net
      * @param transitions list of transitions of the current Petri Net
      */
-    private static void addSubRouteToPetriNet(RouteStep subRoute, Set<Arc> arcs, Map<URI, Place> places, Map<URI, Transition> transitions){
+    private static void addSubRouteToPetriNet(final RouteStep subRoute,
+                                              final Set<Arc> arcs,
+                                              final Map<URI, Place> places,
+                                              final Map<URI, Transition> transitions) {
 
         //if a place with subroutes ID already exists in the map, the SubRoute was already added to the Petri Net
-        if(places.containsKey(subRoute.getId())){
+        if (places.containsKey(subRoute.getId())) {
             return;
         }
 
         //create a new place from the subRoute
-        var place = new PlaceImpl(subRoute.getId());
+        final var place = new PlaceImpl(subRoute.getId());
         places.put(place.getID(), place);
 
         //for every AppRouteStart create a transition and add AppRouteStart -> SubRoute
-        for(var endpoint : subRoute.getAppRouteStart()){
-            var trans = getTransition(transitions, endpoint);
-            var arc = new ArcImpl(trans, place);
+        for (final var endpoint : subRoute.getAppRouteStart()) {
+            final var trans = getTransition(transitions, endpoint);
+            final var arc = new ArcImpl(trans, place);
             arcs.add(arc);
         }
 
         //for every AppRouteEnd create a transition and add SubRoute -> AppRouteEnd
-        for(var endpoint : subRoute.getAppRouteEnd()){
-            var trans = getTransition(transitions, endpoint);
-            var arc = new ArcImpl(place, trans);
+        for (final var endpoint : subRoute.getAppRouteEnd()) {
+            final var trans = getTransition(transitions, endpoint);
+            final var arc = new ArcImpl(place, trans);
             arcs.add(arc);
         }
     }
@@ -105,35 +115,38 @@ public class InfomodelPetriNetBuilder {
      * @param endpoint the endpoint for which the transition should be found
      * @return the existing transition with id from the map, or a new transition
      */
-    private static Transition getTransition(Map<URI, Transition> transitions, Endpoint endpoint){
-        if(transitions.containsKey(endpoint.getId())){
+    private static Transition getTransition(final Map<URI, Transition> transitions,
+                                            final Endpoint endpoint){
+        if (transitions.containsKey(endpoint.getId())) {
             return transitions.get(endpoint.getId());
-        }else{
-            var trans = new TransitionImpl(endpoint.getId());
+        } else {
+            final var trans = new TransitionImpl(endpoint.getId());
             transitions.put(trans.getID(), trans);
             return trans;
         }
     }
-    
+
     /**
      * Add a source node to every transition without input and a sink node to every transition without output.
      *
      * @param petriNet
      */
-    private static void addFirstAndLastNode(PetriNet petriNet){
-        var first = new PlaceImpl(URI.create("place://source"));
+    private static void addFirstAndLastNode(final PetriNet petriNet) {
+        final var first = new PlaceImpl(URI.create("place://source"));
+        final var last = new PlaceImpl(URI.create("place://sink"));
+
         first.setMarkers(1);
-        var last = new PlaceImpl(URI.create("place://sink"));
-        for(var node : petriNet.getNodes()){
-            if(node instanceof TransitionImpl){
+
+        for (final var node : petriNet.getNodes()) {
+            if (node instanceof TransitionImpl) {
                 //if node has no arc with itself as target, add arc: first->node
-                if(node.getTargetArcs().isEmpty()){
-                    var arc = new ArcImpl(first, node);
+                if (node.getTargetArcs().isEmpty()) {
+                    final var arc = new ArcImpl(first, node);
                     petriNet.getArcs().add(arc);
                 }
                 //if node has no arc with itself as source, add arc: node->last
-                if(node.getSourceArcs().isEmpty()){
-                    var arc = new ArcImpl(node, last);
+                if (node.getSourceArcs().isEmpty()) {
+                    final var arc = new ArcImpl(node, last);
                     petriNet.getArcs().add(arc);
                 }
             }
