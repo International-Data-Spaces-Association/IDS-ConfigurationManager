@@ -2,6 +2,7 @@ package de.fraunhofer.isst.configmanager.petrinet.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.Objects;
  * Context of a transition (used for WFDU nets)
  */
 @Getter
+@Setter
 @AllArgsConstructor
 public class ContextObject {
 

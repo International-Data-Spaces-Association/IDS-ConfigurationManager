@@ -24,6 +24,7 @@ public class GraphVizGenerator {
      * @return a DOT String, used for visualizing the PetriNet with GraphViz
      */
     public static String generateGraphViz(final PetriNet petriNet) {
+        //TODO visualize ContextObjects
         final var s = new StringBuilder();
         s.append("digraph graphname {");
 
