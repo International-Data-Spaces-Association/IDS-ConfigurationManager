@@ -17,12 +17,12 @@
         #foreach($i in [0..$lastIndex])
             #if($i > 0)
                 <setHeader name="CamelHttpMethod"><constant>GET</constant></setHeader>
-                <to uri="$routeStepStartUrls.get($i)"
+                <to uri="$routeStepStartUrls.get($i)"/>
             #end
 
             #if($i < $lastIndex)
                 <setHeader name="CamelHttpMethod"><constant>POST</constant></setHeader>
-                <to uri="$routeStepEndUrls.get($i)"
+                <to uri="$routeStepEndUrls.get($i)"/>
             #end
         #end
 
