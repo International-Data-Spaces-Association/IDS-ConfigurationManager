@@ -9,6 +9,10 @@ import lombok.AllArgsConstructor;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * evaluates to true, if parameter1 evaluates to true for every following transition and parameter2 evaluates to true
+ * for every Place in between.
+ */
 @AllArgsConstructor
 public class TransitionFORALL_MODAL implements TransitionFormula {
     private TransitionFormula parameter1;

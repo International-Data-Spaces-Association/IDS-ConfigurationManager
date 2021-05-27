@@ -8,6 +8,9 @@ import java.util.List;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.TT.TT;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionFORALL_UNTIL.transitionFORALL_UNTIL;
 
+/**
+ * evaluates to true, if a transition fulfilling the given parameter is eventually reached on every path
+ */
 @AllArgsConstructor
 public class TransitionEV implements TransitionFormula {
     private TransitionFormula parameter;

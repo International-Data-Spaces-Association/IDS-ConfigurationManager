@@ -9,9 +9,18 @@ import lombok.experimental.UtilityClass;
 
 import java.util.List;
 
+/**
+ * Evaluate a {@link Formula} on a given {@link Node} for a set of Paths
+ */
 @UtilityClass
 public class CTLEvaluator {
 
+    /**
+     * @param ctlExpression a {@link StateFormula} to evaluate
+     * @param place a {@link Place} of a {@link de.fraunhofer.isst.configmanager.petrinet.model.PetriNet}
+     * @param paths possible pathes through the PetriNet
+     * @return result of the evaluation of the ctlExpression
+     */
     public static boolean evaluateNode(final StateFormula ctlExpression,
                                        final Place place,
                                        final List<List<Node>> paths) {
@@ -19,6 +28,12 @@ public class CTLEvaluator {
         return ctlExpression.evaluate(place, paths);
     }
 
+    /**
+     * @param ctlExpression a {@link TransitionFormula} to evaluate
+     * @param transition a {@link Transition} of a {@link de.fraunhofer.isst.configmanager.petrinet.model.PetriNet}
+     * @param paths possible pathes through the PetriNet
+     * @return result of the evaluation of the ctlExpression
+     */
     public static boolean evaluateTransition(final TransitionFormula ctlExpression,
                                              final Transition transition,
                                              final List<List<Node>> paths) {
@@ -26,6 +41,12 @@ public class CTLEvaluator {
         return ctlExpression.evaluate(transition, paths);
     }
 
+    /**
+     * @param ctlExpression a {@link Formula} to evaluate
+     * @param node a {@link Node} of a {@link de.fraunhofer.isst.configmanager.petrinet.model.PetriNet}
+     * @param paths possible pathes through the PetriNet
+     * @return result of the evaluation of the ctlExpression (or false, if formula and node types don't match)
+     */
     public static boolean evaluate(final Formula ctlExpression,
                                    final Node node,
                                    final List<List<Node>> paths) {

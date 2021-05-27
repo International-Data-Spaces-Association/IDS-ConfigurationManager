@@ -6,6 +6,10 @@ import lombok.AllArgsConstructor;
 
 import java.util.List;
 
+/**
+ * evaluates to true, if a path exists, where parameter1 evaluates to true for every transition, until parameter2
+ * evaluates to true
+ */
 @AllArgsConstructor
 public class TransitionEXIST_UNTIL implements TransitionFormula {
     private TransitionFormula parameter1;

@@ -8,6 +8,9 @@ import java.util.List;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionNOT.transitionNOT;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionPOS.transitionPOS;
 
+/**
+ * evaluates to true, if parameter evaluates to true for all reachable transitions
+ */
 @AllArgsConstructor
 public class TransitionINV implements TransitionFormula {
     private TransitionFormula parameter;

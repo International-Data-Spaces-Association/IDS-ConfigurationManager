@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Context of a transition (used for WFDU nets)
+ */
 @Getter
 @AllArgsConstructor
 public class ContextObject {
@@ -41,6 +44,10 @@ public class ContextObject {
         return Objects.hash(new ArrayList<>(context), read, write, erase);
     }
 
+    /**
+     * Transition types (are they apps or control transitions for the petrinet?), only APP transitions have to be
+     * unfolded for parallel checks
+     */
     public enum TransType {
         APP,
         CONTROL

@@ -8,6 +8,9 @@ import java.util.List;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionEXIST_NEXT.transitionEXIST_NEXT;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionNOT.transitionNOT;
 
+/**
+ * evaluates to true, if all following transitions satisfy the given formula
+ */
 @AllArgsConstructor
 public class TransitionFORALL_NEXT implements TransitionFormula {
     private TransitionFormula parameter;

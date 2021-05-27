@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 
 import java.util.List;
 
+/**
+ * evaluates to true, if given subformula evaluates to false
+ */
 @AllArgsConstructor
 public class NodeNOT implements StateFormula {
     private StateFormula parameter;

@@ -6,6 +6,9 @@ import de.fraunhofer.isst.configmanager.petrinet.model.Node;
 
 import java.util.List;
 
+/**
+ * FF operator evaluates to False everytime
+ */
 public class FF implements StateFormula, TransitionFormula {
 
     public static FF FF() {

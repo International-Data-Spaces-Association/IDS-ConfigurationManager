@@ -6,6 +6,10 @@ import lombok.AllArgsConstructor;
 
 import java.util.List;
 
+/**
+ * evaluates to true, if a path exists, where parameter1 evaluates to true for every place, until parameter2
+ * evaluates to true
+ */
 @AllArgsConstructor
 public class NodeEXIST_UNTIL implements StateFormula {
 

@@ -267,74 +267,23 @@ public class PetriNetSimulator {
         return pathsLenNplus1;
     }
 
-    public static boolean circleFree(final List list){
+    /**
+     * Lists are used for paths in other methods, path contains a circle, when list holds duplicate of node
+     *
+     * @param list list to check for duplicates
+     * @return true if list contains no duplicates
+     */
+    public static boolean circleFree(final List<?> list){
         return list.stream().distinct().count() == list.size();
     }
 
-    public static List<List<Object>> calculatePaths(final StepGraph stepGraph) {
-        final var len1 =calcPathsOfLength1(stepGraph);
-        List<List<Object>> lenN = new ArrayList<>(len1);
-
-        lenN = lenN.stream().filter(path -> path.get(0).equals(stepGraph.getInitial())).collect(Collectors.toList());
-
-        final List<List<Object>> allPaths = new ArrayList<>(lenN);
-
-        var i = 1;
-
-        while (!lenN.isEmpty()) {
-            if (log.isInfoEnabled()) {
-                log.info("Calculating paths of length " + ++i);
-            }
-
-            lenN = calcPathsOfLengthNplus1(len1, lenN);
-
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Length %d: %d", i, lenN.size()));
-            }
-
-            if (!lenN.isEmpty()) {
-                allPaths.addAll(lenN);
-            }
-        }
-
-        allPaths.sort(Comparator.comparingInt(List::size));
-
-        return allPaths;
-    }
-
-    private static List<List<Object>> calcPathsOfLength1(final StepGraph stepGraph) {
-        final List<List<Object>> paths = new ArrayList<>();
-
-        for (final var arc : stepGraph.getArcs()) {
-            final var sourcePart = new ArrayList<>();
-            sourcePart.add(arc.getSource());
-            sourcePart.add(arc.getUsedTransition());
-            paths.add(sourcePart);
-
-            final var targetPart = new ArrayList<>();
-            targetPart.add(arc.getUsedTransition());
-            targetPart.add(arc.getTarget());
-            paths.add(targetPart);
-        }
-        return paths;
-    }
-
-    private static List<List<Object>> calcPathsOfLengthNplus1(final List<List<Object>> len1,
-                                                              final List<List<Object>> lenN){
-        final List<List<Object>> pathsLenNplus1 = new ArrayList<>();
-
-        for (final var pathN : lenN) {
-            for (final var path1 : len1) {
-                if(pathN.get(pathN.size()-1).equals(path1.get(0)) && circleFree(pathN)){
-                    final var pathNplus1 = new ArrayList<>(pathN);
-                    pathNplus1.add(path1.get(path1.size()-1));
-                    pathsLenNplus1.add(pathNplus1);
-                }
-            }
-        }
-        return pathsLenNplus1;
-    }
-
+    /**
+     * Unfold a PetriNet (all APP transitions T are replaced by a set T_start(trans) -> T_place(place) -> T_end(trans),
+     * markers on places in same step show possible parallel executions of transitions)
+     *
+     * @param petriNet a PetriNet
+     * @return unfolded petriNet
+     */
     public static PetriNet getUnfoldedPetriNet(PetriNet petriNet){
         var unfolded = petriNet.deepCopy();
         var transitions = unfolded.getNodes().stream().filter(trans -> trans instanceof Transition).filter(trans -> ((Transition) trans).getContext().getType() == ContextObject.TransType.APP).collect(Collectors.toList());
@@ -366,6 +315,10 @@ public class PetriNetSimulator {
         return unfolded;
     }
 
+    /**
+     * @param stepGraph StepGraph (of an unfolded PetriNet)
+     * @return List of parallel executions of transitions in the stepGraph of the given petriNet
+     */
     public static List<List<Transition>> getParallelSets(StepGraph stepGraph){
         List<List<Transition>> parallelSets = new ArrayList<>();
         for(var step : stepGraph.getSteps()){
@@ -379,6 +332,14 @@ public class PetriNetSimulator {
         return parallelSets;
     }
 
+    /**
+     * Remove subpaths from set of paths, only keep longest paths (but keep them if they have different starting places)
+     *
+     * Example: {A -> B -> C (keep), A -> B (remove), B -> C (keep)}
+     *
+     * @param paths Set of all paths
+     * @return Filtered set of Paths
+     */
     private static List<List<Node>> filterPaths(final List<List<Node>> paths) {
         final List<List<Node>> filtered = new ArrayList<>(List.copyOf(paths));
 

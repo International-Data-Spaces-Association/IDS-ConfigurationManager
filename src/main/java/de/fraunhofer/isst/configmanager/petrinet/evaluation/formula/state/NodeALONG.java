@@ -8,6 +8,9 @@ import java.util.List;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeEV.nodeEV;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeNOT.nodeNOT;
 
+/**
+ * evaluates to true, if there exists a path, where parameter holds for every place
+ */
 @AllArgsConstructor
 public class NodeALONG implements StateFormula {
     private StateFormula parameter;

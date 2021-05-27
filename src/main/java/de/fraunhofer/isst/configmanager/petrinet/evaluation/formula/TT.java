@@ -6,6 +6,9 @@ import de.fraunhofer.isst.configmanager.petrinet.model.Node;
 
 import java.util.List;
 
+/**
+ * TT operator evaluates to True everytime
+ */
 public class TT implements StateFormula, TransitionFormula {
 
     public static TT TT() {

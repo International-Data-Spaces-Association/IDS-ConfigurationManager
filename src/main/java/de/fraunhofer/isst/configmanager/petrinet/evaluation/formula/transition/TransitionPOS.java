@@ -8,6 +8,9 @@ import java.util.List;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.TT.TT;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionEXIST_UNTIL.transitionEXIST_UNTIL;
 
+/**
+ * Evaluates to true, if some Transition is reachable, which fulfills the given parameter
+ */
 @AllArgsConstructor
 public class TransitionPOS implements TransitionFormula {
     private TransitionFormula parameter;

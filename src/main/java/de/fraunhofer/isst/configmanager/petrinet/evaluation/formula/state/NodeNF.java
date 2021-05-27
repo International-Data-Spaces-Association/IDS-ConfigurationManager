@@ -1,11 +1,15 @@
 package de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state;
 
+import de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.ArcExpression;
 import de.fraunhofer.isst.configmanager.petrinet.model.Node;
 import de.fraunhofer.isst.configmanager.petrinet.model.Place;
 import lombok.AllArgsConstructor;
 
 import java.util.List;
 
+/**
+ * evaluates to true, if given {@link NodeExpression} evaluates to true
+ */
 @AllArgsConstructor
 public class NodeNF implements StateFormula {
     private NodeExpression parameter;

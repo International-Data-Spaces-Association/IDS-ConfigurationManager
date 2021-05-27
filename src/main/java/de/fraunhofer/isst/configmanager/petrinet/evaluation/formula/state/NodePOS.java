@@ -8,6 +8,9 @@ import java.util.List;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.TT.TT;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeEXIST_UNTIL.nodeEXIST_UNTIL;
 
+/**
+ * Evaluates to true, if some Place is reachable, which fulfills the given parameter
+ */
 @AllArgsConstructor
 public class NodePOS implements StateFormula {
     private StateFormula parameter;

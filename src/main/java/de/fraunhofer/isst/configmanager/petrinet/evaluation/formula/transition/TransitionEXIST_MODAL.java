@@ -10,6 +10,10 @@ import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionAND.transitionAND;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionMODAL.transitionMODAL;
 
+/**
+ * evaluates to true, if there is a successor transition for which parameter1 holds, while parameter2 holds for the
+ * place in between.
+ */
 @AllArgsConstructor
 public class TransitionEXIST_MODAL implements TransitionFormula {
     private TransitionFormula parameter1;
