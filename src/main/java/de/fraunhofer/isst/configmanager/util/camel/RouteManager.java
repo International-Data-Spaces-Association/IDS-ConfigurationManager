@@ -1,5 +1,7 @@
 package de.fraunhofer.isst.configmanager.util.camel;
 
+import de.fraunhofer.iais.eis.AppEndpoint;
+import de.fraunhofer.iais.eis.AppEndpointType;
 import de.fraunhofer.iais.eis.AppRoute;
 import de.fraunhofer.iais.eis.ConfigurationModel;
 import de.fraunhofer.iais.eis.ConnectorEndpoint;
@@ -8,6 +10,7 @@ import de.fraunhofer.iais.eis.GenericEndpoint;
 import de.fraunhofer.iais.eis.RouteStep;
 import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.util.DataspaceConnectorRouteConfigurer;
 import de.fraunhofer.isst.configmanager.connector.trustedconnector.TrustedConnectorRouteConfigurer;
+import de.fraunhofer.isst.configmanager.util.camel.dto.RouteStepEndpoint;
 import de.fraunhofer.isst.configmanager.util.camel.exceptions.NoSuitableTemplateException;
 import de.fraunhofer.isst.configmanager.util.camel.exceptions.RouteCreationException;
 import de.fraunhofer.isst.configmanager.util.camel.exceptions.RouteDeletionException;
@@ -18,11 +21,13 @@ import org.apache.velocity.app.VelocityEngine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Component for creating Camel routes from AppRoutes.
@@ -169,21 +174,53 @@ public class RouteManager {
      */
     private void addRouteStepsToContext(final VelocityContext velocityContext,
                                         final ArrayList<? extends RouteStep> routeSteps) {
-        final var routeStepStartUrls = new ArrayList<String>();
-        final var routeStepEndUrls = new ArrayList<String>();
+        final var routeStepEndpoints = new ArrayList<RouteStepEndpoint>();
 
         if (routeSteps != null) {
-            for (final var routeStep: routeSteps) {
-                final var stepStart = routeStep.getAppRouteStart().get(0);
-                routeStepStartUrls.add(stepStart.getAccessURL().toString());
+            Endpoint lastStepEnd = null;
 
-                final var stepEnd = routeStep.getAppRouteEnd().get(0);
-                routeStepEndUrls.add(stepEnd.getAccessURL().toString());
+            for (int i = 0; i < routeSteps.size(); i++) {
+                final var routeStep = routeSteps.get(i);
+
+                final var stepStart = routeStep.getAppRouteStart().get(0);
+
+                //if end of last step is same as start of current step only call endpoint once
+                if (i > 0 && !stepStart.equals(lastStepEnd)) {
+                    addRouteStepEndpoint(stepStart, routeStepEndpoints);
+                }
+
+                if (i < routeSteps.size() - 1) {
+                    final var stepEnd = routeStep.getAppRouteEnd().get(0);
+                    addRouteStepEndpoint(stepEnd, routeStepEndpoints);
+
+                    lastStepEnd = stepEnd;
+                }
             }
         }
 
-        velocityContext.put("routeStepStartUrls", routeStepStartUrls);
-        velocityContext.put("routeStepEndUrls", routeStepEndUrls);
+        velocityContext.put("routeStepEndpoints", routeStepEndpoints);
+    }
+
+    /**
+     * Adds a {@link RouteStepEndpoint} representation of an {@link Endpoint} to the given list.
+     *
+     * @param endpoint the endpoint.
+     * @param list the list.
+     */
+    private void addRouteStepEndpoint(final Endpoint endpoint, final List<RouteStepEndpoint> list) {
+        if (AppEndpoint.class.isAssignableFrom(endpoint.getClass())) {
+            final var appEndpoint = (AppEndpoint) endpoint;
+            if (appEndpoint.getAppEndpointType() == AppEndpointType.OUTPUT_ENDPOINT) {
+                list.add(new RouteStepEndpoint(appEndpoint.getAccessURL(),
+                        HttpMethod.GET));
+            } else {
+                list.add(new RouteStepEndpoint(appEndpoint.getAccessURL(),
+                        HttpMethod.POST));
+            }
+        } else {
+            list.add(new RouteStepEndpoint(endpoint.getAccessURL(),
+                    HttpMethod.POST));
+        }
     }
 
     /**
