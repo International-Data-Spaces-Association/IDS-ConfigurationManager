@@ -40,8 +40,11 @@ public class InfomodelPetriNetBuilder {
             //for every AppRouteStart create a Transition and add AppRouteStart -> AppRoute
             for (final var endpoint : appRoute.getAppRouteStart()) {
                 final var trans = (TransitionImpl) getTransition(transitions, endpoint);
-                var writes = appRoute.getAppRouteOutput().stream().map(Resource::getId).collect(Collectors.toList());
-                trans.setContextObject(new ContextObject(List.of(), "", writes.toString(), "", ContextObject.TransType.APP));
+                Set<String> writes = Set.of();
+                if(appRoute.getAppRouteOutput() != null && !appRoute.getAppRouteOutput().isEmpty()) {
+                    writes = appRoute.getAppRouteOutput().stream().map(Resource::getId).map(URI::toString).collect(Collectors.toSet());
+                }
+                trans.setContextObject(new ContextObject(Set.of(), Set.of(), writes, Set.of(), ContextObject.TransType.APP));
                 final var arc = new ArcImpl(trans, place);
                 arcs.add(arc);
             }
@@ -49,7 +52,7 @@ public class InfomodelPetriNetBuilder {
             //for every AppRouteEnd create a Transition and add AppRoute -> AppRouteEnd
             for (final var endpoint : appRoute.getAppRouteEnd()) {
                 final var trans = (TransitionImpl) getTransition(transitions, endpoint);
-                trans.setContextObject(new ContextObject(List.of(), "", "", "", ContextObject.TransType.CONTROL));
+                trans.setContextObject(new ContextObject(Set.of(), Set.of(), Set.of(), Set.of(), ContextObject.TransType.CONTROL));
                 final var arc = new ArcImpl(place, trans);
                 arcs.add(arc);
             }
@@ -75,7 +78,7 @@ public class InfomodelPetriNetBuilder {
      * @param petriNet petrinet created from infomodel approute
      * @return petrinet with filled writes and reads in contextobj
      */
-    private PetriNet fillWriteAndErase(PetriNet petriNet){
+    public PetriNet fillWriteAndErase(PetriNet petriNet){
         //TODO check if everything is filled properly
         var transitions = petriNet.getNodes().stream()
                 .filter(node -> node instanceof Transition)
@@ -88,13 +91,12 @@ public class InfomodelPetriNetBuilder {
                     .map(Arc::getSource)
                     .filter(node -> node instanceof TransitionImpl)
                     .map(node -> ((TransitionImpl) node).getContext().getWrite())
-                    .filter(Predicate.not(String::isEmpty))
-                    .collect(Collectors.joining(","));
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toSet());
             ((TransitionImpl) trans).getContext().setRead(previous);
             if(((TransitionImpl) trans).getContext().getType() == ContextObject.TransType.APP){
-                var readSplit = previous.split(",");
-                var writeSplit = List.of(((TransitionImpl) trans).getContext().getWrite().split(","));
-                var erased = Arrays.stream(readSplit).filter(x -> !writeSplit.contains(x)).collect(Collectors.joining(","));
+                var writeSplit = ((TransitionImpl) trans).getContext().getWrite();
+                var erased = previous.stream().filter(x -> !writeSplit.contains(x)).collect(Collectors.toSet());
                 ((TransitionImpl) trans).getContext().setErase(erased);
             }else{
                 ((TransitionImpl) trans).getContext().setWrite(previous);
@@ -128,8 +130,11 @@ public class InfomodelPetriNetBuilder {
         //for every AppRouteStart create a transition and add AppRouteStart -> SubRoute
         for (final var endpoint : subRoute.getAppRouteStart()) {
             final var trans = (TransitionImpl) getTransition(transitions, endpoint);
-            var writes = subRoute.getAppRouteOutput().stream().map(Resource::getId).collect(Collectors.toList());
-            trans.setContextObject(new ContextObject(List.of(), "", writes.toString(), "", ContextObject.TransType.APP));
+            Set<String> writes = Set.of();
+            if(subRoute.getAppRouteOutput() != null && !subRoute.getAppRouteOutput().isEmpty()) {
+                writes = subRoute.getAppRouteOutput().stream().map(Resource::getId).map(URI::toString).collect(Collectors.toSet());
+            }
+            trans.setContextObject(new ContextObject(Set.of(), Set.of(), writes, Set.of(), ContextObject.TransType.APP));
             final var arc = new ArcImpl(trans, place);
             arcs.add(arc);
         }
@@ -137,7 +142,7 @@ public class InfomodelPetriNetBuilder {
         //for every AppRouteEnd create a transition and add SubRoute -> AppRouteEnd
         for (final var endpoint : subRoute.getAppRouteEnd()) {
             final var trans = (TransitionImpl) getTransition(transitions, endpoint);
-            trans.setContextObject(new ContextObject(List.of(), "", "", "", ContextObject.TransType.CONTROL));
+            trans.setContextObject(new ContextObject(Set.of(), Set.of(), Set.of(), Set.of(), ContextObject.TransType.CONTROL));
             final var arc = new ArcImpl(place, trans);
             arcs.add(arc);
         }

@@ -7,6 +7,7 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Context of a transition (used for WFDU nets)
@@ -16,10 +17,10 @@ import java.util.Objects;
 @AllArgsConstructor
 public class ContextObject {
 
-    private List<String> context;
-    private String read;
-    private String write;
-    private String erase;
+    private Set<String> context;
+    private Set<String> read;
+    private Set<String> write;
+    private Set<String> erase;
     private TransType type;
 
    public ContextObject deepCopy() {

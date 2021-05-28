@@ -23,15 +23,58 @@ public class GraphVizGenerator {
      * @param petriNet The PetriNet for which the Graph representation should be built.
      * @return a DOT String, used for visualizing the PetriNet with GraphViz
      */
-    public static String generateGraphViz(final PetriNet petriNet) {
-        //TODO visualize ContextObjects
+    public static String generateGraphVizWithContext(final PetriNet petriNet) {
         final var s = new StringBuilder();
         s.append("digraph graphname {");
 
         for (final var node : petriNet.getNodes()) {
             if (node instanceof TransitionImpl) {
                 //transitions will be drawn as boxes
-                s.append(node.getID().hashCode() + " [shape=box, label=\"" + node.getID() + "\"];");
+                s.append(node.getID().hashCode() + " [shape=box, label=\"" + contextInfo((TransitionImpl) node) + "\"];");
+            } else {
+                //nodes will be drawn as circles and coloured red, if there have markers
+                s.append(node.getID().hashCode() + "[label=\"" + node.getID() + "\"");
+
+                if (((PlaceImpl) node).getMarkers() > 0) {
+                    s.append(", color=red");
+                }
+                s.append("];");
+                s.append(node.getID().hashCode() + "[label=\"" + node.getID() + "\"];");
+            }
+        }
+
+        for (final var arc : petriNet.getArcs()) {
+            //a directed edge will be drawn for every arc
+            s.append(arc.getSource().getID().hashCode() + " -> " + arc.getTarget().getID().hashCode() + ";");
+        }
+
+        s.append("}");
+        return s.toString();
+    }
+
+    private static String contextInfo(TransitionImpl transition){
+        var contextObj = transition.getContext();
+        var read = contextObj.getRead().toString();
+        var write = contextObj.getWrite().toString();
+        var erase = contextObj.getErase().toString();
+        var context = contextObj.getContext().toString();
+        return String.format("name=%s; write=%s; read=%s; erase=%s; context=%s", transition.getID(), write, read, erase, context);
+    }
+
+    /**
+     * Generate a GraphViz Dot String representation for the given {@link PetriNet}.
+     *
+     * @param petriNet The PetriNet for which the Graph representation should be built.
+     * @return a DOT String, used for visualizing the PetriNet with GraphViz
+     */
+    public static String generateGraphViz(final PetriNet petriNet) {
+        final var s = new StringBuilder();
+        s.append("digraph graphname {");
+
+        for (final var node : petriNet.getNodes()) {
+            if (node instanceof TransitionImpl) {
+                //transitions will be drawn as boxes
+                s.append(node.getID().hashCode() + " [shape=box, label=\"" + "name="+node.getID() + "\"];");
             } else {
                 //nodes will be drawn as circles and coloured red, if there have markers
                 s.append(node.getID().hashCode() + "[label=\"" + node.getID() + "\"");
