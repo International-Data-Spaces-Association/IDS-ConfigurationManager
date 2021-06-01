@@ -86,11 +86,11 @@ public class RouteManager {
         velocityContext.put("routeId", camelRouteId);
 
         //get route start and end (will either be connector, app or generic endpoint)
-        addRouteStartToContext(velocityContext, appRoute.getAppRouteStart());
-        addRouteEndToContext(velocityContext, appRoute.getAppRouteEnd());
+        addRouteStartToContext(velocityContext, (ArrayList<? extends Endpoint>) appRoute.getAppRouteStart());
+        addRouteEndToContext(velocityContext, (ArrayList<? extends Endpoint>) appRoute.getAppRouteEnd());
 
         //get route steps (if any)
-        addRouteStepsToContext(velocityContext, appRoute.getHasSubRoute());
+        addRouteStepsToContext(velocityContext, (ArrayList<? extends RouteStep>) appRoute.getHasSubRoute());
 
         try {
             if (dataspaceConnectorEnabled) {
