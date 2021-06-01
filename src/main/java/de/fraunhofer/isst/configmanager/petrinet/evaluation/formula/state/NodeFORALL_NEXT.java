@@ -5,20 +5,23 @@ import lombok.AllArgsConstructor;
 
 import java.util.List;
 
+import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeEXIST_NEXT.nodeEXIST_NEXT;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeNOT.nodeNOT;
 
+/**
+ * evaluates to true, if all following places satisfy the given formula
+ */
 @AllArgsConstructor
 public class NodeFORALL_NEXT implements StateFormula {
+    private StateFormula parameter;
 
-    public static NodeFORALL_NEXT nodeFORALL_NEXT(StateFormula parameter){
+    public static NodeFORALL_NEXT nodeFORALL_NEXT(final StateFormula parameter){
         return new NodeFORALL_NEXT(parameter);
     }
 
-    private StateFormula parameter;
-
     @Override
-    public boolean evaluate(Node node, List<List<Node>> paths) {
-        return nodeNOT(nodeFORALL_NEXT(nodeNOT(parameter))).evaluate(node, paths);
+    public boolean evaluate(final Node node, final List<List<Node>> paths) {
+        return nodeNOT(nodeEXIST_NEXT(nodeNOT(parameter))).evaluate(node, paths);
     }
 
     @Override

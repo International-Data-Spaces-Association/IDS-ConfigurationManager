@@ -26,7 +26,7 @@ public abstract class AbstractResourceService {
 
     @Autowired
     protected AbstractResourceService(final ConfigModelService configModelService,
-                                   final DefaultConnectorClient connectorClient) {
+                                      final DefaultConnectorClient connectorClient) {
         this.configModelService = configModelService;
         this.connectorClient = connectorClient;
     }
@@ -74,6 +74,33 @@ public abstract class AbstractResourceService {
         }
         return resources;
     }
+
+    /**
+     * This method returns a list of requested resources from the connector.
+     *
+     * @return List of requested resources.
+     */
+    public List<Resource> getRequestedResources() {
+        final ArrayList<Resource> resources = new ArrayList<>();
+
+        BaseConnector baseConnector = null;
+        try {
+            baseConnector = connectorClient.getSelfDeclaration();
+        } catch (IOException e) {
+            if (log.isErrorEnabled()) {
+                log.error(e.getMessage(), e);
+            }
+        }
+        if (baseConnector != null && baseConnector.getResourceCatalog() != null) {
+            for (final var resourceCatalog : baseConnector.getResourceCatalog()) {
+                if (resourceCatalog.getRequestedResource() != null) {
+                    resources.addAll(resourceCatalog.getRequestedResource());
+                }
+            }
+        }
+        return resources;
+    }
+
 
     /**
      * Delete occurrence of a resource with resourceID from all SubRoutes.

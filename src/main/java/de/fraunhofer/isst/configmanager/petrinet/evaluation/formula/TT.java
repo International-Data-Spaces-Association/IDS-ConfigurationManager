@@ -6,14 +6,17 @@ import de.fraunhofer.isst.configmanager.petrinet.model.Node;
 
 import java.util.List;
 
+/**
+ * TT operator evaluates to True everytime
+ */
 public class TT implements StateFormula, TransitionFormula {
 
-    public static TT TT(){
+    public static TT TT() {
         return new TT();
     }
 
     @Override
-    public boolean evaluate(Node node, List<List<Node>> paths) {
+    public boolean evaluate(final Node node, final List<List<Node>> paths) {
         return true;
     }
 

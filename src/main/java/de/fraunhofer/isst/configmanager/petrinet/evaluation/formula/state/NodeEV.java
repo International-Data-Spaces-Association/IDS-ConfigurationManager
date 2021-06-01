@@ -8,17 +8,19 @@ import java.util.List;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.TT.TT;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeFORALL_UNTIL.nodeFORALL_UNTIL;
 
+/**
+ * evaluates to true, if a place fulfilling the given parameter is eventually reached on every path
+ */
 @AllArgsConstructor
 public class NodeEV implements StateFormula {
+    private StateFormula parameter;
 
-    public static NodeEV nodeEV(StateFormula parameter){
+    public static NodeEV nodeEV(final StateFormula parameter) {
         return new NodeEV(parameter);
     }
 
-    private StateFormula parameter;
-
     @Override
-    public boolean evaluate(Node node, List<List<Node>> paths) {
+    public boolean evaluate(final Node node, final List<List<Node>> paths) {
         return nodeFORALL_UNTIL(TT(), parameter).evaluate(node, paths);
     }
 

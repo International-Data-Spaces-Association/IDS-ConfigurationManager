@@ -5,17 +5,19 @@ import lombok.AllArgsConstructor;
 
 import java.util.List;
 
+/**
+ * evaluates to true, if given subformula evaluates to false
+ */
 @AllArgsConstructor
 public class TransitionNOT implements TransitionFormula {
+    private TransitionFormula parameter;
 
-    public static TransitionNOT transitionNOT(TransitionFormula parameter){
+    public static TransitionNOT transitionNOT(final TransitionFormula parameter){
         return new TransitionNOT(parameter);
     }
 
-    private TransitionFormula parameter;
-
     @Override
-    public boolean evaluate(Node node, List<List<Node>> paths) {
+    public boolean evaluate(final Node node, final List<List<Node>> paths) {
         return !parameter.evaluate(node, paths);
     }
 

@@ -5,17 +5,21 @@ import lombok.AllArgsConstructor;
 
 import java.util.List;
 
+/**
+ * evaluates to true, if at least one of the two subformulas evaluates to true
+ */
 @AllArgsConstructor
 public class NodeOR implements StateFormula {
+    private StateFormula parameter1;
+    private StateFormula parameter2;
 
-    public static NodeOR nodeOR(StateFormula parameter1, StateFormula parameter2){
+    public static NodeOR nodeOR(final StateFormula parameter1,
+                                final StateFormula parameter2){
         return new NodeOR(parameter1, parameter2);
     }
 
-    private StateFormula parameter1, parameter2;
-
     @Override
-    public boolean evaluate(Node node, List<List<Node>> paths) {
+    public boolean evaluate(final Node node, final List<List<Node>> paths) {
         return parameter1.evaluate(node, paths) || parameter2.evaluate(node, paths);
     }
 

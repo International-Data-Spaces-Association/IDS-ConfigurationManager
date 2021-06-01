@@ -10,18 +10,22 @@ import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionAND.transitionAND;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionMODAL.transitionMODAL;
 
+/**
+ * evaluates to true, if there is a successor transition for which parameter1 holds, while parameter2 holds for the
+ * place in between.
+ */
 @AllArgsConstructor
 public class TransitionEXIST_MODAL implements TransitionFormula {
-
-    private static TransitionEXIST_MODAL transitionEXIST_MODAL(TransitionFormula parameter1, StateFormula parameter2){
-        return new TransitionEXIST_MODAL(parameter1, parameter2);
-    }
-
     private TransitionFormula parameter1;
     private StateFormula parameter2;
 
+    private static TransitionEXIST_MODAL transitionEXIST_MODAL(final TransitionFormula parameter1,
+                                                               final StateFormula parameter2){
+        return new TransitionEXIST_MODAL(parameter1, parameter2);
+    }
+
     @Override
-    public boolean evaluate(Node node, List<List<Node>> paths) {
+    public boolean evaluate(final Node node, final List<List<Node>> paths) {
         return nodeMODAL(transitionAND(parameter1,transitionMODAL(parameter2))).evaluate(node, paths);
     }
 

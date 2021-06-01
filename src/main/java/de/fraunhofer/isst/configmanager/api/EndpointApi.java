@@ -3,11 +3,7 @@ package de.fraunhofer.isst.configmanager.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
@@ -17,6 +13,7 @@ public interface EndpointApi {
     @ApiResponse(responseCode = "200", description = "Created a generic endpoint")
     @ApiResponse(responseCode = "400", description = "Can not create the generic endpoint")
     ResponseEntity<String> createGenericEndpoint(@RequestParam(value = "accessURL") URI accessURL,
+                                                 @RequestParam(value = "sourceType") String sourceType,
                                                  @RequestParam(value = "username", required = false) String username,
                                                  @RequestParam(value = "password", required = false) String password);
 
@@ -38,11 +35,13 @@ public interface EndpointApi {
     @ApiResponse(responseCode = "400", description = "Can not update the generic endpoint")
     ResponseEntity<String> updateGenericEndpoint(@RequestParam(value = "id") URI id,
                                                  @RequestParam(value = "accessURL", required = false) URI accessURL,
+                                                 @RequestParam(value = "sourceType", required = false) String sourceType,
                                                  @RequestParam(value = "username", required = false) String username,
                                                  @RequestParam(value = "password", required = false) String password);
 
     @PostMapping(value = "/connector/endpoint", produces = "application/ld+json")
     @Operation(summary = "Creates a new connector endpoint for the connector")
     @ApiResponse(responseCode = "200", description = "Successfully created the connector endpoint for the connector")
-    ResponseEntity<String> createConnectorEndpoint(@RequestParam("accessUrl") URI accessUrl);
+    ResponseEntity<String> createConnectorEndpoint(@RequestParam("accessUrl") URI accessUrl,
+                                                   @RequestParam(value = "sourceType", required = false) String sourceType);
 }

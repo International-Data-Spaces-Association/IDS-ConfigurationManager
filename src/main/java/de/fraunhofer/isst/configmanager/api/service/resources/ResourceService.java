@@ -9,7 +9,6 @@ import de.fraunhofer.iais.eis.util.TypedLiteral;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.api.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultConnectorClient;
-import de.fraunhofer.isst.configmanager.connector.clients.DefaultResourceClient;
 import de.fraunhofer.isst.configmanager.util.CalenderUtil;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -18,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,14 +30,10 @@ import java.util.List;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ResourceService extends AbstractResourceService {
 
-    transient DefaultResourceClient resourceClient;
-
     @Autowired
     public ResourceService(final ConfigModelService configModelService,
-                           final DefaultConnectorClient connectorClient,
-                           final DefaultResourceClient resourceClient) {
+                           final DefaultConnectorClient connectorClient) {
         super(configModelService, connectorClient);
-        this.resourceClient = resourceClient;
     }
 
 
@@ -85,34 +79,6 @@ public class ResourceService extends AbstractResourceService {
         }
         if (publisher != null) {
             resourceImpl.setPublisher(publisher);
-        }
-    }
-
-    /**
-     * This method returns all offered resources of a connector as plain json String.
-     *
-     * @return list of resources from the connector
-     */
-    public String getOfferedResourcesAsJsonString() {
-        try {
-            return resourceClient.getOfferedResourcesAsJsonString();
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-            return null;
-        }
-    }
-
-    /**
-     * This method returns all requested resources of a connector as plain json String.
-     *
-     * @return list of resources from the connector
-     */
-    public String getRequestedResourcesAsJsonString() {
-        try {
-            return resourceClient.getRequestedResourcesAsJsonString();
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-            return null;
         }
     }
 

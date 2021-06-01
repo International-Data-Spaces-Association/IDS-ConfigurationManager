@@ -8,17 +8,19 @@ import java.util.List;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionEV.transitionEV;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionNOT.transitionNOT;
 
+/**
+ * evaluates to true, if there exists a path, where parameter holds for every transition
+ */
 @AllArgsConstructor
 public class TransitionALONG implements TransitionFormula {
-    
-    public static TransitionALONG transitionALONG(TransitionFormula parameter){
+    private TransitionFormula parameter;
+
+    public static TransitionALONG transitionALONG(final TransitionFormula parameter){
         return new TransitionALONG(parameter);
     }
     
-    private TransitionFormula parameter;
-    
     @Override
-    public boolean evaluate(Node node, List<List<Node>> paths) {
+    public boolean evaluate(final Node node, final List<List<Node>> paths) {
         return transitionNOT(transitionEV(transitionNOT(parameter))).evaluate(node, paths);
     }
 

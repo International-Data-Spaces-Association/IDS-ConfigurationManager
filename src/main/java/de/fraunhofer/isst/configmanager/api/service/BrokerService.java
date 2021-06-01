@@ -2,8 +2,8 @@ package de.fraunhofer.isst.configmanager.api.service;
 
 import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.isst.configmanager.api.service.resources.ResourceService;
-import de.fraunhofer.isst.configmanager.data.enums.BrokerRegistrationStatus;
 import de.fraunhofer.isst.configmanager.data.entities.CustomBroker;
+import de.fraunhofer.isst.configmanager.data.enums.BrokerRegistrationStatus;
 import de.fraunhofer.isst.configmanager.data.repositories.CustomBrokerRepository;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -139,7 +139,7 @@ public class BrokerService {
     }
 
     /**
-     * This method registers resources at a broker
+     * This method registers resources at a broker.
      *
      * @param brokerId broker uri
      */
@@ -221,7 +221,7 @@ public class BrokerService {
     }
 
     /**
-     * This method returns a JSONArray with the currently registered brokers
+     * This method returns a JSONArray with the currently registered brokers.
      *
      * @return json array of all registered broker
      */

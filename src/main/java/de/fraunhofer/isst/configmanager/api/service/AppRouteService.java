@@ -17,9 +17,6 @@ import de.fraunhofer.isst.configmanager.data.repositories.EndpointInformationRep
 import de.fraunhofer.isst.configmanager.data.repositories.RouteDeployMethodRepository;
 import de.fraunhofer.isst.configmanager.data.entities.CustomApp;
 import de.fraunhofer.isst.configmanager.data.entities.EndpointInformation;
-import de.fraunhofer.isst.configmanager.util.camel.RouteManager;
-import de.fraunhofer.isst.configmanager.util.camel.exceptions.RouteCreationException;
-import de.fraunhofer.isst.configmanager.util.camel.exceptions.RouteDeletionException;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
