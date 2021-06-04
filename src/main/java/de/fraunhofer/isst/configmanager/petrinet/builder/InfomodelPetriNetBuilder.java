@@ -3,14 +3,14 @@ package de.fraunhofer.isst.configmanager.petrinet.builder;
 import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.Formula;
 import de.fraunhofer.isst.configmanager.petrinet.model.*;
+import de.fraunhofer.isst.configmanager.petrinet.policy.PolicyUtils;
+import de.fraunhofer.isst.configmanager.petrinet.policy.RuleFormulaBuilder;
+import de.fraunhofer.isst.configmanager.petrinet.policy.RuleUtils;
 import lombok.experimental.UtilityClass;
 
 import java.net.URI;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.TT.TT;
 
 /**
  * Provide static methods, to generate a Petri Net (https://en.wikipedia.org/wiki/Petri_net) from an Infomodel AppRoute.
@@ -195,6 +195,10 @@ public class InfomodelPetriNetBuilder {
         petriNet.getNodes().add(last);
     }
 
+    /**
+     * @param appRoute the AppRoute to extract policies from
+     * @return List of Formulas representing the AppRoutes policies
+     */
     private static List<Formula> extractPoliciesFromAppRoute(AppRoute appRoute){
         List<Formula> formulas = new ArrayList<>();
         var resources = appRoute.getAppRouteOutput();
@@ -207,6 +211,10 @@ public class InfomodelPetriNetBuilder {
         return formulas;
     }
 
+    /**
+     * @param subroute the subroute to extract policies from
+     * @return List of Formulas representing the AppRoutes policies
+     */
     private static List<Formula> extractPoliciesFromSubRoute(RouteStep subroute){
         List<Formula> formulas = new ArrayList<>();
         for(var resource : subroute.getAppRouteOutput()){
@@ -218,17 +226,32 @@ public class InfomodelPetriNetBuilder {
         return formulas;
     }
 
+    /**
+     * @param resource resource for which contract offer rules are transformed to policies
+     * @return List of Formulas representing the policies tied to the resource
+     */
     private static List<Formula> formulasFromResource(Resource resource){
         var offers = resource.getContractOffer();
         List<Formula> formulas = new ArrayList<>();
         for(var offer : offers){
-            formulas.add(buildFormulaFromContractOffer(offer, resource.getId()));
+            var rules = PolicyUtils.getRulesForTargetId(offer, resource.getId());
+            for(final var rule : rules){
+                var formula = buildFormulaFromRule(rule, resource.getId());
+                if(formula != null) {
+                    formulas.add(formula);
+                }
+            }
         }
         return formulas;
     }
 
-    private static Formula buildFormulaFromContractOffer(ContractOffer offer, URI resourceID){
-        //TODO build formula from Contract Offer
-        return null;
+    /**
+     * @param rule a rule which will be transformed to a {@link Formula}
+     * @param resourceID resourceID for which the rule is applied
+     * @return Formula, representing the given rule
+     */
+    private static Formula buildFormulaFromRule(Rule rule, URI resourceID){
+        final var pattern = RuleUtils.getPatternByRule(rule);
+        return RuleFormulaBuilder.buildFormula(pattern, rule, resourceID);
     }
 }
