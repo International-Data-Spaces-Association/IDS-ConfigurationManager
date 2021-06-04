@@ -11,6 +11,7 @@ import lombok.experimental.UtilityClass;
 import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Provide static methods, to generate a Petri Net (https://en.wikipedia.org/wiki/Petri_net) from an Infomodel AppRoute.
@@ -201,29 +202,23 @@ public class InfomodelPetriNetBuilder {
      */
     private static List<Formula> extractPoliciesFromAppRoute(AppRoute appRoute){
         List<Formula> formulas = new ArrayList<>();
-        var resources = appRoute.getAppRouteOutput();
-        for(var resource : resources){
+        var resourceStream = resourceStream(appRoute);
+        var resources = resourceStream.collect(Collectors.toSet());
+        for(final var resource : resources){
             formulas.addAll(formulasFromResource(resource));
-        }
-        for(var route : appRoute.getHasSubRoute()){
-            formulas.addAll(extractPoliciesFromSubRoute(route));
         }
         return formulas;
     }
 
     /**
-     * @param subroute the subroute to extract policies from
-     * @return List of Formulas representing the AppRoutes policies
+     * @param appRoute an infomodel approute
+     * @return stream of all resources in the approute
      */
-    private static List<Formula> extractPoliciesFromSubRoute(RouteStep subroute){
-        List<Formula> formulas = new ArrayList<>();
-        for(var resource : subroute.getAppRouteOutput()){
-            formulas.addAll(formulasFromResource(resource));
-        }
-        for(var route: subroute.getHasSubRoute()){
-            formulas.addAll(extractPoliciesFromSubRoute(route));
-        }
-        return formulas;
+    private static Stream<Resource> resourceStream(AppRoute appRoute) {
+        return Stream.concat(
+                appRoute.getAppRouteOutput().stream(),
+                appRoute.getHasSubRoute() != null ? appRoute.getHasSubRoute().stream().flatMap(InfomodelPetriNetBuilder::resourceStream) : Stream.empty()
+        );
     }
 
     /**
