@@ -2,6 +2,8 @@ package de.fraunhofer.isst.configmanager.petrinet.builder;
 
 import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
+import de.fraunhofer.iais.eis.util.RdfResource;
+import de.fraunhofer.iais.eis.util.TypedLiteral;
 import de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.CTLEvaluator;
 import de.fraunhofer.isst.configmanager.petrinet.model.*;
 import de.fraunhofer.isst.configmanager.petrinet.simulator.ParallelEvaluator;
@@ -14,6 +16,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.FF.FF;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.TT.TT;
@@ -58,13 +61,15 @@ class InfomodelPetriNetBuilderTest {
     void testBuildPetriNet() throws IOException {
         var resources = new ArrayList<Resource>();
         for(int i = 0; i < ThreadLocalRandom.current().nextInt(MINIMUM_SUBROUTE, MAXIMUM_SUBROUTE); i++){
-            resources.add(new ResourceBuilder(URI.create("http://resource" + i)).build());
+            resources.add(new ResourceBuilder(URI.create("http://resource" + i))._contractOffer_(List.of(new ContractOfferBuilder()._permission_(List.of(new PermissionBuilder()._target_(URI.create("http://resource3"))._constraint_(List.of(new ConstraintBuilder()._leftOperand_(LeftOperand.COUNT)._rightOperand_(new RdfResource("5"))._operator_(BinaryOperator.EQ).build())).build()))._obligation_(List.of())._prohibition_(List.of()).build())).build());
         }
         //Randomly generate an AppRoute
         var endpointlist = new ArrayList<Endpoint>();
         for (int i = 0; i < ThreadLocalRandom.current().nextInt(MINIMUM_ENDPOINT, MAXIMUM_ENDPOINT); i++){
-            endpointlist.add(new EndpointBuilder(URI.create("http://endpoint" + i)).build());
+            endpointlist.add(new EndpointBuilder(URI.create("http://endpoint" + i))._endpointInformation_(List.of(new TypedLiteral("logging"),new TypedLiteral("notification"))).build());
         }
+        var set = endpointlist.get(0).getEndpointInformation().stream().map(TypedLiteral::getValue).collect(Collectors.toSet());
+        log.info(set.toString());
         var subroutes = new ArrayList<RouteStep>();
         for (int i = 0; i < ThreadLocalRandom.current().nextInt(MINIMUM_SUBROUTE,MAXIMUM_SUBROUTE); i++){
             subroutes.add(new RouteStepBuilder(URI.create("http://subroute" + i))
@@ -87,6 +92,11 @@ class InfomodelPetriNetBuilderTest {
             log.info(ser.serialize(appRoute));
             log.info(GraphVizGenerator.generateGraphVizWithContext(petriNet));
         }
+        var formulas = InfomodelPetriNetBuilder.extractPoliciesFromAppRoute(appRoute);
+        for(var formula : formulas){
+            log.info(formula.writeFormula());
+        }
+
 
         //build a full Graph of all possible steps in the PetriNet and log generated GraphViz representation
         var graph = PetriNetSimulator.buildStepGraph(petriNet);

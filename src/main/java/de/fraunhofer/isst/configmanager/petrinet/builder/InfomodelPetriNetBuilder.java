@@ -1,6 +1,7 @@
 package de.fraunhofer.isst.configmanager.petrinet.builder;
 
 import de.fraunhofer.iais.eis.*;
+import de.fraunhofer.iais.eis.util.TypedLiteral;
 import de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.Formula;
 import de.fraunhofer.isst.configmanager.petrinet.model.*;
 import de.fraunhofer.isst.configmanager.petrinet.policy.PolicyUtils;
@@ -45,7 +46,7 @@ public class InfomodelPetriNetBuilder {
                 if(appRoute.getAppRouteOutput() != null && !appRoute.getAppRouteOutput().isEmpty()) {
                     writes = appRoute.getAppRouteOutput().stream().map(Resource::getId).map(URI::toString).collect(Collectors.toSet());
                 }
-                trans.setContextObject(new ContextObject(Set.of(), Set.of(), writes, Set.of(), ContextObject.TransType.APP));
+                trans.setContextObject(new ContextObject(endpoint.getEndpointInformation().stream().map(TypedLiteral::getValue).collect(Collectors.toSet()), Set.of(), writes, Set.of(), ContextObject.TransType.APP));
                 final var arc = new ArcImpl(trans, place);
                 arcs.add(arc);
             }
@@ -53,7 +54,7 @@ public class InfomodelPetriNetBuilder {
             //for every AppRouteEnd create a Transition and add AppRoute -> AppRouteEnd
             for (final var endpoint : appRoute.getAppRouteEnd()) {
                 final var trans = (TransitionImpl) getTransition(transitions, endpoint);
-                trans.setContextObject(new ContextObject(Set.of(), Set.of(), Set.of(), Set.of(), ContextObject.TransType.CONTROL));
+                trans.setContextObject(new ContextObject(endpoint.getEndpointInformation().stream().map(TypedLiteral::getValue).collect(Collectors.toSet()), Set.of(), Set.of(), Set.of(), ContextObject.TransType.CONTROL));
                 final var arc = new ArcImpl(place, trans);
                 arcs.add(arc);
             }
@@ -135,7 +136,7 @@ public class InfomodelPetriNetBuilder {
             if(subRoute.getAppRouteOutput() != null && !subRoute.getAppRouteOutput().isEmpty()) {
                 writes = subRoute.getAppRouteOutput().stream().map(Resource::getId).map(URI::toString).collect(Collectors.toSet());
             }
-            trans.setContextObject(new ContextObject(Set.of(), Set.of(), writes, Set.of(), ContextObject.TransType.APP));
+            trans.setContextObject(new ContextObject(endpoint.getEndpointInformation().stream().map(TypedLiteral::getValue).collect(Collectors.toSet()), Set.of(), writes, Set.of(), ContextObject.TransType.APP));
             final var arc = new ArcImpl(trans, place);
             arcs.add(arc);
         }
@@ -143,7 +144,7 @@ public class InfomodelPetriNetBuilder {
         //for every AppRouteEnd create a transition and add SubRoute -> AppRouteEnd
         for (final var endpoint : subRoute.getAppRouteEnd()) {
             final var trans = (TransitionImpl) getTransition(transitions, endpoint);
-            trans.setContextObject(new ContextObject(Set.of(), Set.of(), Set.of(), Set.of(), ContextObject.TransType.CONTROL));
+            trans.setContextObject(new ContextObject(endpoint.getEndpointInformation().stream().map(TypedLiteral::getValue).collect(Collectors.toSet()), Set.of(), Set.of(), Set.of(), ContextObject.TransType.CONTROL));
             final var arc = new ArcImpl(place, trans);
             arcs.add(arc);
         }
@@ -200,7 +201,7 @@ public class InfomodelPetriNetBuilder {
      * @param appRoute the AppRoute to extract policies from
      * @return List of Formulas representing the AppRoutes policies
      */
-    private static List<Formula> extractPoliciesFromAppRoute(AppRoute appRoute){
+    public static List<Formula> extractPoliciesFromAppRoute(AppRoute appRoute){
         List<Formula> formulas = new ArrayList<>();
         var resourceStream = resourceStream(appRoute);
         var resources = resourceStream.collect(Collectors.toSet());
@@ -227,6 +228,7 @@ public class InfomodelPetriNetBuilder {
      */
     private static List<Formula> formulasFromResource(Resource resource){
         var offers = resource.getContractOffer();
+        if(offers == null || offers.isEmpty()) return List.of();
         List<Formula> formulas = new ArrayList<>();
         for(var offer : offers){
             var rules = PolicyUtils.getRulesForTargetId(offer, resource.getId());
