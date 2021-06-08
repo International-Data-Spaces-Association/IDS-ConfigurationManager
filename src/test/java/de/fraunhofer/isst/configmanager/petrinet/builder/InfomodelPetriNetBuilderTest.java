@@ -61,7 +61,12 @@ class InfomodelPetriNetBuilderTest {
     void testBuildPetriNet() throws IOException {
         var resources = new ArrayList<Resource>();
         for(int i = 0; i < ThreadLocalRandom.current().nextInt(MINIMUM_SUBROUTE, MAXIMUM_SUBROUTE); i++){
-            resources.add(new ResourceBuilder(URI.create("http://resource" + i))._contractOffer_(List.of(new ContractOfferBuilder()._permission_(List.of(new PermissionBuilder()._target_(URI.create("http://resource3"))._constraint_(List.of(new ConstraintBuilder()._leftOperand_(LeftOperand.COUNT)._rightOperand_(new RdfResource("5"))._operator_(BinaryOperator.EQ).build())).build()))._obligation_(List.of())._prohibition_(List.of()).build())).build());
+            resources.add(new ResourceBuilder(URI.create("http://resource" + i))._contractOffer_(List.of(
+                    new ContractOfferBuilder()._permission_(List.of(new PermissionBuilder()._target_(URI.create("http://resource3"))._constraint_(List.of(new ConstraintBuilder()._leftOperand_(LeftOperand.COUNT)._rightOperand_(new RdfResource("5"))._operator_(BinaryOperator.LTEQ).build())).build()))._obligation_(List.of())._prohibition_(List.of(new ProhibitionBuilder()._target_(URI.create("http://resource5")).build())).build(),
+                    new ContractOfferBuilder()._permission_(List.of(new PermissionBuilder()._target_(URI.create("http://resource3"))._constraint_(List.of(new ConstraintBuilder()._leftOperand_(LeftOperand.SYSTEM)._rightOperand_(new RdfResource("https://someconnector"))._operator_(BinaryOperator.SAME_AS).build())).build()))._obligation_(List.of())._prohibition_(List.of()).build(),
+                    new ContractOfferBuilder()._permission_(List.of(new PermissionBuilder()._target_(URI.create("http://resource1"))._postDuty_(List.of(new DutyBuilder()._action_(List.of(Action.LOG)).build())).build()))._prohibition_(List.of())._obligation_(List.of()).build(),
+                    new ContractOfferBuilder()._permission_(List.of(new PermissionBuilder()._target_(URI.create("http://resource1"))._constraint_(List.of(new ConstraintBuilder().build(), new ConstraintBuilder().build()))._postDuty_(List.of(new DutyBuilder()._action_(List.of(Action.LOG)).build())).build()))._prohibition_(List.of())._obligation_(List.of()).build()
+                    )).build());
         }
         //Randomly generate an AppRoute
         var endpointlist = new ArrayList<Endpoint>();
@@ -89,7 +94,7 @@ class InfomodelPetriNetBuilderTest {
         petriNet = InfomodelPetriNetBuilder.fillWriteAndErase(petriNet);
         var ser = new Serializer();
         if (log.isInfoEnabled()) {
-            log.info(ser.serialize(appRoute));
+            //log.info(ser.serialize(appRoute));
             log.info(GraphVizGenerator.generateGraphVizWithContext(petriNet));
         }
         var formulas = InfomodelPetriNetBuilder.extractPoliciesFromAppRoute(appRoute);

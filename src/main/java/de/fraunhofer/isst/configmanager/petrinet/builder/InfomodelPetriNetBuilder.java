@@ -8,6 +8,7 @@ import de.fraunhofer.isst.configmanager.petrinet.policy.PolicyUtils;
 import de.fraunhofer.isst.configmanager.petrinet.policy.RuleFormulaBuilder;
 import de.fraunhofer.isst.configmanager.petrinet.policy.RuleUtils;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.URI;
 import java.util.*;
@@ -18,6 +19,7 @@ import java.util.stream.Stream;
  * Provide static methods, to generate a Petri Net (https://en.wikipedia.org/wiki/Petri_net) from an Infomodel AppRoute.
  */
 @UtilityClass
+@Slf4j
 public class InfomodelPetriNetBuilder {
 
     /**
@@ -249,6 +251,7 @@ public class InfomodelPetriNetBuilder {
      */
     private static Formula buildFormulaFromRule(Rule rule, URI resourceID){
         final var pattern = RuleUtils.getPatternByRule(rule);
+        log.info(pattern.toString());
         return RuleFormulaBuilder.buildFormula(pattern, rule, resourceID);
     }
 }
