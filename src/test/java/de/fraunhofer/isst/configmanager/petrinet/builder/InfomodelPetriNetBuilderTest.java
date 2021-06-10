@@ -131,6 +131,43 @@ class InfomodelPetriNetBuilderTest {
         }
     }
 
+    @Test
+    @Disabled
+    void generateFormulas(){
+        var endpoint1 = new EndpointBuilder(URI.create("http://endpoint1")).build();
+        var endpoint2 = new EndpointBuilder(URI.create("http://endpoint2"))._endpointInformation_(List.of(new TypedLiteral("logging"))).build();
+        var endpoint3 = new EndpointBuilder(URI.create("http://endpoint3")).build();
+        var resource1 = new ResourceBuilder(URI.create("http://res1"))._contractOffer_(List.of(
+                new ContractOfferBuilder()._permission_(List.of(new PermissionBuilder()._target_(URI.create("http://res1"))._postDuty_(List.of(new DutyBuilder()._action_(List.of(Action.LOG)).build())).build()))._prohibition_(List.of())._obligation_(List.of()).build()
+                )).build();
+        var resource2 = new ResourceBuilder(URI.create("http://res2"))._contractOffer_(List.of(
+                new ContractOfferBuilder()._permission_(List.of(new PermissionBuilder()._target_(URI.create("http://res2"))._constraint_(List.of(new ConstraintBuilder().build(), new ConstraintBuilder().build()))._postDuty_(List.of(new DutyBuilder().build())).build()))._prohibition_(List.of())._obligation_(List.of()).build()
+        )).build();
+        var resource3 = new ResourceBuilder(URI.create("http://res3"))._contractOffer_(List.of(
+                new ContractOfferBuilder()._permission_(List.of(new PermissionBuilder()._target_(URI.create("http://res3"))._constraint_(List.of(new ConstraintBuilder()._leftOperand_(LeftOperand.COUNT)._rightOperand_(new RdfResource("2"))._operator_(BinaryOperator.LTEQ).build())).build())).build())
+        ).build();
+        var sub1 = new RouteStepBuilder(URI.create("http://sub1"))._appRouteStart_(List.of(endpoint1))._appRouteEnd_(List.of(endpoint2))._appRouteOutput_(List.of(resource1)).build();
+        var sub2 = new RouteStepBuilder(URI.create("http://sub2"))._appRouteStart_(List.of(endpoint2))._appRouteEnd_(List.of(endpoint3))._appRouteOutput_(List.of(resource2, resource3)).build();
+        var appRoute = new AppRouteBuilder(URI.create("http://approute"))._appRouteStart_(List.of(endpoint1))._appRouteStart_(List.of(endpoint3))._appRouteOutput_(List.of(resource1))._hasSubRoute_(List.of(sub1, sub2)).build();
+
+        var petriNet = InfomodelPetriNetBuilder.petriNetFromAppRoute(appRoute, false);
+        petriNet = InfomodelPetriNetBuilder.addControlTransitions(petriNet);
+        petriNet = InfomodelPetriNetBuilder.fillWriteAndErase(petriNet);
+        log.info(GraphVizGenerator.generateGraphVizWithContext(petriNet));
+
+        var stepGraph = PetriNetSimulator.buildStepGraph(petriNet);
+        log.info(GraphVizGenerator.generateGraphViz(stepGraph));
+
+        var paths = PetriNetSimulator.getAllPaths(stepGraph);
+
+        var formulas = InfomodelPetriNetBuilder.extractPoliciesFromAppRoute(appRoute);
+        for(var formula : formulas){
+            log.info(formula.writeFormula());
+            var res = CTLEvaluator.evaluate(formula, stepGraph.getInitial().getNodes().stream().filter(node -> node instanceof Place && ((Place) node).getMarkers() >= 1).findAny().get(), paths);
+            log.info(String.valueOf(res));
+        }
+    }
+
     /**
      * Example: Create a set of Formulas and evaluate them on the example PetriNet
      */

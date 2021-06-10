@@ -44,11 +44,15 @@ public class InfomodelPetriNetBuilder {
             //for every AppRouteStart create a Transition and add AppRouteStart -> AppRoute
             for (final var endpoint : appRoute.getAppRouteStart()) {
                 final var trans = (TransitionImpl) getTransition(transitions, endpoint);
-                Set<String> writes = Set.of();
+                Set<String> writes = new HashSet<>();
                 if(appRoute.getAppRouteOutput() != null && !appRoute.getAppRouteOutput().isEmpty()) {
-                    writes = appRoute.getAppRouteOutput().stream().map(Resource::getId).map(URI::toString).collect(Collectors.toSet());
+                    writes = appRoute.getAppRouteOutput().stream().map(Resource::getId).map(URI::toString).collect(Collectors.toCollection(HashSet::new));
                 }
-                trans.setContextObject(new ContextObject(endpoint.getEndpointInformation().stream().map(TypedLiteral::getValue).collect(Collectors.toSet()), Set.of(), writes, Set.of(), ContextObject.TransType.APP));
+                if(trans.getContext() == null) {
+                    trans.setContextObject(new ContextObject(endpoint.getEndpointInformation().stream().map(TypedLiteral::getValue).collect(Collectors.toSet()), new HashSet<>(), writes, new HashSet<>(), ContextObject.TransType.APP));
+                }else{
+                    trans.getContext().getWrite().addAll(writes);
+                }
                 final var arc = new ArcImpl(trans, place);
                 arcs.add(arc);
             }
@@ -56,7 +60,15 @@ public class InfomodelPetriNetBuilder {
             //for every AppRouteEnd create a Transition and add AppRoute -> AppRouteEnd
             for (final var endpoint : appRoute.getAppRouteEnd()) {
                 final var trans = (TransitionImpl) getTransition(transitions, endpoint);
-                trans.setContextObject(new ContextObject(endpoint.getEndpointInformation().stream().map(TypedLiteral::getValue).collect(Collectors.toSet()), Set.of(), Set.of(), Set.of(), ContextObject.TransType.CONTROL));
+                Set<String> reads = new HashSet<>();
+                if(appRoute.getAppRouteOutput() != null && !appRoute.getAppRouteOutput().isEmpty()) {
+                    reads = appRoute.getAppRouteOutput().stream().map(Resource::getId).map(URI::toString).collect(Collectors.toCollection(HashSet::new));
+                }
+                if(trans.getContext() == null) {
+                    trans.setContextObject(new ContextObject(endpoint.getEndpointInformation().stream().map(TypedLiteral::getValue).collect(Collectors.toSet()), reads, Set.of(), Set.of(), ContextObject.TransType.APP));
+                }else{
+                    trans.getContext().getRead().addAll(reads);
+                }
                 final var arc = new ArcImpl(place, trans);
                 arcs.add(arc);
             }
@@ -76,6 +88,63 @@ public class InfomodelPetriNetBuilder {
         addFirstAndLastNode(petriNet);
 
         return petriNet;
+    }
+
+    /**
+     * Add a {@link RouteStep} to the Petri Net as a new Subroute.
+     *
+     * @param subRoute the subRoute that will be added to the current Petri Net
+     * @param arcs list of arcs of the current Petri Net
+     * @param places list of places of the current Petri Net
+     * @param transitions list of transitions of the current Petri Net
+     */
+    private static void addSubRouteToPetriNet(final RouteStep subRoute,
+                                              final Set<Arc> arcs,
+                                              final Map<URI, Place> places,
+                                              final Map<URI, Transition> transitions) {
+
+        //if a place with subroutes ID already exists in the map, the SubRoute was already added to the Petri Net
+        if (places.containsKey(subRoute.getId())) {
+            return;
+        }
+
+        //create a new place from the subRoute
+        final var place = new PlaceImpl(subRoute.getId());
+        places.put(place.getID(), place);
+
+        //for every AppRouteStart create a transition and add AppRouteStart -> SubRoute
+        for (final var endpoint : subRoute.getAppRouteStart()) {
+            final var trans = (TransitionImpl) getTransition(transitions, endpoint);
+            Set<String> writes = new HashSet<>();
+            if(subRoute.getAppRouteOutput() != null && !subRoute.getAppRouteOutput().isEmpty()) {
+                writes = subRoute.getAppRouteOutput().stream().map(Resource::getId).map(URI::toString).collect(Collectors.toCollection(HashSet::new));
+            }
+            var context = endpoint.getEndpointInformation() != null ? endpoint.getEndpointInformation().stream().map(TypedLiteral::getValue).collect(Collectors.toSet()) : new HashSet();
+            if(trans.getContext() == null) {
+                trans.setContextObject(new ContextObject(context, new HashSet<>(), writes, new HashSet<>(), ContextObject.TransType.APP));
+            }else{
+                trans.getContext().getWrite().addAll(writes);
+            }
+            final var arc = new ArcImpl(trans, place);
+            arcs.add(arc);
+        }
+
+        //for every AppRouteEnd create a transition and add SubRoute -> AppRouteEnd
+        for (final var endpoint : subRoute.getAppRouteEnd()) {
+            final var trans = (TransitionImpl) getTransition(transitions, endpoint);
+            Set<String> reads = new HashSet<>();
+            if(subRoute.getAppRouteOutput() != null && !subRoute.getAppRouteOutput().isEmpty()) {
+                reads = subRoute.getAppRouteOutput().stream().map(Resource::getId).map(URI::toString).collect(Collectors.toCollection(HashSet::new));
+            }
+            var context = endpoint.getEndpointInformation() != null ? endpoint.getEndpointInformation().stream().map(TypedLiteral::getValue).collect(Collectors.toSet()) : new HashSet();
+            if(trans.getContext() == null) {
+                trans.setContextObject(new ContextObject(context, reads, new HashSet<>(), new HashSet<>(), ContextObject.TransType.APP));
+            }else{
+                trans.getContext().getRead().addAll(reads);
+            }
+            final var arc = new ArcImpl(place, trans);
+            arcs.add(arc);
+        }
     }
 
     /**
@@ -107,49 +176,6 @@ public class InfomodelPetriNetBuilder {
             }
         }
         return petriNet;
-    }
-
-    /**
-     * Add a {@link RouteStep} to the Petri Net as a new Subroute.
-     *
-     * @param subRoute the subRoute that will be added to the current Petri Net
-     * @param arcs list of arcs of the current Petri Net
-     * @param places list of places of the current Petri Net
-     * @param transitions list of transitions of the current Petri Net
-     */
-    private static void addSubRouteToPetriNet(final RouteStep subRoute,
-                                              final Set<Arc> arcs,
-                                              final Map<URI, Place> places,
-                                              final Map<URI, Transition> transitions) {
-
-        //if a place with subroutes ID already exists in the map, the SubRoute was already added to the Petri Net
-        if (places.containsKey(subRoute.getId())) {
-            return;
-        }
-
-        //create a new place from the subRoute
-        final var place = new PlaceImpl(subRoute.getId());
-        places.put(place.getID(), place);
-
-        //for every AppRouteStart create a transition and add AppRouteStart -> SubRoute
-        for (final var endpoint : subRoute.getAppRouteStart()) {
-            final var trans = (TransitionImpl) getTransition(transitions, endpoint);
-            Set<String> writes = Set.of();
-            if(subRoute.getAppRouteOutput() != null && !subRoute.getAppRouteOutput().isEmpty()) {
-                writes = subRoute.getAppRouteOutput().stream().map(Resource::getId).map(URI::toString).collect(Collectors.toSet());
-            }
-            trans.setContextObject(new ContextObject(endpoint.getEndpointInformation().stream().map(TypedLiteral::getValue).collect(Collectors.toSet()), Set.of(), writes, Set.of(), ContextObject.TransType.APP));
-            final var arc = new ArcImpl(trans, place);
-            arcs.add(arc);
-        }
-
-        //for every AppRouteEnd create a transition and add SubRoute -> AppRouteEnd
-        for (final var endpoint : subRoute.getAppRouteEnd()) {
-            final var trans = (TransitionImpl) getTransition(transitions, endpoint);
-            trans.setContextObject(new ContextObject(endpoint.getEndpointInformation().stream().map(TypedLiteral::getValue).collect(Collectors.toSet()), Set.of(), Set.of(), Set.of(), ContextObject.TransType.CONTROL));
-            final var arc = new ArcImpl(place, trans);
-            arcs.add(arc);
-        }
     }
 
     /**
@@ -197,6 +223,24 @@ public class InfomodelPetriNetBuilder {
         }
         petriNet.getNodes().add(first);
         petriNet.getNodes().add(last);
+    }
+
+    public static PetriNet addControlTransitions(final PetriNet petriNet){
+        var initials = petriNet.getNodes().stream().filter(node -> node instanceof Place && ((Place) node).getMarkers() >= 1).collect(Collectors.toSet());
+        var controlTrans = new TransitionImpl(URI.create("trans://controlStart"));
+        var controlPlace = new PlaceImpl(URI.create("place://controlPlace"));
+        controlPlace.setMarkers(1);
+        controlTrans.setContextObject(new ContextObject(Set.of(), Set.of(), Set.of(), Set.of(), ContextObject.TransType.CONTROL));
+        var controlArc = new ArcImpl(controlPlace, controlTrans);
+        petriNet.getArcs().add(controlArc);
+        petriNet.getNodes().add(controlPlace);
+        petriNet.getNodes().add(controlTrans);
+        for(var startPlace : initials){
+            var arc = new ArcImpl(controlTrans, startPlace);
+            ((Place) startPlace).setMarkers(0);
+            petriNet.getArcs().add(arc);
+        }
+        return petriNet;
     }
 
     /**

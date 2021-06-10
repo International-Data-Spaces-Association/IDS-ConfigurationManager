@@ -72,9 +72,7 @@ public class RuleFormulaBuilder {
                                         transitionNOT(
                                                 transitionEV(
                                                         transitionAF(
-                                                                arcExpression(x -> x.getContext().getWrite() != null
-                                                                && x.getContext().getWrite().contains(target.toString())
-                                                                || x.getContext().getErase() != null
+                                                                arcExpression(x -> x.getContext().getErase() != null
                                                                 && x.getContext().getErase().contains(target.toString()),
                                                                 "")
                                                         )

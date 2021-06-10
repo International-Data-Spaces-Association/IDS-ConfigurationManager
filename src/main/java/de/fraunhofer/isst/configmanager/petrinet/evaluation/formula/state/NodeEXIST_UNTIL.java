@@ -44,7 +44,7 @@ public class NodeEXIST_UNTIL implements StateFormula {
                 if(res2) return true;
                 if(!res1) continue check;
             }
-            if (parameter2.evaluate(path.get(path.size() - offset), paths)) {
+            if (path.size() > offset && parameter2.evaluate(path.get(path.size() - offset), paths)) {
                 return true;
             }
         }

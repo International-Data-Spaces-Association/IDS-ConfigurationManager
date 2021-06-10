@@ -26,24 +26,30 @@ public class PolicyUtils {
                                                            final URI element) {
         final var rules = new ArrayList<Rule>();
 
-        for (final var permission : contract.getPermission()) {
-            final var target = permission.getTarget();
-            if (target != null && target.equals(element)) {
-                rules.add(permission);
+        if(contract.getPermission() != null) {
+            for (final var permission : contract.getPermission()) {
+                final var target = permission.getTarget();
+                if (target != null && target.equals(element)) {
+                    rules.add(permission);
+                }
             }
         }
 
-        for (final var prohibition : contract.getProhibition()) {
-            final var target = prohibition.getTarget();
-            if (target != null && target.equals(element)) {
-                rules.add(prohibition);
+        if(contract.getProhibition() != null) {
+            for (final var prohibition : contract.getProhibition()) {
+                final var target = prohibition.getTarget();
+                if (target != null && target.equals(element)) {
+                    rules.add(prohibition);
+                }
             }
         }
 
-        for (final var obligation : contract.getObligation()) {
-            final var target = obligation.getTarget();
-            if (target != null && target.equals(element)) {
-                rules.add(obligation);
+        if(contract.getObligation() != null) {
+            for (final var obligation : contract.getObligation()) {
+                final var target = obligation.getTarget();
+                if (target != null && target.equals(element)) {
+                    rules.add(obligation);
+                }
             }
         }
 
