@@ -51,6 +51,11 @@ public class RuleFormulaBuilder {
         }
     }
 
+    /**
+     * @param rule the Policy Rule
+     * @param target resource which is only allowed to be read n times
+     * @return {@link Formula} describing the given rule
+     */
     static Formula buildNTimesUsageFormula(final Rule rule, final URI target){
         //in every possible path, resource is only allowed to be read maxUsage times
         var maxUsage = RuleUtils.getMaxAccess(rule);
@@ -61,6 +66,10 @@ public class RuleFormulaBuilder {
         return nodeNOT(nodeMODAL(formula));
     }
 
+    /**
+     * @param target resource which has to be deleted after usage
+     * @return {@link Formula} describing the given rule
+     */
     static Formula buildUsageUntilDeletionFormula(final URI target){
         //data has to be deleted after a reading transition but before the final node
         return nodeNOT(
@@ -84,6 +93,11 @@ public class RuleFormulaBuilder {
         );
     }
 
+    /**
+     * @param rule the policy rule
+     * @param target resource which is only allowed to be read by targetconnector
+     * @return {@link Formula} describing the given rule
+     */
     static Formula buildConnectorRestrictionFormula(final Rule rule, final URI target){
         //if a transition is reading the resource, it has to be from the allowedConnector
         var allowedConnector = RuleUtils.getEndpoint(rule);
@@ -101,6 +115,10 @@ public class RuleFormulaBuilder {
         );
     }
 
+    /**
+     * @param target resource for which access is forbidden
+     * @return {@link Formula} describing the given rule
+     */
     static Formula buildProhibitAccessFormula(final URI target){
         //no reachable transition reads forbidden resource
         return nodeNOT(
@@ -116,6 +134,10 @@ public class RuleFormulaBuilder {
         );
     }
 
+    /**
+     * @param target resource for which reads must be logged
+     * @return {@link Formula} describing the given rule
+     */
     static Formula buildLoggingFormula(final URI target){
         //every transition reading the resource has to contain a logging flag in context
         return nodeNOT(
@@ -132,6 +154,10 @@ public class RuleFormulaBuilder {
         );
     }
 
+    /**
+     * @param target resource for which the policy holds
+     * @return {@link Formula} describing the given rule
+     */
     static Formula buildNotificationFormula(final URI target){
         //every transition reading the resource has to contain a notification flag in context
         return nodeNOT(

@@ -119,7 +119,7 @@ public class InfomodelPetriNetBuilder {
             if(subRoute.getAppRouteOutput() != null && !subRoute.getAppRouteOutput().isEmpty()) {
                 writes = subRoute.getAppRouteOutput().stream().map(Resource::getId).map(URI::toString).collect(Collectors.toCollection(HashSet::new));
             }
-            var context = endpoint.getEndpointInformation() != null ? endpoint.getEndpointInformation().stream().map(TypedLiteral::getValue).collect(Collectors.toSet()) : new HashSet();
+            var context = endpoint.getEndpointInformation() != null ? endpoint.getEndpointInformation().stream().map(TypedLiteral::getValue).collect(Collectors.toSet()) : new HashSet<String>();
             if(trans.getContext() == null) {
                 trans.setContextObject(new ContextObject(context, new HashSet<>(), writes, new HashSet<>(), ContextObject.TransType.APP));
             }else{
@@ -136,7 +136,7 @@ public class InfomodelPetriNetBuilder {
             if(subRoute.getAppRouteOutput() != null && !subRoute.getAppRouteOutput().isEmpty()) {
                 reads = subRoute.getAppRouteOutput().stream().map(Resource::getId).map(URI::toString).collect(Collectors.toCollection(HashSet::new));
             }
-            var context = endpoint.getEndpointInformation() != null ? endpoint.getEndpointInformation().stream().map(TypedLiteral::getValue).collect(Collectors.toSet()) : new HashSet();
+            var context = endpoint.getEndpointInformation() != null ? endpoint.getEndpointInformation().stream().map(TypedLiteral::getValue).collect(Collectors.toSet()) : new HashSet<String>();
             if(trans.getContext() == null) {
                 trans.setContextObject(new ContextObject(context, reads, new HashSet<>(), new HashSet<>(), ContextObject.TransType.APP));
             }else{
@@ -225,6 +225,12 @@ public class InfomodelPetriNetBuilder {
         petriNet.getNodes().add(last);
     }
 
+    /**
+     * Add an initial CONTROL place (and transition) before all places with markers
+     *
+     * @param petriNet a PetriNet
+     * @return petrinet with initial control transition
+     */
     public static PetriNet addControlTransitions(final PetriNet petriNet){
         var initials = petriNet.getNodes().stream().filter(node -> node instanceof Place && ((Place) node).getMarkers() >= 1).collect(Collectors.toSet());
         var controlTrans = new TransitionImpl(URI.create("trans://controlStart"));
