@@ -12,6 +12,12 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.0.1] - UNRELEASED
+
+### Dependency Maintenance
+- Upgrade: org.postgresql:postgresql 42.2.20 -> 42.2.21
+- 
+
 ## [7.0.0] - 2021-05-26
 ### Major Changes
 - Remove 20 unused APIs (= 1.150 lines of code) (unused by ConfigManager-UI project)
