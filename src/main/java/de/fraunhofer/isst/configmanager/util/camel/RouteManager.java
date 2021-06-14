@@ -121,7 +121,7 @@ public class RouteManager {
             velocityContext.put("startUrl", genericEndpoint.getAccessURL().toString());
             addBasicAuthHeaderForGenericEndpoint(velocityContext, genericEndpoint);
         } else {
-            //app is route start
+            //TODO app is route start
         }
     }
 
@@ -141,7 +141,7 @@ public class RouteManager {
             velocityContext.put("endUrl", genericEndpoint.getAccessURL().toString());
             addBasicAuthHeaderForGenericEndpoint(velocityContext, genericEndpoint);
         } else {
-            //app is route end
+            //TODO app is route end
         }
     }
 
@@ -153,11 +153,12 @@ public class RouteManager {
      */
     private void addBasicAuthHeaderForGenericEndpoint(final VelocityContext velocityContext,
                                                       final GenericEndpoint genericEndpoint) {
-        if (genericEndpoint.getGenericEndpointAuthentication() != null) {
-            final var username = genericEndpoint.getGenericEndpointAuthentication()
-                    .getAuthUsername();
-            final var password = genericEndpoint.getGenericEndpointAuthentication()
-                    .getAuthPassword();
+        final var basicAuth = genericEndpoint.getGenericEndpointAuthentication();
+        if (basicAuth != null && basicAuth.getAuthUsername() != null
+                && !basicAuth.getAuthUsername().isBlank() && basicAuth.getAuthPassword() != null
+                && !basicAuth.getAuthPassword().isBlank()) {
+            final var username = basicAuth.getAuthUsername();
+            final var password = basicAuth.getAuthPassword();
             final var auth = username + ":" + password;
             final var encodedAuth = Base64.encodeBase64(auth.getBytes());
             final var authHeader = "Basic " + new String(encodedAuth);
