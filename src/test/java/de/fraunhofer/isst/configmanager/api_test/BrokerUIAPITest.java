@@ -1,9 +1,9 @@
 package de.fraunhofer.isst.configmanager.api_test;
 
-import de.fraunhofer.isst.configmanager.components.broker.api.controller.BrokerController;
-import de.fraunhofer.isst.configmanager.components.broker.api.service.BrokerService;
+import de.fraunhofer.isst.configmanager.extensions.components.broker.api.controller.BrokerController;
+import de.fraunhofer.isst.configmanager.extensions.components.broker.api.service.BrokerService;
 import de.fraunhofer.isst.configmanager.data.entities.CustomBroker;
-import de.fraunhofer.isst.configmanager.util.TestUtil;
+import de.fraunhofer.isst.configmanager.extensions.apps.util.TestUtil;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
