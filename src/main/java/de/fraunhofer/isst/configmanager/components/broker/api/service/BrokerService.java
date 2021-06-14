@@ -1,4 +1,4 @@
-package de.fraunhofer.isst.configmanager.api.service;
+package de.fraunhofer.isst.configmanager.components.broker.api.service;
 
 import de.fraunhofer.isst.configmanager.data.entities.CustomBroker;
 import de.fraunhofer.isst.configmanager.data.enums.BrokerRegistrationStatus;

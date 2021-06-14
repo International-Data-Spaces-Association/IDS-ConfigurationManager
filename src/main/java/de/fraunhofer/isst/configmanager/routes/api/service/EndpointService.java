@@ -1,4 +1,4 @@
-package de.fraunhofer.isst.configmanager.api.service;
+package de.fraunhofer.isst.configmanager.routes.api.service;
 
 import de.fraunhofer.iais.eis.BasicAuthenticationBuilder;
 import de.fraunhofer.iais.eis.Endpoint;

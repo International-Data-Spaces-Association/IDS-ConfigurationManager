@@ -1,4 +1,4 @@
-package de.fraunhofer.isst.configmanager.api.service;
+package de.fraunhofer.isst.configmanager.configuration.api.service;
 
 import de.fraunhofer.iais.eis.BaseConnectorImpl;
 import de.fraunhofer.iais.eis.ConfigurationModelImpl;
@@ -6,6 +6,7 @@ import de.fraunhofer.iais.eis.ConnectorEndpointBuilder;
 import de.fraunhofer.iais.eis.SecurityProfile;
 import de.fraunhofer.iais.eis.util.TypedLiteral;
 import de.fraunhofer.iais.eis.util.Util;
+import de.fraunhofer.isst.configmanager.configuration.api.service.ConfigModelService;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;

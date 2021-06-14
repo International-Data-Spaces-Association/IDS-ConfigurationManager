@@ -1,4 +1,4 @@
-package de.fraunhofer.isst.configmanager.api;
+package de.fraunhofer.isst.configmanager.routes.api;
 
 import de.fraunhofer.isst.configmanager.data.enums.RouteDeployMethod;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.net.URI;
 
 
-public interface AppRouteApi {
+public interface RouteApi {
     // Interfaces for managing app routes
     @PostMapping(value = "/approute", produces = "application/ld+json")
     @Operation(summary = "Creates a new app route")

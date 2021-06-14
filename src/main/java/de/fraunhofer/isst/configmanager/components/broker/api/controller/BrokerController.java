@@ -1,8 +1,8 @@
-package de.fraunhofer.isst.configmanager.api.controller;
+package de.fraunhofer.isst.configmanager.components.broker.api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.fraunhofer.isst.configmanager.api.BrokerApi;
-import de.fraunhofer.isst.configmanager.api.service.BrokerService;
+import de.fraunhofer.isst.configmanager.components.broker.api.BrokerApi;
+import de.fraunhofer.isst.configmanager.components.broker.api.service.BrokerService;
 import de.fraunhofer.isst.configmanager.util.Utility;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;

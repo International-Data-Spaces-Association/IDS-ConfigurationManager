@@ -1,4 +1,4 @@
-package de.fraunhofer.isst.configmanager.api.controller;
+package de.fraunhofer.isst.configmanager.routes.api.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -6,9 +6,9 @@ import de.fraunhofer.iais.eis.AppRoute;
 import de.fraunhofer.iais.eis.AppRouteImpl;
 import de.fraunhofer.iais.eis.RouteStepImpl;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
-import de.fraunhofer.isst.configmanager.api.AppRouteApi;
-import de.fraunhofer.isst.configmanager.api.service.AppRouteService;
-import de.fraunhofer.isst.configmanager.api.service.ConfigModelService;
+import de.fraunhofer.isst.configmanager.routes.api.RouteApi;
+import de.fraunhofer.isst.configmanager.routes.api.service.RouteService;
+import de.fraunhofer.isst.configmanager.configuration.api.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.data.enums.RouteDeployMethod;
 import de.fraunhofer.isst.configmanager.data.repositories.RouteDeployMethodRepository;
 import de.fraunhofer.isst.configmanager.util.Utility;
@@ -36,22 +36,22 @@ import java.util.ArrayList;
 @RequestMapping("/api/ui")
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Tag(name = "App Route Management", description = "Endpoints for managing the app routes in the configuration manager")
-public class AppRouteController implements AppRouteApi {
+public class RouteController implements RouteApi {
 
     transient ConfigModelService configModelService;
-    transient AppRouteService appRouteService;
+    transient RouteService routeService;
     transient Serializer serializer;
     transient RouteDeployMethodRepository routeDeployMethodRepository;
     transient ObjectMapper objectMapper;
 
     @Autowired
-    public AppRouteController(final ConfigModelService configModelService,
-                              final AppRouteService appRouteService,
-                              final Serializer serializer,
-                              final RouteDeployMethodRepository routeDeployMethodRepository,
-                              final ObjectMapper objectMapper) {
+    public RouteController(final ConfigModelService configModelService,
+                           final RouteService routeService,
+                           final Serializer serializer,
+                           final RouteDeployMethodRepository routeDeployMethodRepository,
+                           final ObjectMapper objectMapper) {
         this.configModelService = configModelService;
-        this.appRouteService = appRouteService;
+        this.routeService = routeService;
         this.serializer = serializer;
         this.routeDeployMethodRepository = routeDeployMethodRepository;
         this.objectMapper = objectMapper;
@@ -77,7 +77,7 @@ public class AppRouteController implements AppRouteApi {
 
         ResponseEntity<String> response;
 
-        final var appRoute = appRouteService.createAppRoute(description);
+        final var appRoute = routeService.createAppRoute(description);
 
         if (appRoute != null) {
             final var jsonObject = new JSONObject();
@@ -112,7 +112,7 @@ public class AppRouteController implements AppRouteApi {
 
         ResponseEntity<String> response;
 
-        final boolean deleted = appRouteService.deleteAppRoute(routeId);
+        final boolean deleted = routeService.deleteAppRoute(routeId);
 
         if (deleted) {
             if (log.isInfoEnabled()) {
@@ -145,7 +145,7 @@ public class AppRouteController implements AppRouteApi {
 
         ResponseEntity<String> response;
 
-        final var appRoute = appRouteService.getAppRoute(routeId);
+        final var appRoute = routeService.getAppRoute(routeId);
 
         if (appRoute != null) {
             try {
@@ -183,7 +183,7 @@ public class AppRouteController implements AppRouteApi {
         }
         ResponseEntity<String> response;
 
-        final var appRouteList = appRouteService.getAppRoutes();
+        final var appRouteList = routeService.getAppRoutes();
 
         try {
             if (appRouteList == null) {
@@ -237,7 +237,7 @@ public class AppRouteController implements AppRouteApi {
         }
         ResponseEntity<String> response;
 
-        final var routeStep = appRouteService.createAppRouteStep(routeId, startId,
+        final var routeStep = routeService.createAppRouteStep(routeId, startId,
                 startCoordinateX, startCoordinateY,
                 endID, endCoordinateX, endCoordinateY, resourceId);
 
@@ -274,7 +274,7 @@ public class AppRouteController implements AppRouteApi {
         }
         ResponseEntity<String> response;
 
-        final var endpointInformation = appRouteService.getEndpointInformation(routeId, endpointId);
+        final var endpointInformation = routeService.getEndpointInformation(routeId, endpointId);
 
         if (endpointInformation != null) {
             try {

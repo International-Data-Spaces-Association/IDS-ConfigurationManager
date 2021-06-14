@@ -1,4 +1,4 @@
-package de.fraunhofer.isst.configmanager.api;
+package de.fraunhofer.isst.configmanager.routes.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

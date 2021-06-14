@@ -1,8 +1,8 @@
-package de.fraunhofer.isst.configmanager.api.controller;
+package de.fraunhofer.isst.configmanager.configuration.api.controller;
 
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
-import de.fraunhofer.isst.configmanager.api.ConfigModelApi;
-import de.fraunhofer.isst.configmanager.api.service.ConfigModelService;
+import de.fraunhofer.isst.configmanager.configuration.api.ConfigModelApi;
+import de.fraunhofer.isst.configmanager.configuration.api.service.ConfigModelService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

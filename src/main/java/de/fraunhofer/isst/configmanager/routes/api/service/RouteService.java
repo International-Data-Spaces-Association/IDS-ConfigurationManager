@@ -1,16 +1,13 @@
-package de.fraunhofer.isst.configmanager.api.service;
+package de.fraunhofer.isst.configmanager.routes.api.service;
 
 import de.fraunhofer.iais.eis.AppRoute;
 import de.fraunhofer.iais.eis.AppRouteBuilder;
 import de.fraunhofer.iais.eis.AppRouteImpl;
-import de.fraunhofer.iais.eis.BaseConnectorImpl;
 import de.fraunhofer.iais.eis.ConfigurationModelImpl;
-import de.fraunhofer.iais.eis.ConnectorEndpointBuilder;
 import de.fraunhofer.iais.eis.Endpoint;
-import de.fraunhofer.iais.eis.ResourceImpl;
 import de.fraunhofer.iais.eis.RouteStep;
-import de.fraunhofer.iais.eis.RouteStepBuilder;
 import de.fraunhofer.iais.eis.util.Util;
+import de.fraunhofer.isst.configmanager.configuration.api.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.data.entities.CustomApp;
 import de.fraunhofer.isst.configmanager.data.entities.EndpointInformation;
 import de.fraunhofer.isst.configmanager.data.repositories.CustomAppRepository;
@@ -37,7 +34,7 @@ import java.util.List;
 @Transactional
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class AppRouteService {
+public class RouteService {
 
     transient ConfigModelService configModelService;
     transient EndpointService endpointService;

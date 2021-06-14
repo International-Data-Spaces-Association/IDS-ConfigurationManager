@@ -1,10 +1,10 @@
-package de.fraunhofer.isst.configmanager.api.controller;
+package de.fraunhofer.isst.configmanager.configuration.api.controller;
 
 import de.fraunhofer.iais.eis.ConfigurationModelImpl;
 import de.fraunhofer.iais.eis.util.Util;
-import de.fraunhofer.isst.configmanager.api.ConnectorApi;
-import de.fraunhofer.isst.configmanager.api.service.ConfigModelService;
-import de.fraunhofer.isst.configmanager.api.service.ConnectorService;
+import de.fraunhofer.isst.configmanager.configuration.api.ConnectorApi;
+import de.fraunhofer.isst.configmanager.configuration.api.service.ConfigModelService;
+import de.fraunhofer.isst.configmanager.configuration.api.service.ConnectorService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

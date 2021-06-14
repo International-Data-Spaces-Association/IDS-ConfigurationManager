@@ -1,4 +1,4 @@
-package de.fraunhofer.isst.configmanager.api.controller;
+package de.fraunhofer.isst.configmanager.routes.api.controller;
 
 
 import de.fraunhofer.iais.eis.BaseConnectorImpl;
@@ -6,9 +6,9 @@ import de.fraunhofer.iais.eis.ConfigurationModelImpl;
 import de.fraunhofer.iais.eis.ConnectorEndpoint;
 import de.fraunhofer.iais.eis.ConnectorEndpointBuilder;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
-import de.fraunhofer.isst.configmanager.api.EndpointApi;
-import de.fraunhofer.isst.configmanager.api.service.ConfigModelService;
-import de.fraunhofer.isst.configmanager.api.service.EndpointService;
+import de.fraunhofer.isst.configmanager.routes.api.EndpointApi;
+import de.fraunhofer.isst.configmanager.configuration.api.service.ConfigModelService;
+import de.fraunhofer.isst.configmanager.routes.api.service.EndpointService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
