@@ -14,10 +14,4 @@ public interface UtilApi {
     @ApiResponse(responseCode = "200", description = "Successfully get the enums")
     @ApiResponse(responseCode = "400", description = "Can not find the enums")
     ResponseEntity<String> getSpecificEnum(@PathVariable String enumName);
-
-    @PostMapping(value = "/policy-pattern")
-    @Operation(summary = "Get pattern of policy")
-    @ApiResponse(responseCode = "200", description = "Successfully get the pattern of policy")
-    @ApiResponse(responseCode = "400", description = "Can not find the policy pattern")
-    ResponseEntity<String> getPolicyPattern(@RequestBody String policy);
 }

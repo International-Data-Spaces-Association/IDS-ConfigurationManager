@@ -4,7 +4,7 @@ import de.fraunhofer.iais.eis.ConnectorDeployMode;
 import de.fraunhofer.iais.eis.ConnectorStatus;
 import de.fraunhofer.iais.eis.Language;
 import de.fraunhofer.iais.eis.LogLevel;
-import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.model.BackendSource;
+//import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.model.BackendSource;
 import de.fraunhofer.isst.configmanager.data.enums.BrokerRegistrationStatus;
 import de.fraunhofer.isst.configmanager.data.enums.RouteDeployMethod;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +41,7 @@ public class UtilService {
             case "connectorstatus": sortedJsonArray = getConnectorStatus(); break;
             case "connectordeploymode": sortedJsonArray = getConnectorDeployMode(); break;
             case "language": sortedJsonArray = getLanguage(); break;
-            case "sourcetype": sortedJsonArray = getSourceType(); break;
+//            case "sourcetype": sortedJsonArray = getSourceType(); break;
             case "deploymethod": sortedJsonArray = getDeployMethod(); break;
             case "brokerstatus": sortedJsonArray = getBrokerStatus(); break;
             default: break;
@@ -83,21 +83,21 @@ public class UtilService {
         return sortedJsonArray;
     }
 
-    private JSONArray getSourceType() {
-        JSONArray sortedJsonArray;
-
-        final var jsonArray = new JSONArray();
-        final var sourceTypes = BackendSource.Type.values();
-
-        for (final var sourceType : sourceTypes) {
-            var jsonObject = new JSONObject();
-            jsonObject.put("displayName", sourceType.name());
-            jsonArray.add(jsonObject);
-        }
-
-        sortedJsonArray = sortJsonArray(jsonArray);
-        return sortedJsonArray;
-    }
+//    private JSONArray getSourceType() {
+//        JSONArray sortedJsonArray;
+//
+//        final var jsonArray = new JSONArray();
+//        final var sourceTypes = BackendSource.Type.values();
+//
+//        for (final var sourceType : sourceTypes) {
+//            var jsonObject = new JSONObject();
+//            jsonObject.put("displayName", sourceType.name());
+//            jsonArray.add(jsonObject);
+//        }
+//
+//        sortedJsonArray = sortJsonArray(jsonArray);
+//        return sortedJsonArray;
+//    }
 
     private JSONArray getLanguage() {
         JSONArray sortedJsonArray;

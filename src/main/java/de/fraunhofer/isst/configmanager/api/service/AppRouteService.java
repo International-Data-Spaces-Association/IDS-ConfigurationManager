@@ -11,13 +11,13 @@ import de.fraunhofer.iais.eis.ResourceImpl;
 import de.fraunhofer.iais.eis.RouteStep;
 import de.fraunhofer.iais.eis.RouteStepBuilder;
 import de.fraunhofer.iais.eis.util.Util;
-import de.fraunhofer.isst.configmanager.api.service.resources.ResourceService;
 import de.fraunhofer.isst.configmanager.data.entities.CustomApp;
 import de.fraunhofer.isst.configmanager.data.entities.EndpointInformation;
 import de.fraunhofer.isst.configmanager.data.repositories.CustomAppRepository;
 import de.fraunhofer.isst.configmanager.data.repositories.EndpointInformationRepository;
 import de.fraunhofer.isst.configmanager.data.repositories.RouteDeployMethodRepository;
 import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,30 +35,15 @@ import java.util.List;
 @Slf4j
 @Service
 @Transactional
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class AppRouteService {
 
     transient ConfigModelService configModelService;
     transient EndpointService endpointService;
-    transient ResourceService resourceService;
     transient RouteDeployMethodRepository routeDeployMethodRepository;
     transient EndpointInformationRepository endpointInformationRepository;
     transient CustomAppRepository customAppRepository;
-
-    @Autowired
-    public AppRouteService(final ConfigModelService configModelService,
-                           final RouteDeployMethodRepository routeDeployMethodRepository,
-                           final EndpointInformationRepository endpointInformationRepository,
-                           final CustomAppRepository customAppRepository,
-                           final EndpointService endpointService,
-                           final ResourceService resourceService) {
-        this.configModelService = configModelService;
-        this.routeDeployMethodRepository = routeDeployMethodRepository;
-        this.endpointInformationRepository = endpointInformationRepository;
-        this.customAppRepository = customAppRepository;
-        this.endpointService = endpointService;
-        this.resourceService = resourceService;
-    }
 
     /**
      * This method creates an app route.
@@ -134,7 +119,7 @@ public class AppRouteService {
      * @return list of app routes
      */
     public List<AppRoute> getAppRoutes() {
-        return (List<AppRoute>) configModelService.getConfigModel().getAppRoute();
+        return configModelService.getConfigModel().getAppRoute();
     }
 
     /**
@@ -195,39 +180,39 @@ public class AppRouteService {
             }
 
             // Create route step
-            if (startEndpoint != null && endpoint != null) {
-                final var resource = resourceService.getResource(resourceId);
-                if (resource != null) {
-
-                    // Set resource endpoint
-                    if (configModelService.getConfigModel().getConnectorDescription().getHasEndpoint() == null
-                            || configModelService.getConfigModel().getConnectorDescription().getHasEndpoint().isEmpty()) {
-
-                        final var baseConnectorImpl =
-                                (BaseConnectorImpl) configModelService.getConfigModel().getConnectorDescription();
-                        baseConnectorImpl.setHasEndpoint(Util.asList(new ConnectorEndpointBuilder()
-                                ._accessURL_(URI.create("http://api/ids/data")).build()));
-                    }
-                    final var connectorEndpoint =
-                            configModelService.getConfigModel().getConnectorDescription()
-                            .getHasEndpoint().get(0);
-                    final var resourceImpl = (ResourceImpl) resource;
-                    resourceImpl.setResourceEndpoint(Util.asList(connectorEndpoint));
-
-                    routeStep = new RouteStepBuilder()._routeDeployMethod_(deployMethod)
-                            ._appRouteStart_(Util.asList(startEndpoint))
-                            ._appRouteEnd_(Util.asList(endpoint))
-                            ._appRouteOutput_(Util.asList(resourceImpl))
-                            .build();
-                } else {
-                    routeStep = new RouteStepBuilder()._routeDeployMethod_(deployMethod)
-                            ._appRouteStart_(Util.asList(startEndpoint))
-                            ._appRouteEnd_(Util.asList(endpoint))
-                            .build();
-                }
-                routeSteps.add(routeStep);
-                configModelService.saveState();
-            }
+//            if (startEndpoint != null && endpoint != null) {
+//                final var resource = resourceService.getResource(resourceId);
+//                if (resource != null) {
+//
+//                    // Set resource endpoint
+//                    if (configModelService.getConfigModel().getConnectorDescription().getHasEndpoint() == null
+//                            || configModelService.getConfigModel().getConnectorDescription().getHasEndpoint().isEmpty()) {
+//
+//                        final var baseConnectorImpl =
+//                                (BaseConnectorImpl) configModelService.getConfigModel().getConnectorDescription();
+//                        baseConnectorImpl.setHasEndpoint(Util.asList(new ConnectorEndpointBuilder()
+//                                ._accessURL_(URI.create("http://api/ids/data")).build()));
+//                    }
+//                    final var connectorEndpoint =
+//                            configModelService.getConfigModel().getConnectorDescription()
+//                            .getHasEndpoint().get(0);
+//                    final var resourceImpl = (ResourceImpl) resource;
+//                    resourceImpl.setResourceEndpoint(Util.asList(connectorEndpoint));
+//
+//                    routeStep = new RouteStepBuilder()._routeDeployMethod_(deployMethod)
+//                            ._appRouteStart_(Util.asList(startEndpoint))
+//                            ._appRouteEnd_(Util.asList(endpoint))
+//                            ._appRouteOutput_(Util.asList(resourceImpl))
+//                            .build();
+//                } else {
+//                    routeStep = new RouteStepBuilder()._routeDeployMethod_(deployMethod)
+//                            ._appRouteStart_(Util.asList(startEndpoint))
+//                            ._appRouteEnd_(Util.asList(endpoint))
+//                            .build();
+//                }
+//                routeSteps.add(routeStep);
+//                configModelService.saveState();
+//            }
         }
         return routeStep;
     }

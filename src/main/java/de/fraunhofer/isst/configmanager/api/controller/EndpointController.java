@@ -11,6 +11,7 @@ import de.fraunhofer.isst.configmanager.api.service.ConfigModelService;
 import de.fraunhofer.isst.configmanager.api.service.EndpointService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 @Slf4j
 @RestController
 @RequestMapping("/api/ui")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Tag(name = "Endpoints Management", description = "Different endpoint types can be managed here")
 public class EndpointController implements EndpointApi {
@@ -38,15 +40,6 @@ public class EndpointController implements EndpointApi {
     transient Serializer serializer;
     transient ConfigModelService configModelService;
     transient EndpointService endpointService;
-
-    @Autowired
-    public EndpointController(final Serializer serializer,
-                              final ConfigModelService configModelService,
-                              final EndpointService endpointService) {
-        this.serializer = serializer;
-        this.configModelService = configModelService;
-        this.endpointService = endpointService;
-    }
 
     /**
      * This method creates a generic endpoint with the given parameters.

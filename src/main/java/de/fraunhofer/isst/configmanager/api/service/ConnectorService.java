@@ -1,13 +1,11 @@
 package de.fraunhofer.isst.configmanager.api.service;
 
-import de.fraunhofer.iais.eis.BaseConnectorBuilder;
 import de.fraunhofer.iais.eis.BaseConnectorImpl;
 import de.fraunhofer.iais.eis.ConfigurationModelImpl;
 import de.fraunhofer.iais.eis.ConnectorEndpointBuilder;
 import de.fraunhofer.iais.eis.SecurityProfile;
 import de.fraunhofer.iais.eis.util.TypedLiteral;
 import de.fraunhofer.iais.eis.util.Util;
-import de.fraunhofer.isst.configmanager.data.repositories.ConfigModelRepository;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -16,8 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Service class for the connector, which manages a list of configurations and a set of observers,
@@ -32,29 +28,9 @@ public class ConnectorService {
     transient ConfigModelService configModelService;
 
     @Autowired
-    public ConnectorService(final ConfigModelService configModelService,
-                            final ConfigModelRepository configModelRepository) {
+    public ConnectorService(final ConfigModelService configModelService) {
         this.configModelService = configModelService;
-
-        // If no connector is found in the database, a default connector is created at this point.
-        if (configModelRepository.findAll().get(0).getConfigurationModel().getConnectorDescription() == null) {
-            if (log.isInfoEnabled()) {
-                log.info("---- [ConnectorService] No connector description is found in the configuration model! Creating"
-                        + " default connector description");
-            }
-
-            final var connector = new BaseConnectorBuilder()
-                    ._inboundModelVersion_(new ArrayList<>(List.of("3.1.0")))
-                    ._outboundModelVersion_("3.1.0")
-                    ._securityProfile_(SecurityProfile.BASE_SECURITY_PROFILE)
-                    ._maintainer_(URI.create("https://example.com"))
-                    ._curator_(URI.create("https://example.com"))
-                    .build();
-
-            final var configurationModel = (ConfigurationModelImpl) configModelService.getConfigModel();
-
-            configurationModel.setConnectorDescription(connector);
-        }
+        //TODO: Getter + Load from DB (empty constructor)
     }
 
     /**

@@ -70,8 +70,10 @@ public class EndpointService {
         if (customGenericEndpointRepository.count() == 0) {
             customGenericEndpointList = new CustomGenericEndpointList();
         } else {
-            customGenericEndpointList = customGenericEndpointRepository.findAll().stream().findAny().get();
+            customGenericEndpointList = customGenericEndpointRepository.findAll().stream().findAny().orElse(null);
         }
+
+        assert customGenericEndpointList != null;
 
         customGenericEndpointList.getCustomGenericEndpointObjects().add(customGenericEndpointObject);
         customGenericEndpointList = customGenericEndpointRepository.saveAndFlush(customGenericEndpointList);
@@ -85,7 +87,10 @@ public class EndpointService {
         var genericEndpoints = new ArrayList<Endpoint>();
 
         try {
-            customGenericEndpointList = customGenericEndpointRepository.findAll().stream().findAny().get();
+            customGenericEndpointList = customGenericEndpointRepository.findAll().stream().findAny().orElse(null);
+
+            assert customGenericEndpointList != null;
+
             genericEndpoints = (ArrayList<Endpoint>) customGenericEndpointList.getEndpoints();
             if (log.isInfoEnabled()) {
                 log.info("---- [EndpointService getGenericEndpoints] Generic endpoints found: " + genericEndpoints.size());
@@ -104,7 +109,9 @@ public class EndpointService {
      * @return generic endpoint
      */
     public GenericEndpoint getGenericEndpoint(final URI id) {
-        customGenericEndpointList = customGenericEndpointRepository.findAll().stream().findAny().get();
+        customGenericEndpointList = customGenericEndpointRepository.findAll().stream().findAny().orElse(null);
+
+        assert this.customGenericEndpointList != null;
 
         return (GenericEndpoint) this.customGenericEndpointList.getEndpoints()
                 .stream()

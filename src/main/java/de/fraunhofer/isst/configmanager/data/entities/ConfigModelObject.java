@@ -29,8 +29,4 @@ public class ConfigModelObject {
     @Convert(converter = ConfigModelConverter.class)
     @Column(columnDefinition = "TEXT")
     ConfigurationModel configurationModel;
-
-    public ConfigModelObject(final ConfigurationModel configurationModel) {
-        this.configurationModel = configurationModel;
-    }
 }

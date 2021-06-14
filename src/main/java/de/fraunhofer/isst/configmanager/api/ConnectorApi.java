@@ -10,19 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.net.URI;
 
 public interface ConnectorApi {
-    @GetMapping(value = "/connector", produces = "application/ld+json")
-    @Operation(summary = "Get the Connector-Description")
-    @ApiResponse(responseCode = "200", description = "Successfully retrieved the connector")
-    @ApiResponse(responseCode = "404", description = "Can not find a connector description")
-    @ApiResponse(responseCode = "500", description = "Internal server error")
-    ResponseEntity<String> getConnector();
-
-    @GetMapping(value = "/connector/status", produces = "application/ld+json")
-    @Operation(summary = "Get the accessibility-status of the Public Connector Endpoint (Connector Self-description)")
-    @ApiResponse(responseCode = "200", description = "Public connector endpoint reachable.")
-    @ApiResponse(responseCode = "503", description = "Public connector endpoint not reachable.")
-    ResponseEntity<String> getConnectorStatus();
-
     @PutMapping(value = "/connector", produces = "application/ld+json")
     @Operation(summary = "Update a connector")
     @ApiResponse(responseCode = "200", description = "Successfully updated the connector description of the configuration model")

@@ -1,18 +1,14 @@
 package de.fraunhofer.isst.configmanager.api.controller;
 
-import de.fraunhofer.iais.eis.ConfigurationModelImpl;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
-import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.api.ConfigModelApi;
 import de.fraunhofer.isst.configmanager.api.service.ConfigModelService;
-import de.fraunhofer.isst.configmanager.connector.clients.DefaultConnectorClient;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,22 +24,13 @@ import java.util.ArrayList;
 @Slf4j
 @RestController
 @RequestMapping("/api/ui")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Tag(name = "Configmodel Management", description = "Endpoints for managing the configuration model")
 public class ConfigModelController implements ConfigModelApi {
 
     transient Serializer serializer;
     transient ConfigModelService configModelService;
-    transient DefaultConnectorClient client;
-
-    @Autowired
-    public ConfigModelController(final Serializer serializer,
-                                 final ConfigModelService configModelService,
-                                 final DefaultConnectorClient client) {
-        this.serializer = serializer;
-        this.configModelService = configModelService;
-        this.client = client;
-    }
 
     /**
      * This method updates the configuration model with the given parameters.
@@ -78,39 +65,12 @@ public class ConfigModelController implements ConfigModelApi {
 
         ResponseEntity<String> response;
 
-        final var result = configModelService.updateConfigurationModel(loglevel, connectorDeployMode,
+        configModelService.updateConfigurationModel(loglevel, connectorDeployMode,
                 trustStore,
                 trustStorePassword, keyStore, keyStorePassword, proxyUri, noProxyUriList,
                 username, password);
 
-        if (result) {
-            final var jsonObject = new JSONObject();
-            jsonObject.put("message", "Successfully updated the configuration model in the "
-                    + "configuration manager");
-            try {
-                // The configuration model is sent to the client without the app routes at this
-                // point, because of the different infomodels.
-                final var configurationModel = (ConfigurationModelImpl) configModelService.getConfigModel();
-                configurationModel.setAppRoute(Util.asList());
-
-                final var valid = client.sendConfiguration(serializer.serialize(configurationModel));
-
-                if (valid) {
-                    jsonObject.put("connectorResponse", "Successfully updated the configuration model at the client");
-                    response = ResponseEntity.ok(jsonObject.toJSONString());
-                } else {
-                    jsonObject.put("connectorResponse", "Failed to update the configuration model at the client");
-                    response = ResponseEntity.badRequest().body(jsonObject.toJSONString());
-                }
-            } catch (IOException e) {
-                if (log.isErrorEnabled()) {
-                    log.error(e.getMessage(), e);
-                }
-                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-            }
-        } else {
-            response = ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to update the configuration model");
-        }
+        response = ResponseEntity.ok("Successfully updated the configuration model!");
 
         return response;
     }
@@ -125,6 +85,7 @@ public class ConfigModelController implements ConfigModelApi {
         if (log.isInfoEnabled()) {
             log.info(">> GET /configmodel");
         }
+
         ResponseEntity<String> response;
 
         try {
