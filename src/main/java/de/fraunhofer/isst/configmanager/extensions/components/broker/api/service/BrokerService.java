@@ -30,7 +30,7 @@ public class BrokerService {
         // If no broker is found in the database, a default broker is created at this point.
         if (customBrokerRepository.count() == 0) {
             if (log.isInfoEnabled()) {
-                log.info("---- [BrokerService] Db is empty! Creating custom broker");
+                log.info("---- [BrokerService] Adding initial example broker!");
             }
             final var customBroker = new CustomBroker();
             customBroker.setBrokerUri(URI.create("https://broker.ids.isst.fraunhofer.de/infrastructure"));
