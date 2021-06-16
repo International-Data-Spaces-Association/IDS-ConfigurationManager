@@ -1,5 +1,7 @@
 package de.fraunhofer.isst.configmanager.core;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
@@ -15,8 +17,9 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @UtilityClass
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class OkHttpUtils {
-    private static final int TIMEOUT = 30;
+    static int TIMEOUT = 30;
 
     /**
      * Static method for generating an OkHttpClient which does not validate Certificate Chains.

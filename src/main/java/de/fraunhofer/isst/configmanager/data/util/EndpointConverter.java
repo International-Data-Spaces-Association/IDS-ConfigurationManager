@@ -15,9 +15,9 @@ import java.io.IOException;
  */
 @Slf4j
 @Converter
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class EndpointConverter implements AttributeConverter<Endpoint, String> {
-    final transient Serializer serializer = new Serializer();
+    transient Serializer serializer = new Serializer();
 
     /**
      * This method serializes the endpoint, which is given in the parameter to a string, to be

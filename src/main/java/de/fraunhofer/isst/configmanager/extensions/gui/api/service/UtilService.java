@@ -4,7 +4,6 @@ import de.fraunhofer.iais.eis.ConnectorDeployMode;
 import de.fraunhofer.iais.eis.ConnectorStatus;
 import de.fraunhofer.iais.eis.Language;
 import de.fraunhofer.iais.eis.LogLevel;
-//import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.model.BackendSource;
 import de.fraunhofer.isst.configmanager.data.enums.BrokerRegistrationStatus;
 import de.fraunhofer.isst.configmanager.data.enums.RouteDeployMethod;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+
+//import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.model.BackendSource;
 
 /**
  * The class can be used to define auxiliary methods that are needed again and again.

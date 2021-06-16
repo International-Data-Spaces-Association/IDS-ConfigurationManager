@@ -2,6 +2,7 @@ package de.fraunhofer.isst.configmanager.data.entities;
 
 import lombok.AccessLevel;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.Entity;
@@ -14,6 +15,7 @@ import javax.persistence.Id;
  */
 @Data
 @Entity
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class EndpointInformation {
     @Id
@@ -23,9 +25,6 @@ public class EndpointInformation {
     String endpointId;
     int xCoordinate;
     int yCoordinate;
-
-    public EndpointInformation() {
-    }
 
     public EndpointInformation(final String routeId, final String endpointId, final int xCoordinate,
                                final int yCoordinate) {

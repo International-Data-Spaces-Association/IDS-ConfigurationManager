@@ -3,6 +3,7 @@ package de.fraunhofer.isst.configmanager.data.entities;
 import de.fraunhofer.isst.configmanager.data.enums.BrokerRegistrationStatus;
 import lombok.AccessLevel;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.ElementCollection;
@@ -18,6 +19,7 @@ import java.util.List;
  */
 @Data
 @Entity
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CustomBroker {
     @Id
@@ -32,9 +34,6 @@ public class CustomBroker {
 
     @ElementCollection
     List<String> registeredResources;
-
-    public CustomBroker() {
-    }
 
     public CustomBroker(final URI brokerUri) {
         this.brokerUri = brokerUri;

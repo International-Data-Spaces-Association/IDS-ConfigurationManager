@@ -7,6 +7,7 @@ import de.fraunhofer.iais.eis.SecurityProfile;
 import de.fraunhofer.iais.eis.util.TypedLiteral;
 import de.fraunhofer.iais.eis.util.Util;
 import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,16 +23,10 @@ import java.net.URI;
 @Slf4j
 @Service
 @Transactional
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ConnectorService {
-
     transient ConfigModelService configModelService;
-
-    @Autowired
-    public ConnectorService(final ConfigModelService configModelService) {
-        this.configModelService = configModelService;
-        //TODO: Getter + Load from DB (empty constructor)
-    }
 
     /**
      * @param title                title of the connector

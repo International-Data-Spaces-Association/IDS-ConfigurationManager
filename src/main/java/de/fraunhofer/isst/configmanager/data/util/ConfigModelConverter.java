@@ -15,9 +15,9 @@ import java.io.IOException;
  */
 @Slf4j
 @Converter
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ConfigModelConverter implements AttributeConverter<ConfigurationModel, String> {
-    final transient Serializer serializer = new Serializer();
+    transient Serializer serializer = new Serializer();
 
     /**
      * Converter method converts the value stored in the entity attribute into the data

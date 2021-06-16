@@ -29,7 +29,6 @@ import java.net.URI;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Tag(name = "Extension: Configuration Connector")
 public class ConnectorController implements ConnectorApi {
-
     transient ConnectorService connectorService;
     transient ConfigModelService configModelService;
 

@@ -26,11 +26,10 @@ import java.net.URI;
 @Slf4j
 @RestController
 @RequestMapping("/api/ui")
+@Tag(name = "Extension: Component Metadata Broker")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-@Tag(name = "Extension: Component Metadata Broker")
 public class BrokerController implements BrokerApi {
-
     transient BrokerService brokerService;
     transient ObjectMapper objectMapper;
 

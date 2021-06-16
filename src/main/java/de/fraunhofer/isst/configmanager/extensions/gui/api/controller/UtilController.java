@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Slf4j
 @RestController
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Tag(name = "Extension: GUI Utilities")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UtilController implements UtilApi {
 
     private final transient UtilService utilService;
