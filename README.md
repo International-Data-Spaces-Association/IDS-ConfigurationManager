@@ -21,9 +21,9 @@ In the current version the development of configuration manager is linked to the
 [Dataspace Connector](https://github.com/International-Data-Spaces-Association/DataspaceConnector) and
 [Configuration Manager UI](https://github.com/International-Data-Spaces-Association/IDS-ConfigurationManager-UI).
 
-This repository has a develop branch in addition to the master branch. The idea is to always merge other branches into
-the develop branch (as SNAPSHOT version) and to push the changes from there into the master only for releases. This way,
-the develop branch is always up to date, with the risk of small issues, while the master only contains official
+This repository has a develop branch in addition to the main branch. The idea is to always merge other branches into
+the develop branch (as SNAPSHOT version) and to push the changes from there into the main only for releases. This way,
+the develop branch is always up to date, with the risk of small issues, while the main only contains official
 releases.
 
 ## Table of Contents
