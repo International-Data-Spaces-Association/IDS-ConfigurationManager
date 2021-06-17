@@ -7,7 +7,7 @@ import de.fraunhofer.iais.eis.ConnectorEndpoint;
 import de.fraunhofer.iais.eis.ConnectorEndpointBuilder;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.extensions.routes.api.EndpointApi;
-import de.fraunhofer.isst.configmanager.extensions.configuration.api.service.ConfigModelService;
+import de.fraunhofer.isst.configmanager.extensions.configuration.api.service.ConnectorConfigurationService;
 import de.fraunhofer.isst.configmanager.extensions.routes.api.service.EndpointService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
@@ -38,7 +38,7 @@ import java.util.ArrayList;
 public class EndpointController implements EndpointApi {
 
     transient Serializer serializer;
-    transient ConfigModelService configModelService;
+    transient ConnectorConfigurationService configModelService;
     transient EndpointService endpointService;
 
     /**

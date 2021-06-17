@@ -7,7 +7,7 @@ import de.fraunhofer.iais.eis.ConfigurationModelImpl;
 import de.fraunhofer.iais.eis.Endpoint;
 import de.fraunhofer.iais.eis.RouteStep;
 import de.fraunhofer.iais.eis.util.Util;
-import de.fraunhofer.isst.configmanager.extensions.configuration.api.service.ConfigModelService;
+import de.fraunhofer.isst.configmanager.extensions.configuration.api.service.ConnectorConfigurationService;
 import de.fraunhofer.isst.configmanager.data.entities.CustomApp;
 import de.fraunhofer.isst.configmanager.data.entities.EndpointInformation;
 import de.fraunhofer.isst.configmanager.data.repositories.CustomAppRepository;
@@ -36,7 +36,7 @@ import java.util.List;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class RouteService {
 
-    transient ConfigModelService configModelService;
+    transient ConnectorConfigurationService configModelService;
     transient EndpointService endpointService;
     transient RouteDeployMethodRepository routeDeployMethodRepository;
     transient EndpointInformationRepository endpointInformationRepository;

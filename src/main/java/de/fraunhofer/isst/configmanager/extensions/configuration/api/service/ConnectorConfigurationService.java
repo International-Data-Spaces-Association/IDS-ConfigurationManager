@@ -1,12 +1,16 @@
 package de.fraunhofer.isst.configmanager.extensions.configuration.api.service;
 
+import de.fraunhofer.iais.eis.BaseConnectorImpl;
 import de.fraunhofer.iais.eis.BasicAuthenticationBuilder;
 import de.fraunhofer.iais.eis.ConfigurationModel;
 import de.fraunhofer.iais.eis.ConfigurationModelImpl;
 import de.fraunhofer.iais.eis.ConnectorDeployMode;
+import de.fraunhofer.iais.eis.ConnectorEndpointBuilder;
 import de.fraunhofer.iais.eis.LogLevel;
 import de.fraunhofer.iais.eis.ProxyBuilder;
 import de.fraunhofer.iais.eis.ProxyImpl;
+import de.fraunhofer.iais.eis.SecurityProfile;
+import de.fraunhofer.iais.eis.util.TypedLiteral;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.data.entities.ConfigModelObject;
 import de.fraunhofer.isst.configmanager.data.repositories.ConfigModelRepository;
@@ -30,7 +34,7 @@ import java.util.ArrayList;
 @Transactional
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class ConfigModelService {
+public class ConnectorConfigurationService {
 
     final transient ConfigModelRepository configModelRepository;
 
@@ -151,5 +155,64 @@ public class ConfigModelService {
      */
     public ConfigurationModel getConfigModel() {
         return getConfigModelObject().getConfigurationModel();
+    }
+
+    /**
+     * @param title                title of the connector
+     * @param description          description of the connector
+     * @param endpointAccessURL    access url of the endpoint
+     * @param version              version of the connector
+     * @param curator              curator of the connector
+     * @param maintainer           maintainer of the connector
+     * @param inboundModelVersion  inbound model version of the connector
+     * @param outboundModelVersion outbound model version of the connector
+     * @return true, if connector is updated
+     */
+    public boolean updateConnector(final String title,
+                                   final String description,
+                                   final URI endpointAccessURL,
+                                   final String version,
+                                   final URI curator,
+                                   final URI maintainer,
+                                   final String inboundModelVersion,
+                                   final String outboundModelVersion) {
+
+        var updated = false;
+        final var connector = (BaseConnectorImpl) getConfigModel().getConnectorDescription();
+
+        if (connector != null) {
+            if (title != null) {
+                connector.setTitle(Util.asList(new TypedLiteral(title)));
+            }
+            if (description != null) {
+                connector.setDescription(Util.asList(new TypedLiteral(description)));
+            }
+            if (endpointAccessURL != null) {
+                connector.setHasEndpoint(Util.asList(new ConnectorEndpointBuilder()
+                        ._accessURL_(endpointAccessURL).build()));
+            }
+            if (version != null) {
+                connector.setVersion(version);
+            }
+            if (curator != null) {
+                connector.setCurator(curator);
+            }
+            if (maintainer != null) {
+                connector.setMaintainer(maintainer);
+            }
+            if (inboundModelVersion != null) {
+                connector.setInboundModelVersion(Util.asList(inboundModelVersion));
+            }
+            if (outboundModelVersion != null) {
+                connector.setOutboundModelVersion(outboundModelVersion);
+            }
+            connector.setSecurityProfile(SecurityProfile.BASE_SECURITY_PROFILE);
+            updated = true;
+        }
+        final var configModelImpl = (ConfigurationModelImpl) getConfigModel();
+        configModelImpl.setConnectorDescription(connector);
+        saveState();
+
+        return updated;
     }
 }

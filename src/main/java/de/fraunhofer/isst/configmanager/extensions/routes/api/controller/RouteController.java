@@ -8,7 +8,7 @@ import de.fraunhofer.iais.eis.RouteStepImpl;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.extensions.routes.api.RouteApi;
 import de.fraunhofer.isst.configmanager.extensions.routes.api.service.RouteService;
-import de.fraunhofer.isst.configmanager.extensions.configuration.api.service.ConfigModelService;
+import de.fraunhofer.isst.configmanager.extensions.configuration.api.service.ConnectorConfigurationService;
 import de.fraunhofer.isst.configmanager.data.enums.RouteDeployMethod;
 import de.fraunhofer.isst.configmanager.data.repositories.RouteDeployMethodRepository;
 import de.fraunhofer.isst.configmanager.extensions.apps.util.AppEndpointBuilder;
@@ -38,14 +38,14 @@ import java.util.ArrayList;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class RouteController implements RouteApi {
 
-    transient ConfigModelService configModelService;
+    transient ConnectorConfigurationService configModelService;
     transient RouteService routeService;
     transient Serializer serializer;
     transient RouteDeployMethodRepository routeDeployMethodRepository;
     transient ObjectMapper objectMapper;
 
     @Autowired
-    public RouteController(final ConfigModelService configModelService,
+    public RouteController(final ConnectorConfigurationService configModelService,
                            final RouteService routeService,
                            final Serializer serializer,
                            final RouteDeployMethodRepository routeDeployMethodRepository,

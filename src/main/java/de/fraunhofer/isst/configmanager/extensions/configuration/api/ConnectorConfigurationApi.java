@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.net.URI;
 import java.util.ArrayList;
 
-public interface ConfigModelApi {
+public interface ConnectorConfigurationApi {
     @PutMapping(value = "/configmodel")
     @Operation(summary = "Updates the configuration model")
     @ApiResponse(responseCode = "200", description = "Successfully updated the configuration model at the client")
@@ -33,4 +33,17 @@ public interface ConfigModelApi {
     @ApiResponse(responseCode = "200", description = "Succesfully get the configuration model")
     @ApiResponse(responseCode = "400", description = "Can not find the configuration model")
     ResponseEntity<String> getConfigModel();
+
+    @PutMapping(value = "/connector", produces = "application/ld+json")
+    @Operation(summary = "Update a connector")
+    @ApiResponse(responseCode = "200", description = "Successfully updated the connector description of the configuration model")
+    @ApiResponse(responseCode = "400", description = "Failed to update the connector. The configuration model is not valid")
+    ResponseEntity<String> updateConnector(@RequestParam(value = "title", required = false) String title,
+                                           @RequestParam(value = "description", required = false) String description,
+                                           @RequestParam(value = "endpoint", required = false) URI endpoint,
+                                           @RequestParam(value = "version", required = false) String version,
+                                           @RequestParam(value = "curator", required = false) URI curator,
+                                           @RequestParam(value = "maintainer", required = false) URI maintainer,
+                                           @RequestParam(value = "inboundModelVersion", required = false) String inboundModelVersion,
+                                           @RequestParam(value = "outboundModelVersion", required = false) String outboundModelVersion);
 }
