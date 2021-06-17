@@ -17,7 +17,6 @@ import java.net.URISyntaxException;
  */
 @UtilityClass
 public class AppEndpointBuilder {
-
     /**
      * This method creates with the given parameters a JSON message.
      *

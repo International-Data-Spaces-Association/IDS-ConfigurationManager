@@ -1,13 +1,17 @@
 package de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+
 /**
  * Implementation class of the {@link Arc} interface.
  */
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ArcImpl implements Arc {
-    private Node source;
-    private Node target;
+    Node source;
+    Node target;
 
-    public ArcImpl(final Node source, final Node target){
+    public ArcImpl(final Node source, final Node target) {
         if (source.isComplementOf(target)) {
             this.source = source;
             source.getSourceArcs().add(this);
@@ -53,7 +57,7 @@ public class ArcImpl implements Arc {
 
     @Override
     public void setTarget(final Node target) {
-        if (source.isComplementOf(target)){
+        if (source.isComplementOf(target)) {
             //if given node is a different type as current source: set as target
             this.target.getTargetArcs().remove(this);
             this.target = target;

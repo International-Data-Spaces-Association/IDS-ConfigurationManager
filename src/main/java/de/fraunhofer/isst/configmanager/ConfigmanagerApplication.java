@@ -8,6 +8,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -25,9 +26,12 @@ import java.util.Properties;
 
 @Slf4j
 @EnableScheduling
+@NoArgsConstructor
 @SpringBootApplication
 public class ConfigmanagerApplication {
     public static final String CURRENT_VERSION = "8.0.0";
+    public static final int SCHEDULE_RATE = 60_000;
+    public static final int SCHEDULE_DELAY = 30_000;
 
     public static void main(final String[] args) {
         if (log.isInfoEnabled()) {
@@ -94,15 +98,13 @@ public class ConfigmanagerApplication {
         return objectMapper;
     }
 
-    @Scheduled(fixedRate = 60_000, initialDelay = 30_000)
+    @Scheduled(fixedRate = SCHEDULE_RATE, initialDelay = SCHEDULE_DELAY)
     public void logInfoStillAlive() {
         final var mb = 1024L * 1024L;
         final var currentHeapSize = Runtime.getRuntime().totalMemory() / mb;
         final var maxHeapSize = Runtime.getRuntime().maxMemory() / mb;
         final var freeHeapSize = Runtime.getRuntime().freeMemory() / mb;
         final var threadCount = Thread.activeCount();
-
-        System.gc(); //Called manually as a precaution, so that the GC is eventually executed
 
         if (log.isInfoEnabled()) {
             log.info("[ConfigManager " + CURRENT_VERSION + "] Heap Size Stats: Used " + Math.toIntExact(currentHeapSize) + " MB - Free " + Math.toIntExact(freeHeapSize) + " MB - Max " + Math.toIntExact(maxHeapSize) + " MB - Running Threads: " + threadCount);

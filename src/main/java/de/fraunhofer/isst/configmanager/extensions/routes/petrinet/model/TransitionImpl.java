@@ -2,6 +2,8 @@ package de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 
 import java.net.URI;
 import java.util.HashSet;
@@ -11,17 +13,18 @@ import java.util.Set;
 /**
  * Implementation class of the {@link Transition} interface.
  */
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class TransitionImpl implements Transition {
 
-    private transient URI id;
+    transient URI id;
 
-    private transient ContextObject contextObject;
-
-    @JsonIgnore
-    private transient Set<Arc> sourceArcs;
+    transient ContextObject contextObject;
 
     @JsonIgnore
-    private transient Set<Arc> targetArcs;
+    transient Set<Arc> sourceArcs;
+
+    @JsonIgnore
+    transient Set<Arc> targetArcs;
 
     public TransitionImpl(final URI id) {
         this.id = id;

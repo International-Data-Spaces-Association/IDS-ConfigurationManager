@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import java.util.List;
 
 /**
- * evaluates to true, if at least one of the two subformulas evaluates to true
+ * Evaluates to true, if at least one of the two subformulas evaluates to true.
  */
 @AllArgsConstructor
 public class NodeOR implements StateFormula {
@@ -14,7 +14,7 @@ public class NodeOR implements StateFormula {
     private StateFormula parameter2;
 
     public static NodeOR nodeOR(final StateFormula parameter1,
-                                final StateFormula parameter2){
+                                final StateFormula parameter2) {
         return new NodeOR(parameter1, parameter2);
     }
 

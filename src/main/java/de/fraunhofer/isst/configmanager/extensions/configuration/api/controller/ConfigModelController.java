@@ -24,9 +24,9 @@ import java.util.ArrayList;
 @Slf4j
 @RestController
 @RequestMapping("/api/ui")
+@Tag(name = "Extension: Configuration Configmodel")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-@Tag(name = "Extension: Configuration Configmodel")
 public class ConfigModelController implements ConfigModelApi {
 
     transient Serializer serializer;

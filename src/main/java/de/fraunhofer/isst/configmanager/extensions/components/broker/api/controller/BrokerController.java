@@ -30,6 +30,7 @@ import java.net.URI;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class BrokerController implements BrokerApi {
+
     transient BrokerService brokerService;
     transient ObjectMapper objectMapper;
 

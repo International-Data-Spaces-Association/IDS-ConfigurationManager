@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * evaluates to true, if parameter1 evaluates to true for every following place and parameter2 evaluates to true
+ * Evaluates to true, if parameter1 evaluates to true for every following place and parameter2 evaluates to true
  * for every transition in between.
  */
 @AllArgsConstructor
@@ -20,7 +20,7 @@ public class NodeFORALL_MODAL implements StateFormula {
     private TransitionFormula parameter2;
 
     public static NodeFORALL_MODAL nodeFORALL_MODAL(final StateFormula parameter1,
-                                                    final TransitionFormula parameter2){
+                                                    final TransitionFormula parameter2) {
         return new NodeFORALL_MODAL(parameter1, parameter2);
     }
 
@@ -41,7 +41,7 @@ public class NodeFORALL_MODAL implements StateFormula {
             }
         }
 
-        for (final var transition : followingTransitions){
+        for (final var transition : followingTransitions) {
             if (!parameter2.evaluate(transition, paths)) {
                 return false;
             }

@@ -3,7 +3,15 @@ package de.fraunhofer.isst.configmanager.extensions.routes.petrinet.builder;
 import de.fraunhofer.iais.eis.AppRoute;
 import de.fraunhofer.iais.eis.Endpoint;
 import de.fraunhofer.iais.eis.RouteStep;
-import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.*;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Arc;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.ArcImpl;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Node;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.PetriNet;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.PetriNetImpl;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Place;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.PlaceImpl;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Transition;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.TransitionImpl;
 import lombok.experimental.UtilityClass;
 
 import java.net.URI;
@@ -33,7 +41,7 @@ public class InfomodelPetriNetBuilder {
         final var transitions = new HashMap<URI, Transition>();
         final var arcs = new HashSet<Arc>();
 
-        if (includeAppRoute){
+        if (includeAppRoute) {
             //create initial place from AppRoute
             final var place = new PlaceImpl(appRoute.getId());
             places.put(place.getID(), place);
@@ -116,7 +124,7 @@ public class InfomodelPetriNetBuilder {
      * @return the existing transition with id from the map, or a new transition
      */
     private static Transition getTransition(final Map<URI, Transition> transitions,
-                                            final Endpoint endpoint){
+                                            final Endpoint endpoint) {
         if (transitions.containsKey(endpoint.getId())) {
             return transitions.get(endpoint.getId());
         } else {

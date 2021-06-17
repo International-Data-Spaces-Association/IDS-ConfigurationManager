@@ -9,13 +9,13 @@ import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evalua
 import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.transition.TransitionNOT.transitionNOT;
 
 /**
- * evaluates to true, if there exists a path, where parameter holds for every transition
+ * Evaluates to true, if there exists a path, where parameter holds for every transition.
  */
 @AllArgsConstructor
 public class TransitionALONG implements TransitionFormula {
     private TransitionFormula parameter;
 
-    public static TransitionALONG transitionALONG(final TransitionFormula parameter){
+    public static TransitionALONG transitionALONG(final TransitionFormula parameter) {
         return new TransitionALONG(parameter);
     }
     

@@ -1,17 +1,20 @@
 package de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.transition;
 
 import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Node;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
 /**
- * evaluates to true, if parameter1 and parameter2 evaluate to true
+ * Evaluates to true, if parameter1 and parameter2 evaluate to true.
  */
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class TransitionAND implements TransitionFormula {
-    private TransitionFormula parameter1;
-    private TransitionFormula parameter2;
+    TransitionFormula parameter1;
+    TransitionFormula parameter2;
 
     public static TransitionAND transitionAND(final TransitionFormula parameter1,
                                               final TransitionFormula parameter2) {

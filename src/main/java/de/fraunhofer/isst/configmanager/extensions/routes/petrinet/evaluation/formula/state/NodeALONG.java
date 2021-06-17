@@ -9,7 +9,7 @@ import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evalua
 import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.state.NodeNOT.nodeNOT;
 
 /**
- * evaluates to true, if there exists a path, where parameter holds for every place
+ * Evaluates to true, if there exists a path, where parameter holds for every place.
  */
 @AllArgsConstructor
 public class NodeALONG implements StateFormula {

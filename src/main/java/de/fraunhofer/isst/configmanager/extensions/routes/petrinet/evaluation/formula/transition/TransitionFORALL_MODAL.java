@@ -4,7 +4,9 @@ import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.fo
 import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Arc;
 import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Node;
 import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Transition;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,12 +16,13 @@ import java.util.stream.Collectors;
  * for every Place in between.
  */
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class TransitionFORALL_MODAL implements TransitionFormula {
-    private TransitionFormula parameter1;
-    private StateFormula parameter2;
+    TransitionFormula parameter1;
+    StateFormula parameter2;
 
     public static TransitionFORALL_MODAL transitionFORALL_MODAL(final TransitionFormula parameter1,
-                                                                final StateFormula parameter2){
+                                                                final StateFormula parameter2) {
         return new TransitionFORALL_MODAL(parameter1, parameter2);
     }
 

@@ -51,7 +51,7 @@ public class GraphVizGenerator {
         s.append("}");
         return s.toString();
     }
-    
+
     /**
      * Generate a GraphViz Dot String representation for the given {@link StepGraph}
      * The StepGraph for which the Graph representation should be built.
@@ -70,16 +70,16 @@ public class GraphVizGenerator {
         s.append("compound=true;");
 
 
-        for (var petriNet : stepGraph.getSteps()) {
+        for (final var petriNet : stepGraph.getSteps()) {
             //generate the graph for every PetriNet in the StepGraph
             var petriString = generateGraphViz(petriNet);
             //the PetriNet Graphs will be subgraphs and have different names
             petriString = petriString.replace("digraph", "subgraph");
-            petriString = petriString.replace("graphname", "cluster"+i);
+            petriString = petriString.replace("graphname", "cluster" + i);
 
             for (final var node : petriNet.getNodes()) {
                 //nodes must have unique names too (or DOT will draw them as the same node)
-                petriString = petriString.replace(String.valueOf(node.getID().hashCode()), node.getID().hashCode()+String.valueOf(i));
+                petriString = petriString.replace(String.valueOf(node.getID().hashCode()), node.getID().hashCode() + String.valueOf(i));
             }
 
             s.append(petriString);
@@ -94,15 +94,15 @@ public class GraphVizGenerator {
 
         for (final var arc : graphArcs) {
             //draw the GraphVizArcs as directed edges between the PetriNet Subgraphs
-            s.append(someId + arc.getSource() + " -> " + someId + arc.getTarget() + "[ltail=cluster"+arc.getSource()+",lhead=cluster"+arc.getTarget()+"];");
+            s.append(someId + arc.getSource() + " -> " + someId + arc.getTarget() + "[ltail=cluster" + arc.getSource() + ",lhead=cluster" + arc.getTarget() + "];");
         }
 
         s.append("}");
         return s.toString();
     }
-    
+
     /**
-     * Utility Subclass, representing Petri Net Arcs
+     * Utility Subclass, representing Petri Net Arcs.
      */
     public static class GraphvizArc {
         private int source;

@@ -3,6 +3,7 @@ package de.fraunhofer.isst.configmanager.data.util;
 import de.fraunhofer.iais.eis.ConfigurationModel;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,6 +16,7 @@ import java.io.IOException;
  */
 @Slf4j
 @Converter
+@NoArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ConfigModelConverter implements AttributeConverter<ConfigurationModel, String> {
     transient Serializer serializer = new Serializer();

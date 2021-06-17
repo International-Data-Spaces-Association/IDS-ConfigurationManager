@@ -16,7 +16,7 @@ public interface Place extends Node {
      * @return number of markers
      */
     int getMarkers();
-    
+
     /**
      * Setter for markers on this place node.
      * @param markers the number of markers this place should have

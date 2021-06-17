@@ -1,20 +1,20 @@
 package de.fraunhofer.isst.configmanager.api_test;
 
+import de.fraunhofer.isst.configmanager.extensions.apps.util.TestUtil;
 import de.fraunhofer.isst.configmanager.extensions.components.broker.api.controller.BrokerController;
 import de.fraunhofer.isst.configmanager.extensions.components.broker.api.service.BrokerService;
-import de.fraunhofer.isst.configmanager.data.entities.CustomBroker;
-import de.fraunhofer.isst.configmanager.extensions.apps.util.TestUtil;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.util.LinkedMultiValueMap;
 
 import java.net.URI;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doNothing;
@@ -24,19 +24,20 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @WebMvcTest(BrokerController.class)
 class BrokerUIAPITest {
 
     @Autowired
-    private transient MockMvc mockMvc;
+    transient MockMvc mockMvc;
 
     @MockBean
-    private transient BrokerService brokerService;
+    transient BrokerService brokerService;
 
     @Test
     void should_add_new_broker() throws Exception {
-
-        LinkedMultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
+        final LinkedMultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
         requestParams.add("brokerUri", "https://example.com");
         requestParams.add("title", "CustomBroker");
 
@@ -47,12 +48,11 @@ class BrokerUIAPITest {
 
     @Test
     void should_update_broker() throws Exception {
-
-        CustomBroker broker = TestUtil.createCustomBroker();
+        final var broker = TestUtil.createCustomBroker();
 
         Mockito.when(brokerService.updateBroker(broker.getBrokerUri(), "titleNew")).thenReturn(true);
 
-        MvcResult result = this.mockMvc.perform(put("/api/ui/broker")
+        final var result = this.mockMvc.perform(put("/api/ui/broker")
                 .param("brokerUri", String.valueOf(broker.getBrokerUri()))
                 .param("title", "titleNew"))
                 .andReturn();
@@ -62,20 +62,19 @@ class BrokerUIAPITest {
 
     @Test
     void should_return_broker_list() throws Exception {
-
-        List<CustomBroker> brokers = TestUtil.brokers();
+        final var brokers = TestUtil.brokers();
         Mockito.when(brokerService.getCustomBrokers()).thenReturn(brokers);
-        MvcResult result = this.mockMvc.perform(get("/api/ui/brokers")).andReturn();
+
+        final var result = this.mockMvc.perform(get("/api/ui/brokers")).andReturn();
 
         assertEquals(200, result.getResponse().getStatus());
     }
 
     @Test
     void should_delete_a_broker() throws Exception {
-
-        CustomBroker customBroker = TestUtil.createCustomBroker();
+        final var customBroker = TestUtil.createCustomBroker();
         Mockito.when(brokerService.deleteBroker(Mockito.any(URI.class))).thenReturn(true);
-        MvcResult result = this.mockMvc.perform(delete("/api/ui/broker")
+        final var result = this.mockMvc.perform(delete("/api/ui/broker")
                 .param("brokerUri", String.valueOf(customBroker.getBrokerUri()))).andReturn();
 
         assertEquals(200, result.getResponse().getStatus());

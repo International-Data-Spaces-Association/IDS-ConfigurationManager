@@ -1,5 +1,6 @@
 package de.fraunhofer.isst.configmanager.core;
 
+import lombok.NoArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -9,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  * configuration.
  */
 @Configuration
+@NoArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     /**
      * @param http the HttpSecurity object

@@ -10,7 +10,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME, property = "@type")
 @JsonSubTypes({@JsonSubTypes.Type(ArcImpl.class)})
 public interface Arc {
-    
     /**
      * Getter for the source node of this arc: X -> ...
      * @return the source node of this arc
@@ -22,14 +21,14 @@ public interface Arc {
      * @return the target node of this arc
      */
     Node getTarget();
-    
+
     /**
      * Setter for the source node of this arc: X -> ...
      * @throws IllegalArgumentException if node has same type as the current target.
      * @param source node that will be set as source
      */
     void setSource(Node source);
-    
+
     /**
      * Setter for the target node of this arc: ... -> X
      * @throws  IllegalArgumentException if node has same type as the current source.

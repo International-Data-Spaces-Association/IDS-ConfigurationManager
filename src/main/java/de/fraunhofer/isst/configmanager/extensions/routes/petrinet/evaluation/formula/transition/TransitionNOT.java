@@ -6,13 +6,13 @@ import lombok.AllArgsConstructor;
 import java.util.List;
 
 /**
- * evaluates to true, if given subformula evaluates to false
+ * Evaluates to true, if given subformula evaluates to false.
  */
 @AllArgsConstructor
 public class TransitionNOT implements TransitionFormula {
     private TransitionFormula parameter;
 
-    public static TransitionNOT transitionNOT(final TransitionFormula parameter){
+    public static TransitionNOT transitionNOT(final TransitionFormula parameter) {
         return new TransitionNOT(parameter);
     }
 

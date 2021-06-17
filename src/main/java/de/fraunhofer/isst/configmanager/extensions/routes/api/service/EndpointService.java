@@ -9,6 +9,7 @@ import de.fraunhofer.isst.configmanager.data.entities.CustomGenericEndpointList;
 import de.fraunhofer.isst.configmanager.data.entities.CustomGenericEndpointObject;
 import de.fraunhofer.isst.configmanager.data.repositories.CustomGenericEndpointRepository;
 import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,14 +28,11 @@ import java.util.NoSuchElementException;
 @Service
 @Transactional
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class EndpointService {
+
     final transient CustomGenericEndpointRepository customGenericEndpointRepository;
     transient CustomGenericEndpointList customGenericEndpointList;
-
-    @Autowired
-    public EndpointService(final CustomGenericEndpointRepository customGenericEndpointRepository) {
-        this.customGenericEndpointRepository = customGenericEndpointRepository;
-    }
 
     /**
      * This method creates a generic endpoint with the given parameters.

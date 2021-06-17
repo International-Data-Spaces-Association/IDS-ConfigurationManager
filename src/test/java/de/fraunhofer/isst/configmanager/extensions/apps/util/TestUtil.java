@@ -27,7 +27,7 @@ public class TestUtil {
      * @return list of brokers
      */
     public static List<CustomBroker> brokers() {
-        List<CustomBroker> brokers = new ArrayList<>();
+        final List<CustomBroker> brokers = new ArrayList<>();
         brokers.add(createCustomBroker());
         return brokers;
     }

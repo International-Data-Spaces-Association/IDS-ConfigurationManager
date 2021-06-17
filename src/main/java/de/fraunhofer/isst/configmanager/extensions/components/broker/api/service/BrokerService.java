@@ -21,6 +21,7 @@ import java.util.List;
 @Transactional
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class BrokerService {
+
     transient CustomBrokerRepository customBrokerRepository;
 
     @Autowired

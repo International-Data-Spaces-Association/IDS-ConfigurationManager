@@ -1,7 +1,16 @@
 package de.fraunhofer.isst.configmanager.extensions.routes.petrinet.simulator;
 
 import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.builder.GraphVizGenerator;
-import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.*;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Arc;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.ArcImpl;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.ContextObject;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.InnerPlace;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Node;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.PetriNet;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Place;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.PlaceImpl;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Transition;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.TransitionImpl;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,13 +33,13 @@ import java.util.stream.Collectors;
 public class PetriNetSimulator {
     /**
      * Make a step in the current petriNet, finding all transitions that can be used
-     * and taking all of them
+     * and taking all of them.
      * (normally a petri net only uses one random transition at a time
      *  TODO: only take one random transition at a time)
      * @param petriNet the current step in the petrinet
      * @return true if something in the petrinet changed after taking the transitions
      */
-    private static boolean makeStep(final PetriNet petriNet){
+    private static boolean makeStep(final PetriNet petriNet) {
         var changed = false;
         final var nodesLosingMarkers = new ArrayList<Node>();
         final var nodesGainingMarkers = new ArrayList<Node>();
@@ -55,12 +64,12 @@ public class PetriNetSimulator {
 
         return changed;
     }
-    
+
     /**
-     * For a given initial PetriNet: execute a step as long as something changes
+     * For a given initial PetriNet: execute a step as long as something changes.
      * @param petriNet the initial PetriNet
      */
-    public static void simulateNet(final PetriNet petriNet){
+    public static void simulateNet(final PetriNet petriNet) {
         if (log.isInfoEnabled()) {
             log.info("Starting Simulation!");
             log.info(GraphVizGenerator.generateGraphViz(petriNet));
@@ -79,11 +88,11 @@ public class PetriNetSimulator {
     }
     
     /**
-     * For a given petriNet, find all transitions that can be taken
+     * For a given petriNet, find all transitions that can be taken.
      * @param petriNet a given PetriNet
      * @return List of Transition nodes, for which all previous nodes have markers
      */
-    private static List<Node> getPossibleTransitions(final PetriNet petriNet){
+    private static List<Node> getPossibleTransitions(final PetriNet petriNet) {
         final var possible = new ArrayList<Node>();
 
         for (final var node : petriNet.getNodes()) {
@@ -100,8 +109,8 @@ public class PetriNetSimulator {
      * @param petriNet a given PetriNet
      * @param node a given Node of the PetriNet
      */
-    private static void doTransition(final PetriNet petriNet, final Node node){
-        if (!isPossible(node)){
+    private static void doTransition(final PetriNet petriNet, final Node node) {
+        if (!isPossible(node)) {
             return;
         }
 
@@ -115,14 +124,14 @@ public class PetriNetSimulator {
             place.setMarkers(place.getMarkers() + 1);
         }
     }
-    
+
     /**
      * Build a StepGraph with the given PetriNet as starting Point for executions.
      *
      * @param petriNet the initial PetriNet
      * @return the StepGraph with all reachable states of the given PetriNet
      */
-    public static StepGraph buildStepGraph(final PetriNet petriNet){
+    public static StepGraph buildStepGraph(final PetriNet petriNet) {
         final var stepGraph = new StepGraph(petriNet);
         stepGraph.getSteps().add(petriNet);
 
@@ -132,7 +141,7 @@ public class PetriNetSimulator {
 
         return stepGraph;
     }
-    
+
     /**
      * Execute a possible transition of the current PetriNet and add the result
      * to the StepGraph.
@@ -146,7 +155,7 @@ public class PetriNetSimulator {
     private static void addStepToStepGraph(final PetriNet parent,
                                            final PetriNet copy,
                                            final Node transition,
-                                           final StepGraph stepGraph){
+                                           final StepGraph stepGraph) {
         Node transitionCopy = null;
         for (final var node : copy.getNodes()) {
             if (node.getID().equals(transition.getID())) {
@@ -157,7 +166,7 @@ public class PetriNetSimulator {
         doTransition(copy, transitionCopy);
 
         for (final var net : stepGraph.getSteps()) {
-            if (net.equals(copy)){
+            if (net.equals(copy)) {
                 stepGraph.getArcs().add(new NetArc(parent, net, transition.getID()));
                 return;
             }
@@ -170,9 +179,9 @@ public class PetriNetSimulator {
             addStepToStepGraph(copy, copy.deepCopy(), node, stepGraph);
         }
     }
-    
+
     /**
-     * For a given node: if it is a transition, check if all previous nodes have markers
+     * For a given node: if it is a transition, check if all previous nodes have markers.
      * @param node a given Node
      * @return true if it is a transition ready to be used
      */
@@ -192,7 +201,7 @@ public class PetriNetSimulator {
      * @param stepGraph PetriNet StepGraph
      * @return all paths possible in given petriNet
      */
-    public static List<List<Node>> getAllPaths(final StepGraph stepGraph){
+    public static List<List<Node>> getAllPaths(final StepGraph stepGraph) {
         final var len1 = getPathsOfLength1(stepGraph);
         List<List<Node>> lenN = new ArrayList<>(len1);
         final List<List<Node>> allPaths = new ArrayList<>(len1);
@@ -219,7 +228,7 @@ public class PetriNetSimulator {
      * @param stepGraph PetriNet StepGraph
      * @return all possible paths of length 1 (either Place -> Transition or Transition -> Place)
      */
-    private static List<List<Node>> getPathsOfLength1(final StepGraph stepGraph){
+    private static List<List<Node>> getPathsOfLength1(final StepGraph stepGraph) {
         final List<List<Node>> paths = new ArrayList<>();
 
         for (final var node : stepGraph.getInitial().getNodes()) {
@@ -236,7 +245,7 @@ public class PetriNetSimulator {
             }
 
             if (node instanceof Transition) {
-                for(final var succ : node.getSourceArcs().stream().map(Arc::getTarget).collect(Collectors.toSet())){
+                for (final var succ : node.getSourceArcs().stream().map(Arc::getTarget).collect(Collectors.toSet())) {
                     paths.add(List.of(node, succ));
                 }
             }
@@ -258,7 +267,7 @@ public class PetriNetSimulator {
                 if (pathN.get(pathN.size() - 1).equals(path1.get(0)) && circleFree(pathN)) {
                     final var pathNplus1 = new ArrayList<>(pathN);
 
-                    pathNplus1.add(path1.get(path1.size()-1));
+                    pathNplus1.add(path1.get(path1.size() - 1));
                     pathsLenNplus1.add(pathNplus1);
                 }
             }
@@ -268,12 +277,12 @@ public class PetriNetSimulator {
     }
 
     /**
-     * Lists are used for paths in other methods, path contains a circle, when list holds duplicate of node
+     * Lists are used for paths in other methods, path contains a circle, when list holds duplicate of node.
      *
      * @param list list to check for duplicates
      * @return true if list contains no duplicates
      */
-    public static boolean circleFree(final List<?> list){
+    public static boolean circleFree(final List<?> list) {
         return list.stream().distinct().count() == list.size();
     }
 
@@ -284,31 +293,31 @@ public class PetriNetSimulator {
      * @param petriNet a PetriNet
      * @return unfolded petriNet
      */
-    public static PetriNet getUnfoldedPetriNet(PetriNet petriNet){
-        var unfolded = petriNet.deepCopy();
-        var transitions = unfolded.getNodes().stream().filter(trans -> trans instanceof Transition).filter(trans -> ((Transition) trans).getContext().getType() == ContextObject.TransType.APP).collect(Collectors.toList());
-        for(var transition : transitions){
+    public static PetriNet getUnfoldedPetriNet(final PetriNet petriNet) {
+        final var unfolded = petriNet.deepCopy();
+        final var transitions = unfolded.getNodes().stream().filter(trans -> trans instanceof Transition).filter(trans -> ((Transition) trans).getContext().getType() == ContextObject.TransType.APP).collect(Collectors.toList());
+        for (final var transition : transitions) {
             unfolded.getNodes().remove(transition);
-            var transpart1 = new TransitionImpl(URI.create(String.format("%s_start", transition.getID().toString())));
-            var transpart2 = new TransitionImpl(URI.create(String.format("%s_end", transition.getID().toString())));
-            var transplace = new InnerPlace(URI.create(String.format("%s_place", transition.getID().toString())), (Transition) transition);
+            final var transpart1 = new TransitionImpl(URI.create(String.format("%s_start", transition.getID().toString())));
+            final var transpart2 = new TransitionImpl(URI.create(String.format("%s_end", transition.getID().toString())));
+            final var transplace = new InnerPlace(URI.create(String.format("%s_place", transition.getID().toString())), (Transition) transition);
             unfolded.getNodes().add(transpart1);
             unfolded.getNodes().add(transpart2);
             unfolded.getNodes().add(transplace);
-            var innerArc1 = new ArcImpl(transpart1, transplace);
-            var innerArc2 = new ArcImpl(transplace, transpart2);
+            final var innerArc1 = new ArcImpl(transpart1, transplace);
+            final var innerArc2 = new ArcImpl(transplace, transpart2);
             unfolded.getArcs().add(innerArc1);
             unfolded.getArcs().add(innerArc2);
-            var targetArcs = transition.getTargetArcs();
-            var sourceArcs = transition.getSourceArcs();
+            final var targetArcs = transition.getTargetArcs();
+            final var sourceArcs = transition.getSourceArcs();
             unfolded.getArcs().removeAll(targetArcs);
             unfolded.getArcs().removeAll(sourceArcs);
-            for(var arc : targetArcs){
-                var newArc = new ArcImpl(arc.getSource(), transpart1);
+            for (final var arc : targetArcs) {
+                final var newArc = new ArcImpl(arc.getSource(), transpart1);
                 unfolded.getArcs().add(newArc);
             }
-            for(var arc : sourceArcs){
-                var newArc = new ArcImpl(transpart2, arc.getTarget());
+            for (final var arc : sourceArcs) {
+                final var newArc = new ArcImpl(transpart2, arc.getTarget());
                 unfolded.getArcs().add(newArc);
             }
         }
@@ -319,21 +328,23 @@ public class PetriNetSimulator {
      * @param stepGraph StepGraph (of an unfolded PetriNet)
      * @return List of parallel executions of transitions in the stepGraph of the given petriNet
      */
-    public static List<List<Transition>> getParallelSets(StepGraph stepGraph){
-        List<List<Transition>> parallelSets = new ArrayList<>();
-        for(var step : stepGraph.getSteps()){
-            var parallelTrans = step.getNodes().stream().filter(node -> node instanceof InnerPlace)
+    public static List<List<Transition>> getParallelSets(final StepGraph stepGraph) {
+        final List<List<Transition>> parallelSets = new ArrayList<>();
+        for (final var step : stepGraph.getSteps()) {
+            final var parallelTrans = step.getNodes().stream().filter(node -> node instanceof InnerPlace)
                     .filter(place -> ((InnerPlace) place).getMarkers() > 0)
                     .map(place -> ((InnerPlace) place).getOriginalTrans())
                     .distinct()
                     .collect(Collectors.toList());
-            if(parallelTrans.size() >= 2) parallelSets.add(parallelTrans);
+            if (parallelTrans.size() >= 2) {
+                parallelSets.add(parallelTrans);
+            }
         }
         return parallelSets;
     }
 
     /**
-     * Remove subpaths from set of paths, only keep longest paths (but keep them if they have different starting places)
+     * Remove subpaths from set of paths, only keep longest paths (but keep them if they have different starting places).
      *
      * Example: {A -> B -> C (keep), A -> B (remove), B -> C (keep)}
      *
@@ -347,7 +358,7 @@ public class PetriNetSimulator {
 
         for (final var pathY : filteredCopy) {
             for (final var pathX : paths) {
-                if(pathX.get(0).equals(pathY.get(0)) && !pathX.equals(pathY) && Collections.indexOfSubList(pathY, pathX) != -1){
+                if (pathX.get(0).equals(pathY.get(0)) && !pathX.equals(pathY) && Collections.indexOfSubList(pathY, pathX) != -1) {
                     filtered.remove(pathX);
                 }
             }

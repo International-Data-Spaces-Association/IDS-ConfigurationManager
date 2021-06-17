@@ -7,8 +7,8 @@ import lombok.AllArgsConstructor;
 import java.util.List;
 
 /**
- * evaluates to true, if a path exists, where parameter1 evaluates to true for every place, until parameter2
- * evaluates to true
+ * Evaluates to true, if a path exists, where parameter1 evaluates to true for every place, until parameter2
+ * evaluates to true.
  */
 @AllArgsConstructor
 public class NodeEXIST_UNTIL implements StateFormula {
@@ -32,18 +32,28 @@ public class NodeEXIST_UNTIL implements StateFormula {
 
         check: for (final var path: paths) {
             int offset;
-            if(!path.get(0).equals(node)) continue;
+
+            if (!path.get(0).equals(node)) {
+                continue;
+            }
+
             if (path.size() % 2 == 1) {
                 offset = 1;
-            }else {
+            } else {
                 offset = 2;
             }
+
             for (var i = 2; i < path.size() - offset; i += 2) {
-                var res1 = parameter1.evaluate(path.get(i), paths);
-                var res2 = parameter2.evaluate(path.get(i), paths);
-                if(res2) return true;
-                if(!res1) continue check;
+                final var res1 = parameter1.evaluate(path.get(i), paths);
+                final var res2 = parameter2.evaluate(path.get(i), paths);
+                if (res2) {
+                    return true;
+                }
+                if (!res1) {
+                    continue check;
+                }
             }
+
             if (parameter2.evaluate(path.get(path.size() - offset), paths)) {
                 return true;
             }

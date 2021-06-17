@@ -6,6 +6,7 @@ import de.fraunhofer.iais.eis.Language;
 import de.fraunhofer.iais.eis.LogLevel;
 import de.fraunhofer.isst.configmanager.data.enums.BrokerRegistrationStatus;
 import de.fraunhofer.isst.configmanager.data.enums.RouteDeployMethod;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -25,6 +26,7 @@ import java.util.List;
 @Slf4j
 @Service
 @Transactional
+@NoArgsConstructor
 public class UtilService {
 
     /**

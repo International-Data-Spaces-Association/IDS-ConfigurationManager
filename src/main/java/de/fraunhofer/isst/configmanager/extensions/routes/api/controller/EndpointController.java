@@ -32,9 +32,9 @@ import java.util.ArrayList;
 @Slf4j
 @RestController
 @RequestMapping("/api/ui")
+@Tag(name = "Extension: App Routes Endpoints")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-@Tag(name = "Extension: App Routes Endpoints")
 public class EndpointController implements EndpointApi {
 
     transient Serializer serializer;
@@ -58,20 +58,14 @@ public class EndpointController implements EndpointApi {
         if (log.isInfoEnabled()) {
             log.info(">> POST /generic/endpoint accessURL: " + accessURL + " username: " + username);
         }
-        ResponseEntity<String> response;
 
         final var genericEndpoint = endpointService.createGenericEndpoint(accessURL, sourceType, username, password);
-        if (genericEndpoint != null) {
-            final var jsonObject = new JSONObject();
-            jsonObject.put("id", genericEndpoint.getId().toString());
-            jsonObject.put("message", "Created a new generic endpoint");
+        final var jsonObject = new JSONObject();
 
-            response = ResponseEntity.ok(jsonObject.toJSONString());
-        } else {
-            response = ResponseEntity.badRequest().body("Could not create a generic endpoint");
-        }
+        jsonObject.put("id", genericEndpoint.getId().toString());
+        jsonObject.put("message", "Created a new generic endpoint");
 
-        return response;
+        return ResponseEntity.ok(jsonObject.toJSONString());
     }
 
     /**
@@ -163,6 +157,7 @@ public class EndpointController implements EndpointApi {
      * @param sourceType source type of the endpoint
      * @return a suitable http response depending on success
      */
+    @Override
     public ResponseEntity<String> createConnectorEndpoint(final URI accessUrl, final String sourceType) {
         if (log.isInfoEnabled()) {
             log.info(">> POST /connector/endpoint accessUrl: " + accessUrl + " sourceType: " + sourceType);

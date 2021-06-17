@@ -34,8 +34,8 @@ import java.util.ArrayList;
 @Slf4j
 @RestController
 @RequestMapping("/api/ui")
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Tag(name = "Extension: App Routes")
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class RouteController implements RouteApi {
 
     transient ConfigModelService configModelService;

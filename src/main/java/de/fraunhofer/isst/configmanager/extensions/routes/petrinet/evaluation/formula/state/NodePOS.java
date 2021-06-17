@@ -9,7 +9,7 @@ import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evalua
 import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.state.NodeEXIST_UNTIL.nodeEXIST_UNTIL;
 
 /**
- * Evaluates to true, if some Place is reachable, which fulfills the given parameter
+ * Evaluates to true, if some Place is reachable, which fulfills the given parameter.
  */
 @AllArgsConstructor
 public class NodePOS implements StateFormula {

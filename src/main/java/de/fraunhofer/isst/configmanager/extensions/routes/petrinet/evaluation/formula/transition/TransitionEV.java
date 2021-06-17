@@ -9,7 +9,7 @@ import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evalua
 import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.transition.TransitionFORALL_UNTIL.transitionFORALL_UNTIL;
 
 /**
- * evaluates to true, if a transition fulfilling the given parameter is eventually reached on every path
+ * Evaluates to true, if a transition fulfilling the given parameter is eventually reached on every path.
  */
 @AllArgsConstructor
 public class TransitionEV implements TransitionFormula {
