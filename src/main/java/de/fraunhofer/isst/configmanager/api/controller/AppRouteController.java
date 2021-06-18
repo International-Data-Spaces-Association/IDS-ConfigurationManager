@@ -26,6 +26,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 /**
  * The api class implements the AppRouteApi and offers the possibilities to manage
@@ -34,15 +36,17 @@ import java.util.ArrayList;
 @Slf4j
 @RestController
 @RequestMapping("/api/ui")
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Tag(name = "App Route Management", description = "Endpoints for managing the app routes in the configuration manager")
 public class AppRouteController implements AppRouteApi {
 
-    transient ConfigModelService configModelService;
-    transient AppRouteService appRouteService;
-    transient Serializer serializer;
-    transient RouteDeployMethodRepository routeDeployMethodRepository;
-    transient ObjectMapper objectMapper;
+    final transient ConfigModelService configModelService;
+    final transient AppRouteService appRouteService;
+    final transient Serializer serializer;
+    final transient RouteDeployMethodRepository routeDeployMethodRepository;
+    final transient ObjectMapper objectMapper;
+
+    final LinkedList<String> routeErrors = new LinkedList<>();
 
     @Autowired
     public AppRouteController(final ConfigModelService configModelService,
@@ -398,5 +402,18 @@ public class AppRouteController implements AppRouteApi {
             }
             configModelService.saveState();
         }
+    }
+
+    @Override
+    public ResponseEntity<String> setRouteError(String routeError) {
+        routeErrors.add(routeError);
+        return ResponseEntity.ok("Saved Route-Error in ConfigManager-backend.");
+    }
+
+    @Override
+    public ResponseEntity<String> getRouteErrors() {
+        final var allErrors = routeErrors.stream().collect(Collectors.joining(",", "{", "}"));
+        routeErrors.clear();
+        return ResponseEntity.ok(allErrors);
     }
 }
