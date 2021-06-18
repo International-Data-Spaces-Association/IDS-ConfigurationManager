@@ -77,11 +77,11 @@ public interface AppRouteApi {
 
     @PostMapping(value = "/route/error", produces = "application/ld+json")
     @Operation(summary = "Save route related errors in the ConfigManager-backend")
-    @ApiResponse(responseCode = "200", description = "Created a new app route")
+    @ApiResponse(responseCode = "200", description = "Saved Route-Error in ConfigManager-backend.")
     ResponseEntity<String> setRouteError(@RequestBody String policy);
 
     @GetMapping(value = "/route/error", produces = "application/ld+json")
     @Operation(summary = "Get new route related errors")
-    @ApiResponse(responseCode = "200", description = "Created a new app route")
+    @ApiResponse(responseCode = "200", description = "Loaded and returned cached Route-Errors.")
     ResponseEntity<String> getRouteErrors();
 }
