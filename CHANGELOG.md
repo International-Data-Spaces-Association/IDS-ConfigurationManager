@@ -21,6 +21,12 @@ Due to the new version of the Dataspace Connector (v5), the responsibilities bet
 - Upgrade: org.postgresql:postgresql 42.2.20 -> 42.2.22
 - Upgrade: org.springframework.boot:spring-boot-starter-parent 2.5.0 -> 2.5.1
 
+## [7.1.0] - UNRELEASED
+
+### Added
+- Minor Change: New API POST /api/ui/route/error caches error messages of the routes until they are fetched by the corresponding GET API (takes every String as RequestBody)
+- Minor Change: New API GET /api/ui/route/error all intermediate errors of the routes can be queried, once queried these are deleted in the backend (only cached until GET API called) 
+
 ## [7.0.0] - 2021-05-26
 ### Major Changes
 - Remove 20 unused APIs (= 1.150 lines of code) (unused by ConfigManager-UI project)

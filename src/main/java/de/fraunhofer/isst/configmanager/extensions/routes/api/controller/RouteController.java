@@ -26,6 +26,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 /**
  * The api class implements the AppRouteApi and offers the possibilities to manage
@@ -43,6 +45,8 @@ public class RouteController implements RouteApi {
     transient Serializer serializer;
     transient RouteDeployMethodRepository routeDeployMethodRepository;
     transient ObjectMapper objectMapper;
+
+    LinkedList<String> routeErrors = new LinkedList<>();
 
     @Autowired
     public RouteController(final ConnectorConfigurationService configModelService,
@@ -398,5 +402,18 @@ public class RouteController implements RouteApi {
             }
             configModelService.saveState();
         }
+    }
+
+    @Override
+    public ResponseEntity<String> setRouteError(String routeError) {
+        routeErrors.add(routeError);
+        return ResponseEntity.ok("Saved Route-Error in ConfigManager-backend.");
+    }
+
+    @Override
+    public ResponseEntity<String> getRouteErrors() {
+        final var allErrors = routeErrors.stream().collect(Collectors.joining(",", "{", "}"));
+        routeErrors.clear();
+        return ResponseEntity.ok(allErrors);
     }
 }
