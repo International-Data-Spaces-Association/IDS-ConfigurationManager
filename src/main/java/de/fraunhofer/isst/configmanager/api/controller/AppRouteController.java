@@ -36,17 +36,17 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestController
 @RequestMapping("/api/ui")
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Tag(name = "App Route Management", description = "Endpoints for managing the app routes in the configuration manager")
 public class AppRouteController implements AppRouteApi {
 
-    final transient ConfigModelService configModelService;
-    final transient AppRouteService appRouteService;
-    final transient Serializer serializer;
-    final transient RouteDeployMethodRepository routeDeployMethodRepository;
-    final transient ObjectMapper objectMapper;
+    transient ConfigModelService configModelService;
+    transient AppRouteService appRouteService;
+    transient Serializer serializer;
+    transient RouteDeployMethodRepository routeDeployMethodRepository;
+    transient ObjectMapper objectMapper;
 
-    final LinkedList<String> routeErrors = new LinkedList<>();
+    LinkedList<String> routeErrors = new LinkedList<>();
 
     @Autowired
     public AppRouteController(final ConfigModelService configModelService,
