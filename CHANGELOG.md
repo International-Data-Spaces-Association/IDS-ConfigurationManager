@@ -15,7 +15,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [7.0.1] - UNRELEASED
 
 ### Dependency Maintenance
-- Upgrade: org.postgresql:postgresql 42.2.20 -> 42.2.21
+- Upgrade: org.postgresql:postgresql 42.2.20 -> 42.2.22
 - Upgrade: org.springframework.boot:spring-boot-starter-parent 2.5.0 -> 2.5.1
 
 ## [7.0.0] - 2021-05-26
