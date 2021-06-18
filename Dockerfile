@@ -10,6 +10,9 @@ COPY src /tmp/src/
 RUN mvn clean package
 
 FROM adoptopenjdk/openjdk11:jre-11.0.8_10-alpine
+
+LABEL org.opencontainers.image.source="https://github.com/International-Data-Spaces-Association/IDS-ConfigurationManager"
+
 RUN mkdir /app
 
 COPY --from=maven /tmp/target/*.jar /app/configurationmanager-7.0.0.jar
