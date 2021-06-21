@@ -40,7 +40,7 @@ import java.util.ArrayList;
 @Slf4j
 @RestController
 @RequestMapping("/api/ui")
-@Tag(name = "Extension: Connector Configuration")
+@Tag(name = "Extension: Configuration")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ConnectorConfigurationController implements ConnectorConfigurationApi {
