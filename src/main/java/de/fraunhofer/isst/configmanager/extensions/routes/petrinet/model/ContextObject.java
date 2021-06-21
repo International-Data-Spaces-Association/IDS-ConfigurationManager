@@ -49,7 +49,7 @@ public class ContextObject {
 
     /**
      * Transition types (are they apps or control transitions for the petrinet?), only APP transitions have to be
-     * unfolded for parallel checks
+     * unfolded for parallel checks.
      */
     public enum TransType {
         APP,

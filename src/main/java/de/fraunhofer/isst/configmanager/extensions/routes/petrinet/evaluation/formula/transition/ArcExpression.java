@@ -19,7 +19,7 @@ public class ArcExpression {
     ArcSubExpression subExpression;
 
     /**
-     * Information message to return when subExpression is not fulfilled by a transition
+     * Information message to return when subExpression is not fulfilled by a transition.
      */
     String message;
 

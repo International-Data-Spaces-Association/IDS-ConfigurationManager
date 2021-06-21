@@ -48,10 +48,10 @@ public class TransitionFORALL_UNTIL implements TransitionFormula {
                 for (var i = 2; i < path.size() - offset; i += 2) {
                     final var res1 = parameter1.evaluate(path.get(i), paths);
                     final var res2 = parameter2.evaluate(path.get(i), paths);
-                    if(res2) {
+                    if (res2) {
                         continue check;
                     }
-                    if(!res1){
+                    if (!res1) {
                         log.info(path.get(i).toString());
                         return false;
                     }
@@ -62,15 +62,15 @@ public class TransitionFORALL_UNTIL implements TransitionFormula {
                     }
                     return false;
                 }
-            }else{
+            } else {
                 //if something on the circle fulfills param2 accept, if something does not fulfill param1 reject
-                for (var i = 2; i<path.size() - 1; i+=2) {
+                for (var i = 2; i < path.size() - 1; i += 2) {
                     final var res1 = parameter1.evaluate(path.get(i), paths);
                     final var res2 = parameter2.evaluate(path.get(i), paths);
                     if (res2) {
                         continue check;
                     }
-                    if (!res1){
+                    if (!res1) {
                         log.info(path.get(i).toString());
                         return false;
                     }

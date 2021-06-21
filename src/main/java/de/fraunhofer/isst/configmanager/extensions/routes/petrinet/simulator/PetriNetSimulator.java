@@ -86,7 +86,7 @@ public class PetriNetSimulator {
             log.info("Nothing changed! Finished simulation of PetriNet!");
         }
     }
-    
+
     /**
      * For a given petriNet, find all transitions that can be taken.
      * @param petriNet a given PetriNet
@@ -103,9 +103,9 @@ public class PetriNetSimulator {
 
         return possible;
     }
-    
+
     /**
-     * Given a petri net and a (transition) node: do the transition
+     * Given a petri net and a (transition) node: do the transition.
      * @param petriNet a given PetriNet
      * @param node a given Node of the PetriNet
      */
@@ -288,7 +288,7 @@ public class PetriNetSimulator {
 
     /**
      * Unfold a PetriNet (all APP transitions T are replaced by a set T_start(trans) -> T_place(place) -> T_end(trans),
-     * markers on places in same step show possible parallel executions of transitions)
+     * markers on places in same step show possible parallel executions of transitions).
      *
      * @param petriNet a PetriNet
      * @return unfolded petriNet

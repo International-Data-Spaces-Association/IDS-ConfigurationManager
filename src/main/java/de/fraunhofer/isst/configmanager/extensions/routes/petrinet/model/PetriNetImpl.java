@@ -6,11 +6,11 @@ import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 
 import java.net.URI;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Implementation class of the {@link PetriNet} interface.
@@ -36,19 +36,18 @@ public class PetriNetImpl implements PetriNet, HasId {
     @Override
     @SneakyThrows
     public PetriNet deepCopy() {
-        final var nodeCopy = new HashSet<Node>();
-        final Map<URI, Node> nodeClones = new HashMap<>();
+        final Map<URI, Node> nodeClones = new ConcurrentHashMap<>();
         for (final var node : nodes) {
             nodeClones.put(node.getID(), node.deepCopy());
         }
-        nodeCopy.addAll(nodeClones.values());
+        final var nodeCopy = new HashSet<>(nodeClones.values());
 
         final var arcCopy = new HashSet<Arc>();
         for (final var arc : arcs) {
             arcCopy.add(
                     new ArcImpl(
-                            (Node) nodeClones.get(arc.getSource().getID()),
-                            (Node) nodeClones.get(arc.getTarget().getID())
+                            nodeClones.get(arc.getSource().getID()),
+                            nodeClones.get(arc.getTarget().getID())
                     )
             );
         }
