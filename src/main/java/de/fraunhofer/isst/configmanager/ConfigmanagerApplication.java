@@ -100,14 +100,7 @@ public class ConfigmanagerApplication {
 
     @Scheduled(fixedRate = SCHEDULE_RATE, initialDelay = SCHEDULE_DELAY)
     public void logInfoStillAlive() {
-        final var mb = 1024L * 1024L;
-        final var currentHeapSize = Runtime.getRuntime().totalMemory() / mb;
-        final var maxHeapSize = Runtime.getRuntime().maxMemory() / mb;
-        final var freeHeapSize = Runtime.getRuntime().freeMemory() / mb;
-        final var threadCount = Thread.activeCount();
-
         if (log.isInfoEnabled()) {
-            log.info("[ConfigManager " + CURRENT_VERSION + "] Heap Size Stats: Used " + Math.toIntExact(currentHeapSize) + " MB - Free " + Math.toIntExact(freeHeapSize) + " MB - Max " + Math.toIntExact(maxHeapSize) + " MB - Running Threads: " + threadCount);
             log.info("[ConfigManager " + CURRENT_VERSION + "] Waiting for API call...");
         }
     }
