@@ -18,8 +18,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-//import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.model.BackendSource;
-
 /**
  * The class can be used to define auxiliary methods that are needed again and again.
  */
