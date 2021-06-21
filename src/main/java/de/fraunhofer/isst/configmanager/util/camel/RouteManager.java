@@ -112,7 +112,8 @@ public class RouteManager {
      * @param routeStart start of the AppRoute
      */
     private void addRouteStartToContext(final VelocityContext velocityContext,
-                                        final ArrayList<? extends Endpoint> routeStart) {
+                                        final ArrayList<? extends Endpoint> routeStart)
+            throws RouteCreationException {
         if (routeStart.get(0) instanceof ConnectorEndpoint) {
             final var connectorEndpoint = (ConnectorEndpoint) routeStart.get(0);
             velocityContext.put("startUrl", connectorEndpoint.getAccessURL().toString());
@@ -122,6 +123,7 @@ public class RouteManager {
             addBasicAuthHeaderForGenericEndpoint(velocityContext, genericEndpoint);
         } else {
             //TODO app is route start
+            throw new RouteCreationException("An app as the route start is not yet supported.");
         }
     }
 
@@ -132,7 +134,8 @@ public class RouteManager {
      * @param routeEnd end of the AppRoute
      */
     private void addRouteEndToContext(final VelocityContext velocityContext,
-                                      final ArrayList<? extends Endpoint> routeEnd) {
+                                      final ArrayList<? extends Endpoint> routeEnd)
+            throws RouteCreationException {
         if (routeEnd.get(0) instanceof ConnectorEndpoint) {
             final var connectorEndpoint = (ConnectorEndpoint) routeEnd.get(0);
             velocityContext.put("endUrl", connectorEndpoint.getAccessURL().toString());
@@ -142,6 +145,7 @@ public class RouteManager {
             addBasicAuthHeaderForGenericEndpoint(velocityContext, genericEndpoint);
         } else {
             //TODO app is route end
+            throw new RouteCreationException("An app as the route end is not yet supported.");
         }
     }
 
