@@ -17,6 +17,16 @@ configuration model, followed by the deployment of the connector. The configurat
 which describes the configuration of a connector. It consists of technology-independent, interconnected configuration
 aspects.
 
+***
+
+<h3 align="center" >
+  <a href="https://github.com/International-Data-Spaces-Association/IDS-Deployment-Examples/tree/main/dataspace-connector/full">
+    Quickstart: Deployment Example Setups
+  </a>
+</h3>
+
+***
+
 In the current version the development of configuration manager is linked to the open source projects
 [Dataspace Connector](https://github.com/International-Data-Spaces-Association/DataspaceConnector) and
 [Configuration Manager UI](https://github.com/International-Data-Spaces-Association/IDS-ConfigurationManager-UI).
