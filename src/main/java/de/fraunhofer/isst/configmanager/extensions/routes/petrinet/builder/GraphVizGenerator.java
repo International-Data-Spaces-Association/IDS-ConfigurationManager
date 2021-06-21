@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package de.fraunhofer.isst.configmanager.extensions.routes.petrinet.builder;
 
 import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.PetriNet;
@@ -30,22 +43,22 @@ public class GraphVizGenerator {
         for (final var node : petriNet.getNodes()) {
             if (node instanceof TransitionImpl) {
                 //transitions will be drawn as boxes
-                s.append(node.getID().hashCode() + " [shape=box, label=\"" + node.getID() + "\"];");
+                s.append(node.getID().hashCode()).append(" [shape=box, label=\"").append(node.getID()).append("\"];");
             } else {
                 //nodes will be drawn as circles and coloured red, if there have markers
-                s.append(node.getID().hashCode() + "[label=\"" + node.getID() + "\"");
+                s.append(node.getID().hashCode()).append("[label=\"").append(node.getID()).append("\"");
 
                 if (((PlaceImpl) node).getMarkers() > 0) {
                     s.append(", color=red");
                 }
                 s.append("];");
-                s.append(node.getID().hashCode() + "[label=\"" + node.getID() + "\"];");
+                s.append(node.getID().hashCode()).append("[label=\"").append(node.getID()).append("\"];");
             }
         }
 
         for (final var arc : petriNet.getArcs()) {
             //a directed edge will be drawn for every arc
-            s.append(arc.getSource().getID().hashCode() + " -> " + arc.getTarget().getID().hashCode() + ";");
+            s.append(arc.getSource().getID().hashCode()).append(" -> ").append(arc.getTarget().getID().hashCode()).append(";");
         }
 
         s.append("}");
@@ -94,7 +107,7 @@ public class GraphVizGenerator {
 
         for (final var arc : graphArcs) {
             //draw the GraphVizArcs as directed edges between the PetriNet Subgraphs
-            s.append(someId + arc.getSource() + " -> " + someId + arc.getTarget() + "[ltail=cluster" + arc.getSource() + ",lhead=cluster" + arc.getTarget() + "];");
+            s.append(someId).append(arc.getSource()).append(" -> ").append(someId).append(arc.getTarget()).append("[ltail=cluster").append(arc.getSource()).append(",lhead=cluster").append(arc.getTarget()).append("];");
         }
 
         s.append("}");
