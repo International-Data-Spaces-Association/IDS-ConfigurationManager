@@ -16,7 +16,12 @@ package de.fraunhofer.isst.configmanager.extensions.routes.api.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fraunhofer.iais.eis.AppRoute;
+import de.fraunhofer.iais.eis.BaseConnectorImpl;
+import de.fraunhofer.iais.eis.ConfigurationModelImpl;
+import de.fraunhofer.iais.eis.ConnectorEndpoint;
+import de.fraunhofer.iais.eis.ConnectorEndpointBuilder;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
+import de.fraunhofer.isst.configmanager.extensions.configuration.api.service.ConnectorConfigurationService;
 import de.fraunhofer.isst.configmanager.extensions.routes.api.RouteApi;
 import de.fraunhofer.isst.configmanager.extensions.routes.api.service.RouteService;
 import de.fraunhofer.isst.configmanager.util.enums.RouteDeployMethod;
@@ -45,23 +50,26 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestController
 @RequestMapping("/api/ui")
-@Tag(name = "Extension: App Routes")
+@Tag(name = "Extension: Routes")
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class RouteController implements RouteApi {
 
     transient RouteService routeService;
     transient Serializer serializer;
     transient ObjectMapper objectMapper;
+    transient ConnectorConfigurationService configModelService;
 
     LinkedList<String> routeErrors = new LinkedList<>();
 
     @Autowired
     public RouteController(final RouteService routeService,
                            final Serializer serializer,
-                           final ObjectMapper objectMapper) {
+                           final ObjectMapper objectMapper,
+                           final ConnectorConfigurationService configModelService) {
         this.routeService = routeService;
         this.serializer = serializer;
         this.objectMapper = objectMapper;
+        this.configModelService = configModelService;
     }
 
     /**
@@ -343,5 +351,149 @@ public class RouteController implements RouteApi {
         final var allErrors = routeErrors.stream().collect(Collectors.joining(",", "{", "}"));
         routeErrors.clear();
         return ResponseEntity.ok(allErrors);
+    }
+
+    /**
+     * This method creates a generic endpoint with the given parameters.
+     *
+     * @param accessURL access url of the parameter
+     * @param sourceType source type of the endpoint
+     * @param username  username for the authentication
+     * @param password  password for the authentication
+     * @return a suitable http response depending on success
+     */
+    @Override
+    public ResponseEntity<String> createGenericEndpoint(final URI accessURL,
+                                                        final String sourceType,
+                                                        final String username,
+                                                        final String password) {
+        if (log.isInfoEnabled()) {
+            log.info(">> POST /generic/endpoint accessURL: " + accessURL + " username: " + username);
+        }
+
+        final var genericEndpoint = routeService.createGenericEndpoint(accessURL, sourceType, username, password);
+        final var jsonObject = new JSONObject();
+
+        jsonObject.put("id", genericEndpoint.getId().toString());
+        jsonObject.put("message", "Created a new generic endpoint");
+
+        return ResponseEntity.ok(jsonObject.toJSONString());
+    }
+
+    /**
+     * This method returns a list of generic endpoints.
+     *
+     * @return a suitable http response depending on success
+     */
+    @Override
+    public ResponseEntity<String> getGenericEndpoints() {
+        if (log.isInfoEnabled()) {
+            log.info(">> GET /generic/endpoints");
+        }
+        ResponseEntity<String> response;
+
+        final var endpoints = routeService.getGenericEndpoints();
+
+        try {
+            response = ResponseEntity.ok(serializer.serialize(endpoints));
+        } catch (IOException e) {
+            if (log.isErrorEnabled()) {
+                log.error(e.getMessage(), e);
+            }
+            response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+        return response;
+    }
+
+    /**
+     * This method deletes a generic endpoint.
+     *
+     * @param endpointId id of the generic endpoint
+     * @return a suitable http response depending on success
+     */
+    @Override
+    public ResponseEntity<String> deleteGenericEndpoint(final URI endpointId) {
+        if (log.isInfoEnabled()) {
+            log.info(">> DELETE /generic/endpoint endpointId: " + endpointId);
+        }
+        ResponseEntity<String> response;
+
+        final var deleted = routeService.deleteGenericEndpoint(endpointId);
+
+        if (deleted) {
+            response = ResponseEntity.ok("Deleted the generic endpoint with id: " + endpointId);
+        } else {
+            response = ResponseEntity.badRequest().body("Could not delete the generic endpoint with id: " + endpointId);
+        }
+
+        return response;
+    }
+
+    /**
+     * This method updates a generic endpoint with the given parameters.
+     *
+     * @param endpointId id of the generic endpoint
+     * @param accessURL  access url of the endpoint
+     * @param sourceType source type of the endpoint
+     * @param username   username for authentication
+     * @param password   password for authentication
+     * @return a suitable http response depending on success
+     */
+    @Override
+    public ResponseEntity<String> updateGenericEndpoint(final URI endpointId,
+                                                        final URI accessURL,
+                                                        final String sourceType,
+                                                        final String username,
+                                                        final String password) {
+        if (log.isInfoEnabled()) {
+            log.info(">> PUT /generic/endpoint endpointId: " + endpointId + " accessURL: " + accessURL);
+        }
+        ResponseEntity<String> response;
+
+        final var updated = routeService.updateGenericEndpoint(endpointId, accessURL, sourceType, username, password);
+
+        if (updated) {
+            response = ResponseEntity.ok("Updated the generic endpoint with id: " + endpointId);
+        } else {
+            response = ResponseEntity.badRequest().body("Could not update the generic endpoint with id: " + endpointId);
+        }
+
+        return response;
+    }
+
+    /**
+     * This method creates a connector endpoint with given parameters.
+     *
+     * @param accessUrl access url of the endpoint
+     * @param sourceType source type of the endpoint
+     * @return a suitable http response depending on success
+     */
+    @Override
+    public ResponseEntity<String> createConnectorEndpoint(final URI accessUrl, final String sourceType) {
+        if (log.isInfoEnabled()) {
+            log.info(">> POST /connector/endpoint accessUrl: " + accessUrl + " sourceType: " + sourceType);
+        }
+
+        final var configModelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
+        final var baseConnector = (BaseConnectorImpl) configModelImpl.getConnectorDescription();
+
+        if (baseConnector.getHasEndpoint() == null) {
+            baseConnector.setHasEndpoint(new ArrayList<>());
+        }
+
+        final var connectorEndpoints = (ArrayList<ConnectorEndpoint>) baseConnector.getHasEndpoint();
+        final var connectorEndpoint = new ConnectorEndpointBuilder()._accessURL_(accessUrl).build();
+
+        connectorEndpoint.setProperty("ids:sourceType", sourceType);
+
+        connectorEndpoints.add(connectorEndpoint);
+
+        final var jsonObject = new JSONObject();
+
+        jsonObject.put("connectorEndpointId", connectorEndpoint.getId().toString());
+        jsonObject.put("message", "Created a new connector endpoint for the connector");
+
+        return ResponseEntity.ok(jsonObject.toJSONString());
     }
 }
