@@ -1,4 +1,4 @@
-package de.fraunhofer.isst.configmanager.data.enums;
+package de.fraunhofer.isst.configmanager.util.enums;
 
 /**
  * Enums for the broker status.

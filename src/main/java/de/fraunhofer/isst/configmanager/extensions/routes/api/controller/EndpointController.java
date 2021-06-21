@@ -176,7 +176,6 @@ public class EndpointController implements EndpointApi {
         connectorEndpoint.setProperty("ids:sourceType", sourceType);
 
         connectorEndpoints.add(connectorEndpoint);
-        configModelService.saveState();
 
         final var jsonObject = new JSONObject();
 

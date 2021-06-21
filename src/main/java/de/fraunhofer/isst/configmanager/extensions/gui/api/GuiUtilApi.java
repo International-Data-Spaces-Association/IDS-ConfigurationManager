@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-public interface UtilApi {
+public interface GuiUtilApi {
     @GetMapping(value = "/api/ui/enum/{enumName}")
     @Operation(summary = "Get the specific enum")
     @ApiResponse(responseCode = "200", description = "Successfully get the enums")

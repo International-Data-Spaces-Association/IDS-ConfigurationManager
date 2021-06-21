@@ -3,15 +3,11 @@ package de.fraunhofer.isst.configmanager.extensions.routes.api.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fraunhofer.iais.eis.AppRoute;
-import de.fraunhofer.iais.eis.AppRouteImpl;
-import de.fraunhofer.iais.eis.RouteStepImpl;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.isst.configmanager.extensions.routes.api.RouteApi;
 import de.fraunhofer.isst.configmanager.extensions.routes.api.service.RouteService;
-import de.fraunhofer.isst.configmanager.extensions.configuration.api.service.ConnectorConfigurationService;
-import de.fraunhofer.isst.configmanager.data.enums.RouteDeployMethod;
-import de.fraunhofer.isst.configmanager.data.repositories.RouteDeployMethodRepository;
-import de.fraunhofer.isst.configmanager.extensions.apps.util.AppEndpointBuilder;
+import de.fraunhofer.isst.configmanager.util.enums.RouteDeployMethod;
+import de.fraunhofer.isst.configmanager.util.json.JsonUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -40,31 +36,19 @@ import java.util.stream.Collectors;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class RouteController implements RouteApi {
 
-    transient ConnectorConfigurationService configModelService;
     transient RouteService routeService;
     transient Serializer serializer;
-    transient RouteDeployMethodRepository routeDeployMethodRepository;
     transient ObjectMapper objectMapper;
 
     LinkedList<String> routeErrors = new LinkedList<>();
 
     @Autowired
-    public RouteController(final ConnectorConfigurationService configModelService,
-                           final RouteService routeService,
+    public RouteController(final RouteService routeService,
                            final Serializer serializer,
-                           final RouteDeployMethodRepository routeDeployMethodRepository,
                            final ObjectMapper objectMapper) {
-        this.configModelService = configModelService;
         this.routeService = routeService;
         this.serializer = serializer;
-        this.routeDeployMethodRepository = routeDeployMethodRepository;
         this.objectMapper = objectMapper;
-
-        if (routeDeployMethodRepository.count() == 0) {
-            final var routeDeployMethod = new de.fraunhofer.isst.configmanager.data.entities.RouteDeployMethod();
-            routeDeployMethod.setRouteDeployMethod(RouteDeployMethod.NONE);
-            routeDeployMethodRepository.save(routeDeployMethod);
-        }
     }
 
     /**
@@ -123,7 +107,7 @@ public class RouteController implements RouteApi {
                 log.info("---- [AppRouteController deleteAppRoute] App route with id: " + routeId + " is deleted.");
             }
 
-            response = ResponseEntity.ok(AppEndpointBuilder.jsonMessage("message", "App route with id: " + routeId + " is deleted."));
+            response = ResponseEntity.ok(JsonUtils.jsonMessage("message", "App route with id: " + routeId + " is deleted."));
         } else {
             if (log.isInfoEnabled()) {
                 log.info("---- [AppRouteController deleteAppRoute] Could not delete app route with id: " + routeId);
@@ -315,30 +299,9 @@ public class RouteController implements RouteApi {
         if (log.isInfoEnabled()) {
             log.info(">> PUT /route/deploymethod deployMethod: " + routeDeployMethod);
         }
-        ResponseEntity<String> response;
 
-        if (routeDeployMethodRepository.count() != 0) {
-            final var existingDeployMethod = routeDeployMethodRepository.findAll().get(0);
-            existingDeployMethod.setRouteDeployMethod(routeDeployMethod);
-
-            routeDeployMethodRepository.save(existingDeployMethod);
-
-            // Updates the deploy method from the app routes and route steps
-            updateDeployMethodFromRoutes(routeDeployMethod);
-
-            if (log.isInfoEnabled()) {
-                log.info("---- [AppRouteController updateRouteDeployMethod] Updated successfully the route deploy method");
-            }
-
-            response = ResponseEntity.ok("Updated successfully the route deploy method");
-        } else {
-            if (log.isWarnEnabled()) {
-                log.warn("---- [AppRouteController updateRouteDeployMethod] Could not update the route deploy method");
-            }
-            response = ResponseEntity.badRequest().body("Could not update the route deploy method");
-        }
-
-        return response;
+        //TODO: set in DB (in Service-Class)
+        return null;
     }
 
     /**
@@ -351,57 +314,9 @@ public class RouteController implements RouteApi {
         if (log.isInfoEnabled()) {
             log.info(">> GET /route/deploymethod");
         }
-        ResponseEntity<String> response;
 
-        final var routeDeployMethods = routeDeployMethodRepository.findAll();
-
-        try {
-            if (log.isInfoEnabled()) {
-                log.info("---- [AppRouteController getRouteDeployMethod] Returning the deploy route method");
-            }
-            response = ResponseEntity.ok(objectMapper.writeValueAsString(routeDeployMethods));
-        } catch (JsonProcessingException e) {
-            if (log.isErrorEnabled()) {
-                log.error("---- [AppRouteController getRouteDeployMethod] Could not get deploy method from the app routes!");
-                log.error(e.getMessage(), e);
-            }
-            response = ResponseEntity.badRequest().body("Could not get deploy method from the app routes");
-        }
-
-        return response;
-    }
-
-    /**
-     * This method updates the deploy method from every app route and route step.
-     *
-     * @param routeDeployMethod deploy method of the route
-     */
-    private void updateDeployMethodFromRoutes(final RouteDeployMethod routeDeployMethod) {
-        if (log.isInfoEnabled()) {
-            log.info("---- [AppRouteController updateDeployMethodFromRoutes] Updating deploymethod for every app route and route step...");
-        }
-
-        final var appRouteList = configModelService.getConfigModel().getAppRoute();
-        if (appRouteList != null) {
-            // Update deploy method from app routes
-            for (final var appRoute : appRouteList) {
-                if (appRoute != null) {
-                    final var appRouteImpl = (AppRouteImpl) appRoute;
-                    appRouteImpl.setRouteDeployMethod(routeDeployMethod.toString());
-
-                    // Update deploy method from route steps
-                    if (appRoute.getHasSubRoute() != null) {
-                        for (final var routeStep : appRoute.getHasSubRoute()) {
-                            if (routeStep != null) {
-                                final var routeStepImpl = (RouteStepImpl) routeStep;
-                                routeStepImpl.setRouteDeployMethod(routeDeployMethod.toString());
-                            }
-                        }
-                    }
-                }
-            }
-            configModelService.saveState();
-        }
+        //TODO: Get from DB (in Service-Class)
+        return null;
     }
 
     @Override

@@ -1,34 +1,30 @@
 package de.fraunhofer.isst.configmanager.extensions.apps.util;
 
-import de.fraunhofer.isst.configmanager.data.entities.CustomBroker;
 import lombok.experimental.UtilityClass;
+import org.junit.jupiter.api.Disabled;
 
-import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Utility class for testing
  */
+@Disabled
 @UtilityClass
 public class TestUtil {
 
     /**
      * @return custom broker
      */
-    public static CustomBroker createCustomBroker() {
-        final var customBroker = new CustomBroker();
-        customBroker.setBrokerUri(URI.create("https://example.com"));
-        customBroker.setTitle("CustomBroker");
-        return customBroker;
+    public static Object createCustomBroker() {
+        //TODO: Test vs DB
+        return null;
     }
 
     /**
      * @return list of brokers
      */
-    public static List<CustomBroker> brokers() {
-        final List<CustomBroker> brokers = new ArrayList<>();
-        brokers.add(createCustomBroker());
-        return brokers;
+    public static List<?> brokers() {
+        //TODO: Test vs DB
+        return null;
     }
 }

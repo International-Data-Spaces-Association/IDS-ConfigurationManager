@@ -1,7 +1,7 @@
 package de.fraunhofer.isst.configmanager.extensions.gui.api.controller;
 
-import de.fraunhofer.isst.configmanager.extensions.gui.api.UtilApi;
-import de.fraunhofer.isst.configmanager.extensions.gui.api.service.UtilService;
+import de.fraunhofer.isst.configmanager.extensions.gui.api.GuiUtilApi;
+import de.fraunhofer.isst.configmanager.extensions.gui.api.service.GuiUtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Tag(name = "Extension: GUI Utilities")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class UtilController implements UtilApi {
+public class GuiUtilController implements GuiUtilApi {
 
-    private final transient UtilService utilService;
+    private final transient GuiUtilService utilService;
 
     /**
      * This method returns for a given enum name all enum values.

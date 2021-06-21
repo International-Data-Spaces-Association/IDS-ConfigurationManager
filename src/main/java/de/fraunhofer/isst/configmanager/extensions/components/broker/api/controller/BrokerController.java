@@ -3,7 +3,7 @@ package de.fraunhofer.isst.configmanager.extensions.components.broker.api.contro
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fraunhofer.isst.configmanager.extensions.components.broker.api.BrokerApi;
 import de.fraunhofer.isst.configmanager.extensions.components.broker.api.service.BrokerService;
-import de.fraunhofer.isst.configmanager.extensions.apps.util.AppEndpointBuilder;
+import de.fraunhofer.isst.configmanager.util.json.JsonUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -47,8 +47,8 @@ public class BrokerController implements BrokerApi {
             log.info(">> POST /broker brokerUri: " + brokerUri + " title: " + title);
         }
 
-        brokerService.createCustomBroker(brokerUri, title);
-        return ResponseEntity.ok(AppEndpointBuilder.jsonMessage("message", "Created a new broker with id: " + brokerUri));
+        brokerService.createBroker(brokerUri, title);
+        return ResponseEntity.ok(JsonUtils.jsonMessage("message", "Created a new broker with id: " + brokerUri));
     }
 
     /**
@@ -91,7 +91,7 @@ public class BrokerController implements BrokerApi {
         ResponseEntity<String> response;
 
         if (brokerService.deleteBroker(brokerUri)) {
-            response = ResponseEntity.ok(AppEndpointBuilder.jsonMessage("message", "Broker with ID: " + brokerUri + " is deleted"));
+            response = ResponseEntity.ok(JsonUtils.jsonMessage("message", "Broker with ID: " + brokerUri + " is deleted"));
         } else {
             response = ResponseEntity.badRequest().body("Could not delete the broker with the id:" + brokerUri);
         }
@@ -111,7 +111,7 @@ public class BrokerController implements BrokerApi {
         }
         ResponseEntity<String> response;
 
-        final var brokers = brokerService.getCustomBrokers();
+        final var brokers = brokerService.getBrokers();
 
         try {
             response = new ResponseEntity<>(objectMapper.writeValueAsString(brokers), HttpStatus.OK);

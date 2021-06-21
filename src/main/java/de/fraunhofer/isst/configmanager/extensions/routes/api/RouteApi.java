@@ -1,6 +1,6 @@
 package de.fraunhofer.isst.configmanager.extensions.routes.api;
 
-import de.fraunhofer.isst.configmanager.data.enums.RouteDeployMethod;
+import de.fraunhofer.isst.configmanager.util.enums.RouteDeployMethod;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.ResponseEntity;

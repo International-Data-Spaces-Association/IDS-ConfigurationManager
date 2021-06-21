@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.net.URI;
 
 public interface BrokerApi {
-    // APIs to manage custom broker
     @PostMapping(value = "/broker", produces = "application/ld+json")
     @Operation(summary = "Creates a new broker")
     @ApiResponse(responseCode = "200", description = "Created a new broker")

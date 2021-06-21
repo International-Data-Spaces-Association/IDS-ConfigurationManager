@@ -4,8 +4,8 @@ import de.fraunhofer.iais.eis.ConnectorDeployMode;
 import de.fraunhofer.iais.eis.ConnectorStatus;
 import de.fraunhofer.iais.eis.Language;
 import de.fraunhofer.iais.eis.LogLevel;
-import de.fraunhofer.isst.configmanager.data.enums.BrokerRegistrationStatus;
-import de.fraunhofer.isst.configmanager.data.enums.RouteDeployMethod;
+import de.fraunhofer.isst.configmanager.util.enums.BrokerRegistrationStatus;
+import de.fraunhofer.isst.configmanager.util.enums.RouteDeployMethod;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONArray;
@@ -25,7 +25,7 @@ import java.util.List;
 @Service
 @Transactional
 @NoArgsConstructor
-public class UtilService {
+public class GuiUtilService {
 
     /**
      * The method returns for a given enum name all enum values.
