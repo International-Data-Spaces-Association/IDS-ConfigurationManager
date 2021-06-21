@@ -25,7 +25,7 @@ import java.util.ArrayList;
  */
 @Service
 @Transactional
-public class ConnectorConfigurationService {
+public class ConfigurationService {
     /**
      * This method updates the configuration model with the given parameters.
      *

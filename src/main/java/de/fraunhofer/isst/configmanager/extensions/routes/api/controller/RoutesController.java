@@ -21,9 +21,9 @@ import de.fraunhofer.iais.eis.ConfigurationModelImpl;
 import de.fraunhofer.iais.eis.ConnectorEndpoint;
 import de.fraunhofer.iais.eis.ConnectorEndpointBuilder;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
-import de.fraunhofer.isst.configmanager.extensions.configuration.api.service.ConnectorConfigurationService;
-import de.fraunhofer.isst.configmanager.extensions.routes.api.RouteApi;
-import de.fraunhofer.isst.configmanager.extensions.routes.api.service.RouteService;
+import de.fraunhofer.isst.configmanager.extensions.configuration.api.service.ConfigurationService;
+import de.fraunhofer.isst.configmanager.extensions.routes.api.RoutesApi;
+import de.fraunhofer.isst.configmanager.extensions.routes.api.service.RoutesService;
 import de.fraunhofer.isst.configmanager.util.enums.RouteDeployMethod;
 import de.fraunhofer.isst.configmanager.util.json.JsonUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -52,21 +52,21 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/ui")
 @Tag(name = "Extension: Routes")
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class RouteController implements RouteApi {
+public class RoutesController implements RoutesApi {
 
-    transient RouteService routeService;
+    transient RoutesService routesService;
     transient Serializer serializer;
     transient ObjectMapper objectMapper;
-    transient ConnectorConfigurationService configModelService;
+    transient ConfigurationService configModelService;
 
     LinkedList<String> routeErrors = new LinkedList<>();
 
     @Autowired
-    public RouteController(final RouteService routeService,
-                           final Serializer serializer,
-                           final ObjectMapper objectMapper,
-                           final ConnectorConfigurationService configModelService) {
-        this.routeService = routeService;
+    public RoutesController(final RoutesService routesService,
+                            final Serializer serializer,
+                            final ObjectMapper objectMapper,
+                            final ConfigurationService configModelService) {
+        this.routesService = routesService;
         this.serializer = serializer;
         this.objectMapper = objectMapper;
         this.configModelService = configModelService;
@@ -86,7 +86,7 @@ public class RouteController implements RouteApi {
 
         ResponseEntity<String> response;
 
-        final var appRoute = routeService.createAppRoute(description);
+        final var appRoute = routesService.createAppRoute(description);
 
         if (appRoute != null) {
             final var jsonObject = new JSONObject();
@@ -121,7 +121,7 @@ public class RouteController implements RouteApi {
 
         ResponseEntity<String> response;
 
-        final boolean deleted = routeService.deleteAppRoute(routeId);
+        final boolean deleted = routesService.deleteAppRoute(routeId);
 
         if (deleted) {
             if (log.isInfoEnabled()) {
@@ -154,7 +154,7 @@ public class RouteController implements RouteApi {
 
         ResponseEntity<String> response;
 
-        final var appRoute = routeService.getAppRoute(routeId);
+        final var appRoute = routesService.getAppRoute(routeId);
 
         if (appRoute != null) {
             try {
@@ -192,7 +192,7 @@ public class RouteController implements RouteApi {
         }
         ResponseEntity<String> response;
 
-        final var appRouteList = routeService.getAppRoutes();
+        final var appRouteList = routesService.getAppRoutes();
 
         try {
             if (appRouteList == null) {
@@ -246,7 +246,7 @@ public class RouteController implements RouteApi {
         }
         ResponseEntity<String> response;
 
-        final var routeStep = routeService.createAppRouteStep(routeId, startId,
+        final var routeStep = routesService.createAppRouteStep(routeId, startId,
                 startCoordinateX, startCoordinateY,
                 endID, endCoordinateX, endCoordinateY, resourceId);
 
@@ -283,7 +283,7 @@ public class RouteController implements RouteApi {
         }
         ResponseEntity<String> response;
 
-        final var endpointInformation = routeService.getEndpointInformation(routeId, endpointId);
+        final var endpointInformation = routesService.getEndpointInformation(routeId, endpointId);
 
         if (endpointInformation != null) {
             try {
@@ -371,7 +371,7 @@ public class RouteController implements RouteApi {
             log.info(">> POST /generic/endpoint accessURL: " + accessURL + " username: " + username);
         }
 
-        final var genericEndpoint = routeService.createGenericEndpoint(accessURL, sourceType, username, password);
+        final var genericEndpoint = routesService.createGenericEndpoint(accessURL, sourceType, username, password);
         final var jsonObject = new JSONObject();
 
         jsonObject.put("id", genericEndpoint.getId().toString());
@@ -392,7 +392,7 @@ public class RouteController implements RouteApi {
         }
         ResponseEntity<String> response;
 
-        final var endpoints = routeService.getGenericEndpoints();
+        final var endpoints = routesService.getGenericEndpoints();
 
         try {
             response = ResponseEntity.ok(serializer.serialize(endpoints));
@@ -419,7 +419,7 @@ public class RouteController implements RouteApi {
         }
         ResponseEntity<String> response;
 
-        final var deleted = routeService.deleteGenericEndpoint(endpointId);
+        final var deleted = routesService.deleteGenericEndpoint(endpointId);
 
         if (deleted) {
             response = ResponseEntity.ok("Deleted the generic endpoint with id: " + endpointId);
@@ -451,7 +451,7 @@ public class RouteController implements RouteApi {
         }
         ResponseEntity<String> response;
 
-        final var updated = routeService.updateGenericEndpoint(endpointId, accessURL, sourceType, username, password);
+        final var updated = routesService.updateGenericEndpoint(endpointId, accessURL, sourceType, username, password);
 
         if (updated) {
             response = ResponseEntity.ok("Updated the generic endpoint with id: " + endpointId);

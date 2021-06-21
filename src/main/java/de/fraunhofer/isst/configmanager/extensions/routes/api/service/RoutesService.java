@@ -18,7 +18,7 @@ import de.fraunhofer.iais.eis.AppRouteImpl;
 import de.fraunhofer.iais.eis.Endpoint;
 import de.fraunhofer.iais.eis.GenericEndpoint;
 import de.fraunhofer.iais.eis.RouteStep;
-import de.fraunhofer.isst.configmanager.extensions.configuration.api.service.ConnectorConfigurationService;
+import de.fraunhofer.isst.configmanager.extensions.configuration.api.service.ConfigurationService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -38,9 +38,9 @@ import java.util.List;
 @Transactional
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class RouteService {
+public class RoutesService {
 
-    transient ConnectorConfigurationService configModelService;
+    transient ConfigurationService configModelService;
 
     /**
      * This method creates an app route.

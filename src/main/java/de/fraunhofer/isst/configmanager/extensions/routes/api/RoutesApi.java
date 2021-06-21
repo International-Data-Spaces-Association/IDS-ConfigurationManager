@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.net.URI;
 
 
-public interface RouteApi {
+public interface RoutesApi {
     // Interfaces for managing app routes
     @PostMapping(value = "/approute", produces = "application/ld+json")
     @Operation(summary = "Creates a new app route")

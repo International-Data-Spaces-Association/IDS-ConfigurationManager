@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.net.URI;
 import java.util.ArrayList;
 
-public interface ConnectorConfigurationApi {
+public interface ConfigurationApi {
     @PutMapping(value = "/configmodel")
     @Operation(summary = "Updates the configuration model")
     @ApiResponse(responseCode = "200", description = "Successfully updated the configuration model at the client")

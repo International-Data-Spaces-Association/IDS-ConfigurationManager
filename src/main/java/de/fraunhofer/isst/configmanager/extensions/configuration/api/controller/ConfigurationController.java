@@ -16,8 +16,8 @@ package de.fraunhofer.isst.configmanager.extensions.configuration.api.controller
 import de.fraunhofer.iais.eis.ConfigurationModelImpl;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.iais.eis.util.Util;
-import de.fraunhofer.isst.configmanager.extensions.configuration.api.ConnectorConfigurationApi;
-import de.fraunhofer.isst.configmanager.extensions.configuration.api.service.ConnectorConfigurationService;
+import de.fraunhofer.isst.configmanager.extensions.configuration.api.ConfigurationApi;
+import de.fraunhofer.isst.configmanager.extensions.configuration.api.service.ConfigurationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -43,10 +43,10 @@ import java.util.ArrayList;
 @Tag(name = "Extension: Configuration")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class ConnectorConfigurationController implements ConnectorConfigurationApi {
+public class ConfigurationController implements ConfigurationApi {
 
     transient Serializer serializer;
-    transient ConnectorConfigurationService configModelService;
+    transient ConfigurationService configModelService;
 
 
     /**
