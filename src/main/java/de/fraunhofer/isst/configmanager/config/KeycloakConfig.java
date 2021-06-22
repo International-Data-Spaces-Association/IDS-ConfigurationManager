@@ -3,6 +3,7 @@ package de.fraunhofer.isst.configmanager.config;
 import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
 import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,6 +24,15 @@ import org.springframework.security.web.servletapi.SecurityContextHolderAwareReq
 @EnableWebSecurity
 @ConditionalOnExpression("${keycloak.enabled}")
 public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
+
+    @Value("${role.admin}")
+    private String admin;
+
+    @Value("${role.provider}")
+    private String provider;
+
+    @Value("${role.consumer}")
+    private String consumer;
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) {
@@ -67,7 +77,7 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers("/**")
-                .hasRole("user")
+                .hasRole(admin)
                 .anyRequest()
                 .permitAll();
     }

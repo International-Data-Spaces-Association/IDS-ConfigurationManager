@@ -7,7 +7,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 
 /**
  * The configuration class helps to allow all requests without login in spring security
- * configuration.
+ * configuration if no authentication with keycloak is desired.
  */
 @Configuration
 @ConditionalOnProperty(
