@@ -16,12 +16,7 @@ package de.fraunhofer.isst.configmanager.extensions.routes.api.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fraunhofer.iais.eis.AppRoute;
-import de.fraunhofer.iais.eis.BaseConnectorImpl;
-import de.fraunhofer.iais.eis.ConfigurationModelImpl;
-import de.fraunhofer.iais.eis.ConnectorEndpoint;
-import de.fraunhofer.iais.eis.ConnectorEndpointBuilder;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
-import de.fraunhofer.isst.configmanager.extensions.configuration.api.service.ConfigurationService;
 import de.fraunhofer.isst.configmanager.extensions.routes.api.RoutesApi;
 import de.fraunhofer.isst.configmanager.extensions.routes.api.service.RoutesService;
 import de.fraunhofer.isst.configmanager.util.enums.RouteDeployMethod;
@@ -57,19 +52,16 @@ public class RoutesController implements RoutesApi {
     transient RoutesService routesService;
     transient Serializer serializer;
     transient ObjectMapper objectMapper;
-    transient ConfigurationService configModelService;
 
     LinkedList<String> routeErrors = new LinkedList<>();
 
     @Autowired
     public RoutesController(final RoutesService routesService,
                             final Serializer serializer,
-                            final ObjectMapper objectMapper,
-                            final ConfigurationService configModelService) {
+                            final ObjectMapper objectMapper) {
         this.routesService = routesService;
         this.serializer = serializer;
         this.objectMapper = objectMapper;
-        this.configModelService = configModelService;
     }
 
     /**
@@ -475,25 +467,27 @@ public class RoutesController implements RoutesApi {
             log.info(">> POST /connector/endpoint accessUrl: " + accessUrl + " sourceType: " + sourceType);
         }
 
-        final var configModelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
-        final var baseConnector = (BaseConnectorImpl) configModelImpl.getConnectorDescription();
-
-        if (baseConnector.getHasEndpoint() == null) {
-            baseConnector.setHasEndpoint(new ArrayList<>());
-        }
-
-        final var connectorEndpoints = (ArrayList<ConnectorEndpoint>) baseConnector.getHasEndpoint();
-        final var connectorEndpoint = new ConnectorEndpointBuilder()._accessURL_(accessUrl).build();
-
-        connectorEndpoint.setProperty("ids:sourceType", sourceType);
-
-        connectorEndpoints.add(connectorEndpoint);
-
-        final var jsonObject = new JSONObject();
-
-        jsonObject.put("connectorEndpointId", connectorEndpoint.getId().toString());
-        jsonObject.put("message", "Created a new connector endpoint for the connector");
-
-        return ResponseEntity.ok(jsonObject.toJSONString());
+        //TODO: Get ConfigModel from DB (updated and maintained via GUI -> DSC)
+//        final var configModelImpl = (ConfigurationModelImpl) configModelService.getConfigModel();
+//        final var baseConnector = (BaseConnectorImpl) configModelImpl.getConnectorDescription();
+//
+//        if (baseConnector.getHasEndpoint() == null) {
+//            baseConnector.setHasEndpoint(new ArrayList<>());
+//        }
+//
+//        final var connectorEndpoints = (ArrayList<ConnectorEndpoint>) baseConnector.getHasEndpoint();
+//        final var connectorEndpoint = new ConnectorEndpointBuilder()._accessURL_(accessUrl).build();
+//
+//        connectorEndpoint.setProperty("ids:sourceType", sourceType);
+//
+//        connectorEndpoints.add(connectorEndpoint);
+//
+//        final var jsonObject = new JSONObject();
+//
+//        jsonObject.put("connectorEndpointId", connectorEndpoint.getId().toString());
+//        jsonObject.put("message", "Created a new connector endpoint for the connector");
+//
+//        return ResponseEntity.ok(jsonObject.toJSONString());
+        return null;
     }
 }
