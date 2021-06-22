@@ -19,6 +19,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Minor Change: New API GET /api/ui/route/error all intermediate errors of the routes can be queried, once queried these are deleted in the backend (only cached until GET API called) 
 
 ### Dependency Maintenance
+- Upgrade: org.springframework.security:spring-security-test 5.5.0 -> 5.5.1
 - Upgrade: org.postgresql:postgresql 42.2.20 -> 42.2.22
 - Upgrade: org.springframework.boot:spring-boot-starter-parent 2.5.0 -> 2.5.1
 
