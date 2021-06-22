@@ -41,6 +41,9 @@ public class RouteManager {
     @Value("${dataspace.connector.enabled}")
     private boolean dataspaceConnectorEnabled;
 
+    @Value("${camel.application.error-handler}")
+    private String camelErrorHandlerRef;
+
     /**
      * Helper for deploying and deleting Camel routes via HTTP.
      */
@@ -246,6 +249,9 @@ public class RouteManager {
         if (log.isDebugEnabled()) {
             log.debug("---- [RouteManager createDataspaceConnectorRoute]Creating route for Dataspace Connector...");
         }
+
+        //add reference to Camel-Instance's error handler to Velocity context
+        velocityContext.put("errorHandlerRef", camelErrorHandlerRef);
 
         //add basic auth header for connector endpoint
         DataspaceConnectorRouteConfigurer.addBasicAuthToContext(velocityContext);
