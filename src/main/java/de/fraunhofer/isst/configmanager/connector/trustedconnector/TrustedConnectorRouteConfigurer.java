@@ -4,6 +4,7 @@ import de.fraunhofer.iais.eis.AppRoute;
 import de.fraunhofer.iais.eis.ConfigurationModel;
 import de.fraunhofer.iais.eis.ConnectorEndpoint;
 import de.fraunhofer.iais.eis.GenericEndpoint;
+import lombok.experimental.UtilityClass;
 import org.apache.velocity.VelocityContext;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
@@ -14,14 +15,13 @@ import java.net.URI;
 /**
  * Utility class for configuring Camel routes for the TrustedConnector.
  */
+@UtilityClass
 public final class TrustedConnectorRouteConfigurer {
 
     /**
      * ResourceLoader for loading Camel route templates from the classpath.
      */
     private static final ResourceLoader RESOURCE_LOADER = new DefaultResourceLoader();
-
-    private TrustedConnectorRouteConfigurer() {}
 
     /**
      * Adds key- and truststore information to the Velocity context for creating a Camel XML route to be used with
@@ -75,5 +75,4 @@ public final class TrustedConnectorRouteConfigurer {
 
         return string;
     }
-
 }

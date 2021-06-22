@@ -12,15 +12,17 @@ import de.fraunhofer.iais.eis.RouteStep;
 import de.fraunhofer.iais.eis.RouteStepBuilder;
 import de.fraunhofer.iais.eis.util.Util;
 import de.fraunhofer.isst.configmanager.api.service.resources.ResourceService;
+import de.fraunhofer.isst.configmanager.data.entities.CustomApp;
+import de.fraunhofer.isst.configmanager.data.entities.EndpointInformation;
 import de.fraunhofer.isst.configmanager.data.repositories.CustomAppRepository;
 import de.fraunhofer.isst.configmanager.data.repositories.EndpointInformationRepository;
 import de.fraunhofer.isst.configmanager.data.repositories.RouteDeployMethodRepository;
-import de.fraunhofer.isst.configmanager.data.entities.CustomApp;
-import de.fraunhofer.isst.configmanager.data.entities.EndpointInformation;
 import de.fraunhofer.isst.configmanager.util.camel.RouteManager;
 import de.fraunhofer.isst.configmanager.util.camel.exceptions.RouteCreationException;
 import de.fraunhofer.isst.configmanager.util.camel.exceptions.RouteDeletionException;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,7 @@ import java.util.List;
 @Slf4j
 @Service
 @Transactional
+@AllArgsConstructor(onConstructor = @__(@Autowired))
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class AppRouteService {
 
@@ -48,23 +51,6 @@ public class AppRouteService {
     transient RouteDeployMethodRepository routeDeployMethodRepository;
     transient EndpointInformationRepository endpointInformationRepository;
     transient CustomAppRepository customAppRepository;
-
-    @Autowired
-    public AppRouteService(final ConfigModelService configModelService,
-                           final RouteDeployMethodRepository routeDeployMethodRepository,
-                           final EndpointInformationRepository endpointInformationRepository,
-                           final CustomAppRepository customAppRepository,
-                           final EndpointService endpointService,
-                           final ResourceService resourceService,
-                           final RouteManager routeManager) {
-        this.configModelService = configModelService;
-        this.routeDeployMethodRepository = routeDeployMethodRepository;
-        this.endpointInformationRepository = endpointInformationRepository;
-        this.customAppRepository = customAppRepository;
-        this.endpointService = endpointService;
-        this.resourceService = resourceService;
-        this.routeManager = routeManager;
-    }
 
     /**
      * This method creates an app route.
@@ -121,7 +107,7 @@ public class AppRouteService {
                 try {
                     routeManager.deleteRoute(appRoute);
                 } catch (RouteDeletionException e) {
-                    if(log.isErrorEnabled()){
+                    if (log.isErrorEnabled()){
                         log.error(e.getMessage(), e);
                     }
                 }
@@ -147,7 +133,7 @@ public class AppRouteService {
      * @return list of app routes
      */
     public List<AppRoute> getAppRoutes() {
-        return (List<AppRoute>) configModelService.getConfigModel().getAppRoute();
+        return configModelService.getConfigModel().getAppRoute();
     }
 
     /**
@@ -237,7 +223,7 @@ public class AppRouteService {
                     try {
                         routeManager.createAndDeployXMLRoute(configModelService.getConfigModel(), appRouteImpl);
                     } catch (RouteCreationException e) {
-                        if(log.isErrorEnabled()){
+                        if (log.isErrorEnabled()){
                             log.error(e.getMessage(), e);
                         }
                     }

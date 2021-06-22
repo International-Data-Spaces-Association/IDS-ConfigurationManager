@@ -14,6 +14,9 @@ import de.fraunhofer.isst.configmanager.util.camel.dto.RouteStepEndpoint;
 import de.fraunhofer.isst.configmanager.util.camel.exceptions.NoSuitableTemplateException;
 import de.fraunhofer.isst.configmanager.util.camel.exceptions.RouteCreationException;
 import de.fraunhofer.isst.configmanager.util.camel.exceptions.RouteDeletionException;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.velocity.VelocityContext;
@@ -34,38 +37,27 @@ import java.util.List;
  */
 @Slf4j
 @Component
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class RouteManager {
     /**
      * Indicates if a Dataspace Connector or a Trusted Connector is being managed.
      */
     @Value("${dataspace.connector.enabled}")
-    private boolean dataspaceConnectorEnabled;
+    boolean dataspaceConnectorEnabled;
 
     @Value("${camel.application.error-handler}")
-    private String camelErrorHandlerRef;
+    String camelErrorHandlerRef;
 
     /**
      * Helper for deploying and deleting Camel routes via HTTP.
      */
-    private final RouteHttpHelper routeHttpHelper;
+    final RouteHttpHelper routeHttpHelper;
 
     /**
      * Helper for deploying and deleting Camel routes in the file system.
      */
-    private final RouteFileHelper routeFileHelper;
-
-    /**
-     * Constructs a RouteManager.
-     *
-     * @param routeHttpHelper the RouteHttpHelper instance
-     * @param routeFileHelper the RouteFileHelper instance
-     */
-    @Autowired
-    public RouteManager(final RouteHttpHelper routeHttpHelper,
-                        final RouteFileHelper routeFileHelper) {
-        this.routeHttpHelper = routeHttpHelper;
-        this.routeFileHelper = routeFileHelper;
-    }
+    final RouteFileHelper routeFileHelper;
 
     /**
      * Creates a Camel XML route from a given app route for either the Dataspace Connector or the

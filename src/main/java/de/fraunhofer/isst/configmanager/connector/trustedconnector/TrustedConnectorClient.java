@@ -8,19 +8,20 @@ import de.fraunhofer.iais.eis.ConnectorStatus;
 import de.fraunhofer.iais.eis.LogLevel;
 import de.fraunhofer.isst.configmanager.connector.clients.DefaultConnectorClient;
 import de.fraunhofer.isst.configmanager.data.util.QueryInput;
+import lombok.NoArgsConstructor;
 import okhttp3.Response;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.net.URI;
 
 @Service
+@NoArgsConstructor
 @ConditionalOnExpression("${dataspace.connector.enabled:false} == false")
 public class TrustedConnectorClient implements DefaultConnectorClient {
 
     @Override
-    public boolean sendConfiguration(final String configurationModel) throws IOException {
+    public boolean sendConfiguration(final String configurationModel) {
         return false;
     }
 
@@ -43,7 +44,7 @@ public class TrustedConnectorClient implements DefaultConnectorClient {
     }
 
     @Override
-    public BaseConnector getBaseConnector(final String accessURL, final String resourceId) throws IOException {
+    public BaseConnector getBaseConnector(final String accessURL, final String resourceId) {
         return null;
     }
 
@@ -53,14 +54,14 @@ public class TrustedConnectorClient implements DefaultConnectorClient {
     }
 
     @Override
-    public BaseConnector getSelfDeclaration() throws IOException {
+    public BaseConnector getSelfDeclaration() {
         return null;
     }
 
     @Override
     public String requestContractAgreement(final String recipientId,
                                            final String requestedArtifactId,
-                                           final String contractOffer) throws IOException {
+                                           final String contractOffer) {
         return null;
     }
 
@@ -69,7 +70,7 @@ public class TrustedConnectorClient implements DefaultConnectorClient {
                                 final String requestedArtifactId,
                                 final String contractId,
                                 final String key,
-                                final QueryInput queryInput) throws IOException {
+                                final QueryInput queryInput) {
         return null;
     }
 }

@@ -1,6 +1,9 @@
 package de.fraunhofer.isst.configmanager.util.camel;
 
 import de.fraunhofer.isst.configmanager.util.OkHttpUtils;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Credentials;
 import okhttp3.MediaType;
@@ -20,35 +23,37 @@ import java.util.Objects;
  */
 @Slf4j
 @Component
+@NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class RouteHttpHelper {
     /**
      * URL of the Camel application.
      */
     @Value("${camel.application.url}")
-    private String camelApplicationUrl;
+    String camelApplicationUrl;
 
     /**
      * Username for the Camel application.
      */
     @Value("${camel.application.username}")
-    private String camelApplicationUsername;
+    String camelApplicationUsername;
 
     /**
      * Password for the Camel application.
      */
     @Value("${camel.application.password}")
-    private String camelApplicationPassword;
+    String camelApplicationPassword;
 
     /**
      * The Camel application's API path for managing routes.
      */
     @Value("${camel.application.path.routes}")
-    private String camelApplicationRoutesPath;
+    String camelApplicationRoutesPath;
 
     /**
      * The OkHttpClient for sending requests to the Camel application.
      */
-    private final OkHttpClient httpClient = OkHttpUtils.getUnsafeOkHttpClient();
+    final OkHttpClient httpClient = OkHttpUtils.getUnsafeOkHttpClient();
 
     /**
      * Sends an XML route to the Camel application specified in application.properties as a file.
@@ -129,5 +134,4 @@ public class RouteHttpHelper {
             throw e;
         }
     }
-
 }

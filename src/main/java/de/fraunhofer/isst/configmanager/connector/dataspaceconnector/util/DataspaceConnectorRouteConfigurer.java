@@ -3,6 +3,9 @@ package de.fraunhofer.isst.configmanager.connector.dataspaceconnector.util;
 import de.fraunhofer.iais.eis.AppRoute;
 import de.fraunhofer.iais.eis.ConnectorEndpoint;
 import de.fraunhofer.iais.eis.GenericEndpoint;
+import lombok.AccessLevel;
+import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.velocity.VelocityContext;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,34 +18,27 @@ import org.springframework.stereotype.Component;
  * Utility class for configuring Camel routes for the Dataspace Connector.
  */
 @Component
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class DataspaceConnectorRouteConfigurer {
 
     /**
      * Username for the Dataspace Connector.
      */
-    private static String dataSpaceConnectorApiUsername;
+    @Setter
+    @Value("${dataspace.connector.api.username}")
+    static String dataSpaceConnectorApiUsername;
 
     /**
      * Password for the Dataspace Connector.
      */
-    private static String dataSpaceConnectorApiPassword;
-
-    @Value("${dataspace.connector.api.username}")
-    public void setDataSpaceConnectorApiUsername(String username) {
-        dataSpaceConnectorApiUsername = username;
-    }
-
+    @Setter
     @Value("${dataspace.connector.api.password}")
-    public void setDataSpaceConnectorApiPassword(String password) {
-        dataSpaceConnectorApiPassword = password;
-    }
+    static String dataSpaceConnectorApiPassword;
 
     /**
      * ResourceLoader for loading Camel route templates from the classpath.
      */
-    private static final ResourceLoader resourceLoader = new DefaultResourceLoader();
-
-    private DataspaceConnectorRouteConfigurer() {}
+    static final ResourceLoader RESOURCE_LOADER = new DefaultResourceLoader();
 
     /**
      * Adds basic authentication information for the Dataspace Connector to the Velocity context
@@ -50,7 +46,7 @@ public class DataspaceConnectorRouteConfigurer {
      *
      * @param velocityContext the context containing the values to insert into the route template
      */
-    public static void addBasicAuthToContext(VelocityContext velocityContext) {
+    public static void addBasicAuthToContext(final VelocityContext velocityContext) {
         final var auth = dataSpaceConnectorApiUsername + ":" + dataSpaceConnectorApiPassword;
         final var encodedAuth = Base64.encodeBase64(auth.getBytes());
         final var authHeader = "Basic " + new String(encodedAuth);
@@ -63,19 +59,18 @@ public class DataspaceConnectorRouteConfigurer {
      * @param appRoute the app route
      * @return the route template
      */
-    public static Resource getRouteTemplate(AppRoute appRoute) {
+    public static Resource getRouteTemplate(final AppRoute appRoute) {
         final var routeStart = appRoute.getAppRouteStart();
 
         Resource resource;
         if (routeStart.get(0) instanceof GenericEndpoint) {
-            resource = resourceLoader.getResource("classpath:camel-templates/dataspaceconnector/http_to_connector_template.vm");
+            resource = RESOURCE_LOADER.getResource("classpath:camel-templates/dataspaceconnector/http_to_connector_template.vm");
         } else if (routeStart.get(0) instanceof ConnectorEndpoint) {
-            resource = resourceLoader.getResource("classpath:camel-templates/dataspaceconnector/connector_to_http_template.vm");
+            resource = RESOURCE_LOADER.getResource("classpath:camel-templates/dataspaceconnector/connector_to_http_template.vm");
         } else {
             resource = null;
         }
 
         return resource;
     }
-
 }

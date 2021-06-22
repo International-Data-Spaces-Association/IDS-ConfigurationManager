@@ -1,5 +1,6 @@
 package de.fraunhofer.isst.configmanager.util.camel;
 
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ import java.nio.file.Paths;
  */
 @Slf4j
 @Component
+@NoArgsConstructor
 public class RouteFileHelper {
     /**
      * Path for the Camel route files.
@@ -88,5 +90,4 @@ public class RouteFileHelper {
             }
         }
     }
-
 }
