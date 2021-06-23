@@ -1,27 +1,29 @@
 package de.fraunhofer.isst.configmanager.petrinet.model;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
 /**
- * Context of a transition (used for WFDU nets)
+ * Context of a transition (used for WFDU nets).
  */
 @Getter
 @Setter
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ContextObject {
 
-    private Set<String> context;
-    private Set<String> read;
-    private Set<String> write;
-    private Set<String> erase;
-    private TransType type;
+    Set<String> context;
+    Set<String> read;
+    Set<String> write;
+    Set<String> erase;
+    TransType type;
 
    public ContextObject deepCopy() {
        return new ContextObject(context, read, write, erase, type);
@@ -49,7 +51,7 @@ public class ContextObject {
 
     /**
      * Transition types (are they apps or control transitions for the petrinet?), only APP transitions have to be
-     * unfolded for parallel checks
+     * unfolded for parallel checks.
      */
     public enum TransType {
         APP,

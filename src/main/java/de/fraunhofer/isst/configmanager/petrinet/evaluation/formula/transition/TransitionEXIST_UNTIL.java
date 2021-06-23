@@ -2,18 +2,22 @@ package de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition;
 
 import de.fraunhofer.isst.configmanager.petrinet.model.Node;
 import de.fraunhofer.isst.configmanager.petrinet.model.Transition;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
 /**
- * evaluates to true, if a path exists, where parameter1 evaluates to true for every transition, until parameter2
- * evaluates to true
+ * Evaluates to true, if a path exists, where parameter1 evaluates to true for every transition, until parameter2
+ * evaluates to true.
  */
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class TransitionEXIST_UNTIL implements TransitionFormula {
-    private TransitionFormula parameter1;
-    private TransitionFormula parameter2;
+
+    TransitionFormula parameter1;
+    TransitionFormula parameter2;
 
     public static TransitionEXIST_UNTIL transitionEXIST_UNTIL(final TransitionFormula parameter1,
                                                               final TransitionFormula parameter2) {
@@ -30,17 +34,27 @@ public class TransitionEXIST_UNTIL implements TransitionFormula {
 
         check: for (final var path: paths) {
             int offset;
-            if(!path.get(0).equals(node)) continue;
+            if (!path.get(0).equals(node)) {
+                continue;
+            }
+
             if (path.size() % 2 == 1) {
                 offset = 1;
-            }else {
+            } else {
                 offset = 2;
             }
+
             for (var i = 2; i < path.size() - offset; i += 2) {
                 var res1 = parameter1.evaluate(path.get(i), paths);
                 var res2 = parameter2.evaluate(path.get(i), paths);
-                if(res2) return true;
-                if(!res1) continue check;
+
+                if (res2) {
+                    return true;
+                }
+
+                if (!res1) {
+                    continue check;
+                }
             }
             if (path.size() > offset && parameter2.evaluate(path.get(path.size() - offset), paths)) {
                 return true;

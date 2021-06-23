@@ -4,6 +4,11 @@ import de.fraunhofer.isst.configmanager.petrinet.model.PetriNet;
 import de.fraunhofer.isst.configmanager.petrinet.model.PlaceImpl;
 import de.fraunhofer.isst.configmanager.petrinet.model.TransitionImpl;
 import de.fraunhofer.isst.configmanager.petrinet.simulator.StepGraph;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import lombok.experimental.UtilityClass;
 
 import java.util.ArrayList;
@@ -53,17 +58,17 @@ public class GraphVizGenerator {
     }
 
     /**
-     * Write transitions context to string
+     * Write transitions context to string.
      *
      * @param transition a petrinet transition
      * @return transitions context as string
      */
-    private static String contextInfo(TransitionImpl transition){
-        var contextObj = transition.getContext();
-        var read = contextObj.getRead().toString();
-        var write = contextObj.getWrite().toString();
-        var erase = contextObj.getErase().toString();
-        var context = contextObj.getContext().toString();
+    private static String contextInfo(final TransitionImpl transition) {
+        final var contextObj = transition.getContext();
+        final var read = contextObj.getRead().toString();
+        final var write = contextObj.getWrite().toString();
+        final var erase = contextObj.getErase().toString();
+        final var context = contextObj.getContext().toString();
         return String.format("name=%s; write=%s; read=%s; erase=%s; context=%s", transition.getID(), write, read, erase, context);
     }
 
@@ -101,10 +106,11 @@ public class GraphVizGenerator {
         s.append("}");
         return s.toString();
     }
-    
+
     /**
      * Generate a GraphViz Dot String representation for the given {@link StepGraph}
      * The StepGraph for which the Graph representation should be built.
+     * @param stepGraph the graph used
      * @return a DOT String, used for visualizing the StepGraph with GraphViz.
      */
     public static String generateGraphViz(final StepGraph stepGraph) {
@@ -120,16 +126,16 @@ public class GraphVizGenerator {
         s.append("compound=true;");
 
 
-        for (var petriNet : stepGraph.getSteps()) {
+        for (final var petriNet : stepGraph.getSteps()) {
             //generate the graph for every PetriNet in the StepGraph
             var petriString = generateGraphViz(petriNet);
             //the PetriNet Graphs will be subgraphs and have different names
             petriString = petriString.replace("digraph", "subgraph");
-            petriString = petriString.replace("graphname", "cluster"+i);
+            petriString = petriString.replace("graphname", "cluster" + i);
 
             for (final var node : petriNet.getNodes()) {
                 //nodes must have unique names too (or DOT will draw them as the same node)
-                petriString = petriString.replace(String.valueOf(node.getID().hashCode()), node.getID().hashCode()+String.valueOf(i));
+                petriString = petriString.replace(String.valueOf(node.getID().hashCode()), node.getID().hashCode() + String.valueOf(i));
             }
 
             s.append(petriString);
@@ -150,33 +156,19 @@ public class GraphVizGenerator {
         s.append("}");
         return s.toString();
     }
-    
+
     /**
-     * Utility Subclass, representing Petri Net Arcs
+     * Utility Subclass, representing Petri Net Arcs.
      */
+    @AllArgsConstructor
+    @FieldDefaults(level = AccessLevel.PRIVATE)
     public static class GraphvizArc {
-        private int source;
-        private int target;
+        @Getter
+        @Setter
+        int source;
 
-        public GraphvizArc(final int source, final int target) {
-            this.source = source;
-            this.target = target;
-        }
-
-        public int getSource() {
-            return source;
-        }
-
-        public int getTarget() {
-            return target;
-        }
-
-        public void setSource(final int source) {
-            this.source = source;
-        }
-
-        public void setTarget(final int target) {
-            this.target = target;
-        }
+        @Getter
+        @Setter
+        int target;
     }
 }

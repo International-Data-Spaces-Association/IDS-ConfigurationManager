@@ -1,9 +1,22 @@
 package de.fraunhofer.isst.configmanager.petrinet.builder;
 
-import de.fraunhofer.iais.eis.*;
+import de.fraunhofer.iais.eis.AppRoute;
+import de.fraunhofer.iais.eis.Endpoint;
+import de.fraunhofer.iais.eis.Resource;
+import de.fraunhofer.iais.eis.RouteStep;
+import de.fraunhofer.iais.eis.Rule;
 import de.fraunhofer.iais.eis.util.TypedLiteral;
 import de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.Formula;
-import de.fraunhofer.isst.configmanager.petrinet.model.*;
+import de.fraunhofer.isst.configmanager.petrinet.model.Arc;
+import de.fraunhofer.isst.configmanager.petrinet.model.ArcImpl;
+import de.fraunhofer.isst.configmanager.petrinet.model.ContextObject;
+import de.fraunhofer.isst.configmanager.petrinet.model.Node;
+import de.fraunhofer.isst.configmanager.petrinet.model.PetriNet;
+import de.fraunhofer.isst.configmanager.petrinet.model.PetriNetImpl;
+import de.fraunhofer.isst.configmanager.petrinet.model.Place;
+import de.fraunhofer.isst.configmanager.petrinet.model.PlaceImpl;
+import de.fraunhofer.isst.configmanager.petrinet.model.Transition;
+import de.fraunhofer.isst.configmanager.petrinet.model.TransitionImpl;
 import de.fraunhofer.isst.configmanager.petrinet.policy.PolicyUtils;
 import de.fraunhofer.isst.configmanager.petrinet.policy.RuleFormulaBuilder;
 import de.fraunhofer.isst.configmanager.petrinet.policy.RuleUtils;
@@ -11,21 +24,28 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
  * Provide static methods, to generate a Petri Net (https://en.wikipedia.org/wiki/Petri_net) from an Infomodel AppRoute.
  */
-@UtilityClass
 @Slf4j
+@UtilityClass
 public class InfomodelPetriNetBuilder {
 
     /**
      * Generate a Petri Net from a given infomodel {@link AppRoute}.
      * RouteSteps will be represented as Places, Endpoints as Transitions.
      *
+     * @param includeAppRoute AppRoute to be included
      * @param appRoute an Infomodel {@link AppRoute}
      * @return a Petri Net created from the AppRoute
      */
@@ -36,7 +56,7 @@ public class InfomodelPetriNetBuilder {
         final var transitions = new HashMap<URI, Transition>();
         final var arcs = new HashSet<Arc>();
 
-        if (includeAppRoute){
+        if (includeAppRoute) {
             //create initial place from AppRoute
             final var place = new PlaceImpl(appRoute.getId());
             places.put(place.getID(), place);
@@ -45,12 +65,12 @@ public class InfomodelPetriNetBuilder {
             for (final var endpoint : appRoute.getAppRouteStart()) {
                 final var trans = (TransitionImpl) getTransition(transitions, endpoint);
                 Set<String> writes = new HashSet<>();
-                if(appRoute.getAppRouteOutput() != null && !appRoute.getAppRouteOutput().isEmpty()) {
+                if (appRoute.getAppRouteOutput() != null && !appRoute.getAppRouteOutput().isEmpty()) {
                     writes = appRoute.getAppRouteOutput().stream().map(Resource::getId).map(URI::toString).collect(Collectors.toCollection(HashSet::new));
                 }
-                if(trans.getContext() == null) {
+                if (trans.getContext() == null) {
                     trans.setContextObject(new ContextObject(endpoint.getEndpointInformation().stream().map(TypedLiteral::getValue).collect(Collectors.toSet()), new HashSet<>(), writes, new HashSet<>(), ContextObject.TransType.APP));
-                }else{
+                } else {
                     trans.getContext().getWrite().addAll(writes);
                 }
                 final var arc = new ArcImpl(trans, place);
@@ -61,12 +81,12 @@ public class InfomodelPetriNetBuilder {
             for (final var endpoint : appRoute.getAppRouteEnd()) {
                 final var trans = (TransitionImpl) getTransition(transitions, endpoint);
                 Set<String> reads = new HashSet<>();
-                if(appRoute.getAppRouteOutput() != null && !appRoute.getAppRouteOutput().isEmpty()) {
+                if (appRoute.getAppRouteOutput() != null && !appRoute.getAppRouteOutput().isEmpty()) {
                     reads = appRoute.getAppRouteOutput().stream().map(Resource::getId).map(URI::toString).collect(Collectors.toCollection(HashSet::new));
                 }
-                if(trans.getContext() == null) {
+                if (trans.getContext() == null) {
                     trans.setContextObject(new ContextObject(endpoint.getEndpointInformation().stream().map(TypedLiteral::getValue).collect(Collectors.toSet()), reads, Set.of(), Set.of(), ContextObject.TransType.APP));
-                }else{
+                } else {
                     trans.getContext().getRead().addAll(reads);
                 }
                 final var arc = new ArcImpl(place, trans);
@@ -116,13 +136,13 @@ public class InfomodelPetriNetBuilder {
         for (final var endpoint : subRoute.getAppRouteStart()) {
             final var trans = (TransitionImpl) getTransition(transitions, endpoint);
             Set<String> writes = new HashSet<>();
-            if(subRoute.getAppRouteOutput() != null && !subRoute.getAppRouteOutput().isEmpty()) {
+            if (subRoute.getAppRouteOutput() != null && !subRoute.getAppRouteOutput().isEmpty()) {
                 writes = subRoute.getAppRouteOutput().stream().map(Resource::getId).map(URI::toString).collect(Collectors.toCollection(HashSet::new));
             }
-            var context = endpoint.getEndpointInformation() != null ? endpoint.getEndpointInformation().stream().map(TypedLiteral::getValue).collect(Collectors.toSet()) : new HashSet<String>();
-            if(trans.getContext() == null) {
+            final var context = endpoint.getEndpointInformation() != null ? endpoint.getEndpointInformation().stream().map(TypedLiteral::getValue).collect(Collectors.toSet()) : new HashSet<String>();
+            if (trans.getContext() == null) {
                 trans.setContextObject(new ContextObject(context, new HashSet<>(), writes, new HashSet<>(), ContextObject.TransType.APP));
-            }else{
+            } else {
                 trans.getContext().getWrite().addAll(writes);
             }
             final var arc = new ArcImpl(trans, place);
@@ -133,13 +153,13 @@ public class InfomodelPetriNetBuilder {
         for (final var endpoint : subRoute.getAppRouteEnd()) {
             final var trans = (TransitionImpl) getTransition(transitions, endpoint);
             Set<String> reads = new HashSet<>();
-            if(subRoute.getAppRouteOutput() != null && !subRoute.getAppRouteOutput().isEmpty()) {
+            if (subRoute.getAppRouteOutput() != null && !subRoute.getAppRouteOutput().isEmpty()) {
                 reads = subRoute.getAppRouteOutput().stream().map(Resource::getId).map(URI::toString).collect(Collectors.toCollection(HashSet::new));
             }
-            var context = endpoint.getEndpointInformation() != null ? endpoint.getEndpointInformation().stream().map(TypedLiteral::getValue).collect(Collectors.toSet()) : new HashSet<String>();
-            if(trans.getContext() == null) {
+            final var context = endpoint.getEndpointInformation() != null ? endpoint.getEndpointInformation().stream().map(TypedLiteral::getValue).collect(Collectors.toSet()) : new HashSet<String>();
+            if (trans.getContext() == null) {
                 trans.setContextObject(new ContextObject(context, reads, new HashSet<>(), new HashSet<>(), ContextObject.TransType.APP));
-            }else{
+            } else {
                 trans.getContext().getRead().addAll(reads);
             }
             final var arc = new ArcImpl(place, trans);
@@ -151,13 +171,13 @@ public class InfomodelPetriNetBuilder {
      * @param petriNet petrinet created from infomodel approute
      * @return petrinet with filled writes and reads in contextobj
      */
-    public PetriNet fillWriteAndErase(PetriNet petriNet){
+    public PetriNet fillWriteAndErase(final PetriNet petriNet) {
         //TODO check if everything is filled properly
-        var transitions = petriNet.getNodes().stream()
+        final var transitions = petriNet.getNodes().stream()
                 .filter(node -> node instanceof Transition)
                 .collect(Collectors.toList());
-        for(var trans : transitions){
-            var previous = trans.getTargetArcs().stream()
+        for (final var trans : transitions) {
+            final var previous = trans.getTargetArcs().stream()
                     .map(Arc::getSource)
                     .map(Node::getTargetArcs)
                     .flatMap(Collection::stream)
@@ -167,11 +187,11 @@ public class InfomodelPetriNetBuilder {
                     .flatMap(Collection::stream)
                     .collect(Collectors.toSet());
             ((TransitionImpl) trans).getContext().setRead(previous);
-            if(((TransitionImpl) trans).getContext().getType() == ContextObject.TransType.APP){
-                var writeSplit = ((TransitionImpl) trans).getContext().getWrite();
-                var erased = previous.stream().filter(x -> !writeSplit.contains(x)).collect(Collectors.toSet());
+            if (((TransitionImpl) trans).getContext().getType() == ContextObject.TransType.APP) {
+                final var writeSplit = ((TransitionImpl) trans).getContext().getWrite();
+                final var erased = previous.stream().filter(x -> !writeSplit.contains(x)).collect(Collectors.toSet());
                 ((TransitionImpl) trans).getContext().setErase(erased);
-            }else{
+            } else {
                 ((TransitionImpl) trans).getContext().setWrite(previous);
             }
         }
@@ -186,7 +206,7 @@ public class InfomodelPetriNetBuilder {
      * @return the existing transition with id from the map, or a new transition
      */
     private static Transition getTransition(final Map<URI, Transition> transitions,
-                                            final Endpoint endpoint){
+                                            final Endpoint endpoint) {
         if (transitions.containsKey(endpoint.getId())) {
             return transitions.get(endpoint.getId());
         } else {
@@ -226,23 +246,23 @@ public class InfomodelPetriNetBuilder {
     }
 
     /**
-     * Add an initial CONTROL place (and transition) before all places with markers
+     * Add an initial CONTROL place (and transition) before all places with markers.
      *
      * @param petriNet a PetriNet
      * @return petrinet with initial control transition
      */
-    public static PetriNet addControlTransitions(final PetriNet petriNet){
-        var initials = petriNet.getNodes().stream().filter(node -> node instanceof Place && ((Place) node).getMarkers() >= 1).collect(Collectors.toSet());
-        var controlTrans = new TransitionImpl(URI.create("trans://controlStart"));
-        var controlPlace = new PlaceImpl(URI.create("place://controlPlace"));
+    public static PetriNet addControlTransitions(final PetriNet petriNet) {
+        final var initials = petriNet.getNodes().stream().filter(node -> node instanceof Place && ((Place) node).getMarkers() >= 1).collect(Collectors.toSet());
+        final var controlTrans = new TransitionImpl(URI.create("trans://controlStart"));
+        final var controlPlace = new PlaceImpl(URI.create("place://controlPlace"));
         controlPlace.setMarkers(1);
         controlTrans.setContextObject(new ContextObject(Set.of(), Set.of(), Set.of(), Set.of(), ContextObject.TransType.CONTROL));
-        var controlArc = new ArcImpl(controlPlace, controlTrans);
+        final var controlArc = new ArcImpl(controlPlace, controlTrans);
         petriNet.getArcs().add(controlArc);
         petriNet.getNodes().add(controlPlace);
         petriNet.getNodes().add(controlTrans);
-        for(var startPlace : initials){
-            var arc = new ArcImpl(controlTrans, startPlace);
+        for (final var startPlace : initials) {
+            final var arc = new ArcImpl(controlTrans, startPlace);
             ((Place) startPlace).setMarkers(0);
             petriNet.getArcs().add(arc);
         }
@@ -253,11 +273,11 @@ public class InfomodelPetriNetBuilder {
      * @param appRoute the AppRoute to extract policies from
      * @return List of Formulas representing the AppRoutes policies
      */
-    public static List<Formula> extractPoliciesFromAppRoute(AppRoute appRoute){
-        List<Formula> formulas = new ArrayList<>();
-        var resourceStream = resourceStream(appRoute);
-        var resources = resourceStream.collect(Collectors.toSet());
-        for(final var resource : resources){
+    public static List<Formula> extractPoliciesFromAppRoute(final AppRoute appRoute) {
+        final List<Formula> formulas = new ArrayList<>();
+        final var resourceStream = resourceStream(appRoute);
+        final var resources = resourceStream.collect(Collectors.toSet());
+        for (final var resource : resources) {
             formulas.addAll(formulasFromResource(resource));
         }
         return formulas;
@@ -267,7 +287,7 @@ public class InfomodelPetriNetBuilder {
      * @param appRoute an infomodel approute
      * @return stream of all resources in the approute
      */
-    private static Stream<Resource> resourceStream(AppRoute appRoute) {
+    private static Stream<Resource> resourceStream(final AppRoute appRoute) {
         return Stream.concat(
                 appRoute.getAppRouteOutput().stream(),
                 appRoute.getHasSubRoute() != null ? appRoute.getHasSubRoute().stream().flatMap(InfomodelPetriNetBuilder::resourceStream) : Stream.empty()
@@ -278,15 +298,17 @@ public class InfomodelPetriNetBuilder {
      * @param resource resource for which contract offer rules are transformed to policies
      * @return List of Formulas representing the policies tied to the resource
      */
-    private static List<Formula> formulasFromResource(Resource resource){
-        var offers = resource.getContractOffer();
-        if(offers == null || offers.isEmpty()) return List.of();
-        List<Formula> formulas = new ArrayList<>();
-        for(var offer : offers){
-            var rules = PolicyUtils.getRulesForTargetId(offer, resource.getId());
-            for(final var rule : rules){
-                var formula = buildFormulaFromRule(rule, resource.getId());
-                if(formula != null) {
+    private static List<Formula> formulasFromResource(final Resource resource) {
+        final var offers = resource.getContractOffer();
+        if (offers == null || offers.isEmpty()) {
+            return List.of();
+        }
+        final List<Formula> formulas = new ArrayList<>();
+        for (final var offer : offers) {
+            final var rules = PolicyUtils.getRulesForTargetId(offer, resource.getId());
+            for (final var rule : rules) {
+                final var formula = buildFormulaFromRule(rule, resource.getId());
+                if (formula != null) {
                     formulas.add(formula);
                 }
             }
@@ -299,9 +321,13 @@ public class InfomodelPetriNetBuilder {
      * @param resourceID resourceID for which the rule is applied
      * @return Formula, representing the given rule
      */
-    private static Formula buildFormulaFromRule(Rule rule, URI resourceID){
+    private static Formula buildFormulaFromRule(final Rule rule, final URI resourceID) {
         final var pattern = RuleUtils.getPatternByRule(rule);
-        log.info(pattern.toString());
+
+        if (log.isInfoEnabled()) {
+            log.info(pattern.toString());
+        }
+
         return RuleFormulaBuilder.buildFormula(pattern, rule, resourceID);
     }
 }

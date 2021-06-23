@@ -1,18 +1,20 @@
 package de.fraunhofer.isst.configmanager.petrinet.policy;
 
-import de.fraunhofer.iais.eis.*;
+import de.fraunhofer.iais.eis.Action;
+import de.fraunhofer.iais.eis.BinaryOperator;
+import de.fraunhofer.iais.eis.ConstraintImpl;
+import de.fraunhofer.iais.eis.LeftOperand;
+import de.fraunhofer.iais.eis.Permission;
+import de.fraunhofer.iais.eis.Prohibition;
+import de.fraunhofer.iais.eis.Rule;
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
-import java.net.URI;
-import java.text.ParseException;
-import java.time.Duration;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeParseException;
-
 /**
- * RuleUtils Class from DataspaceConnector
+ * RuleUtils Class from DataspaceConnector.
  */
 @Slf4j
+@UtilityClass
 public class RuleUtils {
 
     /**
@@ -41,6 +43,7 @@ public class RuleUtils {
                     final var firstConstraint = (ConstraintImpl) constraints.get(0);
                     final var leftOperand = firstConstraint.getLeftOperand();
                     final var operator = firstConstraint.getOperator();
+
                     if (leftOperand == LeftOperand.COUNT) {
                         detectedPattern = PolicyPattern.N_TIMES_USAGE;
                     } else if (leftOperand == LeftOperand.ELAPSED_TIME) {
@@ -55,6 +58,7 @@ public class RuleUtils {
             } else {
                 if (postDuties != null && postDuties.get(0) != null) {
                     final var action = postDuties.get(0).getAction().get(0);
+
                     if (action == Action.NOTIFY) {
                         detectedPattern = PolicyPattern.USAGE_NOTIFICATION;
                     } else if (action == Action.LOG) {
@@ -83,12 +87,12 @@ public class RuleUtils {
         final var operator = ((ConstraintImpl) constraint).getOperator();
 
         int number;
+
         try {
             number = Integer.parseInt(value);
         } catch (NumberFormatException e) {
             if (log.isDebugEnabled()) {
-                log.debug("Failed to parse value to integer. [exception=({})]",
-                        e.getMessage(), e);
+                log.debug("Failed to parse value to integer. [exception=({})]", e.getMessage(), e);
             }
             throw e;
         }

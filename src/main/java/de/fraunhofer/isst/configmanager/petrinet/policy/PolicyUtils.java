@@ -1,16 +1,17 @@
 package de.fraunhofer.isst.configmanager.petrinet.policy;
 
-import antlr.Utils;
 import de.fraunhofer.iais.eis.Contract;
 import de.fraunhofer.iais.eis.Rule;
+import lombok.experimental.UtilityClass;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * PolicyUtils Class from DataspaceConnector
+ * PolicyUtils Class from DataspaceConnector.
  */
+@UtilityClass
 public class PolicyUtils {
 
     /**
@@ -26,7 +27,7 @@ public class PolicyUtils {
                                                            final URI element) {
         final var rules = new ArrayList<Rule>();
 
-        if(contract.getPermission() != null) {
+        if (contract.getPermission() != null) {
             for (final var permission : contract.getPermission()) {
                 final var target = permission.getTarget();
                 if (target != null && target.equals(element)) {
@@ -35,7 +36,7 @@ public class PolicyUtils {
             }
         }
 
-        if(contract.getProhibition() != null) {
+        if (contract.getProhibition() != null) {
             for (final var prohibition : contract.getProhibition()) {
                 final var target = prohibition.getTarget();
                 if (target != null && target.equals(element)) {
@@ -44,7 +45,7 @@ public class PolicyUtils {
             }
         }
 
-        if(contract.getObligation() != null) {
+        if (contract.getObligation() != null) {
             for (final var obligation : contract.getObligation()) {
                 final var target = obligation.getTarget();
                 if (target != null && target.equals(element)) {
@@ -55,5 +56,4 @@ public class PolicyUtils {
 
         return rules;
     }
-
 }
