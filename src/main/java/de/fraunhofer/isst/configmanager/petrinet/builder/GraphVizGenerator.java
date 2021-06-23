@@ -30,28 +30,34 @@ public class GraphVizGenerator {
         for (final var node : petriNet.getNodes()) {
             if (node instanceof TransitionImpl) {
                 //transitions will be drawn as boxes
-                s.append(node.getID().hashCode() + " [shape=box, label=\"" + contextInfo((TransitionImpl) node) + "\"];");
+                s.append(String.format("%d [shape=box, label=\"%s\"];", node.getID().hashCode(), contextInfo((TransitionImpl) node)));
             } else {
                 //nodes will be drawn as circles and coloured red, if there have markers
-                s.append(node.getID().hashCode() + "[label=\"" + node.getID() + "\"");
+                s.append(String.format("%d[label=\"%s\"", node.getID().hashCode(), node.getID()));
 
                 if (((PlaceImpl) node).getMarkers() > 0) {
                     s.append(", color=red");
                 }
                 s.append("];");
-                s.append(node.getID().hashCode() + "[label=\"" + node.getID() + "\"];");
+                s.append(String.format("%d[label=\"%s\"];", node.getID().hashCode(), node.getID()));
             }
         }
 
         for (final var arc : petriNet.getArcs()) {
             //a directed edge will be drawn for every arc
-            s.append(arc.getSource().getID().hashCode() + " -> " + arc.getTarget().getID().hashCode() + ";");
+            s.append(String.format("%d -> %d;", arc.getSource().getID().hashCode(), arc.getTarget().getID().hashCode()));
         }
 
         s.append("}");
         return s.toString();
     }
 
+    /**
+     * Write transitions context to string
+     *
+     * @param transition a petrinet transition
+     * @return transitions context as string
+     */
     private static String contextInfo(TransitionImpl transition){
         var contextObj = transition.getContext();
         var read = contextObj.getRead().toString();
@@ -74,22 +80,22 @@ public class GraphVizGenerator {
         for (final var node : petriNet.getNodes()) {
             if (node instanceof TransitionImpl) {
                 //transitions will be drawn as boxes
-                s.append(node.getID().hashCode() + " [shape=box, label=\"" + "name="+node.getID() + "\"];");
+                s.append(String.format("%d [shape=box, label=\"name=%s\"];", node.getID().hashCode(), node.getID()));
             } else {
                 //nodes will be drawn as circles and coloured red, if there have markers
-                s.append(node.getID().hashCode() + "[label=\"" + node.getID() + "\"");
+                s.append(String.format("%d[label=\"%s\"", node.getID().hashCode(), node.getID()));
 
                 if (((PlaceImpl) node).getMarkers() > 0) {
                     s.append(", color=red");
                 }
                 s.append("];");
-                s.append(node.getID().hashCode() + "[label=\"" + node.getID() + "\"];");
+                s.append(String.format("%d[label=\"%s\"];", node.getID().hashCode(), node.getID()));
             }
         }
 
         for (final var arc : petriNet.getArcs()) {
             //a directed edge will be drawn for every arc
-            s.append(arc.getSource().getID().hashCode() + " -> " + arc.getTarget().getID().hashCode() + ";");
+            s.append(String.format("%d -> %d;", arc.getSource().getID().hashCode(), arc.getTarget().getID().hashCode()));
         }
 
         s.append("}");
@@ -138,7 +144,7 @@ public class GraphVizGenerator {
 
         for (final var arc : graphArcs) {
             //draw the GraphVizArcs as directed edges between the PetriNet Subgraphs
-            s.append(someId + arc.getSource() + " -> " + someId + arc.getTarget() + "[ltail=cluster"+arc.getSource()+",lhead=cluster"+arc.getTarget()+"];");
+            s.append(String.format("%s%d -> %s%d[ltail=cluster%d,lhead=cluster%d];", someId, arc.getSource(), someId, arc.getTarget(), arc.getSource(), arc.getTarget()));
         }
 
         s.append("}");

@@ -24,7 +24,6 @@ public class NodeEXIST_UNTIL implements StateFormula {
     @Override
     // True if a path exists, where parameter1 is true on each node of the path,
     // and parameter2 is true on the final node of the path
-    //TODO fix evaluation: use filtered paths
     public boolean evaluate(final Node node, final List<List<Node>> paths) {
         if (!(node instanceof Place)) {
             return false;

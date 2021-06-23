@@ -22,7 +22,6 @@ public class TransitionEXIST_UNTIL implements TransitionFormula {
 
     // True if a path exists, where parameter1 is true on each transition of the path,
     // and parameter2 is true on the final transition of the path
-    //TODO fix evaluation: use filtered paths
     @Override
     public boolean evaluate(final Node node, final List<List<Node>> paths) {
         if (!(node instanceof Transition)) {
