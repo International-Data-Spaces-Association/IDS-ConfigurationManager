@@ -32,7 +32,7 @@ public class NodeFORALL_MODAL implements StateFormula {
             return false;
         }
 
-        final var followingTransitions = paths.stream().filter(path -> path.size() == 2 && path.get(0) == node).map(path -> path.get(1)).collect(Collectors.toSet());
+        final var followingTransitions = paths.stream().filter(path -> path.get(0) == node).map(path -> path.get(1)).collect(Collectors.toSet());
         final var followingPlaces = followingTransitions.stream().map(Node::getSourceArcs).flatMap(Collection::stream).map(Arc::getTarget).collect(Collectors.toSet());
 
         for (final var place : followingPlaces) {

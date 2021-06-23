@@ -1,10 +1,14 @@
 package de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition;
 
 import de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.StateFormula;
+import de.fraunhofer.isst.configmanager.petrinet.model.Arc;
 import de.fraunhofer.isst.configmanager.petrinet.model.Node;
+import de.fraunhofer.isst.configmanager.petrinet.model.Place;
+import de.fraunhofer.isst.configmanager.petrinet.model.Transition;
 import lombok.AllArgsConstructor;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeMODAL.nodeMODAL;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionAND.transitionAND;
@@ -26,7 +30,19 @@ public class TransitionEXIST_MODAL implements TransitionFormula {
 
     @Override
     public boolean evaluate(final Node node, final List<List<Node>> paths) {
-        return nodeMODAL(transitionAND(parameter1,transitionMODAL(parameter2))).evaluate(node, paths);
+        if(!(node instanceof Transition)) return false;
+        final var followingPlaces = node.getSourceArcs().stream()
+                .map(Arc::getTarget)
+                .collect(Collectors.toSet());
+        for(final var place : followingPlaces){
+            if (parameter2.evaluate(place, paths)){
+                final var followingTrans = place.getSourceArcs().stream().map(Arc::getTarget).collect(Collectors.toSet());
+                for(final var following : followingTrans){
+                    if(parameter1.evaluate(following, paths)) return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override

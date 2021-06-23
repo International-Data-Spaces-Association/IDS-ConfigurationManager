@@ -62,6 +62,7 @@ public class NodeFORALL_UNTIL implements StateFormula {
                 var lastPlace = path.get(path.size()-1) instanceof Place ? path.get(path.size()-1) : path.get(path.size()-2);
                 var newPaths = new ArrayList<>(paths);
                 newPaths.remove(path);
+                if(newPaths.stream().noneMatch(x -> x.get(0).equals(node))) return false;
                 if(!this.evaluate(lastPlace, newPaths)) return false;
             }
         }

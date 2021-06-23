@@ -1,10 +1,15 @@
 package de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state;
 
 import de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionFormula;
+import de.fraunhofer.isst.configmanager.petrinet.model.Arc;
 import de.fraunhofer.isst.configmanager.petrinet.model.Node;
+import de.fraunhofer.isst.configmanager.petrinet.model.Place;
 import lombok.AllArgsConstructor;
+import org.apache.jena.sparql.path.P_Link;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeAND.nodeAND;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeMODAL.nodeMODAL;
@@ -19,14 +24,26 @@ public class NodeEXIST_MODAL implements StateFormula {
     private StateFormula parameter1;
     private TransitionFormula parameter2;
 
-    private static NodeEXIST_MODAL nodeEXIST_MODAL(final StateFormula parameter1,
+    public static NodeEXIST_MODAL nodeEXIST_MODAL(final StateFormula parameter1,
                                                    final TransitionFormula parameter2) {
         return new NodeEXIST_MODAL(parameter1, parameter2);
     }
 
     @Override
     public boolean evaluate(final Node node, final List<List<Node>> paths) {
-        return transitionMODAL(nodeAND(parameter1, nodeMODAL(parameter2))).evaluate(node, paths);
+        if(!(node instanceof Place)) return false;
+        var followingTransitions = node.getSourceArcs().stream()
+                .map(Arc::getTarget)
+                .collect(Collectors.toSet());
+        for(var trans : followingTransitions){
+            if (parameter2.evaluate(trans, paths)){
+                var followingPlaces = trans.getSourceArcs().stream().map(Arc::getTarget).collect(Collectors.toSet());
+                for(var following : followingPlaces){
+                    if(parameter1.evaluate(following, paths)) return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override
