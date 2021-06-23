@@ -33,9 +33,9 @@ public class TransitionFORALL_MODAL implements TransitionFormula {
 
         final var followingPlaces = node.getSourceArcs().stream().map(Arc::getTarget).collect(Collectors.toSet());
 
-        followingPlaces.retainAll(paths.stream().filter(path -> paths.size() == 2).map(path -> path.get(0)).collect(Collectors.toSet()));
+        followingPlaces.retainAll(paths.stream().filter(path -> path.get(0) == node).map(path -> path.get(1)).collect(Collectors.toSet()));
 
-        final var followingTransitions = paths.stream().filter(path -> path.size() == 2).filter(path -> followingPlaces.contains(path.get(0))).map(path -> path.get(1)).collect(Collectors.toSet());
+        final var followingTransitions = paths.stream().filter(path -> followingPlaces.contains(path.get(0))).map(path -> path.get(1)).collect(Collectors.toSet());
 
         for (final var transition : followingTransitions) {
             if (!parameter1.evaluate(transition, paths)) {

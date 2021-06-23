@@ -68,6 +68,7 @@ public class TransitionFORALL_UNTIL implements TransitionFormula {
                 var lastTransition = path.get(path.size()-1) instanceof Transition ? path.get(path.size()-1) : path.get(path.size()-2);
                 var newPaths = new ArrayList<>(paths);
                 newPaths.remove(path);
+                if(newPaths.stream().noneMatch(x -> x.get(0).equals(node))) return false;
                 if(!this.evaluate(lastTransition, newPaths)) return false;
             }
         }

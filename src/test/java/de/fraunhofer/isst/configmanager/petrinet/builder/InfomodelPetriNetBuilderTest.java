@@ -58,7 +58,7 @@ class InfomodelPetriNetBuilderTest {
      */
     @Test
     @Disabled
-    void testBuildPetriNet() throws IOException {
+    void testBuildPetriNet() {
         var resources = new ArrayList<Resource>();
         for(int i = 0; i < ThreadLocalRandom.current().nextInt(MINIMUM_SUBROUTE, MAXIMUM_SUBROUTE); i++){
             resources.add(new ResourceBuilder(URI.create("http://resource" + i))._contractOffer_(List.of(
@@ -66,7 +66,7 @@ class InfomodelPetriNetBuilderTest {
                     new ContractOfferBuilder()._permission_(List.of(new PermissionBuilder()._target_(URI.create("http://resource3"))._constraint_(List.of(new ConstraintBuilder()._leftOperand_(LeftOperand.SYSTEM)._rightOperand_(new RdfResource("https://someconnector"))._operator_(BinaryOperator.SAME_AS).build())).build()))._obligation_(List.of())._prohibition_(List.of()).build(),
                     new ContractOfferBuilder()._permission_(List.of(new PermissionBuilder()._target_(URI.create("http://resource1"))._postDuty_(List.of(new DutyBuilder()._action_(List.of(Action.LOG)).build())).build()))._prohibition_(List.of())._obligation_(List.of()).build(),
                     new ContractOfferBuilder()._permission_(List.of(new PermissionBuilder()._target_(URI.create("http://resource1"))._constraint_(List.of(new ConstraintBuilder().build(), new ConstraintBuilder().build()))._postDuty_(List.of(new DutyBuilder()._action_(List.of(Action.LOG)).build())).build()))._prohibition_(List.of())._obligation_(List.of()).build()
-                    )).build());
+            )).build());
         }
         //Randomly generate an AppRoute
         var endpointlist = new ArrayList<Endpoint>();

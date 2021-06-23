@@ -23,7 +23,7 @@ public class TransitionEXIST_MODAL implements TransitionFormula {
     private TransitionFormula parameter1;
     private StateFormula parameter2;
 
-    private static TransitionEXIST_MODAL transitionEXIST_MODAL(final TransitionFormula parameter1,
+    public static TransitionEXIST_MODAL transitionEXIST_MODAL(final TransitionFormula parameter1,
                                                                final StateFormula parameter2){
         return new TransitionEXIST_MODAL(parameter1, parameter2);
     }
