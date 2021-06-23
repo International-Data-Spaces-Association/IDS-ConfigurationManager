@@ -17,13 +17,23 @@ configuration model, followed by the deployment of the connector. The configurat
 which describes the configuration of a connector. It consists of technology-independent, interconnected configuration
 aspects.
 
+***
+
+<h3 align="center" >
+  <a href="https://github.com/International-Data-Spaces-Association/IDS-Deployment-Examples/tree/main/dataspace-connector/full">
+    Quickstart: Deployment Example Setups
+  </a>
+</h3>
+
+***
+
 In the current version the development of configuration manager is linked to the open source projects
 [Dataspace Connector](https://github.com/International-Data-Spaces-Association/DataspaceConnector) and
 [Configuration Manager UI](https://github.com/International-Data-Spaces-Association/IDS-ConfigurationManager-UI).
 
-This repository has a develop branch in addition to the master branch. The idea is to always merge other branches into
-the develop branch (as SNAPSHOT version) and to push the changes from there into the master only for releases. This way,
-the develop branch is always up to date, with the risk of small issues, while the master only contains official
+This repository has a develop branch in addition to the main branch. The idea is to always merge other branches into
+the develop branch (as SNAPSHOT version) and to push the changes from there into the main only for releases. This way,
+the develop branch is always up to date, with the risk of small issues, while the main only contains official
 releases.
 
 ## Table of Contents
@@ -99,9 +109,8 @@ This is a list of currently implemented features, which is continuously updated.
 
 | Library/Component | Version | License | Owner | Contact |
 | ------ | ------ | ------ | ------ | ------ |
-| IDS Information Model Library | 4.0.6 | Apache 2.0 | Fraunhofer IAIS | [Sebastian Bader](mailto:sebastian.bader@iais.fraunhofer.de) |
-| IDS Information Model Serializer Library | 4.0.6 | Apache 2.0 | Fraunhofer IAIS | [Sebastian Bader](mailto:sebastian.bader@iais.fraunhofer.de) |
-| [Dataspace Connector](https://github.com/International-Data-Spaces-Association/DataspaceConnector) | Recommended: 4.1.0 - 4.3.1 | Apache 2.0 | Fraunhofer ISST | [Julia Pampus](mailto:julia.pampus@isst.fraunhofer.de) |
+| IDS Information Model Artifacts | 4.0.10 | Apache 2.0 | Fraunhofer IAIS | [Sebastian Bader](mailto:sebastian.bader@iais.fraunhofer.de) |
+| [Dataspace Connector](https://github.com/International-Data-Spaces-Association/DataspaceConnector) | 4.3.1 | Apache 2.0 | Fraunhofer ISST | [Julia Pampus](mailto:julia.pampus@isst.fraunhofer.de) |
 | [Configuration Manager UI](https://github.com/International-Data-Spaces-Association/IDS-ConfigurationManager-UI) | latest | Apache 2.0 | Fraunhofer FKIE | [Bastian Weltjen](mailto:bastian.weltjen@fkie.fraunhofer.de) |
 
 ---

@@ -12,7 +12,24 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [7.0.0] - UNRELEASED
+## [8.0.0] - UNRELEASED
+
+### Major Change: 
+Due to the new version of the Dataspace Connector (v5), the responsibilities between Dataspace Connector, ConfigManager-Backend and ConfigManager-GUI are reorganized, for this the architecture has been adapted.
+
+### Dependency Maintenance
+- Upgrade: IDS Information Model Artifacts 4.0.6 -> 4.0.10
+- Upgrade: org.springframework.security:spring-security-test 5.5.0 -> 5.5.1
+- Upgrade: org.postgresql:postgresql 42.2.20 -> 42.2.22
+- Upgrade: org.springframework.boot:spring-boot-starter-parent 2.5.0 -> 2.5.1
+
+## [7.1.0] - UNRELEASED
+
+### Added
+- Minor Change: New API POST /api/ui/route/error caches error messages of the routes until they are fetched by the corresponding GET API (takes every String as RequestBody)
+- Minor Change: New API GET /api/ui/route/error all intermediate errors of the routes can be queried, once queried these are deleted in the backend (only cached until GET API called) 
+
+## [7.0.0] - 2021-05-26
 ### Major Changes
 - Remove 20 unused APIs (= 1.150 lines of code) (unused by ConfigManager-UI project)
 - For the APIs of the enums, in addition to the technical name, such as DE for the language-dropdown, the written labels are now also supplied, e.g. German <-> DE. The structure of the API returns has changed accordingly
@@ -45,6 +62,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Patch Change: A percent sign within URLs in the UI no longer results in an error in the CM-Backend.
 - Patch Change: Refactored Swagger-UI API Documentation, added all actually possible return-status-codes for API calls
 - Patch Change: IDS Resources Duration Policy in (h) in edit mode is poluted with xml-coding (2^^xsd:duration instead of 2), fixed by upgrading infomodel dependencies
+- Patch Change: ResourceService is now use the Serializer-Artifact for returning all ressources
 
 ### Dependency Maintenance
 - Dependabot: Dependabot will now automatically suggest pull requests for updates to dependencies.
