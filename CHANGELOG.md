@@ -17,6 +17,9 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Major Change: 
 Due to the new version of the Dataspace Connector (v5), the responsibilities between Dataspace Connector, ConfigManager-Backend and ConfigManager-GUI are reorganized, for this the architecture has been adapted.
 
+### Added
+- Minor Change: New Feature - Usermanagement via Keycloak. Disabled by default, can be enabled and configured via env-properties or application.properties directly.
+
 ### Dependency Maintenance
 - Upgrade: IDS Information Model Artifacts 4.0.6 -> 4.0.10
 - Upgrade: org.springframework.security:spring-security-test 5.5.0 -> 5.5.1
