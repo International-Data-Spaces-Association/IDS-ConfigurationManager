@@ -24,10 +24,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  * configuration.
  */
 @Configuration
-@ConditionalOnProperty(
-        value="keycloak.enabled",
-        havingValue = "false")
 @NoArgsConstructor
+@ConditionalOnProperty(value = "keycloak.enabled", havingValue = "false")
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     /**
      * @param http the HttpSecurity object
