@@ -3,23 +3,28 @@ package de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state;
 import de.fraunhofer.isst.configmanager.petrinet.model.Node;
 import de.fraunhofer.isst.configmanager.petrinet.model.Place;
 import de.fraunhofer.isst.configmanager.petrinet.simulator.PetriNetSimulator;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * evaluates to true, if on any possible path every place fulfills parameter1, until a place fulfills parameter2
+ * Evaluates to true, if on any possible path every place fulfills parameter1, until a place fulfills parameter2.
  */
-@AllArgsConstructor
+
 @Slf4j
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class NodeFORALL_UNTIL implements StateFormula {
-    private StateFormula parameter1;
-    private StateFormula parameter2;
+
+    StateFormula parameter1;
+    StateFormula parameter2;
 
     public static NodeFORALL_UNTIL nodeFORALL_UNTIL(final StateFormula parameter1,
-                                                    final StateFormula parameter2){
+                                                    final StateFormula parameter2) {
         return new NodeFORALL_UNTIL(parameter1, parameter2);
     }
 
@@ -32,38 +37,59 @@ public class NodeFORALL_UNTIL implements StateFormula {
         }
 
         check: for (final var path: paths) {
-            if(!path.get(0).equals(node)) continue;
+            if (!path.get(0).equals(node)) {
+                continue;
+            }
+
             int offset;
-            if(PetriNetSimulator.circleFree(path)){
+
+            if (PetriNetSimulator.circleFree(path)) {
                 if (path.size() % 2 == 1) {
                     offset = 1;
-                }else {
+                } else {
                     offset = 2;
                 }
+
                 for (var i = 2; i < path.size() - offset; i += 2) {
-                    var res1 = parameter1.evaluate(path.get(i), paths);
-                    var res2 = parameter2.evaluate(path.get(i), paths);
-                    if(res2) continue check;
-                    if(!res1) return false;
+                    final var res1 = parameter1.evaluate(path.get(i), paths);
+                    final var res2 = parameter2.evaluate(path.get(i), paths);
+                    if (res2) {
+                        continue check;
+                    }
+                    if (!res1) {
+                        return false;
+                    }
                 }
+
                 if (!parameter2.evaluate(path.get(path.size() - offset), paths)) {
                     return false;
                 }
-            }else{
+            } else {
                 //TODO path contains circle
                 //if something on the circle fulfills param2 accept, if something does not fulfill param1 reject
-                for (var i = 2; i<path.size() - 1; i+=2){
-                    var res1 = parameter1.evaluate(path.get(i), paths);
-                    var res2 = parameter2.evaluate(path.get(i), paths);
-                    if(res2) continue check;
-                    if(!res1) return false;
+                for (var i = 2; i < path.size() - 1; i += 2) {
+                    final var res1 = parameter1.evaluate(path.get(i), paths);
+                    final var res2 = parameter2.evaluate(path.get(i), paths);
+                    if (res2) {
+                        continue check;
+                    }
+                    if (!res1) {
+                        return false;
+                    }
                 }
+
                 //if everything on circle fulfills param1 but not param2: complicated case
-                var lastPlace = path.get(path.size()-1) instanceof Place ? path.get(path.size()-1) : path.get(path.size()-2);
-                var newPaths = new ArrayList<>(paths);
+                final var lastPlace = path.get(path.size() - 1) instanceof Place ? path.get(path.size() - 1) : path.get(path.size() - 2);
+                final var newPaths = new ArrayList<>(paths);
+
                 newPaths.remove(path);
-                if(newPaths.stream().noneMatch(x -> x.get(0).equals(node))) return false;
-                if(!this.evaluate(lastPlace, newPaths)) return false;
+
+                if (newPaths.stream().noneMatch(x -> x.get(0).equals(node))) {
+                    return false;
+                }
+                if (!this.evaluate(lastPlace, newPaths)) {
+                    return false;
+                }
             }
         }
         return true;

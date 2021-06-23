@@ -4,25 +4,23 @@ import de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.T
 import de.fraunhofer.isst.configmanager.petrinet.model.Arc;
 import de.fraunhofer.isst.configmanager.petrinet.model.Node;
 import de.fraunhofer.isst.configmanager.petrinet.model.Place;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import org.apache.jena.sparql.path.P_Link;
+import lombok.experimental.FieldDefaults;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeAND.nodeAND;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeMODAL.nodeMODAL;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionMODAL.transitionMODAL;
-
 /**
- * evaluates to true, if there is a successor place for which parameter1 holds, while parameter2 holds for the
+ * Evaluates to true, if there is a successor place for which parameter1 holds, while parameter2 holds for the
  * transition in between.
  */
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class NodeEXIST_MODAL implements StateFormula {
-    private StateFormula parameter1;
-    private TransitionFormula parameter2;
+
+    StateFormula parameter1;
+    TransitionFormula parameter2;
 
     public static NodeEXIST_MODAL nodeEXIST_MODAL(final StateFormula parameter1,
                                                    final TransitionFormula parameter2) {
@@ -31,15 +29,21 @@ public class NodeEXIST_MODAL implements StateFormula {
 
     @Override
     public boolean evaluate(final Node node, final List<List<Node>> paths) {
-        if(!(node instanceof Place)) return false;
-        var followingTransitions = node.getSourceArcs().stream()
+        if (!(node instanceof Place)) {
+            return false;
+        }
+
+        final var followingTransitions = node.getSourceArcs().stream()
                 .map(Arc::getTarget)
                 .collect(Collectors.toSet());
-        for(var trans : followingTransitions){
-            if (parameter2.evaluate(trans, paths)){
-                var followingPlaces = trans.getSourceArcs().stream().map(Arc::getTarget).collect(Collectors.toSet());
-                for(var following : followingPlaces){
-                    if(parameter1.evaluate(following, paths)) return true;
+
+        for (final var trans : followingTransitions) {
+            if (parameter2.evaluate(trans, paths)) {
+                final var followingPlaces = trans.getSourceArcs().stream().map(Arc::getTarget).collect(Collectors.toSet());
+                for (final var following : followingPlaces) {
+                    if (parameter1.evaluate(following, paths)) {
+                        return true;
+                    }
                 }
             }
         }

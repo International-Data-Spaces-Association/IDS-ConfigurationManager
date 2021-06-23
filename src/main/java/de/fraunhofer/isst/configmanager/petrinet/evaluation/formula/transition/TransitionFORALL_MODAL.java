@@ -4,22 +4,26 @@ import de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.StateF
 import de.fraunhofer.isst.configmanager.petrinet.model.Arc;
 import de.fraunhofer.isst.configmanager.petrinet.model.Node;
 import de.fraunhofer.isst.configmanager.petrinet.model.Transition;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * evaluates to true, if parameter1 evaluates to true for every following transition and parameter2 evaluates to true
+ * Evaluates to true, if parameter1 evaluates to true for every following transition and parameter2 evaluates to true
  * for every Place in between.
  */
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class TransitionFORALL_MODAL implements TransitionFormula {
-    private TransitionFormula parameter1;
-    private StateFormula parameter2;
+
+    TransitionFormula parameter1;
+    StateFormula parameter2;
 
     public static TransitionFORALL_MODAL transitionFORALL_MODAL(final TransitionFormula parameter1,
-                                                                final StateFormula parameter2){
+                                                                final StateFormula parameter2) {
         return new TransitionFORALL_MODAL(parameter1, parameter2);
     }
 
