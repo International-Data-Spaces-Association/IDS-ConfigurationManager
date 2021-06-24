@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Methods to check parallel evaluation of a {@link PetriNet}
+ * Methods to check parallel evaluation of a {@link PetriNet}.
  */
 @Slf4j
 @UtilityClass
@@ -35,10 +35,10 @@ public class ParallelEvaluator {
      * @param parallelSets sets of parallel transitions (previously calculated through stepgraph of unfolded petrinet)
      * @return true if at least n transitions fulfilling condition are parallely executed at some point
      */
-    public static boolean nParallelTransitionsWithCondition(ArcSubExpression condition, int n, List<List<Transition>> parallelSets){
+    public static boolean nParallelTransitionsWithCondition(final ArcSubExpression condition, final int n, final List<List<Transition>> parallelSets) {
         final var setsWithSizeAtLeastN = parallelSets.stream().filter(transitions -> transitions.size() >= n).collect(Collectors.toSet());
 
-        for (final var set: setsWithSizeAtLeastN){
+        for (final var set: setsWithSizeAtLeastN) {
             if (set.stream().filter(condition::evaluate).count() >= n) {
                 return true;
             }

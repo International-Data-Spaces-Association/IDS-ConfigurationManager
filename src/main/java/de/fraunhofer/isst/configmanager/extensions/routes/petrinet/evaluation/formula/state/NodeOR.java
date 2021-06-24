@@ -30,7 +30,7 @@ public class NodeOR implements StateFormula {
     StateFormula parameter2;
 
     public static NodeOR nodeOR(final StateFormula parameter1,
-                                final StateFormula parameter2){
+                                final StateFormula parameter2) {
         return new NodeOR(parameter1, parameter2);
     }
 

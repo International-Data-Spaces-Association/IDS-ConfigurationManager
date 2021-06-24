@@ -20,7 +20,7 @@ import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
 /**
- * Custom Expression to be evaluated on a {@link Place}
+ * Custom Expression to be evaluated on a {@link Place}.
  */
 @Getter
 @AllArgsConstructor
@@ -28,17 +28,17 @@ import lombok.experimental.FieldDefaults;
 public class NodeExpression {
 
     /**
-     * Subexpression (function from {@link Place} to boolean
+     * Subexpression (function from {@link Place} to boolean.
      */
     NodeSubExpression subExpression;
 
     /**
-     * Information message to return when subExpression is not fulfilled by a transition
+     * Information message to return when subExpression is not fulfilled by a transition.
      */
     String message;
 
     public static NodeExpression nodeExpression(final NodeSubExpression nodeSubExpression,
-                                                final String message){
+                                                final String message) {
         return new NodeExpression(nodeSubExpression, message);
     }
 }

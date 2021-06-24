@@ -49,7 +49,7 @@ public class PetriNetImpl implements PetriNet, HasId {
     @Override
     @SneakyThrows
     public PetriNet deepCopy() {
-        Map<URI, Node> nodeClones = new ConcurrentHashMap<>();
+        final Map<URI, Node> nodeClones = new ConcurrentHashMap<>();
         for (final var node : nodes) {
             nodeClones.put(node.getID(), node.deepCopy());
         }
@@ -100,11 +100,11 @@ public class PetriNetImpl implements PetriNet, HasId {
         return Objects.equals(id, petriNet.id) && arcsEqual(petriNet.arcs) && nodesEqual(petriNet.nodes);
     }
 
-    private boolean nodesEqual(Set<Node> otherNodes){
+    private boolean nodesEqual(final Set<Node> otherNodes) {
         return nodes.stream().map(s -> otherNodes.stream().filter(n -> n.getID().equals(s.getID())).anyMatch(n -> n.equals(s))).reduce(true, (a, b) -> a && b);
     }
 
-    private boolean arcsEqual(Set<Arc> otherArcs){
+    private boolean arcsEqual(final Set<Arc> otherArcs) {
         return arcs.stream().map(s -> otherArcs.stream().anyMatch(n -> n.equals(s))).reduce(true, (a, b) -> a && b);
     }
 }

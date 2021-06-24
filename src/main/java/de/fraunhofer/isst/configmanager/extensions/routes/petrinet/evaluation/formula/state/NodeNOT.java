@@ -25,7 +25,7 @@ import java.util.List;
 public class NodeNOT implements StateFormula {
     private StateFormula parameter;
 
-    public static NodeNOT nodeNOT(final StateFormula parameter){
+    public static NodeNOT nodeNOT(final StateFormula parameter) {
         return new NodeNOT(parameter);
     }
 

@@ -333,7 +333,7 @@ public class RoutesController implements RoutesApi {
     }
 
     @Override
-    public ResponseEntity<String> setRouteError(String routeError) {
+    public ResponseEntity<String> setRouteError(final String routeError) {
         routeErrors.add(routeError);
         return ResponseEntity.ok("Saved Route-Error in ConfigManager-backend.");
     }

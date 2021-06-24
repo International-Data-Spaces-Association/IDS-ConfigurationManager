@@ -17,7 +17,7 @@ import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.fo
 import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Transition;
 
 /**
- * Formulas which are evaluated on a {@link Transition} of a PetriNet
+ * Formulas which are evaluated on a {@link Transition} of a PetriNet.
  */
 public interface TransitionFormula extends Formula {
 }

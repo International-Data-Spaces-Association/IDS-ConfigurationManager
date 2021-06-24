@@ -17,7 +17,7 @@ import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.fo
 import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Place;
 
 /**
- * Formulas which are evaluated on a {@link Place} of a PetriNet
+ * Formulas which are evaluated on a {@link Place} of a PetriNet.
  */
 public interface StateFormula extends Formula {
 }

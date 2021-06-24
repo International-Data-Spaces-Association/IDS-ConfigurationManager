@@ -26,7 +26,7 @@ import java.util.List;
 public class TransitionAF implements TransitionFormula {
     private ArcExpression parameter;
 
-    public static TransitionAF transitionAF(final ArcExpression parameter){
+    public static TransitionAF transitionAF(final ArcExpression parameter) {
         return new TransitionAF(parameter);
     }
 

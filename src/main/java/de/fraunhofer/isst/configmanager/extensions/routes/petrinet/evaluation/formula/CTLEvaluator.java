@@ -66,7 +66,7 @@ public class CTLEvaluator {
 
         if (ctlExpression instanceof StateFormula && node instanceof Place) {
             return evaluateNode((StateFormula) ctlExpression, (Place) node, paths);
-        } else if (ctlExpression instanceof TransitionFormula && node instanceof Transition){
+        } else if (ctlExpression instanceof TransitionFormula && node instanceof Transition) {
             return evaluateTransition((TransitionFormula) ctlExpression, (Transition) node, paths);
         } else {
             //cannot be evaluated

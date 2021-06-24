@@ -22,13 +22,13 @@ import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evalua
 import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.state.NodePOS.nodePOS;
 
 /**
- * evaluates to true, if parameter evaluates to true for all reachable places
+ * Evaluates to true, if parameter evaluates to true for all reachable places.
  */
 @AllArgsConstructor
 public class NodeINV implements StateFormula {
     private StateFormula parameter;
 
-    public static NodeINV nodeINV(final StateFormula parameter){
+    public static NodeINV nodeINV(final StateFormula parameter) {
         return new NodeINV(parameter);
     }
 

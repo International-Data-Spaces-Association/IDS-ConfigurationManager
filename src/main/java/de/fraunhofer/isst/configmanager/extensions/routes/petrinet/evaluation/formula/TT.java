@@ -16,12 +16,14 @@ package de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.f
 import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.state.StateFormula;
 import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.transition.TransitionFormula;
 import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Node;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 /**
  * TT operator evaluates to True every time.
  */
+@NoArgsConstructor
 public class TT implements StateFormula, TransitionFormula {
     public static TT TT() {
         return new TT();

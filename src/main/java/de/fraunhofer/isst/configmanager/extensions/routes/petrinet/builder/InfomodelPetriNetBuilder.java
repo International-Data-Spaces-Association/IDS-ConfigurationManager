@@ -98,7 +98,9 @@ public class InfomodelPetriNetBuilder {
                     reads = appRoute.getAppRouteOutput().stream().map(Resource::getId).map(URI::toString).collect(Collectors.toCollection(HashSet::new));
                 }
                 if (trans.getContext() == null) {
-                    trans.setContextObject(new ContextObject(endpoint.getEndpointInformation().stream().map(TypedLiteral::getValue).collect(Collectors.toSet()), reads, Set.of(), Set.of(), ContextObject.TransType.APP));
+                    trans.setContextObject(new ContextObject(endpoint.getEndpointInformation()
+                            .stream().map(TypedLiteral::getValue)
+                            .collect(Collectors.toSet()), reads, Set.of(), Set.of(), ContextObject.TransType.APP));
                 } else {
                     trans.getContext().getRead().addAll(reads);
                 }
@@ -150,9 +152,13 @@ public class InfomodelPetriNetBuilder {
             final var trans = (TransitionImpl) getTransition(transitions, endpoint);
             Set<String> writes = new HashSet<>();
             if (subRoute.getAppRouteOutput() != null && !subRoute.getAppRouteOutput().isEmpty()) {
-                writes = subRoute.getAppRouteOutput().stream().map(Resource::getId).map(URI::toString).collect(Collectors.toCollection(HashSet::new));
+                writes = subRoute.getAppRouteOutput()
+                        .stream().map(Resource::getId)
+                        .map(URI::toString).collect(Collectors.toCollection(HashSet::new));
             }
-            final var context = endpoint.getEndpointInformation() != null ? endpoint.getEndpointInformation().stream().map(TypedLiteral::getValue).collect(Collectors.toSet()) : new HashSet<String>();
+            final var context = endpoint.getEndpointInformation() != null ? endpoint.getEndpointInformation()
+                    .stream().map(TypedLiteral::getValue)
+                    .collect(Collectors.toSet()) : new HashSet<String>();
             if (trans.getContext() == null) {
                 trans.setContextObject(new ContextObject(context, new HashSet<>(), writes, new HashSet<>(), ContextObject.TransType.APP));
             } else {
@@ -265,15 +271,21 @@ public class InfomodelPetriNetBuilder {
      * @return petrinet with initial control transition
      */
     public static PetriNet addControlTransitions(final PetriNet petriNet) {
-        final var initials = petriNet.getNodes().stream().filter(node -> node instanceof Place && ((Place) node).getMarkers() >= 1).collect(Collectors.toSet());
+        final var initials = petriNet.getNodes()
+                .stream().filter(node -> node instanceof Place && ((Place) node).getMarkers() >= 1).collect(Collectors.toSet());
+
         final var controlTrans = new TransitionImpl(URI.create("trans://controlStart"));
         final var controlPlace = new PlaceImpl(URI.create("place://controlPlace"));
+
         controlPlace.setMarkers(1);
         controlTrans.setContextObject(new ContextObject(Set.of(), Set.of(), Set.of(), Set.of(), ContextObject.TransType.CONTROL));
+
         final var controlArc = new ArcImpl(controlPlace, controlTrans);
+
         petriNet.getArcs().add(controlArc);
         petriNet.getNodes().add(controlPlace);
         petriNet.getNodes().add(controlTrans);
+
         for (final var startPlace : initials) {
             final var arc = new ArcImpl(controlTrans, startPlace);
             ((Place) startPlace).setMarkers(0);

@@ -20,7 +20,7 @@ import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
 /**
- * Custom Expression to be evaluated on a {@link Transition}
+ * Custom Expression to be evaluated on a {@link Transition}.
  */
 @Getter
 @AllArgsConstructor
@@ -28,12 +28,12 @@ import lombok.experimental.FieldDefaults;
 public class ArcExpression {
 
     /**
-     * Subexpression (function from {@link Transition} to boolean
+     * Subexpression (function from {@link Transition} to boolean.
      */
     ArcSubExpression subExpression;
 
     /**
-     * Information message to return when subExpression is not fulfilled by a transition
+     * Information message to return when subExpression is not fulfilled by a transition.
      */
     String message;
 

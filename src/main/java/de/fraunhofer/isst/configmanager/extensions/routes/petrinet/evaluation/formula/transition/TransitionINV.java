@@ -28,7 +28,7 @@ import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evalua
 public class TransitionINV implements TransitionFormula {
     private TransitionFormula parameter;
 
-    public static TransitionINV transitionINV(final TransitionFormula parameter){
+    public static TransitionINV transitionINV(final TransitionFormula parameter) {
         return new TransitionINV(parameter);
     }
 

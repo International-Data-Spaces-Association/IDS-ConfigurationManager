@@ -58,8 +58,8 @@ public class NodeEXIST_UNTIL implements StateFormula {
             }
 
             for (var i = 2; i < path.size() - offset; i += 2) {
-                var res1 = parameter1.evaluate(path.get(i), paths);
-                var res2 = parameter2.evaluate(path.get(i), paths);
+                final var res1 = parameter1.evaluate(path.get(i), paths);
+                final var res2 = parameter2.evaluate(path.get(i), paths);
 
                 if (res2) {
                     return true;

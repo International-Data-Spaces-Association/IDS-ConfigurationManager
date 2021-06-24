@@ -22,7 +22,7 @@ import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evalua
 import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.transition.TransitionMODAL.transitionMODAL;
 
 /**
- * evaluates to true, if there is a following place fulfilling the given formula
+ * Evaluates to true, if there is a following place fulfilling the given formula.
  */
 @AllArgsConstructor
 public class NodeEXIST_NEXT implements StateFormula {

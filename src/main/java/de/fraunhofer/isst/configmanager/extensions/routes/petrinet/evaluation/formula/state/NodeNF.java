@@ -20,13 +20,13 @@ import lombok.AllArgsConstructor;
 import java.util.List;
 
 /**
- * evaluates to true, if given {@link NodeExpression} evaluates to true
+ * Evaluates to true, if given {@link NodeExpression} evaluates to true.
  */
 @AllArgsConstructor
 public class NodeNF implements StateFormula {
     private NodeExpression parameter;
 
-    public static NodeNF nodeNF(final NodeExpression parameter){
+    public static NodeNF nodeNF(final NodeExpression parameter) {
         return new NodeNF(parameter);
     }
 

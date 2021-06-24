@@ -53,5 +53,6 @@ public interface PetriNet {
      * @param other another object
      * @return true if this equals the given object
      */
+    @Override
     boolean equals(Object other);
 }
