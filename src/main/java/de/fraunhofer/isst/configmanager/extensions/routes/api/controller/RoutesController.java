@@ -490,17 +490,4 @@ public class RoutesController implements RoutesApi {
 //        return ResponseEntity.ok(jsonObject.toJSONString());
         return null;
     }
-
-    @Override
-    public ResponseEntity<String> setRouteError(String routeError) {
-        routeErrors.add(routeError);
-        return ResponseEntity.ok("Saved Route-Error in ConfigManager-backend.");
-    }
-
-    @Override
-    public ResponseEntity<String> getRouteErrors() {
-        final var allErrors = routeErrors.stream().collect(Collectors.joining(",", "{", "}"));
-        routeErrors.clear();
-        return ResponseEntity.ok(allErrors);
-    }
 }

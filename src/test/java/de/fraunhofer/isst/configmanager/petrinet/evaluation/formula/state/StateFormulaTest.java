@@ -1,40 +1,40 @@
 package de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state;
 
-import de.fraunhofer.isst.configmanager.petrinet.model.Arc;
-import de.fraunhofer.isst.configmanager.petrinet.model.ArcImpl;
-import de.fraunhofer.isst.configmanager.petrinet.model.Node;
-import de.fraunhofer.isst.configmanager.petrinet.model.PetriNet;
-import de.fraunhofer.isst.configmanager.petrinet.model.PetriNetImpl;
-import de.fraunhofer.isst.configmanager.petrinet.model.PlaceImpl;
-import de.fraunhofer.isst.configmanager.petrinet.model.TransitionImpl;
-import de.fraunhofer.isst.configmanager.petrinet.simulator.PetriNetSimulator;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Arc;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.ArcImpl;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Node;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.PetriNet;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.PetriNetImpl;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.PlaceImpl;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.TransitionImpl;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.simulator.PetriNetSimulator;
 import org.junit.jupiter.api.Test;
 
 import java.net.URI;
 import java.util.List;
 import java.util.Set;
 
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.FF.FF;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.TT.TT;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeAND.nodeAND;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeEXIST_MODAL.nodeEXIST_MODAL;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeEXIST_NEXT.nodeEXIST_NEXT;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeEXIST_UNTIL.nodeEXIST_UNTIL;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeExpression.nodeExpression;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeFORALL_MODAL.nodeFORALL_MODAL;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeFORALL_NEXT.nodeFORALL_NEXT;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeFORALL_UNTIL.nodeFORALL_UNTIL;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeMODAL.nodeMODAL;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeNF.nodeNF;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeNOT.nodeNOT;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeOR.nodeOR;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.ArcExpression.arcExpression;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionAF.transitionAF;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.FF.FF;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.TT.TT;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.state.NodeAND.nodeAND;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.state.NodeEXIST_MODAL.nodeEXIST_MODAL;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.state.NodeEXIST_NEXT.nodeEXIST_NEXT;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.state.NodeEXIST_UNTIL.nodeEXIST_UNTIL;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.state.NodeExpression.nodeExpression;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.state.NodeFORALL_MODAL.nodeFORALL_MODAL;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.state.NodeFORALL_NEXT.nodeFORALL_NEXT;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.state.NodeFORALL_UNTIL.nodeFORALL_UNTIL;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.state.NodeMODAL.nodeMODAL;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.state.NodeNF.nodeNF;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.state.NodeNOT.nodeNOT;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.state.NodeOR.nodeOR;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.transition.ArcExpression.arcExpression;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.transition.TransitionAF.transitionAF;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StateFormulaTest {
-    
+
     @Test
     void testBasicFormulas() {
         //test AND

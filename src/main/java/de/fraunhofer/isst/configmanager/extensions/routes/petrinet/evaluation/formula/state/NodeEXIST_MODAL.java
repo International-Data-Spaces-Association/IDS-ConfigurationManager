@@ -32,7 +32,7 @@ public class NodeEXIST_MODAL implements StateFormula {
     private StateFormula parameter1;
     private TransitionFormula parameter2;
 
-    private static NodeEXIST_MODAL nodeEXIST_MODAL(final StateFormula parameter1,
+    public static NodeEXIST_MODAL nodeEXIST_MODAL(final StateFormula parameter1,
                                                    final TransitionFormula parameter2) {
         return new NodeEXIST_MODAL(parameter1, parameter2);
     }

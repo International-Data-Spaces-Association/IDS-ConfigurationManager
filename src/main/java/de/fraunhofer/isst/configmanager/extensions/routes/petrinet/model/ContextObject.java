@@ -16,29 +16,31 @@ package de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Context of a transition (used for WFDU nets).
  */
 @Getter
+@Setter
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ContextObject {
 
-    List<String> context;
-    String read;
-    String write;
-    String erase;
+    Set<String> context;
+    Set<String> read;
+    Set<String> write;
+    Set<String> erase;
     TransType type;
 
-   public ContextObject deepCopy() {
-       return new ContextObject(context, read, write, erase, type);
-   }
+    public ContextObject deepCopy() {
+        return new ContextObject(context, read, write, erase, type);
+    }
 
     @Override
     public boolean equals(final Object o) {

@@ -1,21 +1,21 @@
 package de.fraunhofer.isst.configmanager.petrinet.policy;
 
 import de.fraunhofer.iais.eis.Rule;
-import de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.Formula;
-import de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionFormula;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.Formula;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.transition.TransitionFormula;
 import lombok.experimental.UtilityClass;
 
 import java.net.URI;
 
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.TT.TT;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeMODAL.nodeMODAL;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeNOT.nodeNOT;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.ArcExpression.arcExpression;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionAF.transitionAF;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionAND.transitionAND;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionEV.transitionEV;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionNOT.transitionNOT;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionPOS.transitionPOS;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.TT.TT;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.state.NodeMODAL.nodeMODAL;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.state.NodeNOT.nodeNOT;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.transition.ArcExpression.arcExpression;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.transition.TransitionAF.transitionAF;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.transition.TransitionAND.transitionAND;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.transition.TransitionEV.transitionEV;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.transition.TransitionNOT.transitionNOT;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.transition.TransitionPOS.transitionPOS;
 
 /**
  * For a given PolicyPattern, Rule and Resource ID (URI), create a Formula.

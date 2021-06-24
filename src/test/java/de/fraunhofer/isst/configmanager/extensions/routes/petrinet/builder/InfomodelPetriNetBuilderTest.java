@@ -1,4 +1,4 @@
-package de.fraunhofer.isst.configmanager.petrinet.builder;
+package de.fraunhofer.isst.configmanager.extensions.routes.petrinet.builder;
 
 import de.fraunhofer.iais.eis.Action;
 import de.fraunhofer.iais.eis.AppRouteBuilder;
@@ -18,18 +18,18 @@ import de.fraunhofer.iais.eis.RouteStepBuilder;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.iais.eis.util.RdfResource;
 import de.fraunhofer.iais.eis.util.TypedLiteral;
-import de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.CTLEvaluator;
-import de.fraunhofer.isst.configmanager.petrinet.model.Arc;
-import de.fraunhofer.isst.configmanager.petrinet.model.ArcImpl;
-import de.fraunhofer.isst.configmanager.petrinet.model.ContextObject;
-import de.fraunhofer.isst.configmanager.petrinet.model.Node;
-import de.fraunhofer.isst.configmanager.petrinet.model.PetriNet;
-import de.fraunhofer.isst.configmanager.petrinet.model.PetriNetImpl;
-import de.fraunhofer.isst.configmanager.petrinet.model.Place;
-import de.fraunhofer.isst.configmanager.petrinet.model.PlaceImpl;
-import de.fraunhofer.isst.configmanager.petrinet.model.TransitionImpl;
-import de.fraunhofer.isst.configmanager.petrinet.simulator.ParallelEvaluator;
-import de.fraunhofer.isst.configmanager.petrinet.simulator.PetriNetSimulator;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.CTLEvaluator;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Arc;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.ArcImpl;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.ContextObject;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Node;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.PetriNet;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.PetriNetImpl;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Place;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.PlaceImpl;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.TransitionImpl;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.simulator.ParallelEvaluator;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.simulator.PetriNetSimulator;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -45,23 +45,23 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.FF.FF;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.TT.TT;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeAND.nodeAND;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeEXIST_UNTIL.nodeEXIST_UNTIL;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeExpression.nodeExpression;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeFORALL_NEXT.nodeFORALL_NEXT;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeMODAL.nodeMODAL;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeNF.nodeNF;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeOR.nodeOR;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.ArcExpression.arcExpression;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionAF.transitionAF;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionAND.transitionAND;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionEV.transitionEV;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionMODAL.transitionMODAL;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionNOT.transitionNOT;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionOR.transitionOR;
-import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionPOS.transitionPOS;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.FF.FF;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.TT.TT;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.state.NodeAND.nodeAND;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.state.NodeEXIST_UNTIL.nodeEXIST_UNTIL;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.state.NodeExpression.nodeExpression;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.state.NodeFORALL_NEXT.nodeFORALL_NEXT;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.state.NodeMODAL.nodeMODAL;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.state.NodeNF.nodeNF;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.state.NodeOR.nodeOR;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.transition.ArcExpression.arcExpression;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.transition.TransitionAF.transitionAF;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.transition.TransitionAND.transitionAND;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.transition.TransitionEV.transitionEV;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.transition.TransitionMODAL.transitionMODAL;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.transition.TransitionNOT.transitionNOT;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.transition.TransitionOR.transitionOR;
+import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.transition.TransitionPOS.transitionPOS;
 
 /**
  * Test building a PetriNet from a randomly generated AppRoute
@@ -70,10 +70,10 @@ import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.trans
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 class InfomodelPetriNetBuilderTest {
     static int MINIMUM_SUBROUTE = 5;
-    static int MAXIMUM_SUBROUTE = 2*MINIMUM_SUBROUTE;
+    static int MAXIMUM_SUBROUTE = 2 * MINIMUM_SUBROUTE;
 
     static int MINIMUM_ENDPOINT = MAXIMUM_SUBROUTE;
-    static int MAXIMUM_ENDPOINT = 2*MAXIMUM_SUBROUTE;
+    static int MAXIMUM_ENDPOINT = 2 * MAXIMUM_SUBROUTE;
 
     static int MINIMUM_STARTEND = 1;
     static int MAXIMUM_STARTEND = 5;
@@ -168,7 +168,7 @@ class InfomodelPetriNetBuilderTest {
         final var resource1 = new ResourceBuilder(URI.create("http://res1"))._contractOffer_(List.of(
                 //Resource 1 reading has to be logged
                 new ContractOfferBuilder()._permission_(List.of(new PermissionBuilder()._target_(URI.create("http://res1"))._postDuty_(List.of(new DutyBuilder()._action_(List.of(Action.LOG)).build())).build()))._prohibition_(List.of())._obligation_(List.of()).build()
-                )).build();
+        )).build();
         final var resource2 = new ResourceBuilder(URI.create("http://res2"))._contractOffer_(List.of(
                 //Resource 2 has to be deleted (erased) after usage
                 new ContractOfferBuilder()._permission_(List.of(new PermissionBuilder()._target_(URI.create("http://res2"))._constraint_(List.of(new ConstraintBuilder().build(), new ConstraintBuilder().build()))._postDuty_(List.of(new DutyBuilder().build())).build()))._prohibition_(List.of())._obligation_(List.of()).build()
@@ -223,15 +223,15 @@ class InfomodelPetriNetBuilderTest {
 
         //Evaluate Formula 1: a transition is reachable, which reads data without 'france' in context, after that transition data is overwritten or erased (or an end is reached)
         final var formulaFrance = transitionPOS(
-                                            transitionAND(
-                                                    transitionAF(arcExpression(x -> x.getContext().getRead() != null && x.getContext().getRead().contains("data") && !x.getContext().getContext().contains("france"), "")),
-                                                    transitionEV(
-                                                            transitionOR(
-                                                                    transitionAF(arcExpression(x -> x.getContext().getWrite() != null && x.getContext().getWrite().contains("data") || x.getContext().getErase() != null && x.getContext().getErase().contains("data"), "")),
-                                                                    transitionMODAL(nodeNF(nodeExpression(x -> x.getSourceArcs().isEmpty(), " ")))
-                                                            )
-                                                    )
-                                            )
+                transitionAND(
+                        transitionAF(arcExpression(x -> x.getContext().getRead() != null && x.getContext().getRead().contains("data") && !x.getContext().getContext().contains("france"), "")),
+                        transitionEV(
+                                transitionOR(
+                                        transitionAF(arcExpression(x -> x.getContext().getWrite() != null && x.getContext().getWrite().contains("data") || x.getContext().getErase() != null && x.getContext().getErase().contains("data"), "")),
+                                        transitionMODAL(nodeNF(nodeExpression(x -> x.getSourceArcs().isEmpty(), " ")))
+                                )
+                        )
+                )
         );
         log.info("Formula France: " + formulaFrance.writeFormula());
         log.info("Result: " + CTLEvaluator.evaluate(formulaFrance, graph.getInitial().getNodes().stream().filter(node -> node.getID().equals(URI.create("trans://getData"))).findAny().get(), allPaths));
@@ -243,21 +243,21 @@ class InfomodelPetriNetBuilderTest {
 
         //Evaluate Formula 3: a transition is reachable, which is reading data. From there another transition is reachable, which also reads data, from this the end or a transition which overwrites or erases data is reachable.
         final var formulaUseAndDelete = transitionPOS(
-                                                transitionAND(
-                                                        transitionAF(arcExpression(x -> x.getContext().getRead() != null && x.getContext().getRead().contains("data"), "")),
-                                                        transitionPOS(
-                                                                transitionAND(
-                                                                    transitionAF(arcExpression(x -> x.getContext().getRead() != null || x.getContext().getRead().contains("data"), "")),
-                                                                    transitionEV(
-                                                                        transitionOR(
-                                                                                transitionAF(arcExpression(x -> x.getContext().getWrite() != null && x.getContext().getWrite().contains("data") || x.getContext().getErase() != null && x.getContext().getErase().contains("data"), "")),
-                                                                                transitionMODAL(nodeNF(nodeExpression(x -> x.getSourceArcs().isEmpty(), " ")))
-                                                                        )
-                                                                    )
-                                                                )
-
-                                                            )
+                transitionAND(
+                        transitionAF(arcExpression(x -> x.getContext().getRead() != null && x.getContext().getRead().contains("data"), "")),
+                        transitionPOS(
+                                transitionAND(
+                                        transitionAF(arcExpression(x -> x.getContext().getRead() != null || x.getContext().getRead().contains("data"), "")),
+                                        transitionEV(
+                                                transitionOR(
+                                                        transitionAF(arcExpression(x -> x.getContext().getWrite() != null && x.getContext().getWrite().contains("data") || x.getContext().getErase() != null && x.getContext().getErase().contains("data"), "")),
+                                                        transitionMODAL(nodeNF(nodeExpression(x -> x.getSourceArcs().isEmpty(), " ")))
                                                 )
+                                        )
+                                )
+
+                        )
+                )
         );
         log.info("Formula Use And Delete: " + formulaUseAndDelete.writeFormula());
         log.info("Result: " + CTLEvaluator.evaluate(formulaUseAndDelete, graph.getInitial().getNodes().stream().filter(node -> node.getID().equals(URI.create("trans://getData"))).findAny().get(), allPaths));
