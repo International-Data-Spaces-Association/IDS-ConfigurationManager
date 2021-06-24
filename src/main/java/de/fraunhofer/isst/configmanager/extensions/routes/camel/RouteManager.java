@@ -1,4 +1,17 @@
-package de.fraunhofer.isst.configmanager.util.camel;
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package de.fraunhofer.isst.configmanager.extensions.routes.camel;
 
 import de.fraunhofer.iais.eis.AppEndpoint;
 import de.fraunhofer.iais.eis.AppEndpointType;
@@ -8,12 +21,12 @@ import de.fraunhofer.iais.eis.ConnectorEndpoint;
 import de.fraunhofer.iais.eis.Endpoint;
 import de.fraunhofer.iais.eis.GenericEndpoint;
 import de.fraunhofer.iais.eis.RouteStep;
-import de.fraunhofer.isst.configmanager.connector.dataspaceconnector.util.DataspaceConnectorRouteConfigurer;
-import de.fraunhofer.isst.configmanager.connector.trustedconnector.TrustedConnectorRouteConfigurer;
-import de.fraunhofer.isst.configmanager.util.camel.dto.RouteStepEndpoint;
-import de.fraunhofer.isst.configmanager.util.camel.exceptions.NoSuitableTemplateException;
-import de.fraunhofer.isst.configmanager.util.camel.exceptions.RouteCreationException;
-import de.fraunhofer.isst.configmanager.util.camel.exceptions.RouteDeletionException;
+import de.fraunhofer.isst.configmanager.extensions.routes.camel.connector.dataspaceconnector.DataspaceConnectorRouteConfigurer;
+import de.fraunhofer.isst.configmanager.extensions.routes.camel.connector.trustedconnector.TrustedConnectorRouteConfigurer;
+import de.fraunhofer.isst.configmanager.extensions.routes.camel.dto.RouteStepEndpoint;
+import de.fraunhofer.isst.configmanager.extensions.routes.camel.exceptions.NoSuitableTemplateException;
+import de.fraunhofer.isst.configmanager.extensions.routes.camel.exceptions.RouteCreationException;
+import de.fraunhofer.isst.configmanager.extensions.routes.camel.exceptions.RouteDeletionException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

@@ -8,4 +8,4 @@
  * @since 7.0.0 (documented since)
  * @author IDS-ConfigurationManager Contributors
  */
-package de.fraunhofer.isst.configmanager.util.camel;
+package de.fraunhofer.isst.configmanager.extensions.routes.camel;
