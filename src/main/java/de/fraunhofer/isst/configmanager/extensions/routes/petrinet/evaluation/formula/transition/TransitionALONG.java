@@ -28,10 +28,10 @@ import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evalua
 public class TransitionALONG implements TransitionFormula {
     private TransitionFormula parameter;
 
-    public static TransitionALONG transitionALONG(final TransitionFormula parameter) {
+    public static TransitionALONG transitionALONG(final TransitionFormula parameter){
         return new TransitionALONG(parameter);
     }
-    
+
     @Override
     public boolean evaluate(final Node node, final List<List<Node>> paths) {
         return transitionNOT(transitionEV(transitionNOT(parameter))).evaluate(node, paths);

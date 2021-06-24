@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.fraunhofer.isst.configmanager.extensions.apps.util;
+package de.fraunhofer.isst.configmanager.api_test.broker;
 
 import lombok.experimental.UtilityClass;
 import org.junit.jupiter.api.Disabled;

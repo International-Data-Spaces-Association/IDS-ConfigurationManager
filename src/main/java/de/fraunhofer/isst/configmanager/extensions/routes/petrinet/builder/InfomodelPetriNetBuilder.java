@@ -30,9 +30,9 @@ import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Place;
 import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.PlaceImpl;
 import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Transition;
 import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.TransitionImpl;
-import de.fraunhofer.isst.configmanager.petrinet.policy.PolicyUtils;
-import de.fraunhofer.isst.configmanager.petrinet.policy.RuleFormulaBuilder;
-import de.fraunhofer.isst.configmanager.petrinet.policy.RuleUtils;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.policy.PolicyUtils;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.policy.RuleFormulaBuilder;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.policy.RuleUtils;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 

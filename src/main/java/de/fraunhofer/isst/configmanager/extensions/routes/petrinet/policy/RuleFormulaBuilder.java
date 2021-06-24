@@ -1,4 +1,4 @@
-package de.fraunhofer.isst.configmanager.petrinet.policy;
+package de.fraunhofer.isst.configmanager.extensions.routes.petrinet.policy;
 
 import de.fraunhofer.iais.eis.Rule;
 import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.Formula;

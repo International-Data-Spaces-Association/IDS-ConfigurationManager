@@ -14,20 +14,23 @@
 package de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.state;
 
 import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Node;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
 /**
- * Evaluates to true, if at least one of the two subformulas evaluates to true.
+ * Wvaluates to true, if at least one of the two subformulas evaluates to true.
  */
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class NodeOR implements StateFormula {
-    private StateFormula parameter1;
-    private StateFormula parameter2;
+    StateFormula parameter1;
+    StateFormula parameter2;
 
     public static NodeOR nodeOR(final StateFormula parameter1,
-                                final StateFormula parameter2) {
+                                final StateFormula parameter2){
         return new NodeOR(parameter1, parameter2);
     }
 

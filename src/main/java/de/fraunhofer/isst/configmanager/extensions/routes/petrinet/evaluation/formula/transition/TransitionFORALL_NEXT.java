@@ -28,7 +28,7 @@ import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evalua
 public class TransitionFORALL_NEXT implements TransitionFormula {
     private TransitionFormula parameter;
 
-    public static TransitionFORALL_NEXT transitionFORALL_NEXT(final TransitionFormula parameter) {
+    public static TransitionFORALL_NEXT transitionFORALL_NEXT(final TransitionFormula parameter){
         return new TransitionFORALL_NEXT(parameter);
     }
 
@@ -46,5 +46,4 @@ public class TransitionFORALL_NEXT implements TransitionFormula {
     public String writeFormula() {
         return String.format("%s(%s)", symbol(), parameter.writeFormula());
     }
-
 }

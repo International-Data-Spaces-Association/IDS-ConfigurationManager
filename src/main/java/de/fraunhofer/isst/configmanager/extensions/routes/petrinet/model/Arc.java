@@ -20,9 +20,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  * Interface for Arcs. Arcs are the edges in petri nets and can only connect two Nodes of
  * different type.
  */
-@JsonTypeInfo(use = com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME, property = "@type")
 @JsonSubTypes({@JsonSubTypes.Type(ArcImpl.class)})
+@JsonTypeInfo(use = com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME, property = "@type")
 public interface Arc {
+
     /**
      * Getter for the source node of this arc: X -> ...
      * @return the source node of this arc

@@ -35,5 +35,4 @@ public interface Place extends Node {
      * @param markers the number of markers this place should have
      */
     void setMarkers(int markers);
-
 }

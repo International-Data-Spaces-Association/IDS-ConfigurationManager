@@ -46,5 +46,4 @@ public class NodePOS implements StateFormula {
     public String writeFormula() {
         return String.format("%s(%s)", symbol(), parameter.writeFormula());
     }
-
 }

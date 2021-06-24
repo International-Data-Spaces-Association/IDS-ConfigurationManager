@@ -19,13 +19,13 @@ import lombok.AllArgsConstructor;
 import java.util.List;
 
 /**
- * Evaluates to true, if given subformula evaluates to false.
+ * Wvaluates to true, if given subformula evaluates to false.
  */
 @AllArgsConstructor
 public class NodeNOT implements StateFormula {
     private StateFormula parameter;
 
-    public static NodeNOT nodeNOT(final StateFormula parameter) {
+    public static NodeNOT nodeNOT(final StateFormula parameter){
         return new NodeNOT(parameter);
     }
 

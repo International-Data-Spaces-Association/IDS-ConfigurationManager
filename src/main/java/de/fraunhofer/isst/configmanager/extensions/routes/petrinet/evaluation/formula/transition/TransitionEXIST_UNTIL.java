@@ -28,6 +28,7 @@ import java.util.List;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TransitionEXIST_UNTIL implements TransitionFormula {
+
     TransitionFormula parameter1;
     TransitionFormula parameter2;
 
@@ -38,7 +39,6 @@ public class TransitionEXIST_UNTIL implements TransitionFormula {
 
     // True if a path exists, where parameter1 is true on each transition of the path,
     // and parameter2 is true on the final transition of the path
-    //TODO fix evaluation: use filtered paths
     @Override
     public boolean evaluate(final Node node, final List<List<Node>> paths) {
         if (!(node instanceof Transition)) {
@@ -50,22 +50,26 @@ public class TransitionEXIST_UNTIL implements TransitionFormula {
             if (!path.get(0).equals(node)) {
                 continue;
             }
+
             if (path.size() % 2 == 1) {
                 offset = 1;
             } else {
                 offset = 2;
             }
+
             for (var i = 2; i < path.size() - offset; i += 2) {
-                final var res1 = parameter1.evaluate(path.get(i), paths);
-                final var res2 = parameter2.evaluate(path.get(i), paths);
+                var res1 = parameter1.evaluate(path.get(i), paths);
+                var res2 = parameter2.evaluate(path.get(i), paths);
+
                 if (res2) {
                     return true;
                 }
+
                 if (!res1) {
                     continue check;
                 }
             }
-            if (parameter2.evaluate(path.get(path.size() - offset), paths)) {
+            if (path.size() > offset && parameter2.evaluate(path.get(path.size() - offset), paths)) {
                 return true;
             }
         }

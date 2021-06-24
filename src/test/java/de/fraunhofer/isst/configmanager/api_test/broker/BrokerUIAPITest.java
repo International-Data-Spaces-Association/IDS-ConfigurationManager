@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.fraunhofer.isst.configmanager.api_test;
+package de.fraunhofer.isst.configmanager.api_test.broker;
 
 import de.fraunhofer.isst.configmanager.extensions.components.broker.api.controller.BrokerController;
 import de.fraunhofer.isst.configmanager.extensions.components.broker.api.service.BrokerService;

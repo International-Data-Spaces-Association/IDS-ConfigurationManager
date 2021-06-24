@@ -16,7 +16,9 @@ package de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.f
 import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Node;
 import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Place;
 import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.simulator.PetriNetSimulator;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -25,11 +27,13 @@ import java.util.List;
 /**
  * Evaluates to true, if on any possible path every place fulfills parameter1, until a place fulfills parameter2.
  */
-@AllArgsConstructor
 @Slf4j
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class NodeFORALL_UNTIL implements StateFormula {
-    private StateFormula parameter1;
-    private StateFormula parameter2;
+
+    StateFormula parameter1;
+    StateFormula parameter2;
 
     public static NodeFORALL_UNTIL nodeFORALL_UNTIL(final StateFormula parameter1,
                                                     final StateFormula parameter2) {
@@ -48,13 +52,16 @@ public class NodeFORALL_UNTIL implements StateFormula {
             if (!path.get(0).equals(node)) {
                 continue;
             }
+
             int offset;
+
             if (PetriNetSimulator.circleFree(path)) {
                 if (path.size() % 2 == 1) {
                     offset = 1;
                 } else {
                     offset = 2;
                 }
+
                 for (var i = 2; i < path.size() - offset; i += 2) {
                     final var res1 = parameter1.evaluate(path.get(i), paths);
                     final var res2 = parameter2.evaluate(path.get(i), paths);
@@ -65,6 +72,7 @@ public class NodeFORALL_UNTIL implements StateFormula {
                         return false;
                     }
                 }
+
                 if (!parameter2.evaluate(path.get(path.size() - offset), paths)) {
                     return false;
                 }
@@ -81,11 +89,16 @@ public class NodeFORALL_UNTIL implements StateFormula {
                         return false;
                     }
                 }
+
                 //if everything on circle fulfills param1 but not param2: complicated case
                 final var lastPlace = path.get(path.size() - 1) instanceof Place ? path.get(path.size() - 1) : path.get(path.size() - 2);
                 final var newPaths = new ArrayList<>(paths);
+
                 newPaths.remove(path);
 
+                if (newPaths.stream().noneMatch(x -> x.get(0).equals(node))) {
+                    return false;
+                }
                 if (!this.evaluate(lastPlace, newPaths)) {
                     return false;
                 }

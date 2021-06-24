@@ -29,7 +29,7 @@ public class TransitionOR implements TransitionFormula {
     TransitionFormula parameter1;
     TransitionFormula parameter2;
 
-    public static TransitionOR transitionOR(final TransitionFormula parameter1, final TransitionFormula parameter2) {
+    public static TransitionOR transitionOR(final TransitionFormula parameter1, final TransitionFormula parameter2){
         return new TransitionOR(parameter1, parameter2);
     }
 

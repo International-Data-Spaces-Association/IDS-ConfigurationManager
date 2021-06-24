@@ -15,7 +15,9 @@ package de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.f
 
 import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Node;
 import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Place;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
@@ -24,10 +26,11 @@ import java.util.List;
  * evaluates to true.
  */
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class NodeEXIST_UNTIL implements StateFormula {
 
-    private StateFormula parameter1;
-    private StateFormula parameter2;
+    StateFormula parameter1;
+    StateFormula parameter2;
 
     public static NodeEXIST_UNTIL nodeEXIST_UNTIL(final StateFormula parameter1,
                                                   final StateFormula parameter2) {
@@ -37,7 +40,6 @@ public class NodeEXIST_UNTIL implements StateFormula {
     @Override
     // True if a path exists, where parameter1 is true on each node of the path,
     // and parameter2 is true on the final node of the path
-    //TODO fix evaluation: use filtered paths
     public boolean evaluate(final Node node, final List<List<Node>> paths) {
         if (!(node instanceof Place)) {
             return false;
@@ -45,7 +47,6 @@ public class NodeEXIST_UNTIL implements StateFormula {
 
         check: for (final var path: paths) {
             int offset;
-
             if (!path.get(0).equals(node)) {
                 continue;
             }
@@ -57,17 +58,19 @@ public class NodeEXIST_UNTIL implements StateFormula {
             }
 
             for (var i = 2; i < path.size() - offset; i += 2) {
-                final var res1 = parameter1.evaluate(path.get(i), paths);
-                final var res2 = parameter2.evaluate(path.get(i), paths);
+                var res1 = parameter1.evaluate(path.get(i), paths);
+                var res2 = parameter2.evaluate(path.get(i), paths);
+
                 if (res2) {
                     return true;
                 }
+
                 if (!res1) {
                     continue check;
                 }
             }
 
-            if (parameter2.evaluate(path.get(path.size() - offset), paths)) {
+            if (path.size() > offset && parameter2.evaluate(path.get(path.size() - offset), paths)) {
                 return true;
             }
         }

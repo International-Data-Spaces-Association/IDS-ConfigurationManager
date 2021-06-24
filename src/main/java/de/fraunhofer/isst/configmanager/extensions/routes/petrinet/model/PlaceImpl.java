@@ -108,5 +108,4 @@ public class PlaceImpl implements Place {
         final var place = (PlaceImpl) o;
         return Objects.equals(id, place.id);
     }
-
 }

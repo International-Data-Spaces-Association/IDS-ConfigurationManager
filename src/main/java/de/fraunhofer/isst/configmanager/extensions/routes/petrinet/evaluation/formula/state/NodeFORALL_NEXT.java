@@ -22,13 +22,13 @@ import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evalua
 import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.state.NodeNOT.nodeNOT;
 
 /**
- * Evaluates to true, if all following places satisfy the given formula.
+ * evaluates to true, if all following places satisfy the given formula
  */
 @AllArgsConstructor
 public class NodeFORALL_NEXT implements StateFormula {
     private StateFormula parameter;
 
-    public static NodeFORALL_NEXT nodeFORALL_NEXT(final StateFormula parameter) {
+    public static NodeFORALL_NEXT nodeFORALL_NEXT(final StateFormula parameter){
         return new NodeFORALL_NEXT(parameter);
     }
 
@@ -46,5 +46,4 @@ public class NodeFORALL_NEXT implements StateFormula {
     public String writeFormula() {
         return String.format("%s(%s)", symbol(), parameter.writeFormula());
     }
-
 }

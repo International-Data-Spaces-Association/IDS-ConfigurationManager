@@ -20,14 +20,15 @@ import java.util.List;
 
 import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.state.NodeNOT.nodeNOT;
 import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.state.NodePOS.nodePOS;
+
 /**
- * Evaluates to true, if parameter evaluates to true for all reachable places.
+ * evaluates to true, if parameter evaluates to true for all reachable places
  */
 @AllArgsConstructor
 public class NodeINV implements StateFormula {
     private StateFormula parameter;
 
-    public static NodeINV nodeINV(final StateFormula parameter) {
+    public static NodeINV nodeINV(final StateFormula parameter){
         return new NodeINV(parameter);
     }
 

@@ -25,7 +25,7 @@ import java.util.List;
 public class TransitionNOT implements TransitionFormula {
     private TransitionFormula parameter;
 
-    public static TransitionNOT transitionNOT(final TransitionFormula parameter) {
+    public static TransitionNOT transitionNOT(final TransitionFormula parameter){
         return new TransitionNOT(parameter);
     }
 

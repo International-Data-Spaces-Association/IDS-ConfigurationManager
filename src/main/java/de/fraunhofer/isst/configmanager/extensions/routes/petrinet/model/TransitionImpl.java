@@ -29,7 +29,6 @@ import java.util.Set;
 public class TransitionImpl implements Transition {
 
     transient URI id;
-
     transient ContextObject contextObject;
 
     @JsonIgnore
@@ -98,4 +97,3 @@ public class TransitionImpl implements Transition {
         return Objects.equals(id, trans.id) && Objects.equals(contextObject, trans.contextObject);
     }
 }
-

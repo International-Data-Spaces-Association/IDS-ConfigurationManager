@@ -16,6 +16,7 @@ package de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.f
 import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.state.StateFormula;
 import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.transition.TransitionFormula;
 import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Node;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.PetriNet;
 import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Place;
 import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Transition;
 import lombok.experimental.UtilityClass;
@@ -27,10 +28,9 @@ import java.util.List;
  */
 @UtilityClass
 public class CTLEvaluator {
-
     /**
      * @param ctlExpression a {@link StateFormula} to evaluate
-     * @param place a {@link Place} of a {@link de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.PetriNet}
+     * @param place a {@link Place} of a {@link PetriNet}
      * @param paths possible pathes through the PetriNet
      * @return result of the evaluation of the ctlExpression
      */
@@ -43,7 +43,7 @@ public class CTLEvaluator {
 
     /**
      * @param ctlExpression a {@link TransitionFormula} to evaluate
-     * @param transition a {@link Transition} of a {@link de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.PetriNet}
+     * @param transition a {@link Transition} of a {@link PetriNet}
      * @param paths possible pathes through the PetriNet
      * @return result of the evaluation of the ctlExpression
      */
@@ -56,7 +56,7 @@ public class CTLEvaluator {
 
     /**
      * @param ctlExpression a {@link Formula} to evaluate
-     * @param node a {@link Node} of a {@link de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.PetriNet}
+     * @param node a {@link Node} of a {@link PetriNet}
      * @param paths possible pathes through the PetriNet
      * @return result of the evaluation of the ctlExpression (or false, if formula and node types don't match)
      */
@@ -64,14 +64,13 @@ public class CTLEvaluator {
                                    final Node node,
                                    final List<List<Node>> paths) {
 
-            if (ctlExpression instanceof StateFormula && node instanceof Place) {
-                return evaluateNode((StateFormula) ctlExpression, (Place) node, paths);
-            } else if (ctlExpression instanceof TransitionFormula && node instanceof Transition) {
-                return evaluateTransition((TransitionFormula) ctlExpression, (Transition) node, paths);
-            } else {
-                //cannot be evaluated
-                return false;
-            }
+        if (ctlExpression instanceof StateFormula && node instanceof Place) {
+            return evaluateNode((StateFormula) ctlExpression, (Place) node, paths);
+        } else if (ctlExpression instanceof TransitionFormula && node instanceof Transition){
+            return evaluateTransition((TransitionFormula) ctlExpression, (Transition) node, paths);
+        } else {
+            //cannot be evaluated
+            return false;
+        }
     }
-
 }

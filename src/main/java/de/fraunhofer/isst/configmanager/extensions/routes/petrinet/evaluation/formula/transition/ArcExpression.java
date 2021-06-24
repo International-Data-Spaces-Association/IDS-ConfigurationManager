@@ -13,13 +13,14 @@
  */
 package de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.transition;
 
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Transition;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
 /**
- * Custom Expression to be evaluated on a {@link de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Transition}.
+ * Custom Expression to be evaluated on a {@link Transition}
  */
 @Getter
 @AllArgsConstructor
@@ -27,12 +28,12 @@ import lombok.experimental.FieldDefaults;
 public class ArcExpression {
 
     /**
-     * Subexpression (function from {@link de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Transition} to boolean.
+     * Subexpression (function from {@link Transition} to boolean
      */
     ArcSubExpression subExpression;
 
     /**
-     * Information message to return when subExpression is not fulfilled by a transition.
+     * Information message to return when subExpression is not fulfilled by a transition
      */
     String message;
 

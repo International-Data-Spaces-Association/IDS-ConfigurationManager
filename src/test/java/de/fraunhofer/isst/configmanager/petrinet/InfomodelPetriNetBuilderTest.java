@@ -1,4 +1,4 @@
-package de.fraunhofer.isst.configmanager.extensions.routes.petrinet.builder;
+package de.fraunhofer.isst.configmanager.petrinet;
 
 import de.fraunhofer.iais.eis.Action;
 import de.fraunhofer.iais.eis.AppRouteBuilder;
@@ -18,6 +18,8 @@ import de.fraunhofer.iais.eis.RouteStepBuilder;
 import de.fraunhofer.iais.eis.ids.jsonld.Serializer;
 import de.fraunhofer.iais.eis.util.RdfResource;
 import de.fraunhofer.iais.eis.util.TypedLiteral;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.builder.GraphVizGenerator;
+import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.builder.InfomodelPetriNetBuilder;
 import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.formula.CTLEvaluator;
 import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Arc;
 import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.ArcImpl;

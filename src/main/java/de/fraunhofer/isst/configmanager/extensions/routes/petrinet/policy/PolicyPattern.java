@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.fraunhofer.isst.configmanager.petrinet.policy;
+package de.fraunhofer.isst.configmanager.extensions.routes.petrinet.policy;
 
 /**
  * Enum describing policy patterns supported by the Dataspace Connector.

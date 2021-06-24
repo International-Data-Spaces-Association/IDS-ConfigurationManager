@@ -28,7 +28,7 @@ import static de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evalua
 public class TransitionPOS implements TransitionFormula {
     private TransitionFormula parameter;
 
-    public static TransitionPOS transitionPOS(final TransitionFormula parameter) {
+    public static TransitionPOS transitionPOS(final TransitionFormula parameter){
         return new TransitionPOS(parameter);
     }
 
@@ -46,5 +46,4 @@ public class TransitionPOS implements TransitionFormula {
     public String writeFormula() {
         return String.format("%s(%s)", symbol(), parameter.writeFormula());
     }
-
 }

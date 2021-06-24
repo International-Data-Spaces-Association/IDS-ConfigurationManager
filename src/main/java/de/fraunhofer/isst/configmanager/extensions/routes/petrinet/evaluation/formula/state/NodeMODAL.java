@@ -22,21 +22,21 @@ import lombok.AllArgsConstructor;
 import java.util.List;
 
 /**
- * Evaluates to true, if parameter evaluates to true for a transition directly following the current place.
+ * evaluates to true, if parameter evaluates to true for a transition directly following the current place
  */
 @AllArgsConstructor
 public class NodeMODAL implements StateFormula {
     private TransitionFormula parameter;
 
-    public static NodeMODAL nodeMODAL(final TransitionFormula parameter) {
+    public static NodeMODAL nodeMODAL(final TransitionFormula parameter){
         return new NodeMODAL(parameter);
     }
 
     // MODAL, is true if parameter evaluates to true for a transition following the current state
     @Override
     public boolean evaluate(final Node node, final List<List<Node>> paths) {
-        return node instanceof Place
-                && node.getSourceArcs().stream()
+        return node instanceof Place &&
+                node.getSourceArcs().stream()
                         .map(Arc::getTarget)
                         .map(transition -> parameter.evaluate(transition, paths))
                         .reduce(false, (a, b) -> a || b);

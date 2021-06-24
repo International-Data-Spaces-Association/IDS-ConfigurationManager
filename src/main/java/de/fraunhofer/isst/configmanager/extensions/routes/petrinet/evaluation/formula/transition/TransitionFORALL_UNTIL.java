@@ -51,19 +51,24 @@ public class TransitionFORALL_UNTIL implements TransitionFormula {
             if (!path.get(0).equals(node)) {
                 continue;
             }
+
             int offset;
+
             if (PetriNetSimulator.circleFree(path)) {
                 if (path.size() % 2 == 1) {
                     offset = 1;
                 } else {
                     offset = 2;
                 }
+
                 for (var i = 2; i < path.size() - offset; i += 2) {
                     final var res1 = parameter1.evaluate(path.get(i), paths);
                     final var res2 = parameter2.evaluate(path.get(i), paths);
+
                     if (res2) {
                         continue check;
                     }
+
                     if (!res1) {
                         log.info(path.get(i).toString());
                         return false;
@@ -80,9 +85,11 @@ public class TransitionFORALL_UNTIL implements TransitionFormula {
                 for (var i = 2; i < path.size() - 1; i += 2) {
                     final var res1 = parameter1.evaluate(path.get(i), paths);
                     final var res2 = parameter2.evaluate(path.get(i), paths);
+
                     if (res2) {
                         continue check;
                     }
+
                     if (!res1) {
                         log.info(path.get(i).toString());
                         return false;
@@ -91,8 +98,10 @@ public class TransitionFORALL_UNTIL implements TransitionFormula {
                 //if everything on circle fulfills param1 but not param2
                 final var lastTransition = path.get(path.size() - 1) instanceof Transition ? path.get(path.size() - 1) : path.get(path.size() - 2);
                 final var newPaths = new ArrayList<>(paths);
+
                 newPaths.remove(path);
-                if (!this.evaluate(lastTransition, newPaths)) {
+
+                if (newPaths.stream().noneMatch(x -> x.get(0).equals(node)) || !this.evaluate(lastTransition, newPaths)) {
                     return false;
                 }
             }

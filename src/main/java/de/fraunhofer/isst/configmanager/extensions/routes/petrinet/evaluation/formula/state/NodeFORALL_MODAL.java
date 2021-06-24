@@ -17,7 +17,9 @@ import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.evaluation.fo
 import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Arc;
 import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Node;
 import de.fraunhofer.isst.configmanager.extensions.routes.petrinet.model.Place;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 import java.util.Collection;
 import java.util.List;
@@ -28,9 +30,11 @@ import java.util.stream.Collectors;
  * for every transition in between.
  */
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class NodeFORALL_MODAL implements StateFormula {
-    private StateFormula parameter1;
-    private TransitionFormula parameter2;
+
+    StateFormula parameter1;
+    TransitionFormula parameter2;
 
     public static NodeFORALL_MODAL nodeFORALL_MODAL(final StateFormula parameter1,
                                                     final TransitionFormula parameter2) {
@@ -45,7 +49,7 @@ public class NodeFORALL_MODAL implements StateFormula {
             return false;
         }
 
-        final var followingTransitions = paths.stream().filter(path -> path.size() == 2 && path.get(0) == node).map(path -> path.get(1)).collect(Collectors.toSet());
+        final var followingTransitions = paths.stream().filter(path -> path.get(0) == node).map(path -> path.get(1)).collect(Collectors.toSet());
         final var followingPlaces = followingTransitions.stream().map(Node::getSourceArcs).flatMap(Collection::stream).map(Arc::getTarget).collect(Collectors.toSet());
 
         for (final var place : followingPlaces) {

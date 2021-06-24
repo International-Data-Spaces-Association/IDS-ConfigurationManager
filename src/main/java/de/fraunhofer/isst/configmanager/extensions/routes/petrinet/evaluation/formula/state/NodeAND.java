@@ -21,14 +21,13 @@ import lombok.experimental.FieldDefaults;
 import java.util.List;
 
 /**
- * evaluates to true, if parameter1 and parameter2 evaluate to true.
+ * evaluates to true, if parameter1 and parameter2 evaluate to true
  */
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class NodeAND implements StateFormula {
 
-    StateFormula parameter1;
-    StateFormula parameter2;
+    private StateFormula parameter1;
+    private StateFormula parameter2;
 
     public static NodeAND nodeAND(final StateFormula parameter1, final StateFormula parameter2) {
         return new NodeAND(parameter1, parameter2);

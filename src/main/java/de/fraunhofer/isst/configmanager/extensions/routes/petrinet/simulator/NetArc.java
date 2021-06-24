@@ -33,7 +33,6 @@ public class NetArc {
      */
     PetriNet source;
 
-
     /**
      * PetriNet that can be reached from source, using a transition.
      */
