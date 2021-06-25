@@ -333,16 +333,19 @@ public class RoutesController implements RoutesApi {
     }
 
     @Override
-    public ResponseEntity<String> setRouteError(final String routeError) {
+    public ResponseEntity<String> setRouteError(String routeError) {
+        if (routeErrors.size() >=  100) {
+            routeErrors.remove(0);
+        }
+
         routeErrors.add(routeError);
+
         return ResponseEntity.ok("Saved Route-Error in ConfigManager-backend.");
     }
 
     @Override
     public ResponseEntity<String> getRouteErrors() {
-        final var allErrors = routeErrors.stream().collect(Collectors.joining(",", "{", "}"));
-        routeErrors.clear();
-        return ResponseEntity.ok(allErrors);
+        return ResponseEntity.ok(routeErrors.stream().collect(Collectors.joining(",", "[", "]")));
     }
 
     /**
