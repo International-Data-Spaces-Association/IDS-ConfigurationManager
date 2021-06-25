@@ -412,7 +412,7 @@ public class AppRouteController implements AppRouteApi {
 
     @Override
     public ResponseEntity<String> getRouteErrors() {
-        final var allErrors = routeErrors.stream().collect(Collectors.joining(",", "{", "}"));
+        final var allErrors = routeErrors.stream().collect(Collectors.joining(",", "[", "]"));
         routeErrors.clear();
         return ResponseEntity.ok(allErrors);
     }
