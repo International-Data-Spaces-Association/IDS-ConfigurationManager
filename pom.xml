@@ -212,6 +212,13 @@
             <version>42.2.22</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.apache.velocity/velocity -->
+        <!-- License: Apache License, Version 2.0 -->
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity</artifactId>
+            <version>1.7</version>
+        </dependency>
 
         <!-- Infomodel -->
         <dependency>
