@@ -340,7 +340,7 @@ public class RoutesController implements RoutesApi {
 
     @Override
     public ResponseEntity<String> getRouteErrors() {
-        final var allErrors = routeErrors.stream().collect(Collectors.joining(",", "{", "}"));
+        final var allErrors = routeErrors.stream().collect(Collectors.joining(",", "[", "]"));
         routeErrors.clear();
         return ResponseEntity.ok(allErrors);
     }
