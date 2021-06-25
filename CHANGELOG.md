@@ -26,6 +26,7 @@ Due to the new version of the Dataspace Connector (v5), the responsibilities bet
 ## [7.1.0] - UNRELEASED
 
 ### Added
+- Minor Change: New Feature: Camel Support
 - Minor Change: New API POST /api/ui/route/error caches error messages of the routes until they are fetched by the corresponding GET API (takes every String as RequestBody)
 - Minor Change: New API GET /api/ui/route/error all intermediate errors of the routes can be queried, once queried these are deleted in the backend (only cached until GET API called) 
 
