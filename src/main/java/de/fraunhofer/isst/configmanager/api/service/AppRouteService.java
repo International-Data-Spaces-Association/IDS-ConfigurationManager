@@ -17,7 +17,12 @@ import de.fraunhofer.isst.configmanager.data.entities.EndpointInformation;
 import de.fraunhofer.isst.configmanager.data.repositories.CustomAppRepository;
 import de.fraunhofer.isst.configmanager.data.repositories.EndpointInformationRepository;
 import de.fraunhofer.isst.configmanager.data.repositories.RouteDeployMethodRepository;
+import de.fraunhofer.isst.configmanager.util.camel.RouteManager;
+import de.fraunhofer.isst.configmanager.util.camel.exceptions.RouteCreationException;
+import de.fraunhofer.isst.configmanager.util.camel.exceptions.RouteDeletionException;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,30 +40,17 @@ import java.util.List;
 @Slf4j
 @Service
 @Transactional
+@AllArgsConstructor(onConstructor = @__(@Autowired))
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class AppRouteService {
 
     transient ConfigModelService configModelService;
     transient EndpointService endpointService;
     transient ResourceService resourceService;
+    transient RouteManager routeManager;
     transient RouteDeployMethodRepository routeDeployMethodRepository;
     transient EndpointInformationRepository endpointInformationRepository;
     transient CustomAppRepository customAppRepository;
-
-    @Autowired
-    public AppRouteService(final ConfigModelService configModelService,
-                           final RouteDeployMethodRepository routeDeployMethodRepository,
-                           final EndpointInformationRepository endpointInformationRepository,
-                           final CustomAppRepository customAppRepository,
-                           final EndpointService endpointService,
-                           final ResourceService resourceService) {
-        this.configModelService = configModelService;
-        this.routeDeployMethodRepository = routeDeployMethodRepository;
-        this.endpointInformationRepository = endpointInformationRepository;
-        this.customAppRepository = customAppRepository;
-        this.endpointService = endpointService;
-        this.resourceService = resourceService;
-    }
 
     /**
      * This method creates an app route.
@@ -112,6 +104,13 @@ public class AppRouteService {
             deleted = configModelService.getConfigModel().getAppRoute().remove(appRoute);
 
             if (deleted) {
+                try {
+                    routeManager.deleteRoute(appRoute);
+                } catch (RouteDeletionException e) {
+                    if (log.isErrorEnabled()){
+                        log.error(e.getMessage(), e);
+                    }
+                }
                 configModelService.saveState();
             }
         }
@@ -134,7 +133,7 @@ public class AppRouteService {
      * @return list of app routes
      */
     public List<AppRoute> getAppRoutes() {
-        return (List<AppRoute>) configModelService.getConfigModel().getAppRoute();
+        return configModelService.getConfigModel().getAppRoute();
     }
 
     /**
@@ -219,6 +218,15 @@ public class AppRouteService {
                             ._appRouteEnd_(Util.asList(endpoint))
                             ._appRouteOutput_(Util.asList(resourceImpl))
                             .build();
+
+                    // Creating camel route
+                    try {
+                        routeManager.createAndDeployXMLRoute(configModelService.getConfigModel(), appRouteImpl);
+                    } catch (RouteCreationException e) {
+                        if (log.isErrorEnabled()){
+                            log.error(e.getMessage(), e);
+                        }
+                    }
                 } else {
                     routeStep = new RouteStepBuilder()._routeDeployMethod_(deployMethod)
                             ._appRouteStart_(Util.asList(startEndpoint))
