@@ -60,6 +60,11 @@ public class RouteManager {
     final RouteFileHelper routeFileHelper;
 
     /**
+     * Helper for configuring Camel routes for the Dataspace Connector.
+     */
+    final DataspaceConnectorRouteConfigurer dataspaceConnectorRouteConfigurer;
+
+    /**
      * Creates a Camel XML route from a given app route for either the Dataspace Connector or the
      * Trusted Connector. If the Configuration Manager is currently managing a Dataspace Connector,
      * the generated XML route will be sent to the Camel application. If the Configuration
@@ -246,10 +251,10 @@ public class RouteManager {
         velocityContext.put("errorHandlerRef", camelErrorHandlerRef);
 
         //add basic auth header for connector endpoint
-        DataspaceConnectorRouteConfigurer.addBasicAuthToContext(velocityContext);
+        dataspaceConnectorRouteConfigurer.addBasicAuthToContext(velocityContext);
 
         //choose correct XML template based on route
-        final var template = DataspaceConnectorRouteConfigurer.getRouteTemplate(appRoute);
+        final var template = dataspaceConnectorRouteConfigurer.getRouteTemplate(appRoute);
 
         if (template != null) {
             final var velocityEngine = new VelocityEngine();

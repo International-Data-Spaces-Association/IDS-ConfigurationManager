@@ -26,19 +26,19 @@ public class DataspaceConnectorRouteConfigurer {
      */
     @Setter
     @Value("${dataspace.connector.api.username}")
-    static String dataSpaceConnectorApiUsername;
+    String dataSpaceConnectorApiUsername;
 
     /**
      * Password for the Dataspace Connector.
      */
     @Setter
     @Value("${dataspace.connector.api.password}")
-    static String dataSpaceConnectorApiPassword;
+    String dataSpaceConnectorApiPassword;
 
     /**
      * ResourceLoader for loading Camel route templates from the classpath.
      */
-    static final ResourceLoader RESOURCE_LOADER = new DefaultResourceLoader();
+    final ResourceLoader RESOURCE_LOADER = new DefaultResourceLoader();
 
     /**
      * Adds basic authentication information for the Dataspace Connector to the Velocity context
@@ -46,7 +46,7 @@ public class DataspaceConnectorRouteConfigurer {
      *
      * @param velocityContext the context containing the values to insert into the route template
      */
-    public static void addBasicAuthToContext(final VelocityContext velocityContext) {
+    public void addBasicAuthToContext(final VelocityContext velocityContext) {
         final var auth = dataSpaceConnectorApiUsername + ":" + dataSpaceConnectorApiPassword;
         final var encodedAuth = Base64.encodeBase64(auth.getBytes());
         final var authHeader = "Basic " + new String(encodedAuth);
@@ -59,7 +59,7 @@ public class DataspaceConnectorRouteConfigurer {
      * @param appRoute the app route
      * @return the route template
      */
-    public static Resource getRouteTemplate(final AppRoute appRoute) {
+    public Resource getRouteTemplate(final AppRoute appRoute) {
         final var routeStart = appRoute.getAppRouteStart();
 
         Resource resource;
