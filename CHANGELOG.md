@@ -33,7 +33,7 @@ Due to the new version of the Dataspace Connector (v5), the responsibilities bet
 ### Dependency Maintenance
 - Upgrade: org.springframework.security:spring-security-test 5.5.0 -> 5.5.1
 - Upgrade: org.postgresql:postgresql 42.2.20 -> 42.2.22
-- Upgrade: org.springframework.boot:spring-boot-starter-parent 2.5.0 -> 2.5.1
+- Upgrade: org.springframework.boot:spring-boot-starter-parent 2.5.0 -> 2.5.2
 
 ## [7.0.0] - 2021-05-26
 ### Major Changes
