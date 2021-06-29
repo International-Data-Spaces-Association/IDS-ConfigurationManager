@@ -8,6 +8,9 @@ import lombok.AllArgsConstructor;
 
 import java.util.List;
 
+/**
+ * evaluates to true, if parameter evaluates to true for a place directly following the transition
+ */
 @AllArgsConstructor
 public class TransitionMODAL implements TransitionFormula {
     private StateFormula parameter;

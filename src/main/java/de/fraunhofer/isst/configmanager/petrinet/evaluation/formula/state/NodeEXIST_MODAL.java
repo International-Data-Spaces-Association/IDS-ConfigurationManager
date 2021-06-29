@@ -10,6 +10,10 @@ import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeMODAL.nodeMODAL;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionMODAL.transitionMODAL;
 
+/**
+ * evaluates to true, if there is a successor place for which parameter1 holds, while parameter2 holds for the
+ * transition in between.
+ */
 @AllArgsConstructor
 public class NodeEXIST_MODAL implements StateFormula {
     private StateFormula parameter1;

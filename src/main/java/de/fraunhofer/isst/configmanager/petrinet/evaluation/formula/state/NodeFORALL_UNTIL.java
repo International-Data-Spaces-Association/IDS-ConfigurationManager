@@ -9,6 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * evaluates to true, if on any possible path every place fulfills parameter1, until a place fulfills parameter2
+ */
 @AllArgsConstructor
 @Slf4j
 public class NodeFORALL_UNTIL implements StateFormula {

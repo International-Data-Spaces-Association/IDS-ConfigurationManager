@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 
 import java.util.List;
 
+/**
+ * evaluates to true, if at least one of the two subformulas evaluates to true
+ */
 @AllArgsConstructor
 public class TransitionOR implements TransitionFormula {
     private TransitionFormula parameter1;

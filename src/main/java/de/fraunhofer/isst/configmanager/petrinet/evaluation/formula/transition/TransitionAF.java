@@ -6,6 +6,9 @@ import lombok.AllArgsConstructor;
 
 import java.util.List;
 
+/**
+ * evaluates to true, if given {@link ArcExpression} evaluates to true
+ */
 @AllArgsConstructor
 public class TransitionAF implements TransitionFormula {
     private ArcExpression parameter;

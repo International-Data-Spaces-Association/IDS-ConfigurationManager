@@ -10,6 +10,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * evaluates to true, if parameter1 evaluates to true for every following place and parameter2 evaluates to true
+ * for every transition in between.
+ */
 @AllArgsConstructor
 public class NodeFORALL_MODAL implements StateFormula {
     private StateFormula parameter1;

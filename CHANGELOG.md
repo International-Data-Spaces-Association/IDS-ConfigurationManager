@@ -12,6 +12,18 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.1.0] - 2021-06-29
+
+### Added
+- Minor Change: New Feature: Camel Support
+- Minor Change: New API POST /api/ui/route/error caches error messages of the routes until they are fetched by the corresponding GET API (takes every String as RequestBody)
+- Minor Change: New API GET /api/ui/route/error all intermediate errors of the routes can be queried, once queried these are deleted in the backend (only cached until GET API called) 
+
+### Dependency Maintenance
+- Upgrade: org.springframework.security:spring-security-test 5.5.0 -> 5.5.1
+- Upgrade: org.postgresql:postgresql 42.2.20 -> 42.2.22
+- Upgrade: org.springframework.boot:spring-boot-starter-parent 2.5.0 -> 2.5.2
+
 ## [7.0.0] - 2021-05-26
 ### Major Changes
 - Remove 20 unused APIs (= 1.150 lines of code) (unused by ConfigManager-UI project)

@@ -56,7 +56,9 @@ class InfomodelPetriNetBuilderTest {
     private static final int MAXIMUM_STARTEND = 3;
 
     /**
-     * Generate a random PetriNet, try to simulate it and print out the GraphViz representation
+     * Example: Generate a random PetriNet, try to simulate it and print out the GraphViz representation
+     * Generated PetriNet can have an infinite amount of possible configurations, if this happens the
+     * example will run indefinitely.
      */
     @Test
     @Disabled
@@ -114,38 +116,45 @@ class InfomodelPetriNetBuilderTest {
         }
     }
 
+    /**
+     * Example: Create a set of Formulas and evaluate them on the example PetriNet
+     */
     @Test
     @Disabled
     void testExamplePetriNet(){
+        //build the example net and log DOT visualization
         var petriNet = buildPaperNet();
+        log.info(GraphVizGenerator.generateGraphViz(petriNet));
 
-        if (log.isInfoEnabled()) {
-            log.info(GraphVizGenerator.generateGraphViz(petriNet));
-        }
-
-        //build stepGraph and visualize
+        //build stepGraph
         var graph = PetriNetSimulator.buildStepGraph(petriNet);
+        log.info(String.format("%d possible states!", graph.getSteps().size()));
 
-        if (log.isInfoEnabled()) {
-            //log.info(GraphVizGenerator.generateGraphViz(graph));
-            log.info(String.format("%d possible states!", graph.getSteps().size()));
-        }
-
+        //get set of paths from calculated stepgraph
         var allPaths = PetriNetSimulator.getAllPaths(graph);
         log.info(String.format("Found %d valid Paths!", allPaths.size()));
-        //an end node is eventually reachable
-        var endReachable = nodeEV(nodeNF(nodeExpression(x -> x.getSourceArcs().isEmpty(), "")));
-        log.info("Evaluating Formula: " + endReachable.writeFormula());
-        //log.info("Result: " + CTLEvaluator.evaluate(endReachable, graph.getInitial().getNodes().stream().filter(node -> node.getID().equals(URI.create("place://start"))).findAny().get(), allPaths));
-        //a transition is reachable, which reads data without 'france' in context, after that transition data is overwritten or erased (or an end is reached)
-        var formulaFrance = transitionPOS(transitionAND(transitionAF(arcExpression(x -> x.getContext().getRead() != null && x.getContext().getRead().equals("data") && !x.getContext().getContext().contains("france"), "")), transitionEV(transitionOR(transitionAF(arcExpression(x -> x.getContext().getWrite() != null && x.getContext().getWrite().equals("data") || x.getContext().getErase() != null && x.getContext().getErase().equals("data"), "")), transitionMODAL(nodeNF(nodeExpression(x -> x.getSourceArcs().isEmpty(), " ")))))));
+
+        //Evaluate Formula 1: a transition is reachable, which reads data without 'france' in context, after that transition data is overwritten or erased (or an end is reached)
+        var formulaFrance = transitionPOS(
+                                            transitionAND(
+                                                    transitionAF(arcExpression(x -> x.getContext().getRead() != null && x.getContext().getRead().equals("data") && !x.getContext().getContext().contains("france"), "")),
+                                                    transitionEV(
+                                                            transitionOR(
+                                                                    transitionAF(arcExpression(x -> x.getContext().getWrite() != null && x.getContext().getWrite().equals("data") || x.getContext().getErase() != null && x.getContext().getErase().equals("data"), "")),
+                                                                    transitionMODAL(nodeNF(nodeExpression(x -> x.getSourceArcs().isEmpty(), " ")))
+                                                            )
+                                                    )
+                                            )
+        );
         log.info("Formula France: " + formulaFrance.writeFormula());
         log.info("Result: " + CTLEvaluator.evaluate(formulaFrance, graph.getInitial().getNodes().stream().filter(node -> node.getID().equals(URI.create("trans://getData"))).findAny().get(), allPaths));
-        //a transition is reachable, which reads data
+
+        //Evaluate Formula 2: a transition is reachable, which reads data
         var formulaDataUsage = nodeMODAL(transitionPOS(transitionAF(arcExpression(x -> x.getContext().getRead() != null && x.getContext().getRead().equals("data"), ""))));
         log.info("Formula Data: " + formulaDataUsage.writeFormula());
         log.info("Result: " + CTLEvaluator.evaluate(formulaDataUsage, graph.getInitial().getNodes().stream().filter(node -> node.getID().equals(URI.create("place://start"))).findAny().get(), allPaths));
-        //a transition is reachable, which is reading data. From there another transition is reachable, which also reads data, from this the end or a transition which overwrites or erases data is reachable.
+
+        //Evaluate Formula 3: a transition is reachable, which is reading data. From there another transition is reachable, which also reads data, from this the end or a transition which overwrites or erases data is reachable.
         var formulaUseAndDelete = transitionPOS(
                                                 transitionAND(
                                                         transitionAF(arcExpression(x -> x.getContext().getRead() != null && x.getContext().getRead().equals("data"), "")),
@@ -167,20 +176,30 @@ class InfomodelPetriNetBuilderTest {
         log.info("Result: " + CTLEvaluator.evaluate(formulaUseAndDelete, graph.getInitial().getNodes().stream().filter(node -> node.getID().equals(URI.create("trans://getData"))).findAny().get(), allPaths));
     }
 
+    /**
+     * Example: Unfold the example PetriNet and check for parallel evaluations
+     */
     @Test
     @Disabled
     void testUnfoldNet(){
+        //build example petrinet
         var petriNet = buildPaperNet();
-        var stepGraph = PetriNetSimulator.buildStepGraph(petriNet);
+
+        //unfold and visualize example petrinet
         var unfolded = PetriNetSimulator.getUnfoldedPetriNet(petriNet);
         log.info(GraphVizGenerator.generateGraphViz(unfolded));
-        log.info(String.valueOf(unfolded.deepCopy().equals(unfolded)));
+
+        //build step graph of unfolded net
         var unfoldedGraph = PetriNetSimulator.buildStepGraph(unfolded);
         log.info(String.format("Step Graph has %d possible combinations!", unfoldedGraph.getSteps().size()));
-        log.info("Getting parallel sets...");
+
+        //get possible parallel executions of transitions from the calculated stepgraph
         var parallelSets = PetriNetSimulator.getParallelSets(unfoldedGraph);
         log.info(String.format("Found %d possible parallel executions!", parallelSets.size()));
-        log.info(String.format("3 parallel reading Transitions: %s", ParallelEvaluator.nParallelTransitionsWithCondition(x -> x.getContext().getRead() != null && x.getContext().getRead().equals("data"), 3, parallelSets)));
+
+        //evaluate: 3 transitions are reading data in parallel
+        var result = ParallelEvaluator.nParallelTransitionsWithCondition(x -> x.getContext().getRead() != null && x.getContext().getRead().equals("data"), 3, parallelSets);
+        log.info(String.format("3 parallel reading Transitions: %s", result));
     }
 
     /**
@@ -199,17 +218,11 @@ class InfomodelPetriNetBuilderTest {
         return newList;
     }
 
-    @Test
-    @Disabled
-    void testFormula(){
-        var formula = nodeAND(nodeMODAL(transitionNOT(FF())), nodeOR(nodeNF(nodeExpression(x -> true, "testMsg")),TT()));
-        if (log.isInfoEnabled()) {
-            log.info(formula.writeFormula());
-        }
-    }
-
+    /**
+     * Build the example PetriNet from the paper, to evaluate formulas on
+     * @return Example PetriNet described in the WFDU Paper
+     */
     private PetriNet buildPaperNet(){
-        var nodes = new HashSet<Node>();
         //create nodes
         var start = new PlaceImpl(URI.create("place://start"));
         start.setMarkers(1);
@@ -230,7 +243,7 @@ class InfomodelPetriNetBuilderTest {
         var stor3 = new PlaceImpl(URI.create("place://stored3"));
         var stor4 = new PlaceImpl(URI.create("place://stored4"));
         var end = new PlaceImpl(URI.create("place://end"));
-        nodes.addAll(List.of(start, copy, init, dat1, dat2, con1, con2, con3, con4, sample, mean, med, rules, stor1, stor2, stor3, stor4, end));
+        var nodes = new HashSet<Node>(List.of(start, copy, init, dat1, dat2, con1, con2, con3, con4, sample, mean, med, rules, stor1, stor2, stor3, stor4, end));
         //create transitions with context
         var initTrans = new TransitionImpl(URI.create("trans://init"));
         initTrans.setContextObject(new ContextObject(List.of(), null, null, null, ContextObject.TransType.CONTROL));

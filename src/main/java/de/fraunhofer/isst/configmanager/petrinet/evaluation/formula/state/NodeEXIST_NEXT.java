@@ -8,6 +8,9 @@ import java.util.List;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.state.NodeMODAL.nodeMODAL;
 import static de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.transition.TransitionMODAL.transitionMODAL;
 
+/**
+ * evaluates to true, if there is a following place fulfilling the given formula
+ */
 @AllArgsConstructor
 public class NodeEXIST_NEXT implements StateFormula {
     private StateFormula parameter;

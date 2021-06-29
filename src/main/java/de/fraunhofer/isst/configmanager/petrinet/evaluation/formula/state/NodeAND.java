@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 
 import java.util.List;
 
+/**
+ * evaluates to true, if parameter1 and parameter2 evaluate to true
+ */
 @AllArgsConstructor
 public class NodeAND implements StateFormula {
 

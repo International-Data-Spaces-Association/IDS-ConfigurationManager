@@ -9,6 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * evaluates to true, if on any possible path every transition fulfills parameter1, until a transition fulfills parameter2
+ */
 @AllArgsConstructor
 @Slf4j
 public class TransitionFORALL_UNTIL implements TransitionFormula {
@@ -51,7 +54,6 @@ public class TransitionFORALL_UNTIL implements TransitionFormula {
                     return false;
                 }
             }else{
-                //TODO path contains circle
                 //if something on the circle fulfills param2 accept, if something does not fulfill param1 reject
                 for (var i = 2; i<path.size() - 1; i+=2){
                     var res1 = parameter1.evaluate(path.get(i), paths);
@@ -62,7 +64,7 @@ public class TransitionFORALL_UNTIL implements TransitionFormula {
                         return false;
                     }
                 }
-                //if everything on circle fulfills param1 but not param2: complicated case
+                //if everything on circle fulfills param1 but not param2
                 var lastTransition = path.get(path.size()-1) instanceof Transition ? path.get(path.size()-1) : path.get(path.size()-2);
                 var newPaths = new ArrayList<>(paths);
                 newPaths.remove(path);

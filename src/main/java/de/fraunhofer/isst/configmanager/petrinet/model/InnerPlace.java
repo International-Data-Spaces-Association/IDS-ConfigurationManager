@@ -6,10 +6,17 @@ import lombok.Setter;
 import java.net.URI;
 import java.util.Objects;
 
+/**
+ * Used for inner places of unfolded transitions (has a originalTrans field to access the original transition which
+ * was unfolded)
+ */
 @Getter
 @Setter
 public class InnerPlace extends PlaceImpl{
 
+    /**
+     * Original Transition, which was unfolded to create the InnerPlace
+     */
     private Transition originalTrans;
 
     public InnerPlace(URI id, Transition originalTrans) {
