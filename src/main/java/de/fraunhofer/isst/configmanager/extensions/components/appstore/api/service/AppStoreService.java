@@ -7,7 +7,7 @@ import java.net.URI;
 import java.util.List;
 
 /**
- * Service class for app stores operations
+ * Service class for app stores operations.
  */
 @Service
 @Transactional
@@ -19,7 +19,7 @@ public class AppStoreService {
      * @param accessUrl uri of the app store
      * @param title     title of the app store
      */
-    public void createAppStore(URI accessUrl, String title) {
+    public void createAppStore(final URI accessUrl, final String title) {
         //TODO: persist in DB
     }
 
@@ -30,7 +30,7 @@ public class AppStoreService {
      * @param title     title of the app store
      * @return true, when app store is updated
      */
-    public boolean updateAppStore(URI accessUrl, String title) {
+    public boolean updateAppStore(final URI accessUrl, final String title) {
         //TODO: persist in DB
         return true;
     }
@@ -41,7 +41,7 @@ public class AppStoreService {
      * @param accessUrl of the app store to be deleted
      * @return true, if accessUrl is deleted
      */
-    public boolean deleteAppStore(URI accessUrl) {
+    public boolean deleteAppStore(final URI accessUrl) {
         //TODO: delete from DB
         return true;
     }
