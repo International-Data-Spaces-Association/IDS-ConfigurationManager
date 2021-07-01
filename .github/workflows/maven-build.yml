@@ -4,8 +4,8 @@
 name: Build Maven Java Project
 
 on:
-  pull_request:
-    branches: [ main, development ]
+  push:
+    branches: [ main, development, Dataspace-Connector-v5 ]
 
 concurrency:
   group: ${{ github.head_ref }}
