@@ -20,7 +20,12 @@ Due to the new version of the Dataspace Connector (v5), the responsibilities bet
 ### Dependency Maintenance
 - Upgrade: IDS Information Model Artifacts 4.0.6 -> 4.0.10
 
-## [7.1.0] - UNRELEASED
+## [7.1.1] - UNRELEASED
+
+### Added
+- Patch change: Added Maven plugin to generate Apache 2.0 license-header in files
+
+## [7.1.0] - 2021-06-29
 
 ### Added
 - Minor Change: New Feature: Camel Support
