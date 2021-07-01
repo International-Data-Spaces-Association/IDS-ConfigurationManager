@@ -95,6 +95,21 @@ This is a list of currently implemented features, which is continuously updated.
   resources, the connector or the configuration model itself
 * App routes can be defined for offering data or resources (under construction)
 * Dummy data apps can be loaded to simulate data processing workflows
+* App routes can be defined for offering data or resources
+* Camel integration for App routes, more details see below
+
+### Camel Integration
+
+A key focus of ConfigManager is routing data between the Connector, Apps and IDS-Endpoints. Camel is used for routing data between endpoints.
+
+The following functionalities are already supported:
+- When creating an AppRoute in ConfigManager or ConfigManager GUI, a Camel route is automatically created and deployed.
+- A new route can be created in various cases: automatically with creation of a new resource and by manually creating a route via the GUI routes page.
+- When a route is deleted, it is also stopped and removed in Camel.
+- Backends accessible via HTTP are supported as a backend for a resource.
+- The created Camel routes are automatically executed every minute: either push the data obtained into the Dataspace Connector or to query the data of a resource of the Dataspace Connector and push it to a backend.
+- If there are errors in the routes, they will be displayed in the GUI on the routes page.
+- Integrating apps into Camel routes can be done easily, but the integration of apps into the ConfigManager itself is under development.
 
 <a name="technologies"></a>
 
