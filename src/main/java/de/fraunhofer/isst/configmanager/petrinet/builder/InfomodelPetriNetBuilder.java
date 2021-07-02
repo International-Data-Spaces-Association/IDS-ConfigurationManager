@@ -57,6 +57,8 @@ public class InfomodelPetriNetBuilder {
     /**
      * Generate a Petri Net from a given infomodel {@link AppRoute}.
      * RouteSteps will be represented as Places, Endpoints as Transitions.
+     * 
+     * THIS METHOD ONLY TRANSLATES APPROUTES OF DEPTH 1: SubRoutes of SubRoutes are currently not considered.
      *
      * @param includeAppRoute AppRoute to be included
      * @param appRoute an Infomodel {@link AppRoute}
