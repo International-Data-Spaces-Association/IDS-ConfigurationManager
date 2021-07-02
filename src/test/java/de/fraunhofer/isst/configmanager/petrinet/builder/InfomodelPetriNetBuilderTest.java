@@ -115,25 +115,7 @@ class InfomodelPetriNetBuilderTest {
         final var sub2 = new RouteStepBuilder(URI.create("http://sub2"))._appRouteStart_(List.of(endpoint2))._appRouteEnd_(List.of(endpoint3))._appRouteOutput_(List.of(resource2, resource3)).build();
         final var appRoute = new AppRouteBuilder(URI.create("http://approute"))._appRouteStart_(List.of(endpoint1))._appRouteStart_(List.of(endpoint3))._appRouteOutput_(List.of(resource1))._hasSubRoute_(List.of(sub1, sub2)).build();
 
-        //Generate PetriNet, add first control transition and fill context of app transitions
-        var petriNet = InfomodelPetriNetBuilder.petriNetFromAppRoute(appRoute, false);
-        petriNet = InfomodelPetriNetBuilder.addControlTransitions(petriNet);
-        petriNet = InfomodelPetriNetBuilder.fillWriteAndErase(petriNet);
-        log.info(GraphVizGenerator.generateGraphVizWithContext(petriNet));
-
-        //build stepgraph
-        final var stepGraph = PetriNetSimulator.buildStepGraph(petriNet);
-        log.info(GraphVizGenerator.generateGraphViz(stepGraph));
-
-        //get all paths from stepgraph
-        final var paths = PetriNetSimulator.getAllPaths(stepGraph);
-
-        //get formulas from the AppRoute and Check them against the StepGraph (should all be true)
-        final var formulas = InfomodelPetriNetBuilder.extractPoliciesFromAppRoute(appRoute);
-        for (final var formula : formulas) {
-            final var res = CTLEvaluator.evaluate(formula, stepGraph.getInitial().getNodes().stream().filter(node -> node instanceof Place && ((Place) node).getMarkers() >= 1).findAny().get(), paths);
-            assertTrue(res);
-        }
+        assertTrue(InfomodelPetriNetBuilder.buildAndCheck(appRoute));
     }
 
     /**
@@ -263,46 +245,7 @@ class InfomodelPetriNetBuilderTest {
                 ._hasSubRoute_(subroutes)
                 .build();
 
-        //build a petriNet from the generated AppRoute and log generated GraphViz representation
-        var petriNet = InfomodelPetriNetBuilder.petriNetFromAppRoute(appRoute, false);
-        petriNet = InfomodelPetriNetBuilder.fillWriteAndErase(petriNet);
-        final var ser = new Serializer();
-        if (log.isInfoEnabled()) {
-            //log.info(ser.serialize(appRoute));
-            log.info(GraphVizGenerator.generateGraphVizWithContext(petriNet));
-        }
-        final var formulas = InfomodelPetriNetBuilder.extractPoliciesFromAppRoute(appRoute);
-        for (final var formula : formulas) {
-            log.info(formula.writeFormula());
-        }
-
-
-        //build a full Graph of all possible steps in the PetriNet and log generated GraphViz representation
-        final var graph = PetriNetSimulator.buildStepGraph(petriNet);
-
-        if (log.isInfoEnabled()) {
-            log.info(String.valueOf(graph.getArcs().size()));
-            log.info(GraphVizGenerator.generateGraphViz(graph));
-        }
-
-        final var allPaths = PetriNetSimulator.getAllPaths(graph);
-
-        if (log.isInfoEnabled()) {
-            log.info(allPaths.toString());
-        }
-
-        final var formula = nodeAND(nodeMODAL(transitionNOT(FF())), nodeOR(nodeNF(nodeExpression(x -> true, "testMsg")),TT()));
-        final var formula2 = nodeAND(nodeFORALL_NEXT(nodeMODAL(transitionAF(arcExpression(x -> true,"")))), TT());
-        final var formula3 = nodeEXIST_UNTIL(nodeMODAL(TT()), nodeNF(nodeExpression(x -> x.getSourceArcs().isEmpty(), "")));
-
-        if (log.isInfoEnabled()) {
-            log.info("Formula 1: " + formula.writeFormula());
-            log.info("Result: " + CTLEvaluator.evaluate(formula, graph.getInitial().getNodes().stream().filter(node -> node instanceof Place).findAny().get(), allPaths));
-            log.info("Formula 2: " + formula2.writeFormula());
-            log.info("Result: " + CTLEvaluator.evaluate(formula2, graph.getInitial().getNodes().stream().filter(node -> node instanceof Place).findAny().get(), allPaths));
-            log.info("Formula 3: " + formula3.writeFormula());
-            log.info("Result: " + CTLEvaluator.evaluate(formula3, graph.getInitial().getNodes().stream().filter(node -> node.getID().equals(URI.create("place://source"))).findAny().get(), allPaths));
-        }
+        log.info("Result: " + InfomodelPetriNetBuilder.buildAndCheck(appRoute));
     }
 
     /**
@@ -349,11 +292,11 @@ class InfomodelPetriNetBuilderTest {
         final var nodes = new HashSet<Node>(List.of(start, copy, init, dat1, dat2, con1, con2, con3, con4, sample, mean, med, rules, stor1, stor2, stor3, stor4, end));
         //create transitions with context
         final var initTrans = new TransitionImpl(URI.create("trans://init"));
-        initTrans.setContextObject(new ContextObject(Set.of(), null, null, null, ContextObject.TransType.CONTROL));
+        initTrans.setContextObject(new ContextObject(Set.of(), Set.of(), Set.of(), Set.of(), ContextObject.TransType.CONTROL));
         final var getData = new TransitionImpl(URI.create("trans://getData"));
-        getData.setContextObject(new ContextObject(Set.of(), null, Set.of("data"), null, ContextObject.TransType.APP));
+        getData.setContextObject(new ContextObject(Set.of(), Set.of(), Set.of("data"), Set.of(), ContextObject.TransType.APP));
         final var copyData = new TransitionImpl(URI.create("trans://copyData"));
-        copyData.setContextObject(new ContextObject(Set.of(""), Set.of("data"), Set.of("data"), null, ContextObject.TransType.APP));
+        copyData.setContextObject(new ContextObject(Set.of(""), Set.of("data"), Set.of("data"), Set.of(), ContextObject.TransType.APP));
         final var extract = new TransitionImpl(URI.create("trans://extractSample"));
         extract.setContextObject(new ContextObject(Set.of("france"), Set.of("data"), Set.of("sample"), Set.of("data"), ContextObject.TransType.APP));
         final var calcMean = new TransitionImpl(URI.create("trans://calcMean"));
@@ -363,15 +306,15 @@ class InfomodelPetriNetBuilderTest {
         final var calcRules = new TransitionImpl(URI.create("trans://calcAPrioriRules"));
         calcRules.setContextObject(new ContextObject(Set.of("france", "high_performance"), Set.of("data"), Set.of("rules"), Set.of("data"), ContextObject.TransType.APP));
         final var store1 = new TransitionImpl(URI.create("trans://storeData1"));
-        store1.setContextObject(new ContextObject(Set.of(), Set.of("sample"), null, Set.of("sample"), ContextObject.TransType.APP));
+        store1.setContextObject(new ContextObject(Set.of(), Set.of("sample"), Set.of(), Set.of("sample"), ContextObject.TransType.APP));
         final var store2 = new TransitionImpl(URI.create("trans://storeData2"));
-        store2.setContextObject(new ContextObject(Set.of(), Set.of("mean"), null, Set.of("mean"), ContextObject.TransType.APP));
+        store2.setContextObject(new ContextObject(Set.of(), Set.of("mean"), Set.of(), Set.of("mean"), ContextObject.TransType.APP));
         final var store3 = new TransitionImpl(URI.create("trans://storeData3"));
-        store3.setContextObject(new ContextObject(Set.of(), Set.of("median"), null, Set.of("median"), ContextObject.TransType.APP));
+        store3.setContextObject(new ContextObject(Set.of(), Set.of("median"), Set.of(), Set.of("median"), ContextObject.TransType.APP));
         final var store4 = new TransitionImpl(URI.create("trans://storeData4"));
-        store4.setContextObject(new ContextObject(Set.of(), Set.of("rules"), null, Set.of("rules"), ContextObject.TransType.APP));
+        store4.setContextObject(new ContextObject(Set.of(), Set.of("rules"), Set.of(), Set.of("rules"), ContextObject.TransType.APP));
         final var endTrans = new TransitionImpl(URI.create("trans://end"));
-        endTrans.setContextObject(new ContextObject(Set.of(), null, null, null, ContextObject.TransType.CONTROL));
+        endTrans.setContextObject(new ContextObject(Set.of(), Set.of(), Set.of(), Set.of(), ContextObject.TransType.CONTROL));
         nodes.addAll(List.of(initTrans, getData, copyData, extract, calcMean, calcMed, calcRules, store1, store2, store3, store4, endTrans));
         //create arcs
         final var arcs = new HashSet<Arc>();

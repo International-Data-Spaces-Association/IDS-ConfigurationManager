@@ -19,6 +19,7 @@ import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.iais.eis.RouteStep;
 import de.fraunhofer.iais.eis.Rule;
 import de.fraunhofer.iais.eis.util.TypedLiteral;
+import de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.CTLEvaluator;
 import de.fraunhofer.isst.configmanager.petrinet.evaluation.formula.Formula;
 import de.fraunhofer.isst.configmanager.petrinet.model.Arc;
 import de.fraunhofer.isst.configmanager.petrinet.model.ArcImpl;
@@ -33,6 +34,7 @@ import de.fraunhofer.isst.configmanager.petrinet.model.TransitionImpl;
 import de.fraunhofer.isst.configmanager.petrinet.policy.PolicyUtils;
 import de.fraunhofer.isst.configmanager.petrinet.policy.RuleFormulaBuilder;
 import de.fraunhofer.isst.configmanager.petrinet.policy.RuleUtils;
+import de.fraunhofer.isst.configmanager.petrinet.simulator.PetriNetSimulator;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
@@ -53,6 +55,41 @@ import java.util.stream.Stream;
 @Slf4j
 @UtilityClass
 public class InfomodelPetriNetBuilder {
+
+    /**
+     * Build a PetriNet from an AppRoute, calculate state space, extract Policies as CTL formulas and evaluate them.
+     *
+     * @param appRoute AppRoute to check
+     * @return true, if approute fulfills all implicit policies
+     */
+    public static boolean buildAndCheck(final AppRoute appRoute){
+        var petriNet = InfomodelPetriNetBuilder.petriNetFromAppRoute(appRoute, false);
+        petriNet = InfomodelPetriNetBuilder.addControlTransitions(petriNet);
+        if(log.isDebugEnabled()){
+            log.debug("Built PetriNet from given AppRoute!");
+            log.debug(GraphVizGenerator.generateGraphVizWithContext(petriNet));
+        }
+        petriNet = InfomodelPetriNetBuilder.fillWriteAndErase(petriNet);
+        if(log.isDebugEnabled()){
+            log.debug("Filled Context of Transitions!");
+            log.debug(GraphVizGenerator.generateGraphVizWithContext(petriNet));
+        }
+        final var stepGraph = PetriNetSimulator.buildStepGraph(petriNet);
+        final var paths = PetriNetSimulator.getAllPaths(stepGraph);
+        final var formulas = InfomodelPetriNetBuilder.extractPoliciesFromAppRoute(appRoute);
+        boolean evaluation = true;
+        for (final var formula : formulas) {
+            if(log.isDebugEnabled()){
+                log.debug(String.format("Evaluating formula: %s", formula.writeFormula()));
+            }
+            var result = CTLEvaluator.evaluate(formula, stepGraph.getInitial().getNodes().stream().filter(node -> node instanceof Place && ((Place) node).getMarkers() >= 1).findAny().get(), paths);
+            if(log.isDebugEnabled()){
+                log.debug(String.format("Evaluation result: %s", result));
+            }
+            evaluation &= result;
+        }
+        return evaluation;
+    }
 
     /**
      * Generate a Petri Net from a given infomodel {@link AppRoute}.
@@ -183,35 +220,59 @@ public class InfomodelPetriNetBuilder {
     }
 
     /**
+     * Fill Read/Write/Erase of Transitions, based on previous transitions
+     *
      * @param petriNet petrinet created from infomodel approute
      * @return petrinet with filled writes and reads in contextobj
      */
     public PetriNet fillWriteAndErase(final PetriNet petriNet) {
-        //TODO check if everything is filled properly
         final var transitions = petriNet.getNodes().stream()
                 .filter(node -> node instanceof Transition)
                 .collect(Collectors.toList());
+        Set<Transition> visited = new HashSet<>();
         for (final var trans : transitions) {
-            final var previous = trans.getTargetArcs().stream()
-                    .map(Arc::getSource)
-                    .map(Node::getTargetArcs)
-                    .flatMap(Collection::stream)
-                    .map(Arc::getSource)
-                    .filter(node -> node instanceof TransitionImpl)
-                    .map(node -> ((TransitionImpl) node).getContext().getWrite())
-                    .flatMap(Collection::stream)
-                    .collect(Collectors.toSet());
-            ((TransitionImpl) trans).getContext().setRead(previous);
-            if (((TransitionImpl) trans).getContext().getType() == ContextObject.TransType.APP) {
-                final var writeSplit = ((TransitionImpl) trans).getContext().getWrite();
-                final var erased = previous.stream().filter(x -> !writeSplit.contains(x)).collect(Collectors.toSet());
-                ((TransitionImpl) trans).getContext().setErase(erased);
-            } else {
-                ((TransitionImpl) trans).getContext().setWrite(previous);
+            if(!visited.contains((Transition) trans)) {
+                visited.addAll(fillWriteAndErase((Transition) trans, new HashSet<>()));
             }
         }
         return petriNet;
     }
+
+    /**
+     * Fill Read/Write/Erase of given Transition, based on previous transitions
+     *
+     * @param trans transition for which read and write should be filled
+     * @param visited already visited transitions
+     * @return transition
+     */
+    public Set<Transition> fillWriteAndErase(final Transition trans, Set<Transition> visited){
+        if(visited.contains(trans)) return visited;
+        visited.add(trans);
+        var previous = trans.getTargetArcs().stream()
+                .map(Arc::getSource)
+                .map(Node::getTargetArcs)
+                .flatMap(Collection::stream)
+                .map(Arc::getSource)
+                .filter(node -> node instanceof TransitionImpl)
+                .collect(Collectors.toSet());
+        Set<String> readSet = new HashSet<>();
+        for (var prevTrans : previous){
+            fillWriteAndErase((Transition) prevTrans, new HashSet<>(visited));
+            Transition filledTrans = (Transition) prevTrans;
+            var context = filledTrans.getContext();
+            readSet.addAll(context.getWrite());
+        }
+        trans.getContext().setRead(readSet);
+        if ((trans).getContext().getType() == ContextObject.TransType.APP) {
+            final var writeSplit = (trans).getContext().getWrite();
+            final var erased = readSet.stream().filter(x -> !writeSplit.contains(x)).collect(Collectors.toSet());
+            (trans).getContext().setErase(erased);
+        } else {
+            (trans).getContext().setWrite(readSet);
+        }
+        return visited;
+    }
+
 
     /**
      * Get the transition for the given {@link Endpoint} by ID, or generate a new one if no transition for that endpoint exists.
@@ -339,8 +400,8 @@ public class InfomodelPetriNetBuilder {
     private static Formula buildFormulaFromRule(final Rule rule, final URI resourceID) {
         final var pattern = RuleUtils.getPatternByRule(rule);
 
-        if (log.isInfoEnabled()) {
-            log.info(pattern.toString());
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Detected Pattern: %s", pattern.toString()));
         }
 
         return RuleFormulaBuilder.buildFormula(pattern, rule, resourceID);

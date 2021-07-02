@@ -42,7 +42,6 @@ public class NodeFORALL_UNTIL implements StateFormula {
     }
 
     //like EXIST_UNTIL for all paths
-    //TODO fix evaluation: use filtered paths
     @Override
     public boolean evaluate(final Node node, final List<List<Node>> paths) {
         if (!(node instanceof Place)) {
@@ -78,7 +77,6 @@ public class NodeFORALL_UNTIL implements StateFormula {
                     return false;
                 }
             } else {
-                //TODO path contains circle
                 //if something on the circle fulfills param2 accept, if something does not fulfill param1 reject
                 for (var i = 2; i < path.size() - 1; i += 2) {
                     final var res1 = parameter1.evaluate(path.get(i), paths);
