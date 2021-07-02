@@ -79,13 +79,13 @@ public class RuleFormulaBuilder {
                         transitionPOS(
                                 transitionAND(
                                         transitionAF(arcExpression(x -> x.getContext().getRead() != null
-                                                && x.getContext().getRead().contains(target.toString()), "")),
+                                                && x.getContext().getRead().contains(target.toString()), String.format("Check if Transition reads %s", target.toString()))),
                                         transitionNOT(
                                                 transitionEV(
                                                         transitionAF(
                                                                 arcExpression(x -> x.getContext().getErase() != null
                                                                 && x.getContext().getErase().contains(target.toString()),
-                                                                "")
+                                                                        String.format("Check if Transition erases %s", target.toString()))
                                                         )
                                                 )
                                         )
@@ -109,7 +109,7 @@ public class RuleFormulaBuilder {
                                 transitionAF(
                                         arcExpression(trans -> trans.getContext().getRead().contains(target.toString())
                                                         && !trans.getContext().getContext().contains(allowedConnector),
-                                                "transition tries to read resource which is prohibited per connector!"
+                                                String.format("IF transition reads resource %s it has to be from Connector %s", target.toString(), allowedConnector)
                                         )
                                 )
                         )
@@ -128,7 +128,7 @@ public class RuleFormulaBuilder {
                         transitionPOS(
                                 transitionAF(
                                         arcExpression(trans -> trans.getContext().getRead().contains(target.toString()),
-                                                "transition tries to read prohibited resource!"
+                                                String.format("Check IF transition tries to read %s", target.toString())
                                         )
                                 )
                         )
@@ -148,7 +148,7 @@ public class RuleFormulaBuilder {
                                 transitionAF(
                                         arcExpression(trans -> trans.getContext().getRead().contains(target.toString())
                                                 && !trans.getContext().getContext().contains("logging"),
-                                                "transition tries to read prohibited resource without notification!"
+                                                String.format("Check IF transition tries to read %s without set logging flag", target.toString())
                                         )
                                 )
                         )
@@ -168,7 +168,7 @@ public class RuleFormulaBuilder {
                                 transitionAF(
                                         arcExpression(trans -> trans.getContext().getRead().contains(target.toString())
                                                         && !trans.getContext().getContext().contains("notification"),
-                                                "transition tries to read prohibited resource without notification!"
+                                                String.format("Check IF transition tries to read %s without set notification flag", target.toString())
                                         )
                                 )
                         )
