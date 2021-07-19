@@ -19,6 +19,7 @@ Due to the new version of the Dataspace Connector (v5), the responsibilities bet
 
 ### Dependency Maintenance
 - Upgrade: IDS Information Model Artifacts 4.0.6 -> 4.0.10
+- Upgrade: org.postgresql:postgresql 42.2.22 -> 42.2.23
 
 ## [7.1.1] - UNRELEASED
 
