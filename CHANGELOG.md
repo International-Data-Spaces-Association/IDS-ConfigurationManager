@@ -14,6 +14,9 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [7.1.1] - UNRELEASED
 
+### Dependency Maintenance
+- Upgrade: org.postgresql:postgresql 42.2.20 -> 42.2.23
+
 ### Added
 - Patch change: Added Maven plugin to generate Apache 2.0 license-header in files
 
