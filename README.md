@@ -1,3 +1,13 @@
+***
+
+<h3 align="center">
+  <a href="https://github.com/International-Data-Spaces-Association/DataspaceConnector">
+    -- End-Of-Support: 21.07.2021 -- Has been integrated directly into the Dataspace Connector.
+  </a>
+</h3>
+
+***
+
 <p align="center">
 <img src="images/ConfigManager.png">
 </p>
