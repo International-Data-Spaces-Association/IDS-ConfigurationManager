@@ -13,6 +13,7 @@
  */
 package de.fraunhofer.isst.configmanager.core;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import lombok.NoArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,6 +25,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  */
 @Configuration
 @NoArgsConstructor
+@ConditionalOnProperty(value = "keycloak.enabled", havingValue = "false")
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     /**
      * @param http the HttpSecurity object
