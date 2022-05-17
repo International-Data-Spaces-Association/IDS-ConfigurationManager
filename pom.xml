@@ -219,6 +219,15 @@
             <version>2.14.1</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.github.docker-java/docker-java -->
+        <!-- License: Apache License, Version 2.0 -->
+        <dependency>
+            <groupId>com.github.docker-java</groupId>
+            <artifactId>docker-java</artifactId>
+            <version>3.2.8</version>
+        </dependency>
+
+
         <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
         <!-- License: BSD-2-Clause -->
         <dependency>
